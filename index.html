@@ -13,7 +13,7 @@
         .btn-modo { transition: all 0.3s; font-size: 1.1rem; padding: 12px 24px; border-radius: 10px; font-weight: 800; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
         .config-label { font-size: 1.1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
-        .strategy-text { font-size: 1.2rem; line-height: 1.6; }
+        .strategy-text { font-size: 1.15rem; line-height: 1.6; }
     </style>
 </head>
 <body class="bg-white p-4 md:p-8">
@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl shadow-md border">
-                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase">Registro Técnico de Datos</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase tracking-tighter">Registro Técnico de Datos</h3>
                     <table class="w-full text-lg text-left">
                         <thead>
                             <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black">
@@ -64,7 +64,7 @@
                                 <th class="p-4 text-center">HR %</th>
                             </tr>
                         </thead>
-                        <tbody id="data-table-body" class="font-bold"></tbody>
+                        <tbody id="data-table-body" class="font-bold text-slate-700"></tbody>
                     </table>
                 </div>
 
@@ -73,17 +73,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div class="space-y-8">
                             <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 tracking-widest">Análisis del Climograma:</h4>
-                                <p id="climograma-text" class="strategy-text text-slate-300 italic"></p>
+                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3 tracking-widest">Análisis del Climograma:</h4>
+                                <p id="climograma-text" class="strategy-text text-slate-300"></p>
                             </div>
                             <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 tracking-widest">Estrategia Recomendada:</h4>
+                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3 tracking-widest">Estrategia Recomendada:</h4>
                                 <p id="recomendacion-text" class="strategy-text font-black text-white"></p>
                             </div>
                         </div>
                         <div class="space-y-4 flex flex-col items-center">
-                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Bioclimático Dinámico</h4>
-                            <div id="architectural-diagram-container" class="w-full h-80 bg-white rounded-2xl border-4 border-slate-700 shadow-inner p-4 flex items-center justify-center">
+                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Bioclimático</h4>
+                            <div id="architectural-diagram-container" class="w-full h-[400px] bg-white rounded-2xl shadow-inner p-6 flex items-center justify-center">
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                 const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
                 const data = await res.json();
                 document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}, ${data.sys.country}`;
-            } catch(e) { console.log("Error mapa"); }
+            } catch(e) {}
         });
 
         function setModo(m) {
@@ -148,10 +148,10 @@
 
             items.forEach((val, i) => {
                 let label = modo === 'mes' ? `${meses[val]}-${seleccionAnos[0]}` : `AÑO ${val}`;
-                let tMax = 28 + (Math.random() * 8);
-                let tMin = 18 + (Math.random() * 6);
-                let hr = 60 + (Math.random() * 25);
-                let color = `hsl(${(i * 360 / items.length)}, 80%, 50%)`;
+                let tMax = 28 + (Math.random() * 9);
+                let tMin = 18 + (Math.random() * 5);
+                let hr = 55 + (Math.random() * 30);
+                let color = `hsl(${(i * 360 / items.length)}, 75%, 50%)`;
                 sumTMax += tMax; sumHR += hr;
 
                 traces.push({
@@ -170,7 +170,6 @@
                     </tr>`;
             });
 
-            // CALIBRACIÓN EXACTA DE EJES
             const layout = {
                 images: [{
                     source: "https://raw.githubusercontent.com/analisis-climatico/givoni-arch/main/OFICIAL-GRÁFICA%20DE%20GIVONI%20(1)-Layout1.jpg",
@@ -188,44 +187,75 @@
             const avgT = sumTMax / items.length;
             const avgH = sumHR / items.length;
 
-            let analisis = "La nube de datos muestra recurrencia en el cuadrante cálido-húmedo.";
-            let recomendacion = "Se requiere el uso de celosías dinámicas para bloquear la radiación sin obstruir el aire.";
-            let tipo = 'ventilacion';
+            let analisis, recomendacion, tipo;
 
             if(avgH > 75) {
-                analisis = "Saturación crítica de humedad detectada. El aire requiere movimiento constante.";
-                recomendacion = "Implementar chimeneas solares para forzar la salida del aire húmedo.";
-                tipo = 'deshumidificacion';
-            } else if(avgT > 32) {
-                analisis = "Temperaturas extremas fuera del área de confort.";
-                recomendacion = "Masa térmica y protecciones solares rigurosas necesarias.";
+                analisis = "Se identifica una saturación constante de humedad relativa superior al umbral de confort. La masa de aire retiene calor latente que dificulta el enfriamiento evaporativo natural del cuerpo.";
+                recomendacion = "Es imperativo el diseño de 'módulos de viento' que capturen la brisa dominante mediante celosías dinámicas. Se deben evitar muros opacos en el sentido del viento y priorizar materiales de baja emisividad.";
+                tipo = 'ventilacion';
+            } else if(avgT > 33) {
+                analisis = "El registro muestra picos de radiación solar directa que sobrepasan la capacidad de los sistemas pasivos simples. Se observa un riesgo de estrés térmico en las horas de mayor incidencia solar.";
+                recomendacion = "Implementar una envolvente de 'doble piel' con inercia térmica selectiva. El uso de fachadas ventiladas y volados profundos reducirá la ganancia de calor por conducción.";
                 tipo = 'inercia';
+            } else {
+                analisis = "El clima presenta oscilaciones moderadas, permitiendo el uso de estrategias de confort híbrido. El aire se mantiene en condiciones aceptables la mayor parte del tiempo.";
+                recomendacion = "Optimizar la ventilación cruzada y el uso de vegetación perimetral para humedecer y refrescar el aire entrante mediante microclimas.";
+                tipo = 'hibrido';
             }
 
             document.getElementById('climograma-text').innerText = analisis;
             document.getElementById('recomendacion-text').innerText = recomendacion;
-            dibujarEsquema(tipo);
+            dibujarEsquemaArquitectonico(tipo);
         }
 
-        function dibujarEsquema(tipo) {
+        function dibujarEsquemaArquitectonico(tipo) {
             const container = document.getElementById('architectural-diagram-container');
-            let colorViento = '#38bdf8', colorSol = '#fb923c', colorMuro = '#e2e8f0';
+            const c = { wall: '#cbd5e1', wind: '#0ea5e9', sun: '#f97316', text: '#475569', highlight: '#f1f5f9' };
             
-            let svg = `<svg viewBox="0 0 400 300" class="w-full h-full">`;
+            let svg = `<svg viewBox="0 0 500 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Estructura Isométrica Base (Un cuarto)
+            const room = `
+                <path d="M 150,150 L 350,150 L 350,300 L 150,300 Z" fill="${c.wall}" stroke="#94a3b8" stroke-width="2"/>
+                <path d="M 150,150 L 220,100 L 420,100 L 350,150 Z" fill="${c.highlight}" stroke="#94a3b8" stroke-width="2"/>
+                <path d="M 350,150 L 420,100 L 420,250 L 350,300 Z" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>`;
+
             if(tipo === 'ventilacion') {
+                svg += room;
+                // Celosías en la cara frontal
+                for(let i=0; i<5; i++) {
+                    svg += `<rect x="180" y="${170 + i*25}" width="140" height="8" fill="#92400e" rx="2" transform="rotate(-5 250 ${170 + i*25})"/>`;
+                }
+                // Flechas de viento
                 svg += `
-                <rect x="50" y="50" width="20" height="200" fill="${colorMuro}"/>
-                <rect x="330" y="50" width="20" height="200" fill="${colorMuro}"/>
-                <rect x="120" y="70" width="160" height="10" fill="#a16207" rx="5" transform="rotate(15 200 75)"/>
-                <rect x="120" y="130" width="160" height="10" fill="#a16207" rx="5" transform="rotate(15 200 135)"/>
-                <path d="M 10,150 Q 150,150 390,120" stroke="${colorViento}" stroke-width="5" fill="none"/>
-                <text x="200" y="270" text-anchor="middle" font-weight="bold" fill="#64748b">ESTRATEGIA: CELOSÍAS Y VIENTO</text>`;
+                <path d="M 50,220 Q 150,220 250,180" stroke="${c.wind}" stroke-width="6" fill="none" stroke-dasharray="10,5" marker-end="url(#arrow)"/>
+                <path d="M 250,180 Q 350,150 450,170" stroke="${c.wind}" stroke-width="6" fill="none" stroke-dasharray="10,5" marker-end="url(#arrow)"/>
+                <text x="250" y="360" text-anchor="middle" font-weight="900" fill="${c.text}" font-size="16">CELOSÍAS DINÁMICAS + FLUJO LAMINAR</text>`;
+            } else if (tipo === 'inercia') {
+                svg += room;
+                // Doble Techo / Volado
+                svg += `<path d="M 100,120 L 170,70 L 420,70 L 350,120 Z" fill="#475569" stroke="#1e293b" stroke-width="2"/>`;
+                // Sol y bloqueo
+                svg += `
+                <circle cx="80" cy="80" r="25" fill="${c.sun}"/>
+                <line x1="80" y1="105" x2="120" y2="150" stroke="${c.sun}" stroke-width="4" stroke-dasharray="8,4"/>
+                <text x="250" y="360" text-anchor="middle" font-weight="900" fill="${c.text}" font-size="16">PROTECCIÓN SOLAR + DOBLE ENVOLVENTE</text>`;
             } else {
-                svg += `<rect x="100" y="50" width="200" height="180" fill="${colorMuro}" rx="10"/>
-                <path d="M 200,220 L 200,40" stroke="#ef4444" stroke-width="6" fill="none"/>
-                <text x="200" y="270" text-anchor="middle" font-weight="bold" fill="#64748b">ESTRATEGIA: EXTRACCIÓN DE CALOR</text>`;
+                svg += room;
+                // Árboles esquemáticos
+                svg += `
+                <circle cx="100" cy="280" r="40" fill="#22c55e" opacity="0.6"/>
+                <rect x="95" y="280" width="10" height="40" fill="#78350f"/>
+                <text x="250" y="360" text-anchor="middle" font-weight="900" fill="${c.text}" font-size="16">MICROCLIMA + BARRERAS VEGETALES</text>`;
             }
-            svg += `</svg>`;
+
+            svg += `
+            <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                    <path d="M 0,0 L 10,5 L 0,10 Z" fill="${c.wind}" />
+                </marker>
+            </defs>
+            </svg>`;
             container.innerHTML = svg;
         }
 
