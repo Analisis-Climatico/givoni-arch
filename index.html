@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Global Arch Pro</title>
+    <title>Givoni Global Arch Pro - Análisis Generativo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -19,7 +19,7 @@
             height: 500px;
             background-color: #ffffff;
             border-radius: 20px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -32,9 +32,9 @@
         <header class="flex justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-lg border">
             <div>
                 <h1 class="text-3xl font-black text-slate-900 tracking-tighter uppercase">Givoni Global Arch</h1>
-                <p id="location-name" class="text-blue-600 font-black text-xl mt-1 italic">UBICACIÓN: Selecciona en el mapa</p>
+                <p id="location-name" class="text-blue-600 font-black text-xl mt-1 italic">UBICACIÓN: Selecciona un punto en el mapa</p>
             </div>
-            <div class="flex gap-4 text-sm font-bold uppercase">
+            <div class="flex gap-4">
                 <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-slate-100 text-slate-600 active-chip">Análisis Meses</button>
                 <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-slate-100 text-slate-600">Análisis Años</button>
             </div>
@@ -45,11 +45,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-1 space-y-6">
                 <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-500">
-                    <h2 class="config-label mb-4 border-b-2 border-blue-500 pb-2">Configuración</h2>
-                    <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto p-2 mb-6 border rounded-xl bg-gray-50 font-black"></div>
+                    <h2 class="config-label mb-4 border-b-2 border-blue-500 pb-2 italic text-sm">Parámetros</h2>
+                    <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto p-2 mb-6 border rounded-xl bg-gray-50 font-black text-sm"></div>
                     <div id="section-meses" class="mb-6">
-                        <h2 class="config-label mb-4">Meses</h2>
-                        <div id="month-selector" class="grid grid-cols-3 gap-2 font-black text-sm"></div>
+                        <h2 class="config-label mb-4 text-sm">Meses Seleccionados</h2>
+                        <div id="month-selector" class="grid grid-cols-3 gap-2 font-black text-xs"></div>
                     </div>
                     <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-xl text-xl uppercase tracking-tighter transition-all">
                         Trazar Análisis
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl shadow-md border">
-                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase tracking-tighter">Registro Técnico Multianual</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase tracking-tighter">Registro Técnico de Datos</h3>
                     <table class="w-full text-lg text-left">
                         <thead>
                             <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black text-xs">
@@ -78,7 +78,7 @@
                     </table>
                 </div>
 
-                <div id="strategy-box" class="bg-slate-950 p-10 rounded-3xl text-white shadow-2xl hidden border-l-8 border-blue-600">
+                <div id="strategy-box" class="bg-slate-950 p-10 rounded-3xl text-white shadow-2xl hidden">
                     <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-800 pb-4 italic">Diagnóstico y Estrategia Arquitectónica</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div class="space-y-8">
@@ -87,12 +87,12 @@
                                 <p id="climograma-text" class="strategy-text text-slate-300 italic font-light"></p>
                             </div>
                             <div>
-                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3 tracking-widest text-blue-300">Propuestas de Diseño:</h4>
+                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-blue-300 tracking-widest">Recomendación Creativa:</h4>
                                 <div id="recomendacion-box" class="strategy-text text-white space-y-4"></div>
                             </div>
                         </div>
                         <div class="space-y-4 flex flex-col items-center">
-                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Isométrico Tectónico</h4>
+                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Isométrico Generativo</h4>
                             <div id="architectural-diagram-container">
                                 </div>
                         </div>
@@ -130,7 +130,7 @@
         const yearBox = document.getElementById('year-selector');
         for(let y = 2026; y >= 2000; y--) {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-4 rounded-xl text-center text-lg ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white border-2 text-slate-400'}`;
+            chip.className = `cursor-pointer p-4 rounded-xl text-center font-black text-lg ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white border-2 text-slate-400'}`;
             chip.innerText = y;
             chip.onclick = () => {
                 if(modo === 'mes') { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); }
@@ -172,105 +172,83 @@
 
                 tableBody.innerHTML += `
                     <tr class="border-b-2 border-slate-100 hover:bg-slate-50 transition-colors text-center">
-                        <td class="p-5"><div class="w-6 h-6 rounded-full inline-block border-2 border-white shadow-md" style="background:${color}"></div></td>
+                        <td class="p-5 text-center"><div class="w-6 h-6 rounded-full inline-block border-2 border-white shadow-md" style="background:${color}"></div></td>
                         <td class="p-5 text-xl font-black">${label}</td>
-                        <td class="p-5 text-xl">${tMax.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl">${tMin.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl text-blue-600 font-black">${hr.toFixed(0)}%</td>
+                        <td class="p-5 text-xl text-center">${tMax.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl text-center">${tMin.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl text-blue-600 font-black text-center">${hr.toFixed(0)}%</td>
                     </tr>`;
             });
 
             const layout = {
                 images: [{
-                    source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
+                    source: "https://raw.githubusercontent.com/analisis-climatico/givoni-arch/main/OFICIAL-GRÁFICA%20DE%20GIVONI%20(1)-Layout1.jpg",
                     xref: "x", yref: "y", x: -5.8, y: 100, sizex: 51.5, sizey: 100,
                     sizing: "stretch", layer: "below"
                 }],
-                xaxis: { range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.05)', title: { text: 'TBS (°C)', font: { size: 18, color: 'red', weight: '900' } } },
-                yaxis: { range: [0, 102], dtick: 10, gridcolor: 'rgba(0,0,0,0.05)', side: 'right', title: { text: 'HR (%)', font: { size: 18, color: 'green', weight: '900' } } },
-                showlegend: false, margin: { t: 50, b: 80, l: 50, r: 100 }
+                xaxis: { range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.05)', title: { text: 'TEMPERATURA (°C)', font: { size: 18, color: 'red', weight: '900' } } },
+                yaxis: { range: [0, 102], dtick: 10, gridcolor: 'rgba(0,0,0,0.05)', side: 'right', title: { text: 'HUMEDAD (%)', font: { size: 18, color: 'green', weight: '900' } } },
+                showlegend: false, margin: { t: 50, b: 100, l: 50, r: 100 }
             };
 
             Plotly.newPlot('givoni-plot', traces, layout);
-            
             document.getElementById('strategy-box').classList.remove('hidden');
-            const avgT = sumTMax / items.length;
-            const avgH = sumHR / items.length;
-
-            procesarEstrategiaPro(avgT, avgH);
+            
+            procesarDiagnostico(sumTMax / items.length, sumHR / items.length);
         }
 
-        function procesarEstrategiaPro(avgT, avgH) {
+        function procesarDiagnostico(avgT, avgH) {
             const climText = document.getElementById('climograma-text');
             const recBox = document.getElementById('recomendacion-box');
             recBox.innerHTML = '';
-            let tipo = 'viento';
+            let tipoEsquema = 'viento';
 
             if (avgH > 75) {
-                climText.innerText = "Saturación crítica de humedad detectada. El calor latente del aire exige una renovación constante para permitir el enfriamiento evaporativo corporal.";
-                const s = [
-                    { t: "Piel Térmica Ligera:", d: "Uso de Bambú o Madera en celosías verticales para sombrear sin retener calor nocturno." },
-                    { t: "Ventilación Laminar:", d: "Forzar el flujo de aire mediante aberturas generosas en fachadas opuestas." }
-                ];
-                s.forEach(e => recBox.innerHTML += `<div><h5 class="font-black text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                tipo = 'viento';
+                climText.innerText = "Saturación crítica de humedad detectada. El calor latente del aire exige una renovación constante para permitir el enfriamiento corporal.";
+                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Piel de Celosías:</h5><p class="text-slate-400 text-sm">Módulos de bambú o madera en fachada para forzar flujo laminar.</p></div>`;
+                tipoEsquema = 'viento';
             } else if (avgT > 32) {
-                climText.innerText = "Altas temperaturas diurnas registradas. El calor es predominantemente radiante, requiriendo masa térmica profunda y sombra.";
-                const s = [
-                    { t: "Masa Térmica Pesada:", d: "Diseñar muros de Ladrillo o Bloque de Tierra (BTC) para retrasar el flujo térmico." },
-                    { t: "Doble Envolvente:", d: "Uso de fachadas ventiladas con cámara de aire para refrescar la estructura interna." }
-                ];
-                s.forEach(e => recBox.innerHTML += `<div><h5 class="font-black text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                tipo = 'masa';
+                climText.innerText = "Altas temperaturas diurnas registradas. El calor es radiante, requiriendo masa térmica profunda y sombra total.";
+                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Masa Térmica:</h5><p class="text-slate-400 text-sm">Muros de Ladrillo o BTC con doble envolvente ventilada.</p></div>`;
+                tipoEsquema = 'masa';
             } else {
-                climText.innerText = "Condiciones de confort híbrido. El aire se mantiene estable, permitiendo un manejo pasivo estándar.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Manejo Pasivo:</h5><p class="text-slate-400 text-sm mt-1">Uso de vegetación perimetral caducifolia y pavimentos permeables para refrescar el aire circundante.</p></div>`;
-                tipo = 'vegetacion';
+                climText.innerText = "Condiciones estables. Se recomienda potenciar microclimas mediante vegetación y patios internos.";
+                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Microclima:</h5><p class="text-slate-400 text-sm">Barreras vegetales y pavimentos permeables para refrescar el aire.</p></div>`;
+                tipoEsquema = 'vegetacion';
             }
 
-            dibujarDiagramaIsometrico(tipo);
+            dibujarIsometrico(tipoEsquema);
         }
 
-        function dibujarDiagramaIsometrico(tipo) {
+        function dibujarIsometrico(tipo) {
             const container = document.getElementById('architectural-diagram-container');
-            const colors = { grey: '#e2e8f0', darkGrey: '#94a3b8', wood: '#a16207', wind: '#38bdf8', sun: '#f97316' };
-            
+            const c = { wall: '#cbd5e1', wood: '#a16207', sky: '#38bdf8', sun: '#f97316' };
             let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">`;
             
-            // Suelo base
-            svg += `<path d="M 50,300 L 250,350 L 450,300 L 250,250 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>`;
+            // Suelo
+            svg += `<path d="M 50,300 L 250,350 L 450,300 L 250,250 Z" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>`;
 
             if (tipo === 'viento') {
-                // ISOMÉTRICO: Módulo de Celosías y Viento
                 svg += `
-                <path d="M 150,280 L 150,130 L 250,80 L 250,230 Z" fill="${colors.grey}" stroke="#64748b" stroke-width="2"/>
-                <path d="M 250,230 L 350,280 L 350,130 L 250,80 Z" fill="${colors.darkGrey}" stroke="#475569" stroke-width="2"/>
-                <rect x="180" y="140" width="8" height="120" fill="${colors.wood}" transform="skewY(-20)"/>
-                <rect x="210" y="155" width="8" height="120" fill="${colors.wood}" transform="skewY(-20)"/>
-                <rect x="240" y="170" width="8" height="120" fill="${colors.wood}" transform="skewY(-20)"/>
-                <path d="M 20,250 Q 150,250 250,200" stroke="${colors.wind}" stroke-width="10" fill="none" opacity="0.6" marker-end="url(#arrow)"/>
-                <path d="M 250,200 Q 350,150 480,180" stroke="${colors.wind}" stroke-width="10" fill="none" opacity="0.6" marker-end="url(#arrow)"/>`;
+                <path d="M 150,280 L 150,130 L 250,80 L 250,230 Z" fill="${c.wall}" stroke="#94a3b8"/>
+                <path d="M 250,230 L 350,280 L 350,130 L 250,80 Z" fill="#94a3b8" stroke="#64748b"/>
+                <rect x="180" y="140" width="10" height="150" fill="${c.wood}" transform="rotate(-15 205 205)"/>
+                <rect x="230" y="155" width="10" height="150" fill="${c.wood}" transform="rotate(-15 255 220)"/>
+                <path d="M 20,250 Q 150,250 300,200" stroke="${c.sky}" stroke-width="12" fill="none" opacity="0.6" marker-end="url(#arr)"/>`;
             } else if (tipo === 'masa') {
-                // ISOMÉTRICO: Masa Pesada y Sombra
                 svg += `
-                <path d="M 150,280 L 150,100 L 350,100 L 350,280 Z" fill="${colors.darkGrey}" stroke="#1e293b" stroke-width="5"/>
-                <path d="M 100,100 L 400,100 L 370,130 L 70,130 Z" fill="${colors.grey}" stroke="#64748b" stroke-width="3"/>
-                <circle cx="50" cy="50" r="25" fill="${colors.sun}"/>
-                <line x1="50" y1="80" x2="130" y2="150" stroke="${colors.sun}" stroke-width="5" stroke-dasharray="10,5"/>`;
+                <path d="M 150,280 L 150,110 L 350,110 L 350,280 Z" fill="#475569" stroke="#1e293b" stroke-width="4"/>
+                <path d="M 100,110 L 400,110 L 370,140 L 70,140 Z" fill="${c.wall}" stroke="#64748b"/>
+                <circle cx="50" cy="50" r="25" fill="${c.sun}"/>
+                <line x1="50" y1="80" x2="140" y2="140" stroke="${c.sun}" stroke-width="5" stroke-dasharray="10,5"/>`;
             } else {
-                // ISOMÉTRICO: Vegetación
                 svg += `
-                <path d="M 180,280 L 180,130 L 320,130 L 320,280 Z" fill="${colors.grey}" stroke="#64748b"/>
-                <circle cx="100" cy="220" r="50" fill="#22c55e" opacity="0.7"/>
+                <path d="M 180,280 L 180,130 L 320,130 L 320,280 Z" fill="${c.wall}"/>
+                <circle cx="100" cy="220" r="60" fill="#22c55e" opacity="0.6"/>
                 <rect x="95" y="220" width="10" height="100" fill="#78350f"/>`;
             }
 
-            svg += `
-            <defs>
-                <marker id="arrow" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
-                    <path d="M0,0 L0,6 L9,3 z" fill="${colors.wind}" />
-                </marker>
-            </defs></svg>`;
+            svg += `<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${c.sky}"/></marker></defs></svg>`;
             container.innerHTML = svg;
         }
 
