@@ -3,68 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Pro - Calibración Absoluta</title>
+    <title>Givoni Pro - Calibración Píxel a Píxel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        #map { height: 250px; border-radius: 15px; border: 1px solid #cbd5e1; }
-        .btn-modo { transition: all 0.2s; padding: 12px 24px; border-radius: 10px; font-weight: 900; text-transform: uppercase; }
-        .active-chip { background-color: #1e40af !important; color: white !important; }
-        #givoni-container { position: relative; width: 100%; background: white; border-radius: 20px; overflow: hidden; border: 2px solid #e2e8f0; }
-        /* Estilo para los puntos de datos para que resalten */
-        .plotly .dot { stroke-width: 2px; stroke: #fff; }
+        #map { height: 200px; border-radius: 15px; border: 1px solid #cbd5e1; margin-bottom: 20px; }
+        #givoni-wrapper { position: relative; width: 100%; max-width: 1200px; margin: auto; border-radius: 20px; overflow: hidden; border: 2px solid #334155; }
+        #givoni-bg { width: 100%; display: block; }
+        #data-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .btn-modo { transition: all 0.2s; padding: 10px 20px; border-radius: 8px; font-weight: 900; border: 2px solid #e2e8f0; }
+        .active-chip { background-color: #1e40af; color: white; border-color: #1e40af; }
     </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-8">
+<body class="bg-slate-50 p-4">
 
-    <main class="max-w-[1700px] mx-auto space-y-6">
-        <header class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center border">
-            <div>
-                <h1 class="text-3xl font-black tracking-tighter text-slate-900">GIVONI GLOBAL ARCH</h1>
-                <p id="location-name" class="text-blue-600 font-bold text-lg italic uppercase">UBICACIÓN: Selecciona punto</p>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-white border active-chip">Meses</button>
-                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-white border">Años</button>
+    <main class="max-w-[1600px] mx-auto">
+        <header class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center mb-6 border">
+            <h1 class="text-2xl font-black tracking-tighter uppercase">Givoni Global Arch</h1>
+            <div class="flex gap-2">
+                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo active-chip">MESES</button>
+                <button onclick="setModo('año')" id="btn-año" class="btn-modo">AÑOS</button>
             </div>
         </header>
 
-        <div id="map" class="shadow-sm"></div>
+        <div id="map"></div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-500">
-                    <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Filtros de Análisis</h2>
-                    <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-xl bg-gray-50 font-bold text-sm"></div>
-                    <div id="section-meses" class="mt-6">
-                        <h3 class="text-xs font-black text-slate-400 uppercase mb-3">Meses</h3>
-                        <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
-                    </div>
-                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-5 rounded-2xl mt-8 hover:bg-blue-800 shadow-xl transition-all uppercase text-lg">
-                        Trazar Datos Reales
-                    </button>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-md border space-y-4">
+                <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-lg bg-gray-50 font-bold text-xs"></div>
+                <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
+                <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest hover:bg-blue-800">Trazar Análisis</button>
             </div>
 
-            <div class="lg:col-span-3 space-y-6">
-                <div id="givoni-container">
-                    <div id="givoni-plot" style="width:100%; height:800px;"></div>
+            <div class="lg:col-span-3">
+                <div id="givoni-wrapper">
+                    <img id="givoni-bg" src="./GRÁFICA DE GIVONI-Layout1.svg" alt="Climograma Givoni">
+                    <canvas id="data-canvas"></canvas>
                 </div>
+            </div>
+        </div>
 
-                <div id="strategy-box" class="bg-slate-950 p-10 rounded-3xl text-white shadow-2xl hidden border-l-[12px] border-blue-600">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div class="space-y-8">
-                            <div>
-                                <h4 class="text-xs font-black text-blue-400 uppercase tracking-[0.3em] mb-4">Diagnóstico Técnico</h4>
-                                <p id="climograma-text" class="text-xl text-slate-300 italic font-light leading-relaxed"></p>
-                            </div>
-                            <div id="recomendacion-box" class="text-lg space-y-4"></div>
-                        </div>
-                        <div id="architectural-diagram-container" class="w-full h-[450px] bg-white rounded-2xl flex items-center justify-center p-4"></div>
-                    </div>
-                </div>
+        <div id="strategy-box" class="mt-8 bg-slate-900 p-8 rounded-3xl text-white hidden border-b-8 border-blue-600">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div id="diagnostico-info"></div>
+                <div id="isometric-container" class="bg-white rounded-xl h-[350px]"></div>
             </div>
         </div>
     </main>
@@ -77,149 +60,99 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         let marker = L.marker([lat, lon]).addTo(map);
 
-        map.on('click', async (e) => {
-            lat = e.latlng.lat; lon = e.latlng.lng;
-            marker.setLatLng([lat, lon]);
-            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
-            const data = await res.json();
-            document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}`;
-        });
-
         function setModo(m) {
             modo = m;
             document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('active-chip'));
             document.getElementById(`btn-${m}`).classList.add('active-chip');
         }
 
-        const yearBox = document.getElementById('year-selector');
-        for(let y = 2026; y >= 2015; y--) {
-            const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-2 rounded border text-center ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
-            chip.innerText = y;
-            chip.onclick = () => { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); };
-            yearBox.appendChild(chip);
+        // --- CALIBRACIÓN DE COORDENADAS (VALORES CRÍTICOS) ---
+        // Estos porcentajes definen dónde están los ejes en tu dibujo de AutoCAD
+        const CALIB = {
+            xMin: 8.4,  // Posición del -5° en % del ancho de la imagen
+            xMax: 94.2, // Posición del 50° en % del ancho de la imagen
+            yMin: 91.5, // Posición del 0% HR en % del alto de la imagen
+            yMax: 5.5   // Posición del 100% HR en % del alto de la imagen
+        };
+
+        function tempToX(temp, width) {
+            let pct = (temp + 5) / 55; // Rango de 55 grados (-5 a 50)
+            return width * (CALIB.xMin / 100 + pct * (CALIB.xMax - CALIB.xMin) / 100);
         }
 
-        const meses = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
-        const monthBox = document.getElementById('month-selector');
-        meses.forEach((m, i) => {
-            const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-2 border rounded text-center text-xs font-bold ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
-            chip.innerText = m;
-            chip.onclick = () => { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionMeses.includes(i)) seleccionMeses = seleccionMeses.filter(idx => idx !== i); else seleccionMeses.push(i); };
-            monthBox.appendChild(chip);
-        });
+        function hrToY(hr, height) {
+            let pct = hr / 100;
+            return height * (CALIB.yMin / 100 - pct * (CALIB.yMin - CALIB.yMax) / 100);
+        }
 
         function ejecutarAnalisis() {
-            const traces = [];
+            const canvas = document.getElementById('data-canvas');
+            const img = document.getElementById('givoni-bg');
+            canvas.width = img.clientWidth;
+            canvas.height = img.clientHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
             const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
-            let sumTMax = 0, sumHR = 0;
 
             items.forEach((val, i) => {
-                let label = modo === 'mes' ? `${meses[val]}` : `${val}`;
-                
-                // --- CALIBRACIÓN DE DATOS ---
-                // Ajustamos para que los datos no se salgan de los rangos tropicales reales
-                let tMax = 28 + (Math.random() * 8);
-                let tMin = 21 + (Math.random() * 4);
-                let hr = 60 + (Math.random() * 25);
-                let color = `hsl(${(i * 360 / items.length)}, 85%, 55%)`;
-                sumTMax += tMax; sumHR += hr;
+                let tMax = 28 + (Math.random() * 10);
+                let tMin = 18 + (Math.random() * 6);
+                let hr = 60 + (Math.random() * 30);
+                let color = `hsl(${(i * 360 / items.length)}, 80%, 50%)`;
 
-                // --- TRAZADO PSICROMÉTRICO CURVO ---
-                let xCurve = [], yCurve = [];
-                for(let step = 0; step <= 15; step++) {
-                    let tStep = tMin + (tMax - tMin) * (step / 15);
-                    // Función de curvatura real para HR constante en el climograma
-                    let hrStep = hr + (Math.pow((tStep - tMin) / 10, 2) * 5); 
-                    xCurve.push(tStep);
-                    yCurve.push(hrStep);
+                // Dibujar curva psicrométrica
+                ctx.beginPath();
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = color;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                for(let s=0; s<=20; s++) {
+                    let t = tMin + (tMax - tMin) * (s/20);
+                    // Curvatura de humedad constante
+                    let hCurva = hr + Math.pow((t - tMin)/8, 2) * 4; 
+                    let x = tempToX(t, canvas.width);
+                    let y = hrToY(hCurva, canvas.height);
+                    if(s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
+                ctx.stroke();
 
-                traces.push({
-                    x: xCurve, y: yCurve,
-                    type: 'scatter', mode: 'lines',
-                    line: { width: 10, color: color, shape: 'spline' },
-                    hoverinfo: 'none', showlegend: false
-                });
-
-                // Puntos finales
-                traces.push({
-                    x: [tMin, tMax], y: [yCurve[0], yCurve[15]],
-                    type: 'scatter', mode: 'markers', name: label,
-                    marker: { size: 16, color: color, line: {color:'white', width:3}, symbol: 'circle' },
-                    hovertemplate: `<b>${label}</b><br>T: %{x}°C<br>HR: ${hr.toFixed(0)}%<extra></extra>`
-                });
+                // Marcadores extremos
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(tempToX(tMin, canvas.width), hrToY(hr, canvas.height), 8, 0, Math.PI*2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
             });
 
-            // --- LAYOUT CON CALIBRACIÓN ABSOLUTA DE AutoCAD ---
-            const layout = {
-                images: [{
-                    source: "./GRÁFICA DE GIVONI-Layout1.svg",
-                    xref: "x", yref: "y",
-                    // Ajuste micrométrico para que el -5 caiga en el inicio del SVG
-                    x: -5.4, 
-                    y: 100.8, 
-                    sizex: 55.8, 
-                    sizey: 101.5,
-                    sizing: "stretch", layer: "below"
-                }],
-                xaxis: { range: [-5, 50], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false, fixedrange: true },
-                yaxis: { range: [0, 100], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false, fixedrange: true },
-                margin: { t: 0, b: 0, l: 0, r: 0 },
-                hoverlabel: { font: { size: 18, family: 'Arial Black' }, bgcolor: '#0f172a' },
-                showlegend: false,
-                plot_bgcolor: 'rgba(0,0,0,0)'
-            };
-
-            Plotly.newPlot('givoni-plot', traces, layout, {responsive: true, displayModeBar: false});
             document.getElementById('strategy-box').classList.remove('hidden');
-            generarEstrategia(sumTMax/items.length, sumHR/items.length);
         }
 
-        function generarEstrategia(t, hr) {
-            const climText = document.getElementById('climograma-text');
-            const recBox = document.getElementById('recomendacion-box');
-            const diagCont = document.getElementById('architectural-diagram-container');
-            recBox.innerHTML = '';
-            
-            let tipo = (hr > 75) ? 'viento' : (t > 30) ? 'masa' : 'hibrido';
-
-            if(tipo === 'viento') {
-                climText.innerText = "Saturación de humedad crítica detectada. Los datos se ubican en la Zona 12 (Ventilación Natural) y Zona 14.";
-                recBox.innerHTML = `<div class='bg-slate-900 p-4 rounded-xl border-l-4 border-blue-500'><h5 class='font-black text-xs uppercase text-blue-400 mb-1'>Estrategia de Ventilación</h5><p class='text-sm text-slate-400'>Aberturas de gran escala y celosías orientables para inducir flujo laminar.</p></div>`;
-            } else if (tipo === 'masa') {
-                climText.innerText = "Calor radiante elevado. Estrategia de Inercia Térmica Pesada requerida (Zona 9).";
-                recBox.innerHTML = `<div class='bg-slate-900 p-4 rounded-xl border-l-4 border-orange-500'><h5 class='font-black text-xs uppercase text-orange-400 mb-1'>Inercia Térmica</h5><p class='text-sm text-slate-400'>Muros de BTC o ladrillo macizo con doble envolvente ventilada.</p></div>`;
-            } else {
-                climText.innerText = "Condiciones cercanas a zona de confort. Manejo pasivo mediante microclimas.";
-                recBox.innerHTML = `<div class='bg-slate-900 p-4 rounded-xl border-l-4 border-green-500'><h5 class='font-black text-xs uppercase text-green-400 mb-1'>Microclima</h5><p class='text-sm text-slate-400'>Vegetación perimetral para enfriamiento evaporativo previo.</p></div>`;
-            }
-            dibujarSeccion(diagCont, tipo);
+        // Llenar selectores (meses/años)
+        const yearBox = document.getElementById('year-selector');
+        for(let y=2026; y>=2015; y--) {
+            let d = document.createElement('div');
+            d.className = "cursor-pointer p-2 border rounded text-center";
+            d.innerText = y;
+            d.onclick = () => { seleccionAnos=[y]; ejecutarAnalisis(); };
+            yearBox.appendChild(d);
         }
 
-        function dibujarSeccion(container, tipo) {
-            const colors = { dark: '#1e293b', structure: '#cbd5e1', wind: '#0ea5e9', wood: '#a16207' };
-            let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 50,320 L 250,370 L 450,320 L 250,270 Z" fill="#f8fafc" stroke="#cbd5e1"/>`;
-            if(tipo === 'viento') {
-                svg += `
-                <path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${colors.dark}"/>
-                <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="${colors.dark}"/>
-                <rect x="230" y="120" width="10" height="170" fill="${colors.wood}" transform="rotate(-15 235 205)"/>
-                <path d="M 10,240 Q 250,240 490,160" stroke="${colors.wind}" stroke-width="14" fill="none" opacity="0.6" marker-end="url(#arr)"/>`;
-            } else if(tipo === 'masa') {
-                svg += `
-                <path d="M 150,300 L 190,285 L 190,85 L 150,100 Z" fill="${colors.dark}"/>
-                <path d="M 150,100 L 400,100 L 360,130 L 110,130 Z" fill="${colors.structure}"/>`;
-            } else {
-                svg += `<circle cx="100" cy="180" r="70" fill="#22c55e" opacity="0.6"/><rect x="92" y="180" width="16" height="130" fill="#78350f"/>`;
-            }
-            svg += `<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${colors.wind}"/></marker></defs></svg>`;
-            container.innerHTML = svg;
-        }
+        const monthBox = document.getElementById('month-selector');
+        meses.forEach((m, i) => {
+            let d = document.createElement('div');
+            d.className = "cursor-pointer p-2 border rounded text-center text-[10px] font-black";
+            d.innerText = m;
+            d.onclick = () => { seleccionMeses=[i]; ejecutarAnalisis(); };
+            monthBox.appendChild(d);
+        });
 
-        window.onload = ejecutarAnalisis;
+        window.onload = () => {
+            setTimeout(ejecutarAnalisis, 1000); // Esperar a que cargue la imagen
+        };
     </script>
 </body>
 </html>
