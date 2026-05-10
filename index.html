@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Global Arch Pro</title>
+    <title>Givoni Arch Pro - Trazado Psicrométrico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -12,8 +12,7 @@
         #map { height: 250px; border-radius: 15px; border: 1px solid #cbd5e1; z-index: 1; }
         .btn-modo { transition: all 0.2s; padding: 12px 24px; border-radius: 10px; font-weight: 900; text-transform: uppercase; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
-        #givoni-container { position: relative; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        .strategy-card { border-left: 12px solid #2563eb; }
+        #givoni-container { position: relative; width: 100%; background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="bg-slate-50 p-4 md:p-8">
@@ -35,13 +34,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-1 space-y-6">
                 <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-500">
-                    <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Configuración de Análisis</h2>
-                    <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-xl bg-gray-50 font-black"></div>
+                    <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Configuración</h2>
+                    <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-xl bg-gray-50 font-black text-sm"></div>
                     <div id="section-meses" class="mt-6">
-                        <h3 class="text-xs font-black text-slate-400 uppercase mb-3">Filtro Mensual</h3>
+                        <h3 class="text-xs font-black text-slate-400 uppercase mb-3">Filtro</h3>
                         <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
                     </div>
-                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-5 rounded-2xl mt-8 hover:bg-blue-800 shadow-xl transition-all uppercase text-lg active:scale-95">
+                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-5 rounded-2xl mt-8 hover:bg-blue-800 shadow-xl transition-all uppercase text-lg">
                         Trazar Análisis
                     </button>
                 </div>
@@ -52,22 +51,19 @@
                     <div id="givoni-plot" style="width:100%; height:800px;"></div>
                 </div>
 
-                <div id="strategy-box" class="bg-slate-950 p-10 rounded-3xl text-white shadow-2xl hidden strategy-card">
+                <div id="strategy-box" class="bg-slate-950 p-10 rounded-3xl text-white shadow-2xl hidden border-l-[12px] border-blue-600">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div class="space-y-8">
                             <div>
-                                <h4 class="text-xs font-black text-blue-400 uppercase tracking-[0.3em] mb-4">Análisis Bioclimático</h4>
+                                <h4 class="text-xs font-black text-blue-400 uppercase tracking-[0.3em] mb-4">Análisis Técnico</h4>
                                 <p id="climograma-text" class="text-xl text-slate-300 italic font-light leading-relaxed"></p>
                             </div>
                             <div>
-                                <h4 class="text-xs font-black text-blue-400 uppercase tracking-[0.3em] mb-4">Propuesta Tectónica y Materiales</h4>
-                                <div id="recomendacion-box" class="text-lg space-y-6"></div>
+                                <h4 class="text-xs font-black text-blue-400 uppercase tracking-[0.3em] mb-4">Recomendación</h4>
+                                <div id="recomendacion-box" class="text-lg space-y-4"></div>
                             </div>
                         </div>
-                        <div class="flex flex-col items-center">
-                            <h4 class="text-xs font-black text-slate-500 uppercase mb-6 tracking-widest">Sección Isométrica Técnica</h4>
-                            <div id="architectural-diagram-container" class="w-full h-[450px] bg-white rounded-2xl flex items-center justify-center p-6 border-4 border-slate-800">
-                                </div>
+                        <div id="architectural-diagram-container" class="w-full h-[450px] bg-white rounded-2xl flex items-center justify-center p-6 border-4 border-slate-800">
                         </div>
                     </div>
                 </div>
@@ -97,12 +93,13 @@
             document.getElementById(`btn-${m}`).classList.add('active-chip');
         }
 
+        // Selectores de Año y Mes
         const yearBox = document.getElementById('year-selector');
         for(let y = 2026; y >= 2015; y--) {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-3 rounded-lg border-2 text-center ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-400'}`;
+            chip.className = `cursor-pointer p-2 rounded border text-center ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
             chip.innerText = y;
-            chip.onclick = () => { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white','border-blue-600'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white','border-blue-600'); };
+            chip.onclick = () => { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); };
             yearBox.appendChild(chip);
         }
 
@@ -110,7 +107,7 @@
         const monthBox = document.getElementById('month-selector');
         meses.forEach((m, i) => {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-2 border rounded-lg text-center text-xs font-black ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
+            chip.className = `cursor-pointer p-2 border rounded text-center text-xs font-bold ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
             chip.innerText = m;
             chip.onclick = () => { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionMeses.includes(i)) seleccionMeses = seleccionMeses.filter(idx => idx !== i); else seleccionMeses.push(i); };
             monthBox.appendChild(chip);
@@ -124,21 +121,38 @@
             items.forEach((val, i) => {
                 let label = modo === 'mes' ? `${meses[val]}` : `${val}`;
                 let tMax = 28 + (Math.random() * 8);
-                let tMin = 20 + (Math.random() * 6);
+                let tMin = 20 + (Math.random() * 5);
                 let hr = 60 + (Math.random() * 25);
                 let color = `hsl(${(i * 360 / items.length)}, 85%, 50%)`;
                 sumTMax += tMax; sumHR += hr;
 
+                // --- GENERACIÓN DE CURVA PSICROMÉTRICA ---
+                // No unimos puntos con recta, creamos 20 puntos intermedios siguiendo la curva de humedad
+                let xCurve = [], yCurve = [];
+                for(let step = 0; step <= 20; step++) {
+                    let tStep = tMin + (tMax - tMin) * (step / 20);
+                    // Simulamos la pendiente del climograma: a mayor T, la línea sube ligeramente en el eje Y visual
+                    let hrStep = hr + (Math.pow((tStep - tMin), 1.2) * 0.4); 
+                    xCurve.push(tStep);
+                    yCurve.push(hrStep);
+                }
+
                 traces.push({
-                    x: [tMin, tMax], y: [hr, hr],
-                    type: 'scatter', mode: 'lines+markers', name: label,
-                    hovertemplate: `<b>${label}</b><br>TBS Máx: %{x}°C<br>HR: %{y}%<extra></extra>`,
-                    line: { width: 12, color: color },
-                    marker: { size: 18, symbol: 'diamond', line: {color:'white', width:3} }
+                    x: xCurve, y: yCurve,
+                    type: 'scatter', mode: 'lines', name: label,
+                    line: { width: 8, color: color, shape: 'spline' }, // 'spline' suaviza la curva
+                    hoverinfo: 'none'
+                });
+
+                // Marcadores en los extremos
+                traces.push({
+                    x: [tMin, tMax], y: [yCurve[0], yCurve[20]],
+                    type: 'scatter', mode: 'markers',
+                    marker: { size: 14, color: color, line: {color:'white', width:3} },
+                    hovertemplate: `<b>${label}</b><br>T: %{x}°C<br>HR: ${hr.toFixed(0)}%<extra></extra>`
                 });
             });
 
-            // CALIBRACIÓN MILIMÉTRICA SOBRE EL ARCHIVO SVG
             const layout = {
                 images: [{
                     source: "./GRÁFICA DE GIVONI-Layout1.svg",
@@ -149,9 +163,8 @@
                 xaxis: { range: [-5, 50], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false, fixedrange: true },
                 yaxis: { range: [0, 100], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false, fixedrange: true },
                 margin: { t: 0, b: 0, l: 0, r: 0 },
-                hoverlabel: { font: { size: 18, family: 'Arial Black' }, bgcolor: '#0f172a' },
-                showlegend: false,
-                plot_bgcolor: 'rgba(0,0,0,0)'
+                hoverlabel: { font: { size: 18, family: 'Arial Black' }, bgcolor: '#1e293b' },
+                showlegend: false, plot_bgcolor: 'rgba(0,0,0,0)'
             };
 
             Plotly.newPlot('givoni-plot', traces, layout, {responsive: true, displayModeBar: false});
@@ -164,58 +177,31 @@
             const recBox = document.getElementById('recomendacion-box');
             const diagCont = document.getElementById('architectural-diagram-container');
             recBox.innerHTML = '';
-            let tipo = 'hibrido';
+            let tipo = (hr > 75) ? 'viento' : 'masa';
 
-            if(hr > 75) {
-                climText.innerText = "Saturación crítica de humedad detectada. Los datos migran a la Zona 12 y 14. Se requiere renovación de aire inmediata.";
-                recBox.innerHTML = `<div class='bg-slate-900 p-6 rounded-2xl border-l-8 border-blue-500'>
-                    <h5 class='font-black text-sm uppercase text-blue-400 mb-2'>Ventilación Cruzada + Deshumidificación</h5>
-                    <p class='text-slate-400'>Uso de celosías dinámicas de madera y materiales de baja emisividad para evitar el recalentamiento por humedad.</p>
-                </div>`;
-                tipo = 'viento';
-            } else if(t > 30) {
-                climText.innerText = "Altas temperaturas con baja humedad (Zona 9). El calor es predominantemente radiante.";
-                recBox.innerHTML = `<div class='bg-slate-900 p-6 rounded-2xl border-l-8 border-orange-500'>
-                    <h5 class='font-black text-sm uppercase text-orange-400 mb-2'>Enfriamiento por Masa Térmica</h5>
-                    <p class='text-slate-400'>Implementar muros de Ladrillo o Bloque de Tierra Comprimida (BTC) con cámara de aire ventilada.</p>
-                </div>`;
-                tipo = 'masa';
+            if(tipo === 'viento') {
+                climText.innerText = "Saturación de humedad (Zona 12/14). Los datos siguen la pendiente de entalpía.";
+                recBox.innerHTML = `<div><h5 class='font-black text-blue-400 uppercase text-xs'>Ventilación Cruzada:</h5><p class='text-slate-400'>Celosías dinámicas de madera para inducir flujo laminar.</p></div>`;
             } else {
-                climText.innerText = "Condiciones dentro de la Zona de Confort (1) y Confort Permisible (2).";
-                recBox.innerHTML = `<div class='bg-slate-900 p-6 rounded-2xl border-l-8 border-green-500'>
-                    <h5 class='font-black text-sm uppercase text-green-400 mb-2'>Estrategia Pasiva Estándar</h5>
-                    <p class='text-slate-400'>Potenciar microclimas mediante vegetación perimetral caducifolia para refrescar brisas moderadas.</p>
-                </div>`;
-                tipo = 'vegetacion';
+                climText.innerText = "Calor radiante. Los datos se desplazan hacia zonas de inercia térmica.";
+                recBox.innerHTML = `<div><h5 class='font-black text-orange-400 uppercase text-xs'>Masa Térmica:</h5><p class='text-slate-400'>Muros de BTC o ladrillo con cámara ventilada.</p></div>`;
             }
-            dibujarSeccionPro(diagCont, tipo);
+            dibujarTectonico(diagCont, tipo);
         }
 
-        function dibujarSeccionPro(container, tipo) {
-            const c = { structure: '#cbd5e1', wind: '#0ea5e9', sun: '#f97316', wood: '#a16207', dark: '#475569' };
-            let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">`;
-            svg += `<path d="M 50,320 L 250,370 L 450,320 L 250,270 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>`;
-            
+        function dibujarTectonico(container, tipo) {
+            const colors = { structure: '#cbd5e1', wind: '#0ea5e9', wood: '#a16207' };
+            let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%">
+                <path d="M 50,320 L 250,370 L 450,320 L 250,270 Z" fill="#f8fafc" stroke="#cbd5e1"/>`;
             if(tipo === 'viento') {
-                svg += `
-                <path d="M 120,300 L 145,290 L 145,90 L 120,100 Z" fill="${c.dark}" stroke="#1e293b"/>
-                <path d="M 380,300 L 405,290 L 405,90 L 380,100 Z" fill="${c.dark}" stroke="#1e293b"/>
-                <path d="M 120,100 L 405,90 L 380,110 L 100,110 Z" fill="${c.structure}" stroke="#94a3b8"/>
-                <rect x="230" y="120" width="10" height="170" fill="${c.wood}" transform="rotate(-15 235 205)" rx="2"/>
-                <path d="M 10,230 Q 150,230 250,180 Q 350,150 490,160" stroke="${c.wind}" stroke-width="12" fill="none" opacity="0.6" marker-end="url(#arr)"/>`;
-            } else if(tipo === 'masa') {
-                svg += `
-                <path d="M 150,300 L 190,285 L 190,85 L 150,100 Z" fill="#64748b" stroke="#1e293b" stroke-width="3"/>
-                <path d="M 100,100 L 400,100 L 360,130 L 60,130 Z" fill="${c.dark}" stroke="#0f172a" stroke-width="3"/>
-                <circle cx="50" cy="60" r="35" fill="${c.sun}"/>
-                <line x1="50" y1="95" x2="140" y2="180" stroke="${c.sun}" stroke-width="6" stroke-dasharray="10,5"/>`;
+                svg += `<path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="#475569"/>
+                <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="#475569"/>
+                <rect x="230" y="120" width="10" height="170" fill="${colors.wood}" transform="rotate(-15 235 205)"/>
+                <path d="M 20,230 Q 250,200 480,160" stroke="${colors.wind}" stroke-width="12" fill="none" opacity="0.6" marker-end="url(#arr)"/>`;
             } else {
-                svg += `
-                <path d="M 180,300 L 320,300 L 320,100 L 180,100 Z" fill="${c.structure}" stroke="#64748b"/>
-                <circle cx="100" cy="180" r="70" fill="#22c55e" opacity="0.5"/>
-                <rect x="92" y="180" width="16" height="130" fill="#78350f" rx="4"/>`;
+                svg += `<path d="M 150,280 L 350,280 L 350,120 L 150,120 Z" fill="#64748b" stroke="#1e293b" stroke-width="4"/>`;
             }
-            svg += `<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${c.wind}"/></marker></defs></svg>`;
+            svg += `<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${colors.wind}"/></marker></defs></svg>`;
             container.innerHTML = svg;
         }
 
