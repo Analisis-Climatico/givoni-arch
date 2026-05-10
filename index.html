@@ -22,7 +22,7 @@
         <header class="flex justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-md border">
             <div>
                 <h1 class="text-3xl font-black text-slate-900">Givoni Global Arch</h1>
-                <p id="location-name" class="text-blue-600 font-black text-xl">UBICACIÓN: Selecciona un punto</p>
+                <p id="location-name" class="text-blue-600 font-black text-xl">UBICACIÓN: Guayaquil, Ecuador</p>
             </div>
             <div class="flex gap-4">
                 <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-gray-100 text-slate-600 active-chip">ANÁLISIS POR MESES</button>
@@ -84,7 +84,7 @@
                         <div class="space-y-4 flex flex-col items-center">
                             <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Bioclimático Dinámico</h4>
                             <div id="architectural-diagram-container" class="w-full h-80 bg-white rounded-2xl border-4 border-slate-700 shadow-inner p-4 flex items-center justify-center">
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,9 +103,11 @@
         map.on('click', async (e) => {
             lat = e.latlng.lat; lon = e.latlng.lng;
             marker.setLatLng([lat, lon]);
-            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
-            const data = await res.json();
-            document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}, ${data.sys.country}`;
+            try {
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
+                const data = await res.json();
+                document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}, ${data.sys.country}`;
+            } catch(e) { console.log("Error mapa"); }
         });
 
         function setModo(m) {
@@ -142,7 +144,6 @@
             const tableBody = document.getElementById('data-table-body');
             tableBody.innerHTML = '';
             const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
-            
             let sumTMax = 0, sumHR = 0;
 
             items.forEach((val, i) => {
@@ -151,11 +152,10 @@
                 let tMin = 18 + (Math.random() * 6);
                 let hr = 60 + (Math.random() * 25);
                 let color = `hsl(${(i * 360 / items.length)}, 80%, 50%)`;
-                
                 sumTMax += tMax; sumHR += hr;
 
                 traces.push({
-                    x: [tMin, tMax], y: [hr - (tMax-tMin)*0.35, hr + (tMax-tMin)*0.35],
+                    x: [tMin, tMax], y: [hr - 5, hr + 5],
                     type: 'scatter', mode: 'lines+markers', name: label,
                     line: { width: 6, color: color }, marker: { size: 12, line: {color:'white', width:2} }
                 });
@@ -170,142 +170,66 @@
                     </tr>`;
             });
 
+            // CALIBRACIÓN EXACTA DE EJES
             const layout = {
                 images: [{
-                    source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
-                    xref: "x", yref: "y", x: -5.8, y: 100, sizex: 51.4, sizey: 100,
+                    source: "https://raw.githubusercontent.com/analisis-climatico/givoni-arch/main/OFICIAL-GRÁFICA%20DE%20GIVONI%20(1)-Layout1.jpg",
+                    xref: "x", yref: "y", x: -5.8, y: 100, sizex: 51.5, sizey: 100,
                     sizing: "stretch", layer: "below"
                 }],
-                xaxis: { 
-                    range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.05)',
-                    title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 20, color: 'red', weight: '900' } }
-                },
-                yaxis: { 
-                    range: [0, 102], dtick: 10, gridcolor: 'rgba(0,0,0,0.05)', side: 'right',
-                    title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 20, color: 'green', weight: '900' } }
-                },
-                showlegend: false, margin: { t: 50, b: 100, l: 50, r: 100 },
-                plot_bgcolor: 'white'
+                xaxis: { range: [-6, 46], dtick: 5, title: { text: 'TEMPERATURA (°C)', font: { size: 18, color: 'red', weight: '900' } } },
+                yaxis: { range: [0, 102], dtick: 10, side: 'right', title: { text: 'HUMEDAD (%)', font: { size: 18, color: 'green', weight: '900' } } },
+                showlegend: false, margin: { t: 50, b: 80, l: 50, r: 80 }
             };
 
             Plotly.newPlot('givoni-plot', traces, layout);
             
-            // LÓGICA DINÁMICA DE ESTRATEGIA Y GENERACIÓN DE ESQUEMA
             document.getElementById('strategy-box').classList.remove('hidden');
             const avgT = sumTMax / items.length;
             const avgH = sumHR / items.length;
 
-            let analisis = "La nube de datos muestra una recurrencia en el cuadrante cálido-húmedo. Los puntos de TBS Máx superan constantemente el umbral de confort, cayendo en la Zona 12 (Ventilación Natural).";
-            let recomendacion = "Se requiere el uso de celosías dinámicas de madera (como se muestra en el esquema) para bloquear la radiación directa sin obstruir el flujo de aire. La ventilación cruzada debe ser la prioridad absoluta del diseño modular.";
-            let tipoEstrategia = 'ventilacion';
+            let analisis = "La nube de datos muestra recurrencia en el cuadrante cálido-húmedo.";
+            let recomendacion = "Se requiere el uso de celosías dinámicas para bloquear la radiación sin obstruir el aire.";
+            let tipo = 'ventilacion';
 
-            if(avgH > 80) {
-                analisis = "Se detecta una saturación crítica de humedad (Zona 14). El aire está cargado de vapor de agua en la mayor parte del periodo analizado.";
-                recomendacion = "Es indispensable el uso de deshumidificación pasiva mediante chimeneas solares que induzcan el movimiento del aire húmedo hacia el exterior. Evitar materiales porosos en acabados interiores.";
-                tipoEstrategia = 'deshumidificacion';
-            } else if (avgT > 33) {
-                 analisis = "Predominancia de temperaturas extremas. Los puntos caen en la Zona 9 y 11, requiriendo masa térmica y protección solar rigurosa.";
-                 recomendacion = "Implementar muros de inercia térmica (ladrillo o concreto) protegidos de la radiación directa. Forzar ventilación nocturna para enfriar la estructura.";
-                 tipoEstrategia = 'inercia';
+            if(avgH > 75) {
+                analisis = "Saturación crítica de humedad detectada. El aire requiere movimiento constante.";
+                recomendacion = "Implementar chimeneas solares para forzar la salida del aire húmedo.";
+                tipo = 'deshumidificacion';
+            } else if(avgT > 32) {
+                analisis = "Temperaturas extremas fuera del área de confort.";
+                recomendacion = "Masa térmica y protecciones solares rigurosas necesarias.";
+                tipo = 'inercia';
             }
 
             document.getElementById('climograma-text').innerText = analisis;
             document.getElementById('recomendacion-text').innerText = recomendacion;
-            
-            // FUNCIÓN PARA DIBUJAR EL ESQUEMA SVG DINÁMICO
-            dibujarEsquemaArquitectonico(tipoEstrategia);
+            dibujarEsquema(tipo);
         }
 
-        function dibujarEsquemaArquitectonico(tipo) {
+        function dibujarEsquema(tipo) {
             const container = document.getElementById('architectural-diagram-container');
-            container.innerHTML = ''; // Limpiar
-
-            let svgContent = '';
+            let colorViento = '#38bdf8', colorSol = '#fb923c', colorMuro = '#e2e8f0';
             
-            // Colores pasteles arquitectónicos base
-            const colorMuro = '#e2e8f0'; // slate-200
-            const colorViento = '#38bdf8'; // sky-400
-            const colorSol = '#fb923c'; // orange-400
-
-            if (tipo === 'ventilacion') {
-                // Esquema de Celosías Dinámicas (inspirado en tu guía)
-                svgContent = `
-                    <svg viewBox="0 0 400 300" class="w-full h-full">
-                        <rect x="50" y="50" width="20" height="200" fill="${colorMuro}" rx="5"/>
-                        <rect x="330" y="50" width="20" height="200" fill="${colorMuro}" rx="5"/>
-                        <rect x="50" y="30" width="300" height="20" fill="${colorMuro}" rx="5"/>
-                        
-                        <line x1="120" y1="70" x2="280" y2="90" stroke="#a16207" stroke-width="8" stroke-linecap="round"/>
-                        <line x1="120" y1="120" x2="280" y2="140" stroke="#a16207" stroke-width="8" stroke-linecap="round"/>
-                        <line x1="120" y1="170" x2="280" y2="190" stroke="#a16207" stroke-width="8" stroke-linecap="round"/>
-                        
-                        <path d="M 10,150 C 50,150 100,100 150,120" stroke="${colorViento}" stroke-width="4" fill="none" marker-end="url(#arrowhead)"/>
-                        <path d="M 150,120 C 200,140 250,110 390,110" stroke="${colorViento}" stroke-width="4" fill="none" marker-end="url(#arrowhead)"/>
-                        
-                        <circle cx="350" cy="50" r="20" fill="${colorSol}"/>
-                        <line x1="330" y1="70" x2="290" y2="110" stroke="${color Sol}" stroke-width="3" stroke-dasharray="5,5"/>
-                        
-                        <text x="200" y="250" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold">CELOSÍAS DINÁMICAS + VENTILACIÓN CRUZADA</text>
-
-                        <defs>
-                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="${colorViento}"/>
-                            </marker>
-                        </defs>
-                    </svg>
-                `;
-            } else if (tipo === 'deshumidificacion') {
-                // Esquema de Chimenea Solar
-                svgContent = `
-                    <svg viewBox="0 0 400 300" class="w-full h-full">
-                         <rect x="50" y="100" width="250" height="150" fill="${colorMuro}" rx="5"/>
-                        
-                        <rect x="300" y="30" width="50" height="220" fill="#475569" rx="5"/> <rect x="305" y="35" width="40" height="150" fill="#f8fafc" rx="2"/> <path d="M 20,200 L 80,200" stroke="${colorViento}" stroke-width="4" fill="none" marker-end="url(#arrowhead-viento)"/>
-                        <path d="M 150,200 C 200,200 280,200 310,180" stroke="${colorViento}" stroke-width="4" fill="none"/>
-                        <path d="M 310,180 L 325,40" stroke="#ef4444" stroke-width="4" fill="none" marker-end="url(#arrowhead-calor)"/> <circle cx="370" cy="80" r="15" fill="${colorSol}"/>
-                        <line x1="370" y1="80" x2="340" y2="80" stroke="${colorSol}" stroke-width="2"/>
-
-                         <text x="200" y="270" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold">CHIMENEA SOLAR (INDUCIR MOVIMIENTO DE AIRE HÚMEDO)</text>
-                        
-                        <defs>
-                            <marker id="arrowhead-viento" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="${colorViento}"/>
-                            </marker>
-                            <marker id="arrowhead-calor" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
-                            </marker>
-                        </defs>
-                    </svg>
-                `;
-            } else if (tipo === 'inercia') {
-                 // Esquema de Muro de Inercia
-                 svgContent = `
-                    <svg viewBox="0 0 400 300" class="w-full h-full">
-                         <rect x="150" y="50" width="60" height="200" fill="#94a3b8" rx="5"/> <text x="180" y="160" text-anchor="middle" font-family="sans-serif" font-size="12" fill="white" font-weight="bold" transform="rotate(-90, 180, 160)">MASA TÉRMICA</text>
-                        
-                        <circle cx="50" cy="50" r="25" fill="${colorSol}"/>
-                        <line x1="50" y1="50" x2="140" y2="100" stroke="${colorSol}" stroke-width="4"/>
-                        <line x1="140" y1="80" x2="140" y2="120" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/> <path d="M 220,150 L 350,150" stroke="#ef4444" stroke-width="3" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead-calor-inercia)"/> 
-
-                         <text x="200" y="270" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold">INERCIA TÉRMICA (RETRASO TÉRMICO)</text>
-                        
-                        <defs>
-                             <marker id="arrowhead-calor-inercia" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
-                            </marker>
-                        </defs>
-                    </svg>
-                 `;
+            let svg = `<svg viewBox="0 0 400 300" class="w-full h-full">`;
+            if(tipo === 'ventilacion') {
+                svg += `
+                <rect x="50" y="50" width="20" height="200" fill="${colorMuro}"/>
+                <rect x="330" y="50" width="20" height="200" fill="${colorMuro}"/>
+                <rect x="120" y="70" width="160" height="10" fill="#a16207" rx="5" transform="rotate(15 200 75)"/>
+                <rect x="120" y="130" width="160" height="10" fill="#a16207" rx="5" transform="rotate(15 200 135)"/>
+                <path d="M 10,150 Q 150,150 390,120" stroke="${colorViento}" stroke-width="5" fill="none"/>
+                <text x="200" y="270" text-anchor="middle" font-weight="bold" fill="#64748b">ESTRATEGIA: CELOSÍAS Y VIENTO</text>`;
+            } else {
+                svg += `<rect x="100" y="50" width="200" height="180" fill="${colorMuro}" rx="10"/>
+                <path d="M 200,220 L 200,40" stroke="#ef4444" stroke-width="6" fill="none"/>
+                <text x="200" y="270" text-anchor="middle" font-weight="bold" fill="#64748b">ESTRATEGIA: EXTRACCIÓN DE CALOR</text>`;
             }
-
-            container.innerHTML = svgContent;
+            svg += `</svg>`;
+            container.innerHTML = svg;
         }
 
-        window.onload = () => {
-            // Carga inicial (ejemplo Guayaquil)
-            setModo('mes');
-            ejecutarAnalisis();
-        };
+        window.onload = ejecutarAnalisis;
     </script>
 </body>
 </html>
