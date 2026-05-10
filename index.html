@@ -63,10 +63,6 @@ body{
     background:white;
 }
 
-.selector-chip:hover{
-    transform:translateY(-2px);
-}
-
 .selected-item{
     background:#2563eb;
     color:white;
@@ -84,7 +80,6 @@ body{
     opacity:0;
     transition:.2s;
     z-index:9999;
-    box-shadow:0 10px 40px rgba(0,0,0,.25);
 }
 
 </style>
@@ -175,6 +170,22 @@ Actualizar Climograma
 
 <div id="chart">
 
+<!-- FONDO GIVONI -->
+
+<img
+src="https://i.imgur.com/5h5U6Gk.png"
+id="givoni-bg"
+style="
+position:absolute;
+width:100%;
+height:100%;
+object-fit:contain;
+pointer-events:none;
+opacity:1;
+z-index:1;
+"
+/>
+
 <div id="tooltip"
 class="tooltip-box"></div>
 
@@ -195,7 +206,7 @@ class="tooltip-box"></div>
 <th class="p-4 text-center">Temp Máx</th>
 <th class="p-4 text-center">Temp Mín</th>
 <th class="p-4 text-center">HR</th>
-<th class="p-4 text-center">Zona Dominante</th>
+<th class="p-4 text-center">Zonas</th>
 
 </tr>
 
@@ -460,7 +471,7 @@ return await response.json();
 }
 
 /* =========================================================
-CURVA GIVONI
+CURVA
 ========================================================= */
 
 function givoniY(hr,temp){
@@ -470,28 +481,88 @@ return hr * Math.exp((temp-20)/20);
 }
 
 /* =========================================================
-ZONA
+ZONAS
 ========================================================= */
 
-function detectZone(temp,hr){
+const ZONES = [
 
-if(temp >= 21 && temp <= 27 && hr >= 40 && hr <= 70){
-return 'Confort';
+{
+id:1,
+name:"Confort",
+x1:21,
+x2:27,
+h1:40,
+h2:70
+},
+
+{
+id:4,
+name:"Ventilación Natural",
+x1:27,
+x2:34,
+h1:45,
+h2:90
+},
+
+{
+id:8,
+name:"Enfriamiento Evaporativo",
+x1:30,
+x2:40,
+h1:20,
+h2:70
+},
+
+{
+id:12,
+name:"Deshumidificación",
+x1:27,
+x2:38,
+h1:70,
+h2:100
+},
+
+{
+id:13,
+name:"Aire Acondicionado",
+x1:35,
+x2:50,
+h1:20,
+h2:80
 }
 
-if(temp > 27 && hr > 75){
-return 'Deshumidificación';
+];
+
+/* =========================================================
+DETECT ZONE
+========================================================= */
+
+function detectZones(tMax,tMin,hr){
+
+const detected = [];
+
+for(let t=tMin;t<=tMax;t+=0.5){
+
+ZONES.forEach(zone=>{
+
+if(
+t >= zone.x1 &&
+t <= zone.x2 &&
+hr >= zone.h1 &&
+hr <= zone.h2
+){
+
+if(!detected.includes(zone.name)){
+detected.push(zone.name);
 }
 
-if(temp > 30 && hr < 75){
-return 'Ventilación';
 }
 
-if(temp < 20){
-return 'Calefacción';
+});
+
 }
 
-return 'Protección Solar';
+return detected;
 
 }
 
@@ -507,10 +578,10 @@ const width = 1600;
 const height = 900;
 
 const margin = {
-top:40,
+top:60,
 right:70,
-bottom:90,
-left:70
+bottom:100,
+left:90
 };
 
 const innerWidth =
@@ -521,6 +592,8 @@ height - margin.top - margin.bottom;
 
 const svg = d3.select('#chart')
 .append('svg')
+.style('position','relative')
+.style('z-index','2')
 .attr('width','100%')
 .attr('height',height)
 .attr('viewBox',`0 0 ${width} ${height}`);
@@ -530,133 +603,17 @@ const g = svg.append('g')
 `translate(${margin.left},${margin.top})`);
 
 const x = d3.scaleLinear()
-.domain([-5,50])
+.domain([0,50])
 .range([0,innerWidth]);
 
 const y = d3.scaleLinear()
 .domain([0,140])
 .range([innerHeight,0]);
 
-/* =========================================================
-GRID
-========================================================= */
-
-for(let t=-5;t<=50;t+=1){
-
-g.append('line')
-.attr('x1',x(t))
-.attr('x2',x(t))
-.attr('y1',0)
-.attr('y2',innerHeight)
-.attr('stroke',
-t % 5 === 0
-? '#d1d5db'
-: '#edf2f7');
-
-}
-
-for(let h=0;h<=140;h+=5){
-
-g.append('line')
-.attr('x1',0)
-.attr('x2',innerWidth)
-.attr('y1',y(h))
-.attr('y2',y(h))
-.attr('stroke','#edf2f7');
-
-}
-
-/* =========================================================
-CURVAS RH
-========================================================= */
-
-for(let hr=10;hr<=100;hr+=10){
-
-const points = [];
-
-for(let t=-5;t<=50;t+=0.5){
-
-points.push([
-x(t),
-y(givoniY(hr,t))
-]);
-
-}
-
-const line = d3.line()
-.curve(d3.curveBasis);
-
-g.append('path')
-.attr('d',line(points))
-.attr('fill','none')
-.attr('stroke','#dbe2ea')
-.attr('stroke-width',1);
-
-}
-
-/* =========================================================
-ZONAS GIVONI
-========================================================= */
-
-const zones = [
-
-{
-stroke:'#facc15',
-fill:'rgba(250,204,21,0.10)',
-points:[[21,20],[25,30],[25,75],[21,60]]
-},
-
-{
-stroke:'#dc2626',
-fill:'rgba(220,38,38,0.08)',
-points:[[20,20],[27,35],[27,60],[24,75],[20,55]]
-},
-
-{
-stroke:'#10b981',
-fill:'rgba(16,185,129,0.08)',
-points:[[20,55],[24,75],[28,110],[33,55],[33,28],[27,35]]
-},
-
-{
-stroke:'#9333ea',
-fill:'rgba(168,85,247,0.08)',
-points:[[24,75],[40,30],[40,0],[27,0]]
-},
-
-{
-stroke:'#2563eb',
-fill:'rgba(37,99,235,0.08)',
-points:[[33,55],[50,55],[50,0],[40,0],[40,30]]
-}
-
-];
-
-zones.forEach(zone=>{
-
-const poly = zone.points.map(p=>[
-x(p[0]),
-y(p[1])
-]);
-
-g.append('polygon')
-.attr('points',poly.join(' '))
-.attr('fill',zone.fill)
-.attr('stroke',zone.stroke)
-.attr('stroke-width',3);
-
-});
-
-/* =========================================================
-TOOLTIP
-========================================================= */
-
 const tooltip =
 document.getElementById('tooltip');
 
-/* =========================================================
-CURVAS
-========================================================= */
+/* CURVAS */
 
 data.forEach((d,i)=>{
 
@@ -692,7 +649,6 @@ g.append('path')
 .attr('stroke',color)
 .attr('stroke-width',8)
 .attr('stroke-linecap','round')
-.attr('opacity',0.95)
 
 .on('mousemove',(event)=>{
 
@@ -705,19 +661,25 @@ tooltip.style.top =
 (event.pageY - 20) + 'px';
 
 tooltip.innerHTML = `
+
 <div class="space-y-1">
 
-<p>${d.label}</p>
+<p class="font-black text-blue-400">
+${d.label}
+</p>
 
-<p>Temp Máx: ${d.tMax.toFixed(1)}°C</p>
+<p>T. Máx: ${d.tMax.toFixed(1)}°C</p>
 
-<p>Temp Mín: ${d.tMin.toFixed(1)}°C</p>
+<p>T. Mín: ${d.tMin.toFixed(1)}°C</p>
 
 <p>HR: ${d.hr.toFixed(0)}%</p>
 
-<p>Zona: ${d.zone}</p>
+<p>Zonas:
+${d.zones.join(', ')}
+</p>
 
 </div>
+
 `;
 
 })
@@ -730,9 +692,7 @@ tooltip.style.opacity = 0;
 
 });
 
-/* =========================================================
-AXES
-========================================================= */
+/* EJES */
 
 g.append('g')
 .attr('transform',
@@ -745,14 +705,6 @@ g.append('text')
 .attr('font-size','20px')
 .attr('font-weight','900')
 .text('TEMPERATURA BULBO SECO (°C)');
-
-g.append('text')
-.attr('transform','rotate(-90)')
-.attr('x',-innerHeight/2)
-.attr('y',-40)
-.attr('font-size','20px')
-.attr('font-weight','900')
-.text('HUMEDAD RELATIVA (%)');
 
 }
 
@@ -797,8 +749,8 @@ ${d.tMin.toFixed(1)}°C
 ${d.hr.toFixed(0)}%
 </td>
 
-<td class="p-4 text-center font-black">
-${d.zone}
+<td class="p-4 text-center font-black text-[10px]">
+${d.zones.join(', ')}
 </td>
 
 </tr>
@@ -823,80 +775,78 @@ document.getElementById('strategy-list');
 
 strategyList.innerHTML = '';
 
-let avgTemp = 0;
-let avgHR = 0;
-
-const zoneCount = {};
+const zoneCounter = {};
 
 data.forEach(d=>{
 
-avgTemp += d.tMax;
-avgHR += d.hr;
+d.zones.forEach(z=>{
 
-zoneCount[d.zone] =
-(zoneCount[d.zone] || 0) + 1;
+zoneCounter[z] =
+(zoneCounter[z] || 0) + 1;
 
 });
 
-avgTemp /= data.length;
-avgHR /= data.length;
+});
 
-let dominantZone =
-Object.keys(zoneCount).reduce((a,b)=>
-zoneCount[a] > zoneCount[b]
-? a
-: b
-);
+const dominantZones =
+Object.entries(zoneCounter)
+.sort((a,b)=>b[1]-a[1])
+.slice(0,3)
+.map(v=>v[0]);
 
-let text = '';
+let text = `
+El análisis bioclimático del climograma evidencia
+predominancia en las zonas:
+${dominantZones.join(', ')}.
+`;
 
 let strategies = [];
 
-if(dominantZone === 'Deshumidificación'){
+if(dominantZones.includes('Ventilación Natural')){
 
-text = `
-El análisis climático evidencia predominancia de
-condiciones cálido-húmedas con elevada humedad
-relativa anual y temperaturas altas persistentes.
-`;
+strategies.push(
+'Ventilación cruzada continua'
+);
 
-strategies = [
-'Ventilación cruzada permanente',
-'Deshumidificación pasiva',
-'Cubiertas ventiladas',
-'Sombreado profundo',
+strategies.push(
 'Fachadas permeables'
-];
+);
 
 }
 
-else if(dominantZone === 'Ventilación'){
+if(dominantZones.includes('Deshumidificación')){
 
-text = `
-El clima presenta altas temperaturas con necesidad
-de disipación térmica constante mediante ventilación.
-`;
+strategies.push(
+'Deshumidificación pasiva'
+);
 
-strategies = [
-'Ventilación natural continua',
-'Protección solar horizontal',
+strategies.push(
+'Cubiertas ventiladas'
+);
+
+}
+
+if(dominantZones.includes('Enfriamiento Evaporativo')){
+
+strategies.push(
+'Sistemas evaporativos'
+);
+
+strategies.push(
 'Disipación térmica nocturna'
-];
+);
 
 }
 
-else{
+if(dominantZones.includes('Aire Acondicionado')){
 
-text = `
-Las condiciones climáticas se aproximan parcialmente
-a rangos de confort bioclimático.
-`;
+strategies.push(
+'Alta protección solar'
+);
 
-strategies = [
-'Control solar moderado',
-'Ventilación parcial',
-'Control térmico pasivo'
-];
+strategies.push(
+'Reducción de ganancias térmicas'
+);
 
 }
 
@@ -929,7 +879,7 @@ async function runClimateAnalysis(){
 let results = [];
 
 /* =========================================================
-MODO MESES
+MESES
 ========================================================= */
 
 if(mode === 'mes'){
@@ -979,7 +929,11 @@ tMax:avgMax,
 tMin:avgMin,
 hr:avgHR,
 
-zone:detectZone(avgMax,avgHR)
+zones:detectZones(
+avgMax,
+avgMin,
+avgHR
+)
 
 });
 
@@ -988,7 +942,7 @@ zone:detectZone(avgMax,avgHR)
 }
 
 /* =========================================================
-MODO AÑOS
+AÑOS
 ========================================================= */
 
 else{
@@ -1024,7 +978,11 @@ tMax:avgMax,
 tMin:avgMin,
 hr:avgHR,
 
-zone:detectZone(avgMax,avgHR)
+zones:detectZones(
+avgMax,
+avgMin,
+avgHR
+)
 
 });
 
