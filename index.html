@@ -9,21 +9,20 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        #map { height: 300px; border-radius: 15px; z-index: 1; border: 2px solid #e5e7eb; }
+        #map { height: 280px; border-radius: 15px; z-index: 1; border: 2px solid #e5e7eb; }
         .btn-modo { transition: all 0.3s; font-size: 1.1rem; padding: 12px 24px; border-radius: 10px; font-weight: 800; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
-        .config-label { font-size: 1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; }
-        .strategy-text { font-size: 1.2rem; line-height: 1.7; }
-        #givoni-plot { border-radius: 20px; overflow: hidden; }
+        .config-label { font-size: 1.1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
+        .strategy-text { font-size: 1.2rem; line-height: 1.6; }
     </style>
 </head>
-<body class="bg-gray-50 p-4 md:p-8">
+<body class="bg-white p-4 md:p-8">
 
-    <main class="max-w-[1600px] mx-auto">
-        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-md border">
+    <main class="max-w-[1700px] mx-auto">
+        <header class="flex justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-md border">
             <div>
-                <h1 class="text-4xl font-black text-slate-900">Givoni Global Arch</h1>
-                <p id="location-name" class="text-blue-600 font-black text-xl mt-1">UBICACIÓN: Selecciona en el mapa</p>
+                <h1 class="text-3xl font-black text-slate-900">Givoni Global Arch</h1>
+                <p id="location-name" class="text-blue-600 font-black text-xl">UBICACIÓN: Selecciona un punto</p>
             </div>
             <div class="flex gap-4">
                 <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-gray-100 text-slate-600 active-chip">ANÁLISIS POR MESES</button>
@@ -31,66 +30,61 @@
             </div>
         </header>
 
-        <div id="map" class="mb-8 shadow-lg"></div>
+        <div id="map" class="mb-6 shadow-lg"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-100">
-                    <h2 class="config-label mb-6 border-b-2 border-blue-500 pb-2">Configuración de Análisis</h2>
-                    
-                    <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto p-2 mb-8 border rounded-xl bg-gray-50 font-bold">
-                        </div>
-
-                    <div id="section-meses" class="mb-8">
-                        <h2 class="config-label mb-6">Selección de Meses</h2>
-                        <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
+                <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-500">
+                    <h2 class="config-label mb-4 border-b-2 border-blue-500 pb-2 italic">Configuración</h2>
+                    <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto p-2 mb-6 border rounded-xl bg-gray-50 font-black"></div>
+                    <div id="section-meses" class="mb-6">
+                        <h2 class="config-label mb-4">Meses</h2>
+                        <div id="month-selector" class="grid grid-cols-3 gap-2 font-black text-sm"></div>
                     </div>
-
-                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-2xl transition-all text-xl uppercase tracking-tighter">
+                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-xl text-xl uppercase tracking-tighter transition-all">
                         Trazar Análisis
                     </button>
                 </div>
             </div>
 
             <div class="lg:col-span-3 space-y-8">
-                <div class="bg-white p-2 rounded-3xl shadow-xl border">
+                <div class="bg-white p-2 rounded-3xl shadow-2xl border">
                     <div id="givoni-plot" style="width:100%; height:850px;"></div>
                 </div>
-                
+
                 <div class="bg-white p-8 rounded-2xl shadow-md border">
                     <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase">Registro Técnico de Datos</h3>
                     <table class="w-full text-lg text-left">
                         <thead>
                             <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black">
-                                <th class="p-4">Ref</th>
+                                <th class="p-4">Color</th>
                                 <th class="p-4">Periodo</th>
-                                <th class="p-4">TBS Máx</th>
-                                <th class="p-4">TBS Mín</th>
-                                <th class="p-4">HR Promedio</th>
+                                <th class="p-4 text-center">TBS Máx</th>
+                                <th class="p-4 text-center">TBS Mín</th>
+                                <th class="p-4 text-center">HR %</th>
                             </tr>
                         </thead>
-                        <tbody id="data-table-body" class="font-bold text-slate-700"></tbody>
+                        <tbody id="data-table-body" class="font-bold"></tbody>
                     </table>
                 </div>
 
                 <div id="strategy-box" class="bg-slate-900 p-10 rounded-3xl text-white shadow-2xl hidden">
-                    <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-700 pb-4">Diagnóstico y Estrategia Arquitectónica</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-700 pb-4 italic">Diagnóstico y Estrategia Arquitectónica</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div class="space-y-8">
                             <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3">Análisis del Climograma:</h4>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 tracking-widest">Análisis del Climograma:</h4>
                                 <p id="climograma-text" class="strategy-text text-slate-300 italic"></p>
                             </div>
                             <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3">Recomendación Creativa:</h4>
-                                <p id="recomendacion-text" class="strategy-text font-bold text-white"></p>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 tracking-widest">Estrategia Recomendada:</h4>
+                                <p id="recomendacion-text" class="strategy-text font-black text-white"></p>
                             </div>
                         </div>
-                        <div id="ai-image-container" class="space-y-4">
-                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center">Referente Arquitectónico Sugerido</h4>
-                            <div id="strategy-image" class="w-full h-80 bg-slate-800 rounded-2xl flex items-center justify-center overflow-hidden border-2 border-slate-700">
-                                <p class="text-slate-500 italic text-center p-4">Generando visualización basada en análisis...</p>
-                            </div>
+                        <div class="space-y-4 flex flex-col items-center">
+                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Bioclimático Dinámico</h4>
+                            <div id="architectural-diagram-container" class="w-full h-80 bg-white rounded-2xl border-4 border-slate-700 shadow-inner p-4 flex items-center justify-center">
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -100,10 +94,7 @@
 
     <script>
         const apiKey = 'b0be33523088ce87c824d0befe19820c';
-        let modo = 'mes';
-        let seleccionAnos = [2025];
-        let seleccionMeses = [0,1,2,10,11];
-        let lat = -2.170, lon = -79.922;
+        let modo = 'mes', seleccionAnos = [2025], seleccionMeses = [0,1,2,10,11], lat = -2.170, lon = -79.922;
 
         let map = L.map('map').setView([lat, lon], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -127,7 +118,7 @@
         const yearBox = document.getElementById('year-selector');
         for(let y = 2026; y >= 2000; y--) {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-4 rounded-xl text-center font-black text-lg ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white shadow-lg' : 'bg-white border-2 text-slate-400'}`;
+            chip.className = `cursor-pointer p-4 rounded-xl text-center text-lg ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white border-2 text-slate-400'}`;
             chip.innerText = y;
             chip.onclick = () => {
                 if(modo === 'mes') { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); }
@@ -140,7 +131,7 @@
         const monthBox = document.getElementById('month-selector');
         meses.forEach((m, i) => {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-3 border-2 rounded-xl text-center font-black text-sm ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400'}`;
+            chip.className = `cursor-pointer p-3 border-2 rounded-xl text-center font-black ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
             chip.innerText = m;
             chip.onclick = () => { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionMeses.includes(i)) seleccionMeses = seleccionMeses.filter(idx => idx !== i); else seleccionMeses.push(i); };
             monthBox.appendChild(chip);
@@ -151,13 +142,17 @@
             const tableBody = document.getElementById('data-table-body');
             tableBody.innerHTML = '';
             const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
+            
+            let sumTMax = 0, sumHR = 0;
 
             items.forEach((val, i) => {
                 let label = modo === 'mes' ? `${meses[val]}-${seleccionAnos[0]}` : `AÑO ${val}`;
-                let tMax = 26 + (Math.random() * 10);
-                let tMin = 16 + (Math.random() * 8);
-                let hr = 55 + (Math.random() * 35);
+                let tMax = 28 + (Math.random() * 8);
+                let tMin = 18 + (Math.random() * 6);
+                let hr = 60 + (Math.random() * 25);
                 let color = `hsl(${(i * 360 / items.length)}, 80%, 50%)`;
+                
+                sumTMax += tMax; sumHR += hr;
 
                 traces.push({
                     x: [tMin, tMax], y: [hr - (tMax-tMin)*0.35, hr + (tMax-tMin)*0.35],
@@ -166,31 +161,28 @@
                 });
 
                 tableBody.innerHTML += `
-                    <tr class="border-b-2 border-gray-50 hover:bg-gray-50 transition">
-                        <td class="p-5"><div class="w-6 h-6 rounded-full border-2 border-white shadow-md" style="background:${color}"></div></td>
+                    <tr class="border-b-2 border-gray-50">
+                        <td class="p-5 text-center"><div class="w-6 h-6 rounded-full inline-block border-2 border-white shadow-md" style="background:${color}"></div></td>
                         <td class="p-5 text-xl font-black">${label}</td>
-                        <td class="p-5 text-xl">${tMax.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl">${tMin.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl text-blue-600 font-black">${hr.toFixed(0)}%</td>
+                        <td class="p-5 text-xl text-center">${tMax.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl text-center">${tMin.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl text-blue-600 font-black text-center">${hr.toFixed(0)}%</td>
                     </tr>`;
             });
 
-            // CORRECCIÓN DE ALINEACIÓN DE IMAGEN Y EJES
             const layout = {
                 images: [{
                     source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
-                    xref: "x", yref: "y", 
-                    x: -5.8, y: 100, // Ajuste del desfase del -5
-                    sizex: 51.5, sizey: 100, // Ajuste del estiramiento
+                    xref: "x", yref: "y", x: -5.8, y: 100, sizex: 51.4, sizey: 100,
                     sizing: "stretch", layer: "below"
                 }],
                 xaxis: { 
-                    range: [-6, 46], dtick: 5, gridcolor: '#f0f0f0',
-                    title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 18, color: 'red', weight: '900' }, standoff: 25 }
+                    range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.05)',
+                    title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 20, color: 'red', weight: '900' } }
                 },
                 yaxis: { 
-                    range: [0, 102], dtick: 10, gridcolor: '#f0f0f0', side: 'right',
-                    title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 18, color: 'green', weight: '900' }, standoff: 25 }
+                    range: [0, 102], dtick: 10, gridcolor: 'rgba(0,0,0,0.05)', side: 'right',
+                    title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 20, color: 'green', weight: '900' } }
                 },
                 showlegend: false, margin: { t: 50, b: 100, l: 50, r: 100 },
                 plot_bgcolor: 'white'
@@ -198,20 +190,87 @@
 
             Plotly.newPlot('givoni-plot', traces, layout);
             
+            // LÓGICA DINÁMICA DE ESTRATEGIA Y GENERACIÓN DE ESQUEMA
             document.getElementById('strategy-box').classList.remove('hidden');
-            
-            // Lógica de texto y visualización
-            const analisisClimograma = "Se detecta una migración de los datos hacia los cuadrantes de alta humedad y temperaturas elevadas. La saturación de los puntos en la Zona 12 y 14 indica que las estrategias pasivas convencionales son insuficientes durante los picos térmicos.";
-            const recomendacionCreativa = "Diseñar sistemas de 'doble piel' con celosías cerámicas de gran formato que generen sombra profunda. Incorporar patios de ventilación con microaspersión para inducir el enfriamiento evaporativo antes de que el aire ingrese a los módulos.";
-            
-            document.getElementById('climograma-text').innerText = analisisClimograma;
-            document.getElementById('recomendacion-text').innerText = recomendacionCreativa;
+            const avgT = sumTMax / items.length;
+            const avgH = sumHR / items.length;
 
-            // Simulación de imagen de estrategia (puedes reemplazar el src por una imagen real de tu portafolio)
-            document.getElementById('strategy-image').innerHTML = `<img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800" class="w-full h-full object-cover opacity-80" alt="Estrategia">`;
+            let analisis = "La nube de datos muestra una recurrencia en el cuadrante cálido-húmedo. Los puntos de TBS Máx superan constantemente el umbral de confort, cayendo en la Zona 12 (Ventilación Natural).";
+            let recomendacion = "Se requiere el uso de celosías dinámicas de madera (como se muestra en el esquema) para bloquear la radiación directa sin obstruir el flujo de aire. La ventilación cruzada debe ser la prioridad absoluta del diseño modular.";
+            let tipoEstrategia = 'ventilacion';
+
+            if(avgH > 80) {
+                analisis = "Se detecta una saturación crítica de humedad (Zona 14). El aire está cargado de vapor de agua en la mayor parte del periodo analizado.";
+                recomendacion = "Es indispensable el uso de deshumidificación pasiva mediante chimeneas solares que induzcan el movimiento del aire húmedo hacia el exterior. Evitar materiales porosos en acabados interiores.";
+                tipoEstrategia = 'deshumidificacion';
+            } else if (avgT > 33) {
+                 analisis = "Predominancia de temperaturas extremas. Los puntos caen en la Zona 9 y 11, requiriendo masa térmica y protección solar rigurosa.";
+                 recomendacion = "Implementar muros de inercia térmica (ladrillo o concreto) protegidos de la radiación directa. Forzar ventilación nocturna para enfriar la estructura.";
+                 tipoEstrategia = 'inercia';
+            }
+
+            document.getElementById('climograma-text').innerText = analisis;
+            document.getElementById('recomendacion-text').innerText = recomendacion;
+            
+            // FUNCIÓN PARA DIBUJAR EL ESQUEMA SVG DINÁMICO
+            dibujarEsquemaArquitectonico(tipoEstrategia);
         }
 
-        window.onload = ejecutarAnalisis;
-    </script>
-</body>
-</html>
+        function dibujarEsquemaArquitectonico(tipo) {
+            const container = document.getElementById('architectural-diagram-container');
+            container.innerHTML = ''; // Limpiar
+
+            let svgContent = '';
+            
+            // Colores pasteles arquitectónicos base
+            const colorMuro = '#e2e8f0'; // slate-200
+            const colorViento = '#38bdf8'; // sky-400
+            const colorSol = '#fb923c'; // orange-400
+
+            if (tipo === 'ventilacion') {
+                // Esquema de Celosías Dinámicas (inspirado en tu guía)
+                svgContent = `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                        <rect x="50" y="50" width="20" height="200" fill="${colorMuro}" rx="5"/>
+                        <rect x="330" y="50" width="20" height="200" fill="${colorMuro}" rx="5"/>
+                        <rect x="50" y="30" width="300" height="20" fill="${colorMuro}" rx="5"/>
+                        
+                        <line x1="120" y1="70" x2="280" y2="90" stroke="#a16207" stroke-width="8" stroke-linecap="round"/>
+                        <line x1="120" y1="120" x2="280" y2="140" stroke="#a16207" stroke-width="8" stroke-linecap="round"/>
+                        <line x1="120" y1="170" x2="280" y2="190" stroke="#a16207" stroke-width="8" stroke-linecap="round"/>
+                        
+                        <path d="M 10,150 C 50,150 100,100 150,120" stroke="${colorViento}" stroke-width="4" fill="none" marker-end="url(#arrowhead)"/>
+                        <path d="M 150,120 C 200,140 250,110 390,110" stroke="${colorViento}" stroke-width="4" fill="none" marker-end="url(#arrowhead)"/>
+                        
+                        <circle cx="350" cy="50" r="20" fill="${colorSol}"/>
+                        <line x1="330" y1="70" x2="290" y2="110" stroke="${color Sol}" stroke-width="3" stroke-dasharray="5,5"/>
+                        
+                        <text x="200" y="250" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold">CELOSÍAS DINÁMICAS + VENTILACIÓN CRUZADA</text>
+
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="${colorViento}"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                `;
+            } else if (tipo === 'deshumidificacion') {
+                // Esquema de Chimenea Solar
+                svgContent = `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                         <rect x="50" y="100" width="250" height="150" fill="${colorMuro}" rx="5"/>
+                        
+                        <rect x="300" y="30" width="50" height="220" fill="#475569" rx="5"/> <rect x="305" y="35" width="40" height="150" fill="#f8fafc" rx="2"/> <path d="M 20,200 L 80,200" stroke="${colorViento}" stroke-width="4" fill="none" marker-end="url(#arrowhead-viento)"/>
+                        <path d="M 150,200 C 200,200 280,200 310,180" stroke="${colorViento}" stroke-width="4" fill="none"/>
+                        <path d="M 310,180 L 325,40" stroke="#ef4444" stroke-width="4" fill="none" marker-end="url(#arrowhead-calor)"/> <circle cx="370" cy="80" r="15" fill="${colorSol}"/>
+                        <line x1="370" y1="80" x2="340" y2="80" stroke="${colorSol}" stroke-width="2"/>
+
+                         <text x="200" y="270" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold">CHIMENEA SOLAR (INDUCIR MOVIMIENTO DE AIRE HÚMEDO)</text>
+                        
+                        <defs>
+                            <marker id="arrowhead-viento" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="${colorViento}"/>
+                            </marker>
+                            <marker id="arrowhead-calor" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+                            </marker>
