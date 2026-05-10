@@ -172,21 +172,6 @@ Actualizar Climograma
 
 <div id="chart">
 
-<img
-src="./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg"
-id="givoni-bg"
-style="
-position:absolute;
-inset:0;
-width:100%;
-height:100%;
-object-fit:fill;
-z-index:1;
-pointer-events:none;
-user-select:none;
-"
-/>
-
 <div id="tooltip"
 class="tooltip-box"></div>
 
@@ -475,54 +460,66 @@ return await response.json();
 ZONAS
 ========================================================= */
 
-const ZONES = [
+const zones = [
 
 {
 id:1,
-name:"Confort",
-x1:21,
-x2:27,
-h1:40,
-h2:70
-},
-
-{
-id:4,
-name:"Ventilación Natural",
-x1:27,
-x2:34,
-h1:45,
-h2:90
-},
-
-{
-id:8,
-name:"Enfriamiento Evaporativo",
-x1:30,
-x2:40,
-h1:20,
-h2:70
+name:'Confort',
+points:[[21,30],[26,30],[27,55],[24,55],[21,40]]
 },
 
 {
 id:12,
-name:"Deshumidificación",
-x1:27,
-x2:38,
-h1:70,
-h2:100
+name:'Ventilación Natural',
+points:[[20,40],[27,80],[33,40],[33,20],[27,15],[20,40]]
+},
+
+{
+id:10,
+name:'Enfriamiento Evaporativo',
+points:[[27,20],[38,20],[40,0],[27,0]]
+},
+
+{
+id:14,
+name:'Deshumidificación',
+points:[[27,80],[35,100],[50,100],[50,40],[32,40]]
 },
 
 {
 id:13,
-name:"Aire Acondicionado",
-x1:35,
-x2:50,
-h1:20,
-h2:80
+name:'Aire Acondicionado',
+points:[[33,45],[50,45],[50,0],[40,0],[40,20]]
 }
 
 ];
+
+/* =========================================================
+POINT IN POLYGON
+========================================================= */
+
+function pointInPolygon(point, vs){
+
+let x = point[0], y = point[1];
+let inside = false;
+
+for(let i=0,j=vs.length-1;i<vs.length;j=i++){
+
+let xi = vs[i][0], yi = vs[i][1];
+let xj = vs[j][0], yj = vs[j][1];
+
+let intersect =
+((yi > y) != (yj > y))
+&&
+(x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+
+if(intersect) inside = !inside;
+
+}
+
+return inside;
+
+}
 
 /* =========================================================
 DETECTAR ZONAS
@@ -534,13 +531,13 @@ const detected = [];
 
 for(let t=tMin;t<=tMax;t+=0.5){
 
-ZONES.forEach(zone=>{
+zones.forEach(zone=>{
 
 if(
-t >= zone.x1 &&
-t <= zone.x2 &&
-hr >= zone.h1 &&
-hr <= zone.h2
+pointInPolygon(
+[t,hr],
+zone.points
+)
 ){
 
 if(!detected.includes(zone.name)){
@@ -568,53 +565,130 @@ d3.select('#chart svg').remove();
 const width = 1600;
 const height = 900;
 
-/* =========================================================
-CALIBRACIÓN DEL FONDO GIVONI
-========================================================= */
+const margin = {
+top:50,
+right:80,
+bottom:80,
+left:80
+};
 
-const chartOffsetX = 118;
-const chartOffsetY = 82;
+const innerWidth =
+width - margin.left - margin.right;
 
-const chartWidth = 1290;
-const chartHeight = 690;
-
-/* =========================================================
-SVG
-========================================================= */
+const innerHeight =
+height - margin.top - margin.bottom;
 
 const svg = d3.select('#chart')
 .append('svg')
-.style('position','absolute')
-.style('inset','0')
-.style('z-index','2')
 .attr('width','100%')
 .attr('height','100%')
 .attr('viewBox',`0 0 ${width} ${height}`);
+
+const g = svg.append('g')
+.attr(
+'transform',
+`translate(${margin.left},${margin.top})`
+);
 
 /* =========================================================
 ESCALAS
 ========================================================= */
 
 const x = d3.scaleLinear()
-.domain([0,50])
-.range([
-chartOffsetX,
-chartOffsetX + chartWidth
-]);
+.domain([-5,50])
+.range([0,innerWidth]);
 
 const y = d3.scaleLinear()
 .domain([0,100])
-.range([
-chartOffsetY + chartHeight,
-chartOffsetY
+.range([innerHeight,0]);
+
+/* =========================================================
+GRID
+========================================================= */
+
+for(let i=-5;i<=50;i+=1){
+
+g.append('line')
+.attr('x1',x(i))
+.attr('x2',x(i))
+.attr('y1',0)
+.attr('y2',innerHeight)
+.attr('stroke','#e5e7eb')
+.attr('stroke-width',0.7);
+
+}
+
+for(let i=0;i<=100;i+=5){
+
+g.append('line')
+.attr('x1',0)
+.attr('x2',innerWidth)
+.attr('y1',y(i))
+.attr('y2',y(i))
+.attr('stroke','#e5e7eb')
+.attr('stroke-width',0.7);
+
+}
+
+/* =========================================================
+CURVAS HUMEDAD
+========================================================= */
+
+for(let hr=10;hr<=100;hr+=10){
+
+const points = [];
+
+for(let t=-5;t<=50;t+=0.5){
+
+const curve =
+hr *
+Math.exp(
+-0.018 * (t-25)
+);
+
+points.push([
+x(t),
+y(curve)
 ]);
+
+}
+
+g.append('path')
+.attr('d',d3.line()(points))
+.attr('fill','none')
+.attr('stroke','#cbd5e1')
+.attr('stroke-width',1);
+
+}
+
+/* =========================================================
+ZONAS
+========================================================= */
+
+zones.forEach(zone=>{
+
+const poly = zone.points.map(p=>[
+x(p[0]),
+y(p[1])
+]);
+
+g.append('polygon')
+.attr(
+'points',
+poly.map(p=>p.join(',')).join(' ')
+)
+.attr('fill','rgba(59,130,246,0.08)')
+.attr('stroke','#2563eb')
+.attr('stroke-width',2);
+
+});
+
+/* =========================================================
+CURVAS CLIMATICAS
+========================================================= */
 
 const tooltip =
 document.getElementById('tooltip');
-
-/* =========================================================
-CURVAS
-========================================================= */
 
 data.forEach((d,i)=>{
 
@@ -625,15 +699,16 @@ d.color = color;
 
 const points = [];
 
-for(let step=0;step<=40;step++){
+for(let s=0;s<=30;s++){
 
 const t =
 d.tMin +
-((d.tMax-d.tMin)*(step/40));
+((d.tMax-d.tMin)*(s/30));
 
 const hrCurve =
-d.hr - (
-(step/40) * 8
+d.hr *
+Math.exp(
+-0.015 * (t-d.tMin)
 );
 
 points.push([
@@ -643,57 +718,35 @@ y(hrCurve)
 
 }
 
-const line = d3.line()
+const line =
+d3.line()
 .curve(d3.curveBasis);
 
-svg.append('path')
+g.append('path')
 .attr('d',line(points))
 .attr('fill','none')
 .attr('stroke',color)
-.attr('stroke-width',8)
+.attr('stroke-width',7)
 .attr('stroke-linecap','round')
-.attr('opacity',0.95)
 
 .on('mousemove',(event)=>{
 
 tooltip.style.opacity = 1;
 
 tooltip.style.left =
-(event.pageX + 20) + 'px';
+(event.pageX+20)+'px';
 
 tooltip.style.top =
-(event.pageY - 20) + 'px';
+(event.pageY-20)+'px';
 
 tooltip.innerHTML = `
-
 <div class="space-y-2">
-
-<p class="font-black text-blue-400">
-${d.label}
-</p>
-
-<p>
-Temperatura Máx:
-<b>${d.tMax.toFixed(1)}°C</b>
-</p>
-
-<p>
-Temperatura Mín:
-<b>${d.tMin.toFixed(1)}°C</b>
-</p>
-
-<p>
-Humedad:
-<b>${d.hr.toFixed(0)}%</b>
-</p>
-
-<p>
-Zonas:
-<b>${d.zones.join(', ')}</b>
-</p>
-
+<p class="font-black text-blue-400">${d.label}</p>
+<p>Temp Máx: <b>${d.tMax.toFixed(1)}°C</b></p>
+<p>Temp Mín: <b>${d.tMin.toFixed(1)}°C</b></p>
+<p>HR: <b>${d.hr.toFixed(0)}%</b></p>
+<p>Zonas: <b>${d.zones.join(', ')}</b></p>
 </div>
-
 `;
 
 })
@@ -704,17 +757,21 @@ tooltip.style.opacity = 0;
 
 });
 
-points.forEach(p=>{
-
-svg.append('circle')
-.attr('cx',p[0])
-.attr('cy',p[1])
-.attr('r',3)
-.attr('fill',color);
-
 });
 
-});
+/* =========================================================
+EJES
+========================================================= */
+
+g.append('g')
+.attr(
+'transform',
+`translate(0,${innerHeight})`
+)
+.call(d3.axisBottom(x));
+
+g.append('g')
+.call(d3.axisLeft(y));
 
 }
 
@@ -732,20 +789,15 @@ tbody.innerHTML = '';
 data.forEach(d=>{
 
 tbody.innerHTML += `
-
 <tr class="border-b hover:bg-slate-50">
 
 <td class="p-4 text-center">
-
 <div class="w-4 h-4 rounded-full inline-block"
 style="background:${d.color}">
 </div>
-
 </td>
 
-<td class="p-4">
-${d.label}
-</td>
+<td class="p-4">${d.label}</td>
 
 <td class="p-4 text-center">
 ${d.tMax.toFixed(1)}°C
@@ -764,7 +816,6 @@ ${d.zones.join(', ')}
 </td>
 
 </tr>
-
 `;
 
 });
@@ -785,95 +836,59 @@ document.getElementById('strategy-list');
 
 strategyList.innerHTML = '';
 
-const zoneCounter = {};
+const counter = {};
 
 data.forEach(d=>{
 
 d.zones.forEach(z=>{
 
-zoneCounter[z] =
-(zoneCounter[z] || 0) + 1;
+counter[z] =
+(counter[z] || 0)+1;
 
 });
 
 });
 
-const dominantZones =
-Object.entries(zoneCounter)
+const dominant =
+Object.entries(counter)
 .sort((a,b)=>b[1]-a[1])
 .slice(0,3)
 .map(v=>v[0]);
 
-let text = `
-El análisis bioclimático evidencia predominancia
-en las zonas:
-${dominantZones.join(', ')}.
+analysis.innerText = `
+El análisis climático evidencia predominancia
+de estrategias relacionadas con:
+${dominant.join(', ')}.
 `;
 
-let strategies = [];
+const strategies = [];
 
-if(dominantZones.includes('Ventilación Natural')){
-
-strategies.push(
-'Ventilación cruzada continua'
-);
-
-strategies.push(
-'Fachadas permeables'
-);
-
+if(dominant.includes('Ventilación Natural')){
+strategies.push('Ventilación cruzada');
+strategies.push('Fachadas permeables');
 }
 
-if(dominantZones.includes('Deshumidificación')){
-
-strategies.push(
-'Deshumidificación pasiva'
-);
-
-strategies.push(
-'Cubiertas ventiladas'
-);
-
+if(dominant.includes('Deshumidificación')){
+strategies.push('Cubiertas ventiladas');
+strategies.push('Control higrotérmico');
 }
 
-if(dominantZones.includes('Enfriamiento Evaporativo')){
-
-strategies.push(
-'Sistemas evaporativos'
-);
-
-strategies.push(
-'Disipación térmica nocturna'
-);
-
+if(dominant.includes('Enfriamiento Evaporativo')){
+strategies.push('Disipación térmica');
 }
 
-if(dominantZones.includes('Aire Acondicionado')){
-
-strategies.push(
-'Alta protección solar'
-);
-
-strategies.push(
-'Reducción de ganancias térmicas'
-);
-
+if(dominant.includes('Aire Acondicionado')){
+strategies.push('Protección solar total');
 }
-
-analysis.innerText = text;
 
 strategies.forEach(s=>{
 
 strategyList.innerHTML += `
-
 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-
 <p class="text-sm font-bold text-slate-300">
 ${s}
 </p>
-
 </div>
-
 `;
 
 });
@@ -887,10 +902,6 @@ MAIN
 async function runClimateAnalysis(){
 
 let results = [];
-
-/* =========================================================
-MESES
-========================================================= */
 
 if(mode === 'mes'){
 
@@ -950,11 +961,6 @@ avgHR
 }
 
 }
-
-/* =========================================================
-AÑOS
-========================================================= */
-
 else{
 
 for(const year of selectedYears){
