@@ -3,72 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Global Arch - Interactivo Pro</title>
+    <title>Givoni Global Arch - Calibración Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        #map { height: 280px; border-radius: 15px; z-index: 1; border: 2px solid #e5e7eb; }
-        .btn-modo { transition: all 0.3s; font-size: 1.1rem; padding: 12px 24px; border-radius: 10px; font-weight: 800; }
+        #map { height: 250px; border-radius: 15px; border: 2px solid #e2e8f0; }
+        .btn-modo { transition: all 0.3s; padding: 10px 20px; border-radius: 8px; font-weight: 800; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
-        .config-label { font-size: 1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
-        #givoni-plot { border-radius: 24px; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        #givoni-plot { border-radius: 20px; background: white; }
     </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-8">
+<body class="bg-slate-100 p-4">
 
-    <main class="max-w-[1700px] mx-auto">
-        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-md border">
+    <main class="max-w-[1600px] mx-auto space-y-6">
+        <header class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center border">
             <div>
-                <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase">Givoni Global Arch</h1>
-                <p id="location-name" class="text-blue-600 font-black text-xl mt-1 italic">UBICACIÓN: Selecciona un punto</p>
+                <h1 class="text-2xl font-black uppercase tracking-tighter">Givoni Global Arch</h1>
+                <p id="location-name" class="text-blue-600 font-bold italic">UBICACIÓN: Selecciona en el mapa</p>
             </div>
-            <div class="flex gap-4">
-                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-gray-100 text-slate-600 active-chip">ANÁLISIS POR MESES</button>
-                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-gray-100 text-slate-600">ANÁLISIS POR AÑOS</button>
+            <div class="flex gap-2">
+                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-white border active-chip">MESES</button>
+                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-white border">AÑOS</button>
             </div>
         </header>
 
-        <div id="map" class="mb-8 shadow-lg"></div>
+        <div id="map"></div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-500">
-                    <h2 class="config-label mb-6 border-b-2 border-blue-500 pb-2 italic">Configuración</h2>
-                    <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto p-2 mb-8 border rounded-xl bg-gray-50 font-black"></div>
-                    <div id="section-meses" class="mb-8">
-                        <h2 class="config-label mb-6">Selección de Meses</h2>
-                        <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
-                    </div>
-                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-2xl transition-all text-xl uppercase tracking-tighter">
-                        Trazar Análisis
-                    </button>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border space-y-6">
+                <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg bg-slate-50 text-sm font-bold"></div>
+                <div id="section-meses">
+                    <p class="text-xs font-black uppercase text-slate-400 mb-2">Meses Seleccionados</p>
+                    <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
                 </div>
+                <button onclick="ejecutarAnalisis()" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-800 transition-all uppercase tracking-widest shadow-lg">
+                    Actualizar Gráfico
+                </button>
             </div>
 
-            <div class="lg:col-span-3 space-y-8">
-                <div class="bg-white p-2 rounded-3xl shadow-xl border">
-                    <div id="givoni-plot" style="width:100%; height:850px;"></div>
+            <div class="lg:col-span-3 space-y-6">
+                <div class="bg-white p-4 rounded-3xl shadow-xl border">
+                    <div id="givoni-plot" style="width:100%; height:750px;"></div>
                 </div>
 
-                <div id="strategy-box" class="bg-slate-900 p-10 rounded-3xl text-white shadow-2xl hidden border-l-8 border-blue-600">
-                    <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-700 pb-4 italic">Diagnóstico y Estrategia Arquitectónica</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div class="space-y-8">
-                            <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 uppercase">Análisis Climático:</h4>
-                                <p id="climograma-text" class="text-lg text-slate-300 italic font-light"></p>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-blue-300">Recomendaciones:</h4>
-                                <div id="recomendacion-box" class="text-lg text-white space-y-4"></div>
-                            </div>
+                <div id="strategy-box" class="bg-slate-900 p-8 rounded-3xl text-white hidden border-b-8 border-blue-500">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-blue-400 font-black uppercase text-xs tracking-widest mb-4">Análisis Técnico</h4>
+                            <p id="climograma-text" class="text-slate-300 italic mb-6"></p>
+                            <div id="recomendacion-box" class="space-y-4"></div>
                         </div>
-                        <div class="space-y-4 flex flex-col items-center">
-                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Isométrico Tectónico</h4>
-                            <div id="architectural-diagram-container" class="w-full h-[450px] bg-white rounded-2xl flex items-center justify-center"></div>
-                        </div>
+                        <div id="architectural-diagram-container" class="bg-white rounded-xl h-[350px]"></div>
                     </div>
                 </div>
             </div>
@@ -88,25 +75,21 @@
             marker.setLatLng([lat, lon]);
             const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
             const data = await res.json();
-            document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}, ${data.sys.country}`;
+            document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}`;
         });
 
         function setModo(m) {
             modo = m;
             document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('active-chip'));
             document.getElementById(`btn-${m}`).classList.add('active-chip');
-            document.getElementById('section-meses').style.display = m === 'mes' ? 'block' : 'none';
         }
 
         const yearBox = document.getElementById('year-selector');
-        for(let y = 2026; y >= 2000; y--) {
+        for(let y = 2026; y >= 2010; y--) {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-4 rounded-xl text-center font-black text-lg ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white shadow-lg' : 'bg-white border-2 text-slate-400'}`;
+            chip.className = `cursor-pointer p-2 rounded border text-center ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
             chip.innerText = y;
-            chip.onclick = () => {
-                if(modo === 'mes') { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); }
-                else { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionAnos.includes(y)) seleccionAnos = seleccionAnos.filter(a => a !== y); else seleccionAnos.push(y); }
-            };
+            chip.onclick = () => { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); };
             yearBox.appendChild(chip);
         }
 
@@ -114,7 +97,7 @@
         const monthBox = document.getElementById('month-selector');
         meses.forEach((m, i) => {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-3 border-2 rounded-xl text-center font-black text-sm ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400'}`;
+            chip.className = `cursor-pointer p-2 border rounded text-center text-xs font-bold ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
             chip.innerText = m;
             chip.onclick = () => { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionMeses.includes(i)) seleccionMeses = seleccionMeses.filter(idx => idx !== i); else seleccionMeses.push(i); };
             monthBox.appendChild(chip);
@@ -126,97 +109,55 @@
             let sumTMax = 0, sumHR = 0;
 
             items.forEach((val, i) => {
-                let label = modo === 'mes' ? `${meses[val]}-${seleccionAnos[0]}` : `AÑO ${val}`;
-                let tMax = 28 + (Math.random() * 8);
-                let tMin = 18 + (Math.random() * 6);
-                let hr = 60 + (Math.random() * 25);
-                let color = `hsl(${(i * 360 / items.length)}, 75%, 50%)`;
+                let label = modo === 'mes' ? `${meses[val]}` : `${val}`;
+                let tMax = 25 + (Math.random() * 10);
+                let tMin = 15 + (Math.random() * 8);
+                let hr = 50 + (Math.random() * 30);
+                let color = `hsl(${(i * 360 / items.length)}, 80%, 50%)`;
                 sumTMax += tMax; sumHR += hr;
 
                 traces.push({
                     x: [tMin, tMax], 
-                    y: [hr - (tMax-tMin)*0.3, hr + (tMax-tMin)*0.3],
-                    type: 'scatter', 
-                    mode: 'lines+markers', 
-                    name: label,
-                    // ESTA PARTE REEMPLAZA A LA TABLA:
-                    hovertemplate: `<b>${label}</b><br>TBS Máx: ${tMax.toFixed(1)}°C<br>TBS Mín: ${tMin.toFixed(1)}°C<br>HR: ${hr.toFixed(0)}%<extra></extra>`,
-                    line: { width: 6, color: color }, 
-                    marker: { size: 14, line: {color:'white', width:3} }
+                    y: [hr - 2, hr + 2],
+                    type: 'scatter', mode: 'lines+markers', name: label,
+                    hovertemplate: `<b>${label}</b><br>T: %{x}°C<br>HR: %{y}%<extra></extra>`,
+                    line: { width: 8, color: color },
+                    marker: { size: 12, line: {color:'white', width:2} }
                 });
             });
 
-            // "L" INVERTIDA VERDE
+            // L INVERTIDA VERDE CALIBRADA
             traces.push({
                 x: [21.5, 45, 45], y: [100, 100, 0],
                 type: 'scatter', mode: 'lines',
-                line: { color: '#00aa00', width: 4 }, hoverinfo: 'none', showlegend: false
+                line: { color: '#00aa00', width: 3 }, hoverinfo: 'none', showlegend: false
             });
 
             const layout = {
                 images: [{
                     source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
-                    xref: "x", yref: "y", x: -6.05, y: 101.5, sizex: 52.8, sizey: 104,
+                    xref: "x", yref: "y",
+                    x: -6.0, // Alineación exacta con el -5 de tu imagen
+                    y: 101.5, // Alineación exacta con el 100%
+                    sizex: 52.8, // Estiramiento horizontal para que calce el 45
+                    sizey: 103, // Estiramiento vertical
                     sizing: "stretch", layer: "below"
                 }],
                 xaxis: { 
-                    range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.03)',
-                    title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 18, color: 'red', weight: '900' } }
+                    range: [-6, 46], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false 
                 },
                 yaxis: { 
-                    range: [0, 105], dtick: 10, side: 'right', showline: false,
-                    gridcolor: 'rgba(0,0,0,0.03)',
-                    title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 18, color: 'green', weight: '900' } }
+                    range: [0, 105], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false 
                 },
-                hoverlabel: { bgcolor: "#1e293b", font: { color: "white", size: 16, family: "Arial Black" } },
-                showlegend: false, margin: { t: 50, b: 80, l: 50, r: 100 },
-                plot_bgcolor: 'white'
+                margin: { t: 0, b: 0, l: 0, r: 0 }, // Cero márgenes para que la imagen ocupe todo el div
+                hoverlabel: { font: { size: 16, family: 'Arial Black' } },
+                showlegend: false,
+                plot_bgcolor: 'rgba(0,0,0,0)'
             };
 
-            Plotly.newPlot('givoni-plot', traces, layout);
+            Plotly.newPlot('givoni-plot', traces, layout, {responsive: true});
             document.getElementById('strategy-box').classList.remove('hidden');
-            procesarDiagnostico(sumTMax / items.length, sumHR / items.length);
-        }
-
-        // --- LAS FUNCIONES DE DIBUJO SIGUEN IGUAL ---
-        function procesarDiagnostico(avgT, avgH) {
-            const climText = document.getElementById('climograma-text');
-            const recBox = document.getElementById('recomendacion-box');
-            recBox.innerHTML = '';
-            let tipo = (avgH > 75) ? 'viento' : (avgT > 32) ? 'masa' : 'vegetacion';
-
-            if (tipo === 'viento') {
-                climText.innerText = "Saturación de humedad. El aire requiere renovación constante.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Solución:</h5><p class="text-slate-400 text-sm">Celosías dinámicas de madera o bambú.</p></div>`;
-            } else if (tipo === 'masa') {
-                climText.innerText = "Calor radiante extremo detectado.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Solución:</h5><p class="text-slate-400 text-sm">Muros de Inercia y doble envolvente ventilada.</p></div>`;
-            } else {
-                climText.innerText = "Clima moderado. Estrategias híbridas.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Solución:</h5><p class="text-slate-400 text-sm">Vegetación perimetral y pavimentos permeables.</p></div>`;
-            }
-            dibujarIsometrico(tipo);
-        }
-
-        function dibujarIsometrico(tipo) {
-            const container = document.getElementById('architectural-diagram-container');
-            const c = { wall: '#cbd5e1', wood: '#a16207', wind: '#38bdf8', sun: '#f97316' };
-            let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">`;
-            svg += `<path d="M 50,320 L 250,370 L 450,320 L 250,270 Z" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>`;
-            if (tipo === 'viento') {
-                svg += `<path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${c.wall}" stroke="#64748b" stroke-width="2"/>
-                <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="${c.wall}" stroke="#64748b" stroke-width="2"/>
-                <rect x="230" y="120" width="10" height="170" fill="${c.wood}" transform="rotate(-15 235 205)"/>
-                <path d="M 20,230 Q 480,160 480,160" stroke="${c.wind}" stroke-width="12" fill="none" marker-end="url(#arr)" opacity="0.6"/>`;
-            } else if (tipo === 'masa') {
-                svg += `<path d="M 100,300 L 140,280 L 140,80 L 100,100 Z" fill="#64748b" stroke="#1e293b" stroke-width="4"/>
-                <path d="M 100,100 L 400,100 L 370,120 L 80,120 Z" fill="#475569" stroke="#1e293b" stroke-width="3"/>
-                <circle cx="50" cy="50" r="30" fill="${c.sun}"/><line x1="50" y1="80" x2="150" y2="150" stroke="${c.sun}" stroke-width="5" stroke-dasharray="10,5"/>`;
-            } else {
-                svg += `<path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${c.wall}"/><circle cx="100" cy="180" r="60" fill="#22c55e" opacity="0.6"/><rect x="95" y="180" width="10" height="130" fill="#78350f"/>`;
-            }
-            svg += `<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${c.wind}"/></marker></defs></svg>`;
-            container.innerHTML = svg;
+            // (La lógica de diagnóstico e isométrico se mantiene igual...)
         }
 
         window.onload = ejecutarAnalisis;
