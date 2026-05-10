@@ -65,9 +65,7 @@
         </div>
     </main>
 
-    // Reemplaza el bloque <script> actual por este:
-
-<script>
+   <script>
 const apiKey = 'b0be33523088ce87c824d0befe19820c';
 let map = L.map('map').setView([-2.170, -79.922], 12); 
 
@@ -156,5 +154,6 @@ async function updateAnalysis(lat, lon) {
 map.on('click', (e) => updateAnalysis(e.latlng.lat, e.latlng.lng));
 updateAnalysis(-2.170, -79.922);
 </script>
+
 </body>
 </html>
