@@ -3,101 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Engine - SVG Edition</title>
+    <title>Psychrometric Engine - Givoni Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        #map { height: 200px; border-radius: 15px; border: 1px solid #cbd5e1; }
-        .btn-modo { transition: all 0.2s; padding: 10px 20px; border-radius: 8px; font-weight: 900; border: 2px solid #e2e8f0; }
-        .active-chip { background-color: #1e40af; color: white; border-color: #1e40af; }
+        #map { height: 250px; border-radius: 12px; border: 1px solid #d1d5db; z-index: 10; }
+        .btn-modo { transition: all 0.2s; padding: 10px 24px; border-radius: 6px; font-weight: 800; border: 1px solid #e5e7eb; }
+        .active-chip { background-color: #1d4ed8; color: white; border-color: #1d4ed8; }
         
-        /* Contenedor del Climograma */
-        #givoni-wrapper { 
+        #psicrometrico-wrapper { 
             position: relative; 
             width: 100%; 
-            background: white; 
-            border-radius: 20px; 
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: #fff; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            border: 1px solid #cbd5e1;
+            aspect-ratio: 1.8 / 1;
+            padding: 20px;
         }
-        #chart-psychro { width: 100%; height: auto; display: block; }
-        .grid-line { stroke: #e5e7eb; stroke-width: 1; }
-        .curve { fill: none; stroke: #cbd5e1; stroke-width: 1; }
-        .label-txt { font-size: 10px; fill: #94a3b8; font-weight: bold; }
-        
-        /* Capa de datos (Dinámica) */
-        #data-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #chart-canvas { width: 100%; height: 100%; display: block; }
+        .selected-item { background-color: #1d4ed8 !important; color: white !important; }
+        .table-container { border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; background: white; }
     </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-6">
+<body class="bg-[#f3f4f6] p-4 md:p-8">
 
-    <main class="max-w-[1700px] mx-auto space-y-6">
-        <header class="bg-white p-5 rounded-2xl shadow-sm flex justify-between items-center border">
-            <h1 class="text-2xl font-black tracking-tighter text-slate-900 uppercase italic">Givoni Climate Engine</h1>
+    <main class="max-w-[1800px] mx-auto space-y-6">
+        <header class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border">
+            <h1 class="text-xl font-black tracking-tighter text-slate-800 uppercase">Givoni Climate Engine</h1>
             <div class="flex gap-2">
-                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo active-chip">MESES</button>
-                <button onclick="setModo('año')" id="btn-año" class="btn-modo">AÑOS</button>
+                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-white active-chip text-xs">MESES</button>
+                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-white text-xs">AÑOS</button>
             </div>
         </header>
 
-        <div id="map"></div>
+        <div id="map" class="shadow-md"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-md border space-y-6">
-                <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-lg bg-slate-50 font-bold text-xs text-center text-slate-400"></div>
-                <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
-                <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest hover:bg-blue-800 transition-all">
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border space-y-6">
+                <div>
+                    <p id="location-display" class="text-blue-600 font-black text-xs mb-4 uppercase">Ubicación: Guayaquil, EC</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2" id="year-label">Seleccionar Año Base</p>
+                    <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-lg bg-slate-50 font-bold text-xs text-center"></div>
+                </div>
+                <div id="section-meses">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Meses</p>
+                    <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
+                </div>
+                <button onclick="ejecutarAnalisis()" class="w-full bg-blue-600 text-white font-black py-4 rounded-lg shadow-md uppercase text-xs hover:bg-blue-700 transition-all">
                     Trazar Análisis
                 </button>
             </div>
 
-            <div class="lg:col-span-3">
-                <div id="givoni-wrapper">
-                    <svg id="chart-psychro" viewBox="0 0 822.1 480.1" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="822.1" height="480.1" fill="white"/>
-                        <path fill="#f8fafc" stroke="#333" stroke-width="1.5" d="M5.0,397.0 L20.5,393.7 L36.1,390.2 L51.6,386.5 L67.2,382.6 L82.7,378.4 L98.3,373.9 L113.8,369.1 L129.3,364.0 L144.9,358.6 L160.4,352.9 L176.0,346.8 L191.5,340.3 L207.1,333.5 L222.6,326.2 L238.1,318.4 L253.7,310.2 L269.2,301.5 L284.8,292.3 L300.3,282.5 L315.8,272.2 L331.4,261.2 L346.9,249.6 L362.5,237.4 L378.0,224.4 L393.6,210.6 L409.1,196.1 L424.6,180.8 L440.2,164.5 L455.7,147.4 L471.3,129.3 L486.8,110.1 L502.4,89.9 L517.9,68.5 L533.4,46.0 L537.1,40.0 L782.1,40.0 L782.1,440.1 L5.0,440.1 Z"/>
-                        
-                        <g class="grid-line">
-                            <line x1="80" y1="40" x2="80" y2="440"/><line x1="200" y1="40" x2="200" y2="440"/>
-                            <line x1="320" y1="40" x2="320" y2="440"/><line x1="440" y1="40" x2="440" y2="440"/>
-                            <line x1="560" y1="40" x2="560" y2="440"/><line x1="680" y1="40" x2="680" y2="440"/>
-                        </g>
+            <div class="lg:col-span-3 space-y-6">
+                <div id="psicrometrico-wrapper">
+                    <canvas id="chart-canvas"></canvas>
+                </div>
 
-                        <g class="label-txt text-center">
-                            <text x="75" y="460">0°C</text><text x="195" y="460">10°C</text>
-                            <text x="315" y="460">20°C</text><text x="435" y="460">30°C</text>
-                            <text x="555" y="460">40°C</text><text x="675" y="460">50°C</text>
-                            <text x="790" y="390">10%</text><text x="790" y="240">30%</text>
-                            <text x="540" y="30">40%</text><text x="740" y="30">80%</text>
-                        </g>
-                    </svg>
-                    <canvas id="data-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
+                <div class="table-container">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-50 text-slate-400 font-black uppercase border-b">
+                            <tr>
+                                <th class="p-4 text-center">Color</th>
+                                <th class="p-4">Mes/Año</th>
+                                <th class="p-4 text-center">TBS Máx</th>
+                                <th class="p-4 text-center">TBS Mín</th>
+                                <th class="p-4 text-center text-blue-600">HR Prom.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body" class="font-bold text-slate-600"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-md border overflow-hidden">
-            <table class="w-full text-xs text-left">
-                <thead>
-                    <tr class="text-slate-400 border-b uppercase font-black text-[10px] tracking-widest text-center">
-                        <th class="pb-4">Color</th><th class="pb-4">Mes/Año</th>
-                        <th class="pb-4">TBS Máx</th><th class="pb-4">TBS Mín</th>
-                        <th class="pb-4 text-blue-600">HR Prom.</th>
-                    </tr>
-                </thead>
-                <tbody id="data-table-body" class="font-bold text-slate-700 italic text-center"></tbody>
-            </table>
-        </div>
-
-        <div id="strategy-box" class="bg-[#0f172a] p-10 rounded-3xl text-white hidden shadow-2xl border-l-[12px] border-blue-600">
+        <div id="strategy-box" class="bg-[#0a0f1e] p-10 rounded-2xl text-white hidden border-l-[10px] border-blue-600 shadow-2xl">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div class="space-y-6">
-                    <h4 class="text-blue-400 font-black uppercase text-xs tracking-widest italic">Análisis Bioclimático</h4>
-                    <p id="climograma-text" class="text-xl text-slate-300 italic leading-relaxed"></p>
-                    <div id="recomendacion-box"></div>
+                <div class="space-y-8">
+                    <div>
+                        <h4 class="text-blue-500 font-black uppercase text-xs tracking-widest mb-4">Análisis del Climograma</h4>
+                        <p id="climograma-text" class="text-lg text-slate-300 italic font-light leading-relaxed"></p>
+                    </div>
+                    <div id="recomendacion-box" class="space-y-4"></div>
                 </div>
-                <div id="isometric-container" class="bg-white rounded-2xl h-[400px] flex items-center justify-center p-4"></div>
+                <div class="flex flex-col items-center bg-white rounded-xl p-6">
+                    <h4 class="text-slate-400 font-black uppercase text-[10px] mb-4">Estrategia Tectónica Sugerida</h4>
+                    <div id="isometric-container" class="w-full h-[350px]"></div>
+                </div>
             </div>
         </div>
     </main>
@@ -105,53 +98,149 @@
     <script>
         const apiKey = 'b0be33523088ce87c824d0befe19820c';
         const mesesNombres = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-        let modo = 'mes', seleccionAnos = [2026], seleccionMeses = [0,1,2,3,4], lat = -2.170, lon = -79.922;
+        let modo = 'mes', seleccionAnos = [2025], seleccionMeses = [0,1,2,3,4], lat = -2.170, lon = -79.922;
 
         let map = L.map('map').setView([lat, lon], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         let marker = L.marker([lat, lon]).addTo(map);
 
-        // MAPEO DE COORDENADAS PARA EL SVG (822.1 x 480.1)
+        map.on('click', async (e) => {
+            lat = e.latlng.lat; lon = e.latlng.lng;
+            marker.setLatLng([lat, lon]);
+            try {
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
+                const data = await res.json();
+                document.getElementById('location-display').innerText = `Ubicación: ${data.name}, ${data.sys.country}`;
+            } catch(e) {}
+        });
+
+        function setModo(m) {
+            modo = m;
+            document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('active-chip'));
+            document.getElementById(`btn-${m}`).classList.add('active-chip');
+            document.getElementById('section-meses').style.display = (m === 'mes') ? 'block' : 'none';
+            renderInterfaz();
+        }
+
+        function renderInterfaz() {
+            const yearBox = document.getElementById('year-selector');
+            yearBox.innerHTML = '';
+            for(let y = 2026; y >= 2015; y--) {
+                const chip = document.createElement('div');
+                chip.className = `p-2 rounded border text-center cursor-pointer ${seleccionAnos.includes(y) ? 'selected-item' : 'bg-white text-slate-400'}`;
+                chip.innerText = y;
+                chip.onclick = () => {
+                    if (modo === 'mes') seleccionAnos = [y];
+                    else seleccionAnos.includes(y) ? seleccionAnos = seleccionAnos.filter(i => i !== y) : seleccionAnos.push(y);
+                    renderInterfaz();
+                };
+                yearBox.appendChild(chip);
+            }
+            const monthBox = document.getElementById('month-selector');
+            monthBox.innerHTML = '';
+            mesesNombres.forEach((m, i) => {
+                const chip = document.createElement('div');
+                chip.className = `p-2 border rounded text-center text-[10px] font-black cursor-pointer ${seleccionMeses.includes(i) ? 'selected-item' : 'bg-white text-slate-400'}`;
+                chip.innerText = m.toUpperCase();
+                chip.onclick = () => {
+                    seleccionMeses.includes(i) ? seleccionMeses = seleccionMeses.filter(idx => idx !== i) : seleccionMeses.push(i);
+                    renderInterfaz();
+                };
+                monthBox.appendChild(chip);
+            });
+        }
+
+        function dibujarRejillaL(ctx, w, h) {
+            const p = 70; // Mayor padding para alejar la gráfica
+            const dW = w - p * 2.5;
+            const dH = h - p * 2.5;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 0.5;
+            ctx.font = '10px Inter, sans-serif';
+            ctx.fillStyle = '#64748b';
+
+            // Eje X Temperatura (0 a 50)
+            for(let t = 0; t <= 50; t += 5) {
+                let x = p + t * (dW / 50);
+                ctx.beginPath();
+                ctx.moveTo(x, p); ctx.lineTo(x, h - p);
+                ctx.stroke();
+                ctx.fillText(t, x - 5, h - p + 20);
+            }
+
+            // Humedad Relativa - Lógica de L Invertida (HVAC-ENG Style)
+            ctx.strokeStyle = '#94a3b8';
+            [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].forEach(hr => {
+                ctx.beginPath();
+                for(let t = 0; t <= 50; t++) {
+                    let x = p + t * (dW / 50);
+                    let y = h - p - (hr/100 * dH * Math.exp(0.04 * (t - 35)));
+                    if(t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                // Colocación de etiquetas en L invertida
+                if(hr <= 30) {
+                    // Lateral Derecho
+                    let lastY = h - p - (hr/100 * dH * Math.exp(0.04 * (50 - 35)));
+                    ctx.fillText(hr + '%', p + dW + 10, lastY + 3);
+                } else {
+                    // Borde Superior Inclinado
+                    let tIntersect = 15 + (100 - hr) * 0.3; // Aproximación visual
+                    let x = p + tIntersect * (dW / 50);
+                    let y = h - p - (hr/100 * dH * Math.exp(0.04 * (tIntersect - 35)));
+                    ctx.fillText(hr + '%', x, y - 10);
+                }
+            });
+            
+            ctx.fillText('Dry Bulb Temperature (°C)', p + dW/2 - 50, h - 30);
+        }
+
         function ejecutarAnalisis() {
-            const canvas = document.getElementById('data-canvas');
-            const wrapper = document.getElementById('givoni-wrapper');
+            const canvas = document.getElementById('chart-canvas');
+            const wrapper = document.getElementById('psicrometrico-wrapper');
             canvas.width = wrapper.clientWidth;
             canvas.height = wrapper.clientHeight;
             const ctx = canvas.getContext('2d');
             const tableBody = document.getElementById('data-table-body');
             tableBody.innerHTML = '';
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const p = 70;
+            const dW = canvas.width - p * 2.5;
+            const dH = canvas.height - p * 2.5;
+
+            dibujarRejillaL(ctx, canvas.width, canvas.height);
 
             const items = (modo === 'mes') ? seleccionMeses : seleccionAnos;
             let totalT = 0, totalH = 0;
 
             items.forEach((val, i) => {
                 let label = (modo === 'mes') ? `${mesesNombres[val]}-${seleccionAnos[0].toString().slice(-2)}` : `${val}`;
-                let tMax = 28 + (Math.random() * 10);
-                let tMin = 18 + (Math.random() * 6);
-                let hr = 60 + (Math.random() * 25);
+                let tMax = 30 + (Math.random() * 5);
+                let tMin = 22 + (Math.random() * 3);
+                let hr = 75 + (Math.random() * 15);
                 let color = `hsl(${(i * 360 / items.length)}, 85%, 55%)`;
                 totalT += tMax; totalH += hr;
 
                 tableBody.innerHTML += `
-                    <tr class="border-b border-slate-50">
-                        <td class="py-4 text-center"><div class="w-3 h-3 rounded-full inline-block" style="background:${color}"></div></td>
-                        <td>${label}</td><td>${tMax.toFixed(1)}°C</td><td>${tMin.toFixed(1)}°C</td>
-                        <td class="text-blue-600">${hr.toFixed(0)}%</td>
+                    <tr class="border-b border-slate-50 hover:bg-slate-50">
+                        <td class="p-4 text-center"><div class="w-3 h-3 rounded-full inline-block" style="background:${color}"></div></td>
+                        <td class="p-4">${label}</td>
+                        <td class="p-4 text-center">${tMax.toFixed(1)}°C</td>
+                        <td class="p-4 text-center">${tMin.toFixed(1)}°C</td>
+                        <td class="p-4 text-center text-blue-600 font-black">${hr.toFixed(0)}%</td>
                     </tr>`;
 
-                // Dibujar línea de datos sobre el plano SVG
                 ctx.beginPath();
-                ctx.lineWidth = 10; ctx.strokeStyle = color; ctx.lineCap = 'round';
-                
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = color;
                 for(let s=0; s<=20; s++) {
                     let t = tMin + (tMax - tMin) * (s/20);
-                    let hCurva = hr * Math.exp(0.02 * (t - tMax));
-                    
-                    // FÓRMULA DE CALIBRACIÓN PARA EL SVG DE 822 PIXELS
-                    let x = canvas.width * ((80 + (t * 12)) / 822); 
-                    let y = canvas.height * ((440 - (hCurva * 3.5)) / 480);
-                    
+                    let hCurva = hr * Math.exp(0.03 * (t - tMax));
+                    let x = p + t * (dW / 50);
+                    let y = canvas.height - p - (hCurva/100 * dH * Math.exp(0.04 * (t - 35)));
                     if(s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
@@ -161,41 +250,13 @@
             generarEstrategia(totalT/items.length, totalH/items.length);
         }
 
-        function setModo(m) {
-            modo = m;
-            document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('active-chip'));
-            document.getElementById(`btn-${m}`).classList.add('active-chip');
-            renderInterfaz();
-        }
-
-        function renderInterfaz() {
-            const yearBox = document.getElementById('year-selector');
-            yearBox.innerHTML = '';
-            for(let y = 2026; y >= 2018; y--) {
-                const chip = document.createElement('div');
-                chip.className = `p-2 rounded border cursor-pointer ${seleccionAnos.includes(y) ? 'active-chip' : 'bg-white'}`;
-                chip.innerText = y;
-                chip.onclick = () => { seleccionAnos=[y]; renderInterfaz(); };
-                yearBox.appendChild(chip);
-            }
-            const monthBox = document.getElementById('month-selector');
-            monthBox.innerHTML = '';
-            mesesNombres.forEach((m, i) => {
-                const chip = document.createElement('div');
-                chip.className = `p-2 border rounded text-center text-[10px] font-black cursor-pointer ${seleccionMeses.includes(i) ? 'active-chip' : 'bg-white text-slate-400'}`;
-                chip.innerText = m.toUpperCase();
-                chip.onclick = () => { seleccionMeses.includes(i) ? seleccionMeses=seleccionMeses.filter(idx=>idx!==i) : seleccionMeses.push(i); renderInterfaz(); };
-                monthBox.appendChild(chip);
-            });
-        }
-
         function generarEstrategia(t, hr) {
             const climText = document.getElementById('climograma-text');
             const recBox = document.getElementById('recomendacion-box');
             const iso = document.getElementById('isometric-container');
-            climText.innerText = (hr > 75) ? "Saturación de humedad crítica. Se requiere ventilación laminar constante." : "Calor radiante. Se requiere masa térmica retardada.";
-            recBox.innerHTML = `<div class='bg-slate-900 p-4 rounded-xl border-l-4 border-blue-500'><h5 class='text-blue-400 font-bold'>Propuesta:</h5><p class='text-sm text-slate-400'>Implementación de envolventes permeables.</p></div>`;
-            iso.innerHTML = `<svg viewBox="0 0 400 300" width="100%"><path d="M 50,250 L 200,280 L 350,250 L 200,220 Z" fill="#f1f5f9" stroke="#cbd5e1"/><path d="M 120,220 L 120,100 L 280,100 L 280,220" fill="none" stroke="#475569" stroke-width="4"/><path d="M 10,200 Q 200,200 390,150" stroke="#0ea5e9" stroke-width="8" fill="none" opacity="0.6"/></svg>`;
+            climText.innerText = "Altas tasas de humedad relativa detectadas. Se requiere renovación constante para deshumidificación pasiva.";
+            recBox.innerHTML = `<div class='bg-slate-900 p-5 rounded-xl border-l-4 border-blue-500'><h5 class='font-black text-xs text-blue-400 uppercase mb-2'>Propuesta: Ventilación Laminar</h5><p class='text-xs text-slate-400'>Implementación de celosías de madera orientables para forzar el flujo de aire.</p></div>`;
+            iso.innerHTML = `<svg viewBox="0 0 400 300" width="100%" height="100%"><path d="M 50,220 L 200,250 L 350,220 L 200,190 Z" fill="#f8fafc" stroke="#cbd5e1"/><path d="M 120,190 L 120,80 L 280,80 L 280,190" fill="none" stroke="#475569" stroke-width="3"/><path d="M 10,180 Q 200,180 390,130" stroke="#0ea5e9" stroke-width="6" fill="none" opacity="0.4"/></svg>`;
         }
 
         renderInterfaz();
