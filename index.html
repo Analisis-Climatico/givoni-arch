@@ -3,59 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Global Arch - Calibración Final</title>
+    <title>Givoni Global Arch - Calibración Real</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        #map { height: 250px; border-radius: 15px; border: 2px solid #e2e8f0; }
-        .btn-modo { transition: all 0.3s; padding: 10px 20px; border-radius: 8px; font-weight: 800; }
+        #map { height: 250px; border-radius: 15px; border: 1px solid #ddd; }
+        .btn-modo { transition: all 0.2s; padding: 10px 20px; border-radius: 8px; font-weight: 800; text-transform: uppercase; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
-        #givoni-plot { border-radius: 20px; background: white; }
+        #givoni-plot { border-radius: 20px; background: white; cursor: crosshair; }
     </style>
 </head>
-<body class="bg-slate-100 p-4">
+<body class="bg-gray-50 p-4">
 
     <main class="max-w-[1600px] mx-auto space-y-6">
         <header class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center border">
             <div>
-                <h1 class="text-2xl font-black uppercase tracking-tighter">Givoni Global Arch</h1>
-                <p id="location-name" class="text-blue-600 font-bold italic">UBICACIÓN: Selecciona en el mapa</p>
+                <h1 class="text-2xl font-black tracking-tighter text-slate-800">GIVONI GLOBAL ARCH</h1>
+                <p id="location-name" class="text-blue-600 font-bold text-sm">UBICACIÓN: Selecciona punto en el mapa</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-white border active-chip">MESES</button>
-                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-white border">AÑOS</button>
+                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-white border active-chip">Meses</button>
+                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-white border">Años</button>
             </div>
         </header>
 
-        <div id="map"></div>
+        <div id="map" class="shadow-inner"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border space-y-6">
+                <p class="font-black text-xs text-slate-400 uppercase tracking-widest">Temporalidad</p>
                 <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg bg-slate-50 text-sm font-bold"></div>
+                
                 <div id="section-meses">
-                    <p class="text-xs font-black uppercase text-slate-400 mb-2">Meses Seleccionados</p>
+                    <p class="font-black text-xs text-slate-400 uppercase tracking-widest mb-2">Filtro de Meses</p>
                     <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
                 </div>
-                <button onclick="ejecutarAnalisis()" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-800 transition-all uppercase tracking-widest shadow-lg">
-                    Actualizar Gráfico
+                
+                <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-4 rounded-xl hover:bg-blue-800 transition-all uppercase tracking-widest shadow-lg active:scale-95">
+                    Trazar Análisis
                 </button>
             </div>
 
             <div class="lg:col-span-3 space-y-6">
-                <div class="bg-white p-4 rounded-3xl shadow-xl border">
+                <div class="bg-white p-2 rounded-3xl shadow-xl border">
                     <div id="givoni-plot" style="width:100%; height:750px;"></div>
                 </div>
 
-                <div id="strategy-box" class="bg-slate-900 p-8 rounded-3xl text-white hidden border-b-8 border-blue-500">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div id="strategy-box" class="bg-slate-900 p-8 rounded-3xl text-white hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                         <div>
-                            <h4 class="text-blue-400 font-black uppercase text-xs tracking-widest mb-4">Análisis Técnico</h4>
-                            <p id="climograma-text" class="text-slate-300 italic mb-6"></p>
+                            <h4 class="text-blue-400 font-black uppercase text-xs tracking-widest mb-4">Análisis Bioclimático</h4>
+                            <p id="climograma-text" class="text-slate-300 italic mb-6 leading-relaxed"></p>
                             <div id="recomendacion-box" class="space-y-4"></div>
                         </div>
-                        <div id="architectural-diagram-container" class="bg-white rounded-xl h-[350px]"></div>
+                        <div id="architectural-diagram-container" class="bg-white rounded-2xl h-[380px] flex items-center justify-center p-4">
+                            </div>
                     </div>
                 </div>
             </div>
@@ -84,8 +88,9 @@
             document.getElementById(`btn-${m}`).classList.add('active-chip');
         }
 
+        // Generación de años y meses
         const yearBox = document.getElementById('year-selector');
-        for(let y = 2026; y >= 2010; y--) {
+        for(let y = 2026; y >= 2015; y--) {
             const chip = document.createElement('div');
             chip.className = `cursor-pointer p-2 rounded border text-center ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
             chip.innerText = y;
@@ -110,54 +115,109 @@
 
             items.forEach((val, i) => {
                 let label = modo === 'mes' ? `${meses[val]}` : `${val}`;
-                let tMax = 25 + (Math.random() * 10);
-                let tMin = 15 + (Math.random() * 8);
-                let hr = 50 + (Math.random() * 30);
-                let color = `hsl(${(i * 360 / items.length)}, 80%, 50%)`;
+                // Datos simulados alineados a rangos tropicales (Guayaquil)
+                let tMax = 29 + (Math.random() * 6);
+                let tMin = 21 + (Math.random() * 4);
+                let hr = 65 + (Math.random() * 20);
+                let color = `hsl(${(i * 360 / items.length)}, 85%, 50%)`;
                 sumTMax += tMax; sumHR += hr;
 
                 traces.push({
                     x: [tMin, tMax], 
-                    y: [hr - 2, hr + 2],
+                    y: [hr - 1.5, hr + 1.5],
                     type: 'scatter', mode: 'lines+markers', name: label,
-                    hovertemplate: `<b>${label}</b><br>T: %{x}°C<br>HR: %{y}%<extra></extra>`,
+                    hovertemplate: `<b>${label}</b><br>TBS: %{x}°C<br>HR: %{y}%<extra></extra>`,
                     line: { width: 8, color: color },
                     marker: { size: 12, line: {color:'white', width:2} }
                 });
             });
 
-            // L INVERTIDA VERDE CALIBRADA
-            traces.push({
-                x: [21.5, 45, 45], y: [100, 100, 0],
-                type: 'scatter', mode: 'lines',
-                line: { color: '#00aa00', width: 3 }, hoverinfo: 'none', showlegend: false
-            });
-
+            // --- CALIBRACIÓN MATEMÁTICA PARA ENCAJAR SOBRE LA IMAGEN ---
             const layout = {
                 images: [{
-                    source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
+                    source: "https://raw.githubusercontent.com/analisis-climatico/givoni-arch/main/OFICIAL-GRÁFICA%20DE%20GIVONI%20(1)-Layout1.jpg",
                     xref: "x", yref: "y",
-                    x: -6.0, // Alineación exacta con el -5 de tu imagen
-                    y: 101.5, // Alineación exacta con el 100%
-                    sizex: 52.8, // Estiramiento horizontal para que calce el 45
-                    sizey: 103, // Estiramiento vertical
+                    // Calibración forzada: el -5 matemático debe estar sobre el -5 de la imagen
+                    x: -6.15, 
+                    y: 101.8, 
+                    sizex: 53.05, 
+                    sizey: 104.5,
                     sizing: "stretch", layer: "below"
                 }],
                 xaxis: { 
-                    range: [-6, 46], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false 
+                    range: [-6, 46.5], 
+                    showgrid: false, zeroline: false, showline: false, 
+                    ticks: '', showticklabels: false, fixedrange: true
                 },
                 yaxis: { 
-                    range: [0, 105], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false 
+                    range: [-1, 105], 
+                    showgrid: false, zeroline: false, showline: false, 
+                    ticks: '', showticklabels: false, fixedrange: true
                 },
-                margin: { t: 0, b: 0, l: 0, r: 0 }, // Cero márgenes para que la imagen ocupe todo el div
-                hoverlabel: { font: { size: 16, family: 'Arial Black' } },
+                margin: { t: 0, b: 0, l: 0, r: 0 },
+                hoverlabel: { font: { size: 16, family: 'Arial Black' }, bgcolor: '#1e293b', bordercolor: '#3b82f6' },
                 showlegend: false,
                 plot_bgcolor: 'rgba(0,0,0,0)'
             };
 
-            Plotly.newPlot('givoni-plot', traces, layout, {responsive: true});
+            Plotly.newPlot('givoni-plot', traces, layout, {responsive: true, displayModeBar: false});
             document.getElementById('strategy-box').classList.remove('hidden');
-            // (La lógica de diagnóstico e isométrico se mantiene igual...)
+            
+            // Invocación de diagnóstico e isométrico dinámico
+            generarEstrategiaArquitectonica(sumTMax/items.length, sumHR/items.length);
+        }
+
+        function generarEstrategiaArquitectonica(t, hr) {
+            const climText = document.getElementById('climograma-text');
+            const recBox = document.getElementById('recomendacion-box');
+            const diagCont = document.getElementById('architectural-diagram-container');
+            recBox.innerHTML = '';
+
+            let analisis = "Datos en zona de Confort.";
+            let tipo = 'hibrido';
+
+            if(hr > 75) {
+                analisis = "Saturación de humedad detectada. El aire requiere renovación constante para confort evaporativo.";
+                recBox.innerHTML = `<div class='bg-slate-800 p-4 rounded-xl border-l-4 border-blue-500'><h5 class='font-black text-xs uppercase'>Estrategia: Ventilación Cruzada</h5><p class='text-sm text-slate-400'>Celosías de bambú y pieles ligeras.</p></div>`;
+                tipo = 'viento';
+            } else if(t > 32) {
+                analisis = "Calor radiante elevado. Se requiere inercia térmica para retrasar flujo de calor.";
+                recBox.innerHTML = `<div class='bg-slate-800 p-4 rounded-xl border-l-4 border-orange-500'><h5 class='font-black text-xs uppercase'>Estrategia: Masa Térmica</h5><p class='text-sm text-slate-400'>Muros de BTC o Ladrillo con cámara de aire.</p></div>`;
+                tipo = 'masa';
+            }
+
+            climText.innerText = analisis;
+            dibujarSeccionIsometrica(diagCont, tipo);
+        }
+
+        function dibujarSeccionIsometrica(container, tipo) {
+            const colors = { structure: '#cbd5e1', wind: '#0ea5e9', sun: '#f97316', wood: '#a16207' };
+            let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Base Suelo
+            svg += `<path d="M 50,300 L 250,350 L 450,300 L 250,250 Z" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>`;
+
+            if(tipo === 'viento') {
+                // Sección de Ventilación
+                svg += `
+                <path d="M 150,280 L 150,150 L 250,100 L 250,230 Z" fill="${colors.structure}" stroke="#94a3b8"/>
+                <path d="M 250,230 L 350,280 L 350,150 L 250,100 Z" fill="#94a3b8" stroke="#64748b"/>
+                <rect x="180" y="140" width="8" height="120" fill="${colors.wood}" transform="rotate(-15 185 200)"/>
+                <rect x="220" y="155" width="8" height="120" fill="${colors.wood}" transform="rotate(-15 225 215)"/>
+                <path d="M 20,250 Q 150,250 250,200 Q 350,150 480,180" stroke="${colors.wind}" stroke-width="12" fill="none" opacity="0.6" marker-end="url(#arr)"/>
+                `;
+            } else {
+                // Sección de Masa
+                svg += `
+                <path d="M 150,280 L 150,120 L 350,120 L 350,280 Z" fill="#64748b" stroke="#1e293b" stroke-width="4"/>
+                <path d="M 100,120 L 400,120 L 370,150 L 70,150 Z" fill="${colors.structure}" stroke="#1e293b" stroke-width="3"/>
+                <circle cx="50" cy="80" r="30" fill="${colors.sun}"/>
+                <line x1="50" y1="110" x2="140" y2="180" stroke="${colors.sun}" stroke-width="6" stroke-dasharray="10,5"/>
+                `;
+            }
+
+            svg += `<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${colors.wind}"/></marker></defs></svg>`;
+            container.innerHTML = svg;
         }
 
         window.onload = ejecutarAnalisis;
