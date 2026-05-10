@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Global Arch Pro - Diagnóstico Técnico</title>
+    <title>Givoni Global Arch Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -14,24 +14,16 @@
         .active-chip { background-color: #1e40af !important; color: white !important; }
         .config-label { font-size: 1.1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
         .strategy-text { font-size: 1.15rem; line-height: 1.7; }
-        
-        /* Contenedor optimizado para cargar Renders Isométricos fotorrealistas */
         #render-container {
             width: 100%;
-            height: 550px;
-            background-color: #f8fafc;
+            height: 500px;
+            background-color: #ffffff;
             border-radius: 20px;
             overflow: hidden;
             border: 2px solid #e2e8f0;
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        #render-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; /* Asegura que el isométrico se vea completo sin recortar */
         }
     </style>
 </head>
@@ -72,18 +64,18 @@
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl shadow-md border">
-                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase tracking-tighter">Registro Técnico Multianual</h3>
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase tracking-tighter text-center">Registro Técnico Multianual</h3>
                     <table class="w-full text-lg text-left">
                         <thead>
-                            <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black text-xs tracking-wider">
+                            <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black text-xs">
                                 <th class="p-4">Color</th>
                                 <th class="p-4">Periodo</th>
                                 <th class="p-4 text-center">TBS Máx</th>
                                 <th class="p-4 text-center">TBS Mín</th>
-                                <th class="p-4 text-center text-blue-600">HR %</th>
+                                <th class="p-4 text-center">HR %</th>
                             </tr>
                         </thead>
-                        <tbody id="data-table-body" class="font-bold text-slate-700"></tbody>
+                        <tbody id="data-table-body" class="font-bold text-slate-700 text-center"></tbody>
                     </table>
                 </div>
 
@@ -93,19 +85,17 @@
                         <div class="space-y-8">
                             <div>
                                 <h4 class="text-xs font-black text-slate-500 uppercase mb-3 tracking-widest">Análisis del Climograma:</h4>
-                                <p id="climograma-text" class="strategy-text text-slate-300 italic"></p>
+                                <p id="climograma-text" class="strategy-text text-slate-300 italic font-light"></p>
                             </div>
                             <div>
-                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3 tracking-widest">Estrategias y Variedad de Opciones:</h4>
-                                <div id="recomendacion-box" class="strategy-text text-white space-y-4">
-                                    </div>
+                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3 tracking-widest text-blue-300">Propuestas de Diseño:</h4>
+                                <div id="recomendacion-box" class="strategy-text text-white space-y-4"></div>
                             </div>
                         </div>
-                        <div class="space-y-4 flex flex-col items-center overflow-hidden">
-                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Render Isométrico Técnico</h4>
+                        <div class="space-y-4 flex flex-col items-center">
+                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Técnico Isométrico</h4>
                             <div id="render-container">
-                                <img id="render-image" src="" alt="Cargando Render Arquitectónico...">
-                            </div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -165,16 +155,14 @@
             const tableBody = document.getElementById('data-table-body');
             tableBody.innerHTML = '';
             const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
-            
             let sumTMax = 0, sumHR = 0;
 
             items.forEach((val, i) => {
                 let label = modo === 'mes' ? `${meses[val]}-${seleccionAnos[0]}` : `AÑO ${val}`;
-                let tMax = 28 + (Math.random() * 9);
-                let tMin = 18 + (Math.random() * 5);
-                let hr = 55 + (Math.random() * 30);
+                let tMax = 28 + (Math.random() * 8);
+                let tMin = 18 + (Math.random() * 6);
+                let hr = 60 + (Math.random() * 25);
                 let color = `hsl(${(i * 360 / items.length)}, 75%, 50%)`;
-                
                 sumTMax += tMax; sumHR += hr;
 
                 traces.push({
@@ -184,72 +172,93 @@
                 });
 
                 tableBody.innerHTML += `
-                    <tr class="border-b-2 border-slate-100 hover:bg-slate-100 transition-colors">
-                        <td class="p-5 text-center"><div class="w-6 h-6 rounded-full inline-block border-2 border-white shadow-md" style="background:${color}"></div></td>
-                        <td class="p-5 text-xl font-black text-slate-800">${label}</td>
-                        <td class="p-5 text-xl text-center text-slate-700">${tMax.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl text-center text-slate-500">${tMin.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl text-blue-600 font-black text-center">${hr.toFixed(0)}%</td>
+                    <tr class="border-b-2 border-slate-100 hover:bg-slate-50">
+                        <td class="p-4 text-center"><div class="w-6 h-6 rounded-full inline-block" style="background:${color}"></div></td>
+                        <td class="p-4 text-xl font-black text-slate-800">${label}</td>
+                        <td class="p-4 text-xl text-center">${tMax.toFixed(1)}°</td>
+                        <td class="p-4 text-xl text-center">${tMin.toFixed(1)}°</td>
+                        <td class="p-4 text-xl text-blue-600 font-black text-center">${hr.toFixed(0)}%</td>
                     </tr>`;
             });
 
-            // CALIBRACIÓN DE EJES (Fiel a tu lámina oficial)
             const layout = {
                 images: [{
                     source: "https://raw.githubusercontent.com/analisis-climatico/givoni-arch/main/OFICIAL-GRÁFICA%20DE%20GIVONI%20(1)-Layout1.jpg",
                     xref: "x", yref: "y", x: -5.8, y: 100, sizex: 51.5, sizey: 100,
                     sizing: "stretch", layer: "below"
                 }],
-                xaxis: { range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.05)', title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 18, color: 'red', weight: '900' } } },
-                yaxis: { range: [0, 102], dtick: 10, gridcolor: 'rgba(0,0,0,0.05)', side: 'right', title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 18, color: 'green', weight: '900' } } },
-                showlegend: false, margin: { t: 50, b: 80, l: 50, r: 100 },
-                plot_bgcolor: 'white'
+                xaxis: { range: [-6, 46], dtick: 5, title: { text: 'TBS (°C)', font: { size: 18, color: 'red', weight: '900' } } },
+                yaxis: { range: [0, 102], dtick: 10, side: 'right', title: { text: 'HR (%)', font: { size: 18, color: 'green', weight: '900' } } },
+                showlegend: false, margin: { t: 50, b: 80, l: 50, r: 80 }
             };
 
             Plotly.newPlot('givoni-plot', traces, layout);
-            
             document.getElementById('strategy-box').classList.remove('hidden');
-            const avgT = sumTMax / items.length;
-            const avgH = sumHR / items.length;
-
-            actualizarRecomendacionesDinamicas(avgT, avgH);
+            
+            generarEstrategiaPro(sumTMax / items.length, sumHR / items.length);
         }
 
-        function actualizarRecomendacionesDinamicas(avgT, avgH) {
+        function generarEstrategiaPro(avgT, avgH) {
             const climogramaText = document.getElementById('climograma-text');
             const recomendacionBox = document.getElementById('recomendacion-box');
-            const renderImage = document.getElementById('render-image');
-            
-            recomendacionBox.innerHTML = ''; // Limpiar
+            const renderContainer = document.getElementById('render-container');
+            recomendacionBox.innerHTML = '';
 
+            let tipo = 'ventilacion';
             if (avgH > 75) {
-                // ESTRATEGIA CÁLIDO-HÚMEDA
-                climogramaText.innerText = "La nube de datos muestra una saturación crítica de humedad relativa. El calor latente del aire es elevado, lo que dificulta el enfriamiento evaporativo natural del cuerpo.";
-                
-                const estrategias = [
-                    { t: "1. Control Solar y Sombreamiento:", d: "Forzar sombra total en fachadas ESTE y OESTE. Opciones: Grandes volados de hormigón poroso, pérgolas de bambú o celosías de ladrillo hueco." },
-                    { t: "2. Ventilación Cruzada Rigurosa:", d: "Priorizar ventilación laminar y forzada. Elementos: Ventanas de guillotina para control selectivo, lamas de vidrio o aberturas cenitales (efecto chimenea)." },
-                    { t: "3. Envolvente Tectónica Ligera:", d: "Usar materiales de baja inercia térmica. Alternativas: Pieles de madera tratada, paneles de fibrocemento o metal desplegado que permitan que la estructura 'respire'." }
+                climogramaText.innerText = "Saturación crítica de humedad detectada. El calor latente del aire exige una renovación constante para permitir el enfriamiento evaporativo corporal.";
+                const ests = [
+                    { t: "Piel Térmica Ligera:", d: "Uso de Bambú o Madera en celosías verticales para sombrear sin retener calor." },
+                    { t: "Ventilación Cruzada:", d: "Aberturas en fachadas opuestas para forzar el flujo laminar del aire." }
                 ];
-                estrategias.forEach(e => recomendacionBox.innerHTML += `<div><h5 class="font-black text-white text-xs uppercase tracking-wider">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                renderImage.src = "./render_ventilacion_bambu.jpg"; // <--- Esta imagen debe existir
-
-            } else if (avgT > 32) {
-                // ESTRATEGIA CÁLIDO-SECA
-                climogramaText.innerText = "Temperaturas extremas fuera del área de confort térmico diurno. El calor es predominantemente radiante y por conducción en la envolvente.";
-                const estrategias = [
-                    { t: "1. Inercia Térmica Pesada:", d: "Diseñar con materiales de gran masa para retrasar la entrada de calor. Opciones: Muros de tapial, bloques de tierra comprimida (BTC) o concreto con acabado claro." },
-                    { t: "2. Protección Solar Selectiva y Doble Piel:", d: "Bloquear radiación y enfriar la envolvente. Elementos: Piel de celosía cerámica de gran formato (tipo brise-soleil), fachadas ventiladas o techos fríos (cool roofs)." },
-                    { t: "3. Microclima y Vegetación:", d: "Enfriar el aire entrante. Soluciones: Patios interiores con agua (microaspersión) y vegetación xerófila selectiva para sombrear el perímetro." }
-                ];
-                estrategias.forEach(e => recomendacionBox.innerHTML += `<div><h5 class="font-black text-white text-xs uppercase tracking-wider">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                renderImage.src = "./render_inercia_tapial.jpg"; // <--- Esta imagen debe existir
+                ests.forEach(e => recomendacionBox.innerHTML += `<div><h5 class="font-bold text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm">${e.d}</p></div>`);
+                tipo = 'ventilacion';
             } else {
-                // ESTRATEGIA HÍBRIDA
-                climogramaText.innerText = "El clima presenta oscilaciones moderadas dentro o cerca del rango de confort. Estrategias pasivas básicas son suficientes.";
-                recomendacionBox.innerHTML = `<div><h5 class="font-black text-white text-xs uppercase tracking-wider">Manejo Pasivo General:</h5><p class="text-slate-400 text-sm mt-1">Optimizar la ventilación cruzada selectiva, el uso de vegetación perimetral caducifolia para sombrear en verano y materiales constructivos híbridos.</p></div>`;
-                renderImage.src = "./render_hibrido.jpg"; // <--- Esta imagen debe existir
+                climogramaText.innerText = "Altas temperaturas con humedad moderada. El calor es predominantemente radiante, requiriendo masa y protección solar.";
+                const ests = [
+                    { t: "Masa Térmica:", d: "Muros de Ladrillo o Bloque de Tierra para retrasar el flujo térmico diurno." },
+                    { t: "Vegetación Perimetral:", d: "Barreras de árboles de hoja caduca para humidificar y refrescar el microclima." }
+                ];
+                ests.forEach(e => recomendacionBox.innerHTML += `<div><h5 class="font-bold text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm">${e.d}</p></div>`);
+                tipo = 'inercia';
             }
+
+            dibujarIsométricoVectorial(renderContainer, tipo);
+        }
+
+        function dibujarIsométricoVectorial(container, tipo) {
+            const colors = { concrete: '#e2e8f0', wood: '#a16207', wind: '#38bdf8', sun: '#f97316' };
+            let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Base Isométrica
+            svg += `<path d="M 100,300 L 250,350 L 400,300 L 250,250 Z" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>`;
+
+            if (tipo === 'ventilacion') {
+                // Dibujo de Módulo con Celosías y Viento
+                svg += `
+                <path d="M 150,280 L 150,150 L 250,100 L 250,230 Z" fill="${colors.concrete}" stroke="#94a3b8"/>
+                <path d="M 250,230 L 350,280 L 350,150 L 250,100 Z" fill="#cbd5e1" stroke="#94a3b8"/>
+                <rect x="180" y="140" width="8" height="120" fill="${colors.wood}" transform="skewY(-20)"/>
+                <rect x="210" y="155" width="8" height="120" fill="${colors.wood}" transform="skewY(-20)"/>
+                <path d="M 50,250 Q 200,250 300,200" stroke="${colors.wind}" stroke-width="8" fill="none" marker-end="url(#arrow)"/>
+                <path d="M 150,220 Q 300,220 450,180" stroke="${colors.wind}" stroke-width="8" fill="none" marker-end="url(#arrow)"/>`;
+            } else {
+                // Dibujo de Módulo con Muro Pesado y Vegetación
+                svg += `
+                <path d="M 150,280 L 150,120 L 350,120 L 350,280 Z" fill="#94a3b8" stroke="#475569" stroke-width="4"/>
+                <circle cx="100" cy="250" r="40" fill="#22c55e" opacity="0.6"/>
+                <rect x="95" y="250" width="10" height="50" fill="#78350f"/>
+                <circle cx="50" cy="80" r="25" fill="${colors.sun}"/>
+                <line x1="50" y1="80" x2="140" y2="130" stroke="${colors.sun}" stroke-width="4" stroke-dasharray="10,5"/>`;
+            }
+
+            svg += `
+            <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L9,3 z" fill="${colors.wind}" />
+                </marker>
+            </defs></svg>`;
+            container.innerHTML = svg;
         }
 
         window.onload = ejecutarAnalisis;
