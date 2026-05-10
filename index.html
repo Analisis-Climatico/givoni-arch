@@ -13,8 +13,8 @@
         .btn-modo { transition: all 0.2s; padding: 12px 24px; border-radius: 10px; font-weight: 900; text-transform: uppercase; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
         #givoni-container { position: relative; width: 100%; background: white; border-radius: 20px; overflow: hidden; border: 2px solid #e2e8f0; }
-        /* Estilo para los puntos de datos para que resalten */
-        .plotly .dot { stroke-width: 2px; stroke: #fff; }
+        .year-chip, .month-chip { cursor: pointer; transition: all 0.2s; }
+        .selected-item { background-color: #1e40af !important; color: white !important; border-color: #1e40af !important; }
     </style>
 </head>
 <body class="bg-slate-50 p-4 md:p-8">
@@ -37,11 +37,17 @@
             <div class="lg:col-span-1 space-y-6">
                 <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-500">
                     <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Filtros de Análisis</h2>
-                    <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-xl bg-gray-50 font-bold text-sm"></div>
+                    
+                    <div id="section-anos">
+                        <h3 id="year-title" class="text-xs font-black text-slate-400 uppercase mb-3">Seleccionar Año</h3>
+                        <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-xl bg-gray-50 font-bold text-sm"></div>
+                    </div>
+
                     <div id="section-meses" class="mt-6">
-                        <h3 class="text-xs font-black text-slate-400 uppercase mb-3">Meses</h3>
+                        <h3 class="text-xs font-black text-slate-400 uppercase mb-3">Meses del Año</h3>
                         <div id="month-selector" class="grid grid-cols-3 gap-1"></div>
                     </div>
+
                     <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-5 rounded-2xl mt-8 hover:bg-blue-800 shadow-xl transition-all uppercase text-lg">
                         Trazar Datos Reales
                     </button>
@@ -71,8 +77,14 @@
 
     <script>
         const apiKey = 'b0be33523088ce87c824d0befe19820c';
-        let modo = 'mes', seleccionAnos = [2025], seleccionMeses = [0,1,2,10,11], lat = -2.170, lon = -79.922;
+        const mesesNombres = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+        
+        let modo = 'mes'; 
+        let seleccionAnos = [2025]; 
+        let seleccionMeses = [0,1,2,10,11]; 
+        let lat = -2.170, lon = -79.922;
 
+        // Leaflet Map
         let map = L.map('map').setView([lat, lon], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         let marker = L.marker([lat, lon]).addTo(map);
@@ -85,52 +97,88 @@
             document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}`;
         });
 
+        // Interface Logic
+        function renderInterfaz() {
+            // Render Años
+            const yearBox = document.getElementById('year-selector');
+            yearBox.innerHTML = '';
+            for(let y = 2026; y >= 2015; y--) {
+                const chip = document.createElement('div');
+                chip.className = `year-chip p-2 rounded border text-center ${seleccionAnos.includes(y) ? 'selected-item' : 'bg-white text-slate-400'}`;
+                chip.innerText = y;
+                chip.onclick = () => {
+                    if (modo === 'mes') {
+                        seleccionAnos = [y]; // Solo uno en modo mes
+                    } else {
+                        if (seleccionAnos.includes(y)) {
+                            seleccionAnos = seleccionAnos.filter(item => item !== y);
+                        } else {
+                            seleccionAnos.push(y);
+                        }
+                    }
+                    renderInterfaz();
+                };
+                yearBox.appendChild(chip);
+            }
+
+            // Render Meses
+            const monthBox = document.getElementById('month-selector');
+            monthBox.innerHTML = '';
+            mesesNombres.forEach((m, i) => {
+                const chip = document.createElement('div');
+                chip.className = `month-chip p-2 border rounded text-center text-xs font-bold ${seleccionMeses.includes(i) ? 'selected-item' : 'bg-white text-slate-400'}`;
+                chip.innerText = m;
+                chip.onclick = () => {
+                    if (seleccionMeses.includes(i)) {
+                        seleccionMeses = seleccionMeses.filter(idx => idx !== i);
+                    } else {
+                        seleccionMeses.push(i);
+                    }
+                    renderInterfaz();
+                };
+                monthBox.appendChild(chip);
+            });
+
+            // Control de secciones
+            document.getElementById('section-meses').style.display = (modo === 'mes') ? 'block' : 'none';
+            document.getElementById('year-title').innerText = (modo === 'mes') ? 'Seleccionar Año Base' : 'Seleccionar Años a Comparar';
+        }
+
         function setModo(m) {
             modo = m;
+            // Reiniciar selecciones para evitar inconsistencias
+            seleccionAnos = [2025];
+            seleccionMeses = [0,1,2,3,4,5,6,7,8,9,10,11];
+            
             document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('active-chip'));
             document.getElementById(`btn-${m}`).classList.add('active-chip');
+            renderInterfaz();
         }
-
-        const yearBox = document.getElementById('year-selector');
-        for(let y = 2026; y >= 2015; y--) {
-            const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-2 rounded border text-center ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
-            chip.innerText = y;
-            chip.onclick = () => { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); };
-            yearBox.appendChild(chip);
-        }
-
-        const meses = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
-        const monthBox = document.getElementById('month-selector');
-        meses.forEach((m, i) => {
-            const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-2 border rounded text-center text-xs font-bold ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
-            chip.innerText = m;
-            chip.onclick = () => { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionMeses.includes(i)) seleccionMeses = seleccionMeses.filter(idx => idx !== i); else seleccionMeses.push(i); };
-            monthBox.appendChild(chip);
-        });
 
         function ejecutarAnalisis() {
             const traces = [];
-            const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
+            const items = (modo === 'mes') ? seleccionMeses : seleccionAnos;
+            
+            if (items.length === 0) {
+                alert("Por favor selecciona al menos un elemento.");
+                return;
+            }
+
             let sumTMax = 0, sumHR = 0;
 
             items.forEach((val, i) => {
-                let label = modo === 'mes' ? `${meses[val]}` : `${val}`;
+                let label = (modo === 'mes') ? `${mesesNombres[val]} ${seleccionAnos[0]}` : `AÑO ${val}`;
                 
-                // --- CALIBRACIÓN DE DATOS ---
-                // Ajustamos para que los datos no se salgan de los rangos tropicales reales
                 let tMax = 28 + (Math.random() * 8);
                 let tMin = 21 + (Math.random() * 4);
                 let hr = 60 + (Math.random() * 25);
                 let color = `hsl(${(i * 360 / items.length)}, 85%, 55%)`;
+                
                 sumTMax += tMax; sumHR += hr;
 
-                // --- TRAZADO PSICROMÉTRICO CURVO ---
                 let xCurve = [], yCurve = [];
                 for(let step = 0; step <= 15; step++) {
                     let tStep = tMin + (tMax - tMin) * (step / 15);
-                    // Función de curvatura real para HR constante en el climograma
                     let hrStep = hr + (Math.pow((tStep - tMin) / 10, 2) * 5); 
                     xCurve.push(tStep);
                     yCurve.push(hrStep);
@@ -139,29 +187,23 @@
                 traces.push({
                     x: xCurve, y: yCurve,
                     type: 'scatter', mode: 'lines',
-                    line: { width: 10, color: color, shape: 'spline' },
+                    line: { width: 8, color: color, shape: 'spline' },
                     hoverinfo: 'none', showlegend: false
                 });
 
-                // Puntos finales
                 traces.push({
                     x: [tMin, tMax], y: [yCurve[0], yCurve[15]],
                     type: 'scatter', mode: 'markers', name: label,
-                    marker: { size: 16, color: color, line: {color:'white', width:3}, symbol: 'circle' },
+                    marker: { size: 16, color: color, line: {color:'white', width:3} },
                     hovertemplate: `<b>${label}</b><br>T: %{x}°C<br>HR: ${hr.toFixed(0)}%<extra></extra>`
                 });
             });
 
-            // --- LAYOUT CON CALIBRACIÓN ABSOLUTA DE AutoCAD ---
             const layout = {
                 images: [{
                     source: "./GRÁFICA DE GIVONI-Layout1.svg",
                     xref: "x", yref: "y",
-                    // Ajuste micrométrico para que el -5 caiga en el inicio del SVG
-                    x: -5.4, 
-                    y: 100.8, 
-                    sizex: 55.8, 
-                    sizey: 101.5,
+                    x: -5.4, y: 100.8, sizex: 55.8, sizey: 101.5,
                     sizing: "stretch", layer: "below"
                 }],
                 xaxis: { range: [-5, 50], showgrid: false, zeroline: false, showline: false, ticks: '', showticklabels: false, fixedrange: true },
@@ -203,14 +245,12 @@
             let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <path d="M 50,320 L 250,370 L 450,320 L 250,270 Z" fill="#f8fafc" stroke="#cbd5e1"/>`;
             if(tipo === 'viento') {
-                svg += `
-                <path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${colors.dark}"/>
+                svg += `<path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${colors.dark}"/>
                 <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="${colors.dark}"/>
                 <rect x="230" y="120" width="10" height="170" fill="${colors.wood}" transform="rotate(-15 235 205)"/>
                 <path d="M 10,240 Q 250,240 490,160" stroke="${colors.wind}" stroke-width="14" fill="none" opacity="0.6" marker-end="url(#arr)"/>`;
             } else if(tipo === 'masa') {
-                svg += `
-                <path d="M 150,300 L 190,285 L 190,85 L 150,100 Z" fill="${colors.dark}"/>
+                svg += `<path d="M 150,300 L 190,285 L 190,85 L 150,100 Z" fill="${colors.dark}"/>
                 <path d="M 150,100 L 400,100 L 360,130 L 110,130 Z" fill="${colors.structure}"/>`;
             } else {
                 svg += `<circle cx="100" cy="180" r="70" fill="#22c55e" opacity="0.6"/><rect x="92" y="180" width="16" height="130" fill="#78350f"/>`;
@@ -219,6 +259,8 @@
             container.innerHTML = svg;
         }
 
+        // Inicialización
+        renderInterfaz();
         window.onload = ejecutarAnalisis;
     </script>
 </body>
