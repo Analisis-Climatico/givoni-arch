@@ -168,21 +168,22 @@ Actualizar Climograma
 
 <div class="xl:col-span-3 space-y-6">
 
-<div id="chart">
+<!-- CHART -->
 
-<!-- FONDO GIVONI -->
+<div id="chart">
 
 <img
 src="./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg"
 id="givoni-bg"
 style="
 position:absolute;
+inset:0;
 width:100%;
 height:100%;
-object-fit:contain;
-pointer-events:none;
-opacity:1;
+object-fit:fill;
 z-index:1;
+pointer-events:none;
+user-select:none;
 "
 />
 
@@ -471,16 +472,6 @@ return await response.json();
 }
 
 /* =========================================================
-CURVA
-========================================================= */
-
-function givoniY(hr,temp){
-
-return hr * Math.exp((temp-20)/20);
-
-}
-
-/* =========================================================
 ZONAS
 ========================================================= */
 
@@ -534,7 +525,7 @@ h2:80
 ];
 
 /* =========================================================
-DETECT ZONE
+DETECTAR ZONAS
 ========================================================= */
 
 function detectZones(tMax,tMin,hr){
@@ -567,7 +558,7 @@ return detected;
 }
 
 /* =========================================================
-DRAW
+DRAW CHART
 ========================================================= */
 
 function drawChart(data){
@@ -577,43 +568,53 @@ d3.select('#chart svg').remove();
 const width = 1600;
 const height = 900;
 
-const margin = {
-top:60,
-right:70,
-bottom:100,
-left:90
-};
+/* =========================================================
+CALIBRACIÓN DEL FONDO GIVONI
+========================================================= */
 
-const innerWidth =
-width - margin.left - margin.right;
+const chartOffsetX = 118;
+const chartOffsetY = 82;
 
-const innerHeight =
-height - margin.top - margin.bottom;
+const chartWidth = 1290;
+const chartHeight = 690;
+
+/* =========================================================
+SVG
+========================================================= */
 
 const svg = d3.select('#chart')
 .append('svg')
-.style('position','relative')
+.style('position','absolute')
+.style('inset','0')
 .style('z-index','2')
 .attr('width','100%')
-.attr('height',height)
+.attr('height','100%')
 .attr('viewBox',`0 0 ${width} ${height}`);
 
-const g = svg.append('g')
-.attr('transform',
-`translate(${margin.left},${margin.top})`);
+/* =========================================================
+ESCALAS
+========================================================= */
 
 const x = d3.scaleLinear()
 .domain([0,50])
-.range([0,innerWidth]);
+.range([
+chartOffsetX,
+chartOffsetX + chartWidth
+]);
 
 const y = d3.scaleLinear()
-.domain([0,140])
-.range([innerHeight,0]);
+.domain([0,100])
+.range([
+chartOffsetY + chartHeight,
+chartOffsetY
+]);
 
 const tooltip =
 document.getElementById('tooltip');
 
-/* CURVAS */
+/* =========================================================
+CURVAS
+========================================================= */
 
 data.forEach((d,i)=>{
 
@@ -624,14 +625,16 @@ d.color = color;
 
 const points = [];
 
-for(let step=0;step<=20;step++){
+for(let step=0;step<=40;step++){
 
 const t =
 d.tMin +
-((d.tMax-d.tMin)*(step/20));
+((d.tMax-d.tMin)*(step/40));
 
 const hrCurve =
-givoniY(d.hr,t);
+d.hr - (
+(step/40) * 8
+);
 
 points.push([
 x(t),
@@ -643,12 +646,13 @@ y(hrCurve)
 const line = d3.line()
 .curve(d3.curveBasis);
 
-g.append('path')
+svg.append('path')
 .attr('d',line(points))
 .attr('fill','none')
 .attr('stroke',color)
 .attr('stroke-width',8)
 .attr('stroke-linecap','round')
+.attr('opacity',0.95)
 
 .on('mousemove',(event)=>{
 
@@ -662,20 +666,30 @@ tooltip.style.top =
 
 tooltip.innerHTML = `
 
-<div class="space-y-1">
+<div class="space-y-2">
 
 <p class="font-black text-blue-400">
 ${d.label}
 </p>
 
-<p>T. Máx: ${d.tMax.toFixed(1)}°C</p>
+<p>
+Temperatura Máx:
+<b>${d.tMax.toFixed(1)}°C</b>
+</p>
 
-<p>T. Mín: ${d.tMin.toFixed(1)}°C</p>
+<p>
+Temperatura Mín:
+<b>${d.tMin.toFixed(1)}°C</b>
+</p>
 
-<p>HR: ${d.hr.toFixed(0)}%</p>
+<p>
+Humedad:
+<b>${d.hr.toFixed(0)}%</b>
+</p>
 
-<p>Zonas:
-${d.zones.join(', ')}
+<p>
+Zonas:
+<b>${d.zones.join(', ')}</b>
 </p>
 
 </div>
@@ -690,26 +704,22 @@ tooltip.style.opacity = 0;
 
 });
 
+points.forEach(p=>{
+
+svg.append('circle')
+.attr('cx',p[0])
+.attr('cy',p[1])
+.attr('r',3)
+.attr('fill',color);
+
 });
 
-/* EJES */
-
-g.append('g')
-.attr('transform',
-`translate(0,${innerHeight})`)
-.call(d3.axisBottom(x));
-
-g.append('text')
-.attr('x',innerWidth/2)
-.attr('y',innerHeight+60)
-.attr('font-size','20px')
-.attr('font-weight','900')
-.text('TEMPERATURA BULBO SECO (°C)');
+});
 
 }
 
 /* =========================================================
-TABLE
+TABLA
 ========================================================= */
 
 function updateTable(data){
@@ -795,8 +805,8 @@ Object.entries(zoneCounter)
 .map(v=>v[0]);
 
 let text = `
-El análisis bioclimático del climograma evidencia
-predominancia en las zonas:
+El análisis bioclimático evidencia predominancia
+en las zonas:
 ${dominantZones.join(', ')}.
 `;
 
