@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Givoni Climate Engine V3</title>
+<title>Givoni Climate Engine V4</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -21,9 +21,9 @@ body{
 
 #map{
     height:260px;
-    border-radius:18px;
-    border:1px solid #dbe2ea;
+    border-radius:20px;
     overflow:hidden;
+    border:1px solid #dbe2ea;
 }
 
 #chart{
@@ -31,8 +31,8 @@ body{
     height:850px;
     background:white;
     border-radius:24px;
-    border:1px solid #dbe2ea;
     overflow:hidden;
+    border:1px solid #dbe2ea;
 }
 
 .btn-mode{
@@ -54,10 +54,10 @@ body{
     padding:10px;
     border-radius:10px;
     border:1px solid #dbe2ea;
-    cursor:pointer;
     text-align:center;
     font-size:11px;
     font-weight:800;
+    cursor:pointer;
     transition:.2s;
 }
 
@@ -70,11 +70,6 @@ body{
     color:white;
 }
 
-.zone-label{
-    font-size:11px;
-    font-weight:900;
-}
-
 </style>
 </head>
 
@@ -82,21 +77,22 @@ body{
 
 <main class="max-w-[1900px] mx-auto space-y-6">
 
-<!-- HEADER -->
-
-<header class="bg-white rounded-3xl border shadow-sm p-6 flex justify-between items-center">
+<header class="bg-white border rounded-3xl shadow-sm p-6 flex justify-between items-center">
 
 <div>
-<h1 class="text-3xl font-black tracking-tight uppercase text-slate-800">
+
+<h1 class="text-3xl font-black uppercase tracking-tight text-slate-800">
 Givoni Climate Engine
 </h1>
 
 <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">
 Arquitectura Bioclimática
 </p>
+
 </div>
 
 <div class="flex gap-2">
+
 <button onclick="setMode('mes')" id="btn-mes"
 class="btn-mode active-mode">
 MESES
@@ -106,15 +102,12 @@ MESES
 class="btn-mode">
 AÑOS
 </button>
+
 </div>
 
 </header>
 
-<!-- MAPA -->
-
 <div id="map"></div>
-
-<!-- LAYOUT -->
 
 <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
@@ -123,6 +116,7 @@ AÑOS
 <div class="bg-white rounded-3xl border shadow-sm p-6 space-y-6">
 
 <div>
+
 <p id="location-text"
 class="text-blue-600 font-black text-xs uppercase mb-4">
 Ubicación: Guayaquil
@@ -134,6 +128,7 @@ Seleccionar Año
 
 <div id="year-selector"
 class="grid grid-cols-2 gap-2"></div>
+
 </div>
 
 <div id="month-section">
@@ -148,7 +143,7 @@ class="grid grid-cols-3 gap-2"></div>
 </div>
 
 <button onclick="runClimateAnalysis()"
-class="w-full bg-blue-600 hover:bg-blue-700 transition-all text-white font-black uppercase py-4 rounded-2xl text-xs">
+class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase rounded-2xl py-4 text-xs transition-all">
 
 Actualizar Climograma
 
@@ -189,8 +184,7 @@ class="font-bold text-slate-700"></tbody>
 
 <!-- ANALISIS -->
 
-<div id="analysis-box"
-class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[10px] border-blue-500">
+<div class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[10px] border-blue-500">
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
@@ -228,9 +222,9 @@ class="space-y-4"></div>
 
 <script>
 
-/* =========================================================
-   VARIABLES
-========================================================= */
+/* ======================================================
+VARIABLES
+====================================================== */
 
 const months = [
 'Ene','Feb','Mar','Abr','May','Jun',
@@ -242,14 +236,14 @@ let mode = 'mes';
 let selectedYears = [2025];
 let selectedMonths = [0,1,2,3,4];
 
-let lat = -2.170;
-let lon = -79.922;
+let lat = -2.17;
+let lon = -79.92;
 
-/* =========================================================
-   MAPA
-========================================================= */
+/* ======================================================
+MAPA
+====================================================== */
 
-const map = L.map('map').setView([lat,lon],8);
+const map = L.map('map').setView([lat,lon],7);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -273,9 +267,9 @@ runClimateAnalysis();
 
 });
 
-/* =========================================================
-   UI
-========================================================= */
+/* ======================================================
+UI
+====================================================== */
 
 function setMode(m){
 
@@ -316,7 +310,9 @@ chip.innerText = y;
 chip.onclick = ()=>{
 
 if(mode === 'mes'){
+
 selectedYears = [y];
+
 }
 else{
 
@@ -338,7 +334,9 @@ yearBox.appendChild(chip);
 
 }
 
-const monthBox = document.getElementById('month-selector');
+const monthBox =
+document.getElementById('month-selector');
+
 monthBox.innerHTML = '';
 
 months.forEach((m,i)=>{
@@ -356,11 +354,15 @@ chip.innerText = m;
 chip.onclick = ()=>{
 
 if(selectedMonths.includes(i)){
+
 selectedMonths =
 selectedMonths.filter(v=>v!==i);
+
 }
 else{
+
 selectedMonths.push(i);
+
 }
 
 renderSelectors();
@@ -373,9 +375,9 @@ monthBox.appendChild(chip);
 
 }
 
-/* =========================================================
-   UBICACION
-========================================================= */
+/* ======================================================
+LOCATION
+====================================================== */
 
 async function updateLocation(){
 
@@ -401,11 +403,11 @@ catch(err){}
 
 }
 
-/* =========================================================
-   OPEN METEO
-========================================================= */
+/* ======================================================
+OPEN METEO
+====================================================== */
 
-async function fetchClimateData(year){
+async function fetchClimate(year){
 
 const url = `
 https://archive-api.open-meteo.com/v1/archive?
@@ -413,7 +415,8 @@ latitude=${lat}&
 longitude=${lon}&
 start_date=${year}-01-01&
 end_date=${year}-12-31&
-hourly=temperature_2m,relative_humidity_2m
+daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&
+timezone=auto
 `;
 
 const response = await fetch(
@@ -424,41 +427,24 @@ return await response.json();
 
 }
 
-/* =========================================================
-   DETECTAR ZONA GIVONI
-========================================================= */
+/* ======================================================
+GIVONI Y
+====================================================== */
 
-function detectZone(temp,hr){
+function givoniY(hr,temp){
 
-if(temp >= 21 && temp <= 27 && hr >= 30 && hr <= 70){
-return 'Confort';
-}
+const factor =
+Math.exp((temp-20)/18);
 
-if(temp >= 27 && temp <= 34 && hr >= 20){
-return 'Ventilación';
-}
-
-if(temp > 34){
-return 'Masa Térmica';
-}
-
-if(temp < 20){
-return 'Calefacción Solar';
-}
-
-if(hr > 80){
-return 'Deshumidificación';
-}
-
-return 'Protección Solar';
+return hr * factor;
 
 }
 
-/* =========================================================
-   DIBUJAR DIAGRAMA GIVONI
-========================================================= */
+/* ======================================================
+DRAW
+====================================================== */
 
-function drawChart(climate){
+function drawChart(monthData){
 
 d3.select('#chart').html('');
 
@@ -467,8 +453,8 @@ const height = 850;
 
 const margin = {
 top:40,
-right:120,
-bottom:80,
+right:70,
+bottom:90,
 left:70
 };
 
@@ -493,7 +479,7 @@ const x = d3.scaleLinear()
 .range([0,innerWidth]);
 
 const y = d3.scaleLinear()
-.domain([0,100])
+.domain([0,140])
 .range([innerHeight,0]);
 
 /* GRID */
@@ -508,7 +494,7 @@ g.append('line')
 .attr('stroke',
 t % 5 === 0
 ? '#d1d5db'
-: '#e5e7eb')
+: '#edf2f7')
 .attr('stroke-width',
 t % 5 === 0
 ? 1
@@ -516,36 +502,34 @@ t % 5 === 0
 
 }
 
-for(let h=0;h<=100;h+=5){
+for(let h=0;h<=140;h+=5){
 
 g.append('line')
 .attr('x1',0)
 .attr('x2',innerWidth)
 .attr('y1',y(h))
 .attr('y2',y(h))
-.attr('stroke','#e5e7eb');
+.attr('stroke','#edf2f7');
 
 }
 
 /* CURVAS RH */
 
-for(let rh=10;rh<=100;rh+=10){
+for(let hr=10;hr<=100;hr+=10){
 
 const points = [];
 
 for(let t=-5;t<=50;t+=0.5){
 
-const curve =
-100 - ((100-rh) * Math.exp(-(t+5)/20));
-
 points.push([
 x(t),
-y(curve)
+y(givoniY(hr,t))
 ]);
 
 }
 
-const line = d3.line();
+const line = d3.line()
+.curve(d3.curveBasis);
 
 g.append('path')
 .attr('d',line(points))
@@ -555,91 +539,85 @@ g.append('path')
 
 }
 
-/* ZONAS GIVONI */
+/* ZONAS */
 
 const zones = [
 
 {
-name:'1',
-label:'CONFORT',
-color:'rgba(250,204,21,0.15)',
 stroke:'#eab308',
+fill:'rgba(250,204,21,0.12)',
 points:[
-[21,10],
-[25,15],
-[25,45],
-[21,35]
-]
+[21,20],
+[24,28],
+[24,60],
+[21,50]
+],
+label:'1'
 },
 
 {
-name:'2',
-label:'CONFORT PERMISIBLE',
-color:'rgba(239,68,68,0.12)',
-stroke:'#b91c1c',
+stroke:'#dc2626',
+fill:'rgba(220,38,38,0.08)',
 points:[
-[20,10],
-[27,15],
-[27,45],
-[24,55],
-[20,40]
-]
+[20,20],
+[27,35],
+[27,60],
+[24,75],
+[20,55]
+],
+label:'2'
 },
 
 {
-name:'12',
-label:'VENTILACIÓN',
-color:'rgba(16,185,129,0.12)',
 stroke:'#10b981',
+fill:'rgba(16,185,129,0.10)',
 points:[
-[20,40],
-[24,55],
-[28,80],
-[33,45],
-[33,20],
-[27,15]
-]
+[20,55],
+[24,75],
+[28,110],
+[33,55],
+[33,28],
+[27,35]
+],
+label:'12'
 },
 
 {
-name:'9',
-label:'ALTA MASA TÉRMICA',
-color:'rgba(244,114,182,0.12)',
 stroke:'#ef4444',
+fill:'rgba(244,114,182,0.10)',
 points:[
-[24,55],
-[33,45],
-[37,30],
-[37,10],
-[24,10]
-]
+[24,75],
+[33,55],
+[37,40],
+[37,20],
+[24,20]
+],
+label:'9'
 },
 
 {
-name:'10',
-label:'EVAPORACIÓN',
-color:'rgba(168,85,247,0.12)',
 stroke:'#9333ea',
+fill:'rgba(168,85,247,0.08)',
 points:[
-[24,55],
-[40,20],
+[24,75],
+[40,30],
 [40,0],
 [27,0]
-]
+],
+label:'10'
 },
 
 {
-name:'13',
-label:'AIRE ACONDICIONADO',
-color:'rgba(59,130,246,0.08)',
 stroke:'#1d4ed8',
+fill:'rgba(59,130,246,0.08)',
 points:[
-[33,45],
-[50,45],
+[33,55],
+[50,55],
 [50,0],
 [40,0],
-[40,20]
-]
+[40,30]
+],
+label:'13'
 }
 
 ];
@@ -655,75 +633,55 @@ y(p[1])
 g.append('polygon')
 .attr('points',
 polygon.join(' '))
-.attr('fill',zone.color)
+.attr('fill',zone.fill)
 .attr('stroke',zone.stroke)
 .attr('stroke-width',3);
 
 g.append('text')
-.attr('x',x(zone.points[0][0])+8)
-.attr('y',y(zone.points[0][1])-8)
-.text(zone.name)
-.attr('fill',zone.stroke)
+.attr('x',x(zone.points[0][0])+5)
+.attr('y',y(zone.points[0][1])-5)
+.attr('font-size','18px')
 .attr('font-weight','900')
-.attr('font-size','16px');
+.attr('fill',zone.stroke)
+.text(zone.label);
 
 });
 
-/* PUNTOS CLIMÁTICOS */
+/* CURVAS CLIMÁTICAS */
 
-const temps =
-climate.hourly.temperature_2m;
+monthData.forEach((d,i)=>{
 
-const humidity =
-climate.hourly.relative_humidity_2m;
+const color =
+d3.interpolateRainbow(i/monthData.length);
 
-const times =
-climate.hourly.time;
+const points = [];
 
-const monthData = {};
+for(let step=0;step<=20;step++){
 
-temps.forEach((temp,i)=>{
+const t =
+d.tMin +
+((d.tMax-d.tMin)*(step/20));
 
-const hr = humidity[i];
+const hrCurve =
+givoniY(d.hr,t);
 
-const date = new Date(times[i]);
-const month = date.getMonth();
-
-if(mode === 'mes' &&
-!selectedMonths.includes(month)){
-return;
-}
-
-if(!monthData[month]){
-
-monthData[month] = {
-max:temp,
-min:temp,
-hr:[],
-zone:[]
-};
+points.push([
+x(t),
+y(hrCurve)
+]);
 
 }
 
-monthData[month].max =
-Math.max(monthData[month].max,temp);
+const line = d3.line()
+.curve(d3.curveBasis);
 
-monthData[month].min =
-Math.min(monthData[month].min,temp);
-
-monthData[month].hr.push(hr);
-
-monthData[month].zone.push(
-detectZone(temp,hr)
-);
-
-/* PUNTO */
-
-g.append('circle')
-.attr('cx',x(temp))
-.attr('cy',y(hr))
-.attr('r',2)
-.attr('fill','rgba(37,99,235,0.25)');
+g.append('path')
+.attr('d',line(points))
+.attr('fill','none')
+.attr('stroke',color)
+.attr('stroke-width',8)
+.attr('stroke-linecap','round')
+.attr('opacity',0.95);
 
 });
 
@@ -735,14 +693,14 @@ g.append('g')
 .call(d3.axisBottom(x));
 
 g.append('g')
-.call(d3.axisRight(y));
+.call(d3.axisLeft(y).ticks(0));
 
 /* LABELS */
 
 g.append('text')
 .attr('x',innerWidth/2)
 .attr('y',innerHeight+60)
-.attr('font-size','18px')
+.attr('font-size','20px')
 .attr('font-weight','900')
 .text('TEMPERATURA BULBO SECO (°C)');
 
@@ -750,23 +708,15 @@ g.append('text')
 .attr('transform','rotate(-90)')
 .attr('x',-innerHeight/2)
 .attr('y',-40)
-.attr('font-size','18px')
+.attr('font-size','20px')
 .attr('font-weight','900')
 .text('HUMEDAD RELATIVA (%)');
 
-/* TABLA */
-
-updateTable(monthData);
-
-/* ANALISIS */
-
-updateAnalysis(monthData);
-
 }
 
-/* =========================================================
-   TABLA
-========================================================= */
+/* ======================================================
+TABLE
+====================================================== */
 
 function updateTable(monthData){
 
@@ -775,40 +725,30 @@ document.getElementById('table-body');
 
 tbody.innerHTML = '';
 
-Object.keys(monthData).forEach(month=>{
-
-const data = monthData[month];
-
-const avgHR =
-data.hr.reduce((a,b)=>a+b,0)
-/
-data.hr.length;
-
-const dominantZone =
-modeZone(data.zone);
+monthData.forEach(d=>{
 
 tbody.innerHTML += `
 
 <tr class="border-b hover:bg-slate-50">
 
 <td class="p-4">
-${months[month]}
+${d.label}
 </td>
 
 <td class="p-4 text-center">
-${data.max.toFixed(1)}°C
+${d.tMax.toFixed(1)}°C
 </td>
 
 <td class="p-4 text-center">
-${data.min.toFixed(1)}°C
+${d.tMin.toFixed(1)}°C
 </td>
 
 <td class="p-4 text-center text-blue-600 font-black">
-${avgHR.toFixed(0)}%
+${d.hr.toFixed(0)}%
 </td>
 
 <td class="p-4 text-center font-black">
-${dominantZone}
+${d.zone}
 </td>
 
 </tr>
@@ -819,24 +759,35 @@ ${dominantZone}
 
 }
 
-/* =========================================================
-   MODA
-========================================================= */
+/* ======================================================
+ZONE
+====================================================== */
 
-function modeZone(arr){
+function detectZone(temp,hr){
 
-return arr.sort(
-(a,b)=>
-arr.filter(v=>v===a).length
--
-arr.filter(v=>v===b).length
-).pop();
+if(temp>=21 && temp<=27 && hr>=40 && hr<=70){
+return 'Confort';
+}
+
+if(temp>27 && hr>70){
+return 'Deshumidificación';
+}
+
+if(temp>30){
+return 'Ventilación';
+}
+
+if(temp<20){
+return 'Calefacción';
+}
+
+return 'Protección Solar';
 
 }
 
-/* =========================================================
-   ANALISIS DINAMICO
-========================================================= */
+/* ======================================================
+ANALYSIS
+====================================================== */
 
 function updateAnalysis(monthData){
 
@@ -850,21 +801,16 @@ strategyList.innerHTML = '';
 
 let avgTemp = 0;
 let avgHR = 0;
-let count = 0;
 
-Object.values(monthData).forEach(d=>{
+monthData.forEach(d=>{
 
-avgTemp += d.max;
-avgHR +=
-d.hr.reduce((a,b)=>a+b,0)
-/ d.hr.length;
-
-count++;
+avgTemp += d.tMax;
+avgHR += d.hr;
 
 });
 
-avgTemp /= count;
-avgHR /= count;
+avgTemp /= monthData.length;
+avgHR /= monthData.length;
 
 let text = '';
 let strategies = [];
@@ -872,53 +818,32 @@ let strategies = [];
 if(avgTemp > 28 && avgHR > 75){
 
 text = `
-El análisis climático evidencia un clima cálido húmedo
-con predominancia de condiciones fuera de la zona
-de confort. Las altas temperaturas y humedad relativa
-requieren estrategias pasivas enfocadas en ventilación
-constante, control solar y disipación térmica.
+Predomina un clima cálido húmedo con altas tasas
+de humedad relativa y temperaturas elevadas durante
+gran parte del año. El comportamiento climático se
+ubica principalmente en zonas de ventilación y
+deshumidificación.
 `;
 
 strategies = [
-'Ventilación cruzada permanente',
+'Ventilación cruzada continua',
 'Cubiertas ventiladas',
-'Protección solar horizontal',
+'Protección solar profunda',
 'Fachadas permeables',
-'Sombras profundas',
 'Disipación térmica pasiva'
 ];
 
 }
-
-else if(avgTemp < 20){
-
-text = `
-El comportamiento climático muestra temperaturas
-templadas frías, por lo que las estrategias deben
-priorizar captación solar y conservación térmica.
-`;
-
-strategies = [
-'Ganancia solar pasiva',
-'Masa térmica',
-'Protección contra viento',
-'Compactación volumétrica'
-];
-
-}
-
 else{
 
 text = `
-El clima presenta condiciones relativamente próximas
-al confort térmico durante parte importante del año.
-Las estrategias deben enfocarse en control solar
-moderado y ventilación regulada.
+El comportamiento climático presenta condiciones
+moderadas cercanas a confort térmico parcial.
 `;
 
 strategies = [
-'Protección solar parcial',
 'Ventilación moderada',
+'Protección solar parcial',
 'Control térmico pasivo'
 ];
 
@@ -930,7 +855,7 @@ strategies.forEach(s=>{
 
 strategyList.innerHTML += `
 
-<div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
 
 <p class="text-sm font-bold text-slate-300">
 ${s}
@@ -944,32 +869,81 @@ ${s}
 
 }
 
-/* =========================================================
-   RUN
-========================================================= */
+/* ======================================================
+RUN
+====================================================== */
 
 async function runClimateAnalysis(){
-
-try{
 
 const year =
 selectedYears[0];
 
-const climate =
-await fetchClimateData(year);
+const data =
+await fetchClimate(year);
 
-drawChart(climate);
+const monthData = [];
+
+if(!data.daily) return;
+
+for(let m=0;m<12;m++){
+
+if(mode === 'mes' &&
+!selectedMonths.includes(m)){
+continue;
+}
+
+const tMax =
+data.daily.temperature_2m_max
+.filter((v,i)=>
+new Date(data.daily.time[i]).getMonth()===m
+);
+
+const tMin =
+data.daily.temperature_2m_min
+.filter((v,i)=>
+new Date(data.daily.time[i]).getMonth()===m
+);
+
+const hr =
+data.daily.relative_humidity_2m_mean
+.filter((v,i)=>
+new Date(data.daily.time[i]).getMonth()===m
+);
+
+const avgMax =
+tMax.reduce((a,b)=>a+b,0)/tMax.length;
+
+const avgMin =
+tMin.reduce((a,b)=>a+b,0)/tMin.length;
+
+const avgHR =
+hr.reduce((a,b)=>a+b,0)/hr.length;
+
+monthData.push({
+
+label:months[m],
+
+tMax:avgMax,
+tMin:avgMin,
+hr:avgHR,
+
+zone:detectZone(avgMax,avgHR)
+
+});
 
 }
-catch(err){
-console.error(err);
-}
+
+drawChart(monthData);
+
+updateTable(monthData);
+
+updateAnalysis(monthData);
 
 }
 
-/* =========================================================
-   INIT
-========================================================= */
+/* ======================================================
+INIT
+====================================================== */
 
 renderSelectors();
 
