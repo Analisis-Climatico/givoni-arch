@@ -3,193 +3,124 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Givoni Climate Engine</title>
+<title>Givoni Climate Engine V2</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
 
 body {
-    background: #f1f5f9;
     font-family: Inter, sans-serif;
+    background: #f1f5f9;
 }
 
 #map {
-    height: 260px;
-    border-radius: 18px;
-    border: 1px solid #dbe2ea;
-    overflow: hidden;
-}
-
-.btn-chip {
-    transition: 0.2s;
-    padding: 10px 18px;
-    border-radius: 10px;
-    font-weight: 800;
-    font-size: 11px;
-    border: 1px solid #dbe2ea;
-}
-
-.active-chip {
-    background: #2563eb;
-    color: white;
-    border-color: #2563eb;
-}
-
-.selector-chip {
-    padding: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 11px;
-    font-weight: 800;
-    border: 1px solid #dbe2ea;
-    transition: 0.2s;
-}
-
-.selector-chip:hover {
-    transform: translateY(-1px);
-}
-
-.selected-item {
-    background: #2563eb;
-    color: white;
-}
-
-#chart-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1.9 / 1;
-    background: white;
+    height: 280px;
     border-radius: 20px;
-    border: 1px solid #dbe2ea;
     overflow: hidden;
+    border: 1px solid #dbe2ea;
 }
 
-#chart-canvas {
+#chart {
     width: 100%;
-    height: 100%;
-    display: block;
+    height: 820px;
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #dbe2ea;
 }
 
-.table-container {
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid #dbe2ea;
+.zone-label {
+    font-size: 12px;
+    font-weight: 800;
+    opacity: 0.8;
 }
 
 </style>
 </head>
 <body class="p-4 md:p-8">
 
-<main class="max-w-[1800px] mx-auto space-y-6">
+<main class="max-w-[1900px] mx-auto space-y-6">
 
-<header class="bg-white rounded-2xl border shadow-sm p-5 flex justify-between items-center">
-    <div>
-        <h1 class="text-2xl font-black tracking-tight text-slate-800 uppercase">
-            Givoni Climate Engine
-        </h1>
-        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">
-            Arquitectura Bioclimática · Psicrometría Real
-        </p>
-    </div>
+<header class="bg-white border rounded-3xl p-6 shadow-sm flex justify-between items-center">
 
-    <div class="flex gap-2">
-        <button onclick="setModo('mes')" id="btn-mes" class="btn-chip active-chip">
-            MESES
-        </button>
+<div>
+<h1 class="text-3xl font-black tracking-tight text-slate-800 uppercase">
+Givoni Climate Engine V2
+</h1>
 
-        <button onclick="setModo('año')" id="btn-año" class="btn-chip">
-            AÑOS
-        </button>
-    </div>
+<p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">
+Psychrometric + Bioclimatic Analysis Platform
+</p>
+</div>
+
+<button onclick="runClimateAnalysis()"
+class="bg-blue-600 hover:bg-blue-700 transition-all text-white px-8 py-4 rounded-2xl font-black uppercase text-xs shadow-lg">
+Actualizar Climograma
+</button>
+
 </header>
 
 <div id="map"></div>
 
-<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
-    <div class="bg-white rounded-2xl border shadow-sm p-6 space-y-6">
+<div class="xl:col-span-1 bg-white rounded-3xl border p-6 shadow-sm space-y-6">
 
-        <div>
-            <p id="location-display" class="text-blue-600 font-black text-xs uppercase mb-5">
-                Ubicación: Guayaquil, EC
-            </p>
+<div>
+<p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-3">
+Ubicación
+</p>
 
-            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-2">
-                Seleccionar Año
-            </p>
+<p id="location-text" class="text-blue-600 font-black text-sm">
+Guayaquil, Ecuador
+</p>
+</div>
 
-            <div id="year-selector" class="grid grid-cols-2 gap-2"></div>
-        </div>
+<div>
+<p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-3">
+Diagnóstico Climático
+</p>
 
-        <div id="month-section">
-            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-2">
-                Meses
-            </p>
+<div id="climate-summary" class="space-y-3"></div>
+</div>
 
-            <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
-        </div>
+<div>
+<p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-3">
+Estrategias Bioclimáticas
+</p>
 
-        <button onclick="ejecutarAnalisis()"
-            class="w-full bg-blue-600 hover:bg-blue-700 transition-all text-white font-black uppercase py-4 rounded-xl text-xs">
-            Ejecutar Análisis Climático
-        </button>
-
-    </div>
-
-    <div class="lg:col-span-3 space-y-6">
-
-        <div id="chart-wrapper">
-            <canvas id="chart-canvas"></canvas>
-        </div>
-
-        <div class="table-container bg-white">
-            <table class="w-full text-xs">
-                <thead class="bg-slate-50 border-b text-slate-500 uppercase font-black">
-                    <tr>
-                        <th class="p-4">Color</th>
-                        <th class="p-4">Periodo</th>
-                        <th class="p-4 text-center">Temp. Máx</th>
-                        <th class="p-4 text-center">Temp. Mín</th>
-                        <th class="p-4 text-center">HR</th>
-                        <th class="p-4 text-center">Zona</th>
-                    </tr>
-                </thead>
-
-                <tbody id="table-body" class="font-bold text-slate-700"></tbody>
-            </table>
-        </div>
-
-    </div>
+<div id="strategy-list" class="space-y-3"></div>
+</div>
 
 </div>
 
-<div id="strategy-box" class="hidden bg-[#0f172a] rounded-3xl p-10 text-white border-l-[12px] border-blue-500">
+<div class="xl:col-span-3 space-y-6">
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div id="chart"></div>
 
-        <div class="space-y-8">
+<div class="bg-white rounded-3xl border overflow-hidden shadow-sm">
 
-            <div>
-                <p class="text-blue-400 uppercase font-black text-xs tracking-widest mb-4">
-                    Diagnóstico Bioclimático
-                </p>
+<table class="w-full text-xs">
+<thead class="bg-slate-50 border-b text-slate-500 uppercase font-black">
+<tr>
+<th class="p-4">Mes</th>
+<th class="p-4 text-center">Temp Máx</th>
+<th class="p-4 text-center">Temp Mín</th>
+<th class="p-4 text-center">HR</th>
+<th class="p-4 text-center">Zona Dominante</th>
+</tr>
+</thead>
 
-                <p id="analysis-text" class="text-lg leading-relaxed text-slate-300"></p>
-            </div>
+<tbody id="table-body" class="font-bold text-slate-700"></tbody>
 
-            <div id="strategy-list" class="space-y-4"></div>
+</table>
 
-        </div>
+</div>
 
-        <div class="bg-white rounded-2xl p-8">
-            <div id="svg-container"></div>
-        </div>
-
-    </div>
+</div>
 
 </div>
 
@@ -197,14 +128,14 @@ body {
 
 <script>
 
-const meses = [
-'Ene','Feb','Mar','Abr','May','Jun',
-'Jul','Ago','Sep','Oct','Nov','Dic'
-];
+/* =========================================================
+   VARIABLES
+========================================================= */
 
-let modo = 'mes';
-let selectedYears = [2025];
-let selectedMonths = [0,1,2,3,4];
+const months = [
+'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+];
 
 let lat = -2.170;
 let lon = -79.922;
@@ -213,10 +144,10 @@ let lon = -79.922;
    MAPA
 ========================================================= */
 
-const map = L.map('map').setView([lat, lon], 11);
+const map = L.map('map').setView([lat, lon], 8);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap'
+    attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
 const marker = L.marker([lat, lon]).addTo(map);
@@ -228,101 +159,56 @@ map.on('click', async (e) => {
 
     marker.setLatLng([lat, lon]);
 
-    try {
+    await updateLocationName();
 
-        const geo = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-        const data = await geo.json();
-
-        document.getElementById('location-display').innerText =
-            `Ubicación: ${data.address.city || data.address.town || data.address.state}`;
-
-    } catch(err) {}
-
+    runClimateAnalysis();
 });
 
 /* =========================================================
-   UI
+   UBICACIÓN
 ========================================================= */
 
-function setModo(m) {
+async function updateLocationName() {
 
-    modo = m;
+    try {
 
-    document.querySelectorAll('.btn-chip').forEach(btn => {
-        btn.classList.remove('active-chip');
-    });
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+        );
 
-    document.getElementById(`btn-${m}`).classList.add('active-chip');
+        const data = await response.json();
 
-    document.getElementById('month-section').style.display =
-        modo === 'mes' ? 'block' : 'none';
+        const city =
+            data.address.city ||
+            data.address.town ||
+            data.address.state ||
+            'Ubicación desconocida';
 
-    renderSelectors();
+        document.getElementById('location-text').innerText = city;
+
+    } catch(err) {
+        console.error(err);
+    }
 }
 
-function renderSelectors() {
+/* =========================================================
+   OPEN METEO
+========================================================= */
 
-    const yearBox = document.getElementById('year-selector');
-    yearBox.innerHTML = '';
+async function fetchClimateData() {
 
-    for(let y = 2026; y >= 2015; y--) {
+    const currentYear = new Date().getFullYear() - 1;
 
-        const chip = document.createElement('div');
+    const url = `https://archive-api.open-meteo.com/v1/archive?
+latitude=${lat}&
+longitude=${lon}&
+start_date=${currentYear}-01-01&
+end_date=${currentYear}-12-31&
+ hourly=temperature_2m,relative_humidity_2m`;
 
-        chip.className = `selector-chip ${selectedYears.includes(y)
-            ? 'selected-item'
-            : 'bg-white text-slate-500'}`;
+    const response = await fetch(url.replace(/\s+/g,''));
 
-        chip.innerText = y;
-
-        chip.onclick = () => {
-
-            if(modo === 'mes') {
-                selectedYears = [y];
-            }
-            else {
-
-                if(selectedYears.includes(y)) {
-                    selectedYears = selectedYears.filter(v => v !== y);
-                }
-                else {
-                    selectedYears.push(y);
-                }
-            }
-
-            renderSelectors();
-        };
-
-        yearBox.appendChild(chip);
-    }
-
-    const monthBox = document.getElementById('month-selector');
-    monthBox.innerHTML = '';
-
-    meses.forEach((mes, i) => {
-
-        const chip = document.createElement('div');
-
-        chip.className = `selector-chip ${selectedMonths.includes(i)
-            ? 'selected-item'
-            : 'bg-white text-slate-500'}`;
-
-        chip.innerText = mes.toUpperCase();
-
-        chip.onclick = () => {
-
-            if(selectedMonths.includes(i)) {
-                selectedMonths = selectedMonths.filter(v => v !== i);
-            }
-            else {
-                selectedMonths.push(i);
-            }
-
-            renderSelectors();
-        };
-
-        monthBox.appendChild(chip);
-    });
+    return await response.json();
 }
 
 /* =========================================================
@@ -342,298 +228,343 @@ function humidityRatio(temp, rh) {
 }
 
 /* =========================================================
-   DIBUJAR CLIMOGRAMA REAL
+   CONFIGURACIÓN D3
 ========================================================= */
 
-function drawPsychrometricChart(ctx, width, height) {
+const width = 1400;
+const height = 820;
+const margin = {
+    top: 50,
+    right: 120,
+    bottom: 80,
+    left: 100
+};
 
-    ctx.clearRect(0,0,width,height);
+const innerWidth = width - margin.left - margin.right;
+const innerHeight = height - margin.top - margin.bottom;
 
-    const pad = 80;
+/* =========================================================
+   14 ZONAS GIVONI
+========================================================= */
 
-    const graphW = width - pad * 1.5;
-    const graphH = height - pad * 1.5;
+const givoniZones = [
 
-    const maxTemp = 50;
-    const maxHumidity = 0.030;
+{
+    name: 'Comfort',
+    color: 'rgba(59,130,246,0.18)',
+    points: [[21,0.007],[27,0.007],[27,0.012],[21,0.012]]
+},
 
-    function getX(temp) {
-        return pad + (temp / maxTemp) * graphW;
+{
+    name: 'Ventilation',
+    color: 'rgba(16,185,129,0.18)',
+    points: [[27,0.007],[32,0.007],[32,0.014],[27,0.012]]
+},
+
+{
+    name: 'Evaporative Cooling',
+    color: 'rgba(14,165,233,0.18)',
+    points: [[32,0.004],[38,0.004],[38,0.012],[32,0.014]]
+},
+
+{
+    name: 'Thermal Mass',
+    color: 'rgba(249,115,22,0.16)',
+    points: [[27,0.012],[34,0.012],[34,0.018],[27,0.018]]
+},
+
+{
+    name: 'Passive Solar Heating',
+    color: 'rgba(234,179,8,0.18)',
+    points: [[16,0.004],[21,0.004],[21,0.010],[16,0.010]]
+},
+
+{
+    name: 'Humidification',
+    color: 'rgba(168,85,247,0.15)',
+    points: [[20,0.001],[26,0.001],[26,0.004],[20,0.004]]
+},
+
+{
+    name: 'Dehumidification',
+    color: 'rgba(239,68,68,0.15)',
+    points: [[24,0.014],[32,0.014],[32,0.020],[24,0.020]]
+},
+
+{
+    name: 'Air Conditioning',
+    color: 'rgba(15,23,42,0.12)',
+    points: [[32,0.014],[42,0.014],[42,0.024],[32,0.024]]
+}
+
+];
+
+/* =========================================================
+   DETECCIÓN DE ZONA
+========================================================= */
+
+function detectZone(temp, humidity) {
+
+    if(temp >= 21 && temp <= 27 && humidity >= 0.007 && humidity <= 0.012) {
+        return 'Comfort';
     }
 
-    function getY(w) {
-        return height - pad - (w / maxHumidity) * graphH;
+    if(temp >= 27 && temp <= 32 && humidity >= 0.007) {
+        return 'Ventilation';
     }
 
-    /* Fondo */
-
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0,0,width,height);
-
-    /* Grid */
-
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1;
-
-    for(let t = 0; t <= 50; t += 5) {
-
-        const x = getX(t);
-
-        ctx.beginPath();
-        ctx.moveTo(x, pad);
-        ctx.lineTo(x, height - pad);
-        ctx.stroke();
-
-        ctx.fillStyle = '#64748b';
-        ctx.font = '11px Inter';
-        ctx.fillText(`${t}`, x - 6, height - 55);
+    if(temp > 32) {
+        return 'Evaporative Cooling';
     }
 
-    for(let g = 0; g <= maxHumidity; g += 0.005) {
-
-        const y = getY(g);
-
-        ctx.beginPath();
-        ctx.moveTo(pad, y);
-        ctx.lineTo(width - pad/2, y);
-        ctx.stroke();
-
-        ctx.fillText((g*1000).toFixed(0), 30, y + 3);
+    if(temp < 20) {
+        return 'Passive Solar Heating';
     }
 
-    /* Curvas de humedad relativa */
+    if(humidity > 0.014) {
+        return 'Dehumidification';
+    }
 
-    const RH_VALUES = [10,20,30,40,50,60,70,80,90,100];
-
-    RH_VALUES.forEach(rhVal => {
-
-        ctx.beginPath();
-        ctx.lineWidth = rhVal === 100 ? 2 : 1;
-        ctx.strokeStyle = rhVal === 100 ? '#475569' : '#94a3b8';
-
-        for(let t = 0; t <= 50; t += 0.5) {
-
-            const w = humidityRatio(t, rhVal / 100);
-
-            const x = getX(t);
-            const y = getY(w);
-
-            if(t === 0) {
-                ctx.moveTo(x,y);
-            }
-            else {
-                ctx.lineTo(x,y);
-            }
-        }
-
-        ctx.stroke();
-
-        const labelX = getX(46);
-        const labelY = getY(humidityRatio(46, rhVal / 100));
-
-        ctx.fillStyle = '#64748b';
-        ctx.font = '10px Inter';
-
-        ctx.fillText(`${rhVal}%`, labelX + 8, labelY + 3);
-    });
-
-    /* Zona de confort */
-
-    ctx.fillStyle = 'rgba(59,130,246,0.12)';
-    ctx.strokeStyle = 'rgba(59,130,246,0.6)';
-    ctx.lineWidth = 2;
-
-    const comfortTemps = [21,27,27,21];
-    const comfortRH = [0.007,0.007,0.012,0.012];
-
-    ctx.beginPath();
-
-    comfortTemps.forEach((t, i) => {
-
-        const x = getX(t);
-        const y = getY(comfortRH[i]);
-
-        if(i === 0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
-    });
-
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#2563eb';
-    ctx.font = 'bold 12px Inter';
-    ctx.fillText('Zona de Confort', getX(22), getY(0.010));
-
-    /* Ejes */
-
-    ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 13px Inter';
-
-    ctx.fillText('Temperatura de Bulbo Seco (°C)', width/2 - 90, height - 20);
-
-    ctx.save();
-    ctx.translate(20, height/2 + 80);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('Humedad Absoluta (g/kg)', 0,0);
-    ctx.restore();
+    return 'Thermal Mass';
 }
 
 /* =========================================================
-   DATOS CLIMÁTICOS BASE
+   DIBUJAR CLIMOGRAMA
 ========================================================= */
 
-const climateData = {
+function drawChart(hourlyData) {
 
-    0: { tMax: 31, tMin: 24, hr: 82 },
-    1: { tMax: 31, tMin: 24, hr: 84 },
-    2: { tMax: 32, tMin: 24, hr: 85 },
-    3: { tMax: 32, tMin: 25, hr: 83 },
-    4: { tMax: 31, tMin: 24, hr: 82 },
-    5: { tMax: 30, tMin: 23, hr: 81 },
-    6: { tMax: 29, tMin: 22, hr: 80 },
-    7: { tMax: 29, tMin: 22, hr: 78 },
-    8: { tMax: 29, tMin: 22, hr: 79 },
-    9: { tMax: 30, tMin: 23, hr: 81 },
-    10:{ tMax: 30, tMin: 23, hr: 82 },
-    11:{ tMax: 31, tMin: 24, hr: 83 }
-};
+    d3.select('#chart').html('');
+
+    const svg = d3.select('#chart')
+        .append('svg')
+        .attr('width', '100%')
+        .attr('height', height)
+        .attr('viewBox', `0 0 ${width} ${height}`);
+
+    const g = svg.append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const xScale = d3.scaleLinear()
+        .domain([0, 50])
+        .range([0, innerWidth]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, 0.030])
+        .range([innerHeight, 0]);
+
+    /* GRID */
+
+    for(let t = 0; t <= 50; t += 5) {
+
+        g.append('line')
+            .attr('x1', xScale(t))
+            .attr('x2', xScale(t))
+            .attr('y1', 0)
+            .attr('y2', innerHeight)
+            .attr('stroke', '#e2e8f0');
+    }
+
+    for(let hr = 0; hr <= 0.030; hr += 0.002) {
+
+        g.append('line')
+            .attr('x1', 0)
+            .attr('x2', innerWidth)
+            .attr('y1', yScale(hr))
+            .attr('y2', yScale(hr))
+            .attr('stroke', '#e2e8f0');
+    }
+
+    /* CURVAS RH */
+
+    const rhValues = [10,20,30,40,50,60,70,80,90,100];
+
+    rhValues.forEach(rh => {
+
+        const points = [];
+
+        for(let t = 0; t <= 50; t += 0.5) {
+
+            const w = humidityRatio(t, rh/100);
+
+            points.push([
+                xScale(t),
+                yScale(w)
+            ]);
+        }
+
+        const line = d3.line();
+
+        g.append('path')
+            .attr('d', line(points))
+            .attr('fill', 'none')
+            .attr('stroke', rh === 100 ? '#334155' : '#94a3b8')
+            .attr('stroke-width', rh === 100 ? 2 : 1);
+    });
+
+    /* ZONAS GIVONI */
+
+    givoniZones.forEach(zone => {
+
+        const polygon = zone.points.map(p => [
+            xScale(p[0]),
+            yScale(p[1])
+        ]);
+
+        g.append('polygon')
+            .attr('points', polygon.join(' '))
+            .attr('fill', zone.color)
+            .attr('stroke', '#64748b')
+            .attr('stroke-width', 1);
+
+        g.append('text')
+            .attr('x', xScale(zone.points[0][0]) + 10)
+            .attr('y', yScale(zone.points[0][1]) - 10)
+            .text(zone.name)
+            .attr('class', 'zone-label')
+            .attr('fill', '#0f172a');
+    });
+
+    /* PUNTOS CLIMÁTICOS */
+
+    const temps = hourlyData.temperature_2m;
+    const humidity = hourlyData.relative_humidity_2m;
+
+    const monthlyStats = [];
+
+    temps.forEach((temp, i) => {
+
+        const rh = humidity[i] / 100;
+
+        const w = humidityRatio(temp, rh);
+
+        const month = new Date(hourlyData.time[i]).getMonth();
+
+        if(!monthlyStats[month]) {
+
+            monthlyStats[month] = {
+                max: temp,
+                min: temp,
+                hr: humidity[i],
+                points: []
+            };
+        }
+
+        monthlyStats[month].max = Math.max(monthlyStats[month].max, temp);
+        monthlyStats[month].min = Math.min(monthlyStats[month].min, temp);
+
+        monthlyStats[month].points.push({
+            temp,
+            humidity: w
+        });
+
+        g.append('circle')
+            .attr('cx', xScale(temp))
+            .attr('cy', yScale(w))
+            .attr('r', 2.2)
+            .attr('fill', 'rgba(37,99,235,0.35)');
+    });
+
+    /* EJES */
+
+    g.append('g')
+        .attr('transform', `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(xScale));
+
+    g.append('g')
+        .call(d3.axisLeft(yScale));
+
+    g.append('text')
+        .attr('x', innerWidth / 2)
+        .attr('y', innerHeight + 60)
+        .attr('font-weight', 'bold')
+        .text('Temperatura de Bulbo Seco (°C)');
+
+    g.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -innerHeight / 2)
+        .attr('y', -70)
+        .attr('font-weight', 'bold')
+        .text('Humedad Absoluta (kg/kg)');
+
+    updateTable(monthlyStats);
+
+    updateBioclimaticAnalysis(temps, humidity);
+}
 
 /* =========================================================
-   ANALISIS
+   TABLA DINÁMICA
 ========================================================= */
 
-function ejecutarAnalisis() {
+function updateTable(monthlyStats) {
 
-    const canvas = document.getElementById('chart-canvas');
-    const wrapper = document.getElementById('chart-wrapper');
+    const tbody = document.getElementById('table-body');
 
-    canvas.width = wrapper.clientWidth;
-    canvas.height = wrapper.clientHeight;
+    tbody.innerHTML = '';
 
-    const ctx = canvas.getContext('2d');
+    monthlyStats.forEach((monthData, index) => {
 
-    drawPsychrometricChart(ctx, canvas.width, canvas.height);
+        if(!monthData) return;
 
-    const tableBody = document.getElementById('table-body');
-    tableBody.innerHTML = '';
+        const avgHumidity = monthData.hr;
 
-    const pad = 80;
-    const graphW = canvas.width - pad * 1.5;
-    const graphH = canvas.height - pad * 1.5;
+        const zone = detectZone(
+            monthData.max,
+            humidityRatio(monthData.max, avgHumidity/100)
+        );
 
-    function getX(temp) {
-        return pad + (temp / 50) * graphW;
-    }
-
-    function getY(w) {
-        return canvas.height - pad - (w / 0.030) * graphH;
-    }
-
-    const items = modo === 'mes' ? selectedMonths : selectedYears;
-
-    let avgTemp = 0;
-    let avgHR = 0;
-
-    items.forEach((item, i) => {
-
-        const data = climateData[item % 12];
-
-        const color = `hsl(${(i * 360 / items.length)},85%,50%)`;
-
-        avgTemp += data.tMax;
-        avgHR += data.hr;
-
-        const label = modo === 'mes'
-            ? `${meses[item]}-${selectedYears[0]}`
-            : item;
-
-        const hr = data.hr / 100;
-
-        const wMax = humidityRatio(data.tMax, hr);
-        const wMin = humidityRatio(data.tMin, hr);
-
-        /* Curva climática */
-
-        ctx.beginPath();
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = color;
-        ctx.lineCap = 'round';
-
-        for(let t = data.tMin; t <= data.tMax; t += 0.3) {
-
-            const factor = (t - data.tMin) / (data.tMax - data.tMin);
-            const dynamicRH = hr - factor * 0.12;
-
-            const w = humidityRatio(t, dynamicRH);
-
-            const x = getX(t);
-            const y = getY(w);
-
-            if(t === data.tMin) ctx.moveTo(x,y);
-            else ctx.lineTo(x,y);
-        }
-
-        ctx.stroke();
-
-        /* Clasificación */
-
-        let zone = 'Confort';
-
-        if(data.tMax > 29 && data.hr > 75) {
-            zone = 'Ventilación';
-        }
-
-        if(data.tMax > 33) {
-            zone = 'Enfriamiento';
-        }
-
-        tableBody.innerHTML += `
+        tbody.innerHTML += `
 
         <tr class="border-b hover:bg-slate-50">
-            <td class="p-4">
-                <div class="w-4 h-4 rounded-full" style="background:${color}"></div>
+
+            <td class="p-4">${months[index]}</td>
+
+            <td class="p-4 text-center">
+                ${monthData.max.toFixed(1)}°C
             </td>
 
-            <td class="p-4">${label}</td>
-            <td class="p-4 text-center">${data.tMax}°C</td>
-            <td class="p-4 text-center">${data.tMin}°C</td>
-            <td class="p-4 text-center text-blue-600 font-black">${data.hr}%</td>
-            <td class="p-4 text-center">${zone}</td>
+            <td class="p-4 text-center">
+                ${monthData.min.toFixed(1)}°C
+            </td>
+
+            <td class="p-4 text-center text-blue-600 font-black">
+                ${avgHumidity.toFixed(0)}%
+            </td>
+
+            <td class="p-4 text-center font-black">
+                ${zone}
+            </td>
+
         </tr>
 
         `;
     });
-
-    avgTemp /= items.length;
-    avgHR /= items.length;
-
-    generateStrategies(avgTemp, avgHR);
 }
 
 /* =========================================================
-   ESTRATEGIAS BIOCLIMÁTICAS
+   DIAGNÓSTICO DINÁMICO
 ========================================================= */
 
-function generateStrategies(temp, hr) {
+function updateBioclimaticAnalysis(temps, humidity) {
 
-    const strategyBox = document.getElementById('strategy-box');
-    strategyBox.classList.remove('hidden');
-
-    const analysisText = document.getElementById('analysis-text');
+    const summary = document.getElementById('climate-summary');
     const strategyList = document.getElementById('strategy-list');
-    const svgContainer = document.getElementById('svg-container');
 
-    let text = '';
+    summary.innerHTML = '';
+    strategyList.innerHTML = '';
+
+    const avgTemp = d3.mean(temps);
+    const avgHumidity = d3.mean(humidity);
+
+    let diagnosis = '';
     let strategies = [];
 
-    if(temp >= 29 && hr >= 75) {
+    if(avgTemp > 28 && avgHumidity > 75) {
 
-        text = `
-        El climograma evidencia condiciones cálido-húmedas durante gran parte del año.
-        La combinación de altas temperaturas y elevada humedad relativa desplaza los puntos climáticos
-        fuera de la zona de confort, por lo que se requieren estrategias pasivas orientadas
-        a maximizar la ventilación natural, disipar calor acumulado y reducir ganancias solares.
+        diagnosis = `
+        Clima cálido húmedo dominante. El comportamiento psicrométrico
+        evidencia sobrecalentamiento combinado con alta humedad relativa,
+        desplazando gran parte de las horas anuales fuera de la zona de confort.
         `;
 
         strategies = [
@@ -641,84 +572,92 @@ function generateStrategies(temp, hr) {
             'Cubiertas ventiladas',
             'Protección solar horizontal',
             'Fachadas permeables',
-            'Reducción de masa térmica interna'
+            'Control de ganancias térmicas',
+            'Espacios semiabiertos',
+            'Sombras profundas',
+            'Reducción de masa térmica'
         ];
 
     }
-    else {
 
-        text = `
-        El comportamiento climático se aproxima parcialmente a la zona de confort.
-        Las estrategias pasivas deben enfocarse en controlar ganancias térmicas y
-        mantener renovación de aire moderada.
+    else if(avgTemp < 20) {
+
+        diagnosis = `
+        Clima templado frío. Las estrategias deben priorizar
+        captación solar, control térmico y masa térmica.
         `;
 
         strategies = [
-            'Protección solar parcial',
+            'Ganancia solar pasiva',
+            'Masa térmica interna',
+            'Protección contra vientos',
+            'Compactación volumétrica'
+        ];
+    }
+
+    else {
+
+        diagnosis = `
+        Clima templado intermedio. Parte importante del año
+        se encuentra cercana a la zona de confort.
+        `;
+
+        strategies = [
             'Ventilación moderada',
+            'Protección solar parcial',
             'Inercia térmica controlada'
         ];
     }
 
-    analysisText.innerText = text;
+    summary.innerHTML = `
 
-    strategyList.innerHTML = '';
+    <div class="bg-slate-50 border rounded-2xl p-5">
+
+        <p class="text-sm leading-relaxed text-slate-700 font-semibold">
+            ${diagnosis}
+        </p>
+
+    </div>
+
+    `;
 
     strategies.forEach(strategy => {
 
         strategyList.innerHTML += `
 
-        <div class="bg-slate-900 rounded-xl p-5 border-l-4 border-blue-500">
-            <p class="text-sm text-slate-300 font-semibold">
+        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+            <p class="text-xs uppercase font-black tracking-wider text-blue-700">
                 ${strategy}
             </p>
         </div>
 
         `;
     });
+}
 
-    svgContainer.innerHTML = `
+/* =========================================================
+   RUN
+========================================================= */
 
-    <svg viewBox="0 0 500 350" width="100%" height="100%">
+async function runClimateAnalysis() {
 
-        <rect x="80" y="110" width="340" height="130"
-            fill="#f8fafc" stroke="#94a3b8" stroke-width="3"/>
+    try {
 
-        <rect x="140" y="70" width="220" height="50"
-            fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/>
+        const climate = await fetchClimateData();
 
-        <line x1="30" y1="180" x2="470" y2="180"
-            stroke="#0ea5e9" stroke-width="10" opacity="0.3"/>
+        drawChart(climate.hourly);
 
-        <polygon points="460,180 420,160 420,200"
-            fill="#0ea5e9" opacity="0.6"/>
-
-        <line x1="50" y1="150" x2="450" y2="150"
-            stroke="#38bdf8" stroke-width="4" opacity="0.5" stroke-dasharray="12"/>
-
-        <line x1="50" y1="210" x2="450" y2="210"
-            stroke="#38bdf8" stroke-width="4" opacity="0.5" stroke-dasharray="12"/>
-
-        <text x="120" y="300" fill="#0f172a" font-size="18" font-weight="bold">
-            Estrategia de Ventilación Cruzada
-        </text>
-
-    </svg>
-
-    `;
+    } catch(err) {
+        console.error(err);
+    }
 }
 
 /* =========================================================
    INIT
 ========================================================= */
 
-renderSelectors();
-
-window.onload = () => {
-    setTimeout(ejecutarAnalisis, 300);
-};
-
-window.addEventListener('resize', ejecutarAnalisis);
+updateLocationName();
+runClimateAnalysis();
 
 </script>
 
