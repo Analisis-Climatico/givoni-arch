@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Global Arch Pro - Calibración Total</title>
+    <title>Givoni Global Arch - Interactivo Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -13,21 +13,12 @@
         .btn-modo { transition: all 0.3s; font-size: 1.1rem; padding: 12px 24px; border-radius: 10px; font-weight: 800; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
         .config-label { font-size: 1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
-        .strategy-text { font-size: 1.2rem; line-height: 1.7; }
-        #architectural-diagram-container {
-            width: 100%;
-            height: 450px;
-            background-color: #ffffff;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        #givoni-plot { border-radius: 24px; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
     </style>
 </head>
 <body class="bg-slate-50 p-4 md:p-8">
 
-    <main class="max-w-[1600px] mx-auto">
+    <main class="max-w-[1700px] mx-auto">
         <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-md border">
             <div>
                 <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase">Givoni Global Arch</h1>
@@ -47,7 +38,7 @@
                     <h2 class="config-label mb-6 border-b-2 border-blue-500 pb-2 italic">Configuración</h2>
                     <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto p-2 mb-8 border rounded-xl bg-gray-50 font-black"></div>
                     <div id="section-meses" class="mb-8">
-                        <h2 class="config-label mb-6">Meses</h2>
+                        <h2 class="config-label mb-6">Selección de Meses</h2>
                         <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                     </div>
                     <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-2xl transition-all text-xl uppercase tracking-tighter">
@@ -61,38 +52,22 @@
                     <div id="givoni-plot" style="width:100%; height:850px;"></div>
                 </div>
 
-                <div class="bg-white p-8 rounded-2xl shadow-md border">
-                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase">Registro Técnico de Datos</h3>
-                    <table class="w-full text-lg text-left">
-                        <thead>
-                            <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black text-center">
-                                <th class="p-4">Ref</th>
-                                <th class="p-4 text-left">Periodo</th>
-                                <th class="p-4">TBS Máx</th>
-                                <th class="p-4">TBS Mín</th>
-                                <th class="p-4 text-blue-600">HR %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="data-table-body" class="font-bold text-slate-700"></tbody>
-                    </table>
-                </div>
-
-                <div id="strategy-box" class="bg-slate-900 p-10 rounded-3xl text-white shadow-2xl hidden">
+                <div id="strategy-box" class="bg-slate-900 p-10 rounded-3xl text-white shadow-2xl hidden border-l-8 border-blue-600">
                     <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-700 pb-4 italic">Diagnóstico y Estrategia Arquitectónica</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div class="space-y-8">
                             <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 uppercase">Análisis del Climograma:</h4>
-                                <p id="climograma-text" class="strategy-text text-slate-300 italic font-light"></p>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 uppercase">Análisis Climático:</h4>
+                                <p id="climograma-text" class="text-lg text-slate-300 italic font-light"></p>
                             </div>
                             <div>
-                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-blue-300">Propuesta Tectónica:</h4>
-                                <div id="recomendacion-box" class="strategy-text text-white space-y-4"></div>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-blue-300">Recomendaciones:</h4>
+                                <div id="recomendacion-box" class="text-lg text-white space-y-4"></div>
                             </div>
                         </div>
                         <div class="space-y-4 flex flex-col items-center">
-                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Isométrico Pro</h4>
-                            <div id="architectural-diagram-container"></div>
+                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Isométrico Tectónico</h4>
+                            <div id="architectural-diagram-container" class="w-full h-[450px] bg-white rounded-2xl flex items-center justify-center"></div>
                         </div>
                     </div>
                 </div>
@@ -147,8 +122,6 @@
 
         function ejecutarAnalisis() {
             const traces = [];
-            const tableBody = document.getElementById('data-table-body');
-            tableBody.innerHTML = '';
             const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
             let sumTMax = 0, sumHR = 0;
 
@@ -161,22 +134,19 @@
                 sumTMax += tMax; sumHR += hr;
 
                 traces.push({
-                    x: [tMin, tMax], y: [hr - (tMax-tMin)*0.3, hr + (tMax-tMin)*0.3],
-                    type: 'scatter', mode: 'lines+markers', name: label,
-                    line: { width: 5, color: color }, marker: { size: 10, line: {color:'white', width:2} }
+                    x: [tMin, tMax], 
+                    y: [hr - (tMax-tMin)*0.3, hr + (tMax-tMin)*0.3],
+                    type: 'scatter', 
+                    mode: 'lines+markers', 
+                    name: label,
+                    // ESTA PARTE REEMPLAZA A LA TABLA:
+                    hovertemplate: `<b>${label}</b><br>TBS Máx: ${tMax.toFixed(1)}°C<br>TBS Mín: ${tMin.toFixed(1)}°C<br>HR: ${hr.toFixed(0)}%<extra></extra>`,
+                    line: { width: 6, color: color }, 
+                    marker: { size: 14, line: {color:'white', width:3} }
                 });
-
-                tableBody.innerHTML += `
-                    <tr class="border-b-2 border-slate-100 text-center">
-                        <td class="p-5"><div class="w-6 h-6 rounded-full inline-block border-2 border-white shadow-md" style="background:${color}"></div></td>
-                        <td class="p-5 text-xl font-black text-left">${label}</td>
-                        <td class="p-5 text-xl">${tMax.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl">${tMin.toFixed(1)}°C</td>
-                        <td class="p-5 text-xl text-blue-600 font-black">${hr.toFixed(0)}%</td>
-                    </tr>`;
             });
 
-            // LA "L INVERTIDA" VERDE (DIBUJO MANUAL)
+            // "L" INVERTIDA VERDE
             traces.push({
                 x: [21.5, 45, 45], y: [100, 100, 0],
                 type: 'scatter', mode: 'lines',
@@ -186,19 +156,19 @@
             const layout = {
                 images: [{
                     source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
-                    xref: "x", yref: "y", 
-                    x: -6.05, y: 101.5, sizex: 52.8, sizey: 104,
+                    xref: "x", yref: "y", x: -6.05, y: 101.5, sizex: 52.8, sizey: 104,
                     sizing: "stretch", layer: "below"
                 }],
                 xaxis: { 
                     range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.03)',
-                    title: { text: 'TBS (°C)', font: { size: 18, color: 'red', weight: '900' } }
+                    title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 18, color: 'red', weight: '900' } }
                 },
                 yaxis: { 
                     range: [0, 105], dtick: 10, side: 'right', showline: false,
                     gridcolor: 'rgba(0,0,0,0.03)',
-                    title: { text: 'HR (%)', font: { size: 18, color: 'green', weight: '900' } }
+                    title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 18, color: 'green', weight: '900' } }
                 },
+                hoverlabel: { bgcolor: "#1e293b", font: { color: "white", size: 16, family: "Arial Black" } },
                 showlegend: false, margin: { t: 50, b: 80, l: 50, r: 100 },
                 plot_bgcolor: 'white'
             };
@@ -208,26 +178,22 @@
             procesarDiagnostico(sumTMax / items.length, sumHR / items.length);
         }
 
+        // --- LAS FUNCIONES DE DIBUJO SIGUEN IGUAL ---
         function procesarDiagnostico(avgT, avgH) {
             const climText = document.getElementById('climograma-text');
             const recBox = document.getElementById('recomendacion-box');
             recBox.innerHTML = '';
-            let tipo = 'viento';
+            let tipo = (avgH > 75) ? 'viento' : (avgT > 32) ? 'masa' : 'vegetacion';
 
-            if (avgH > 75) {
-                climText.innerText = "Saturación crítica de humedad detectada. El aire requiere renovación constante para permitir el confort evaporativo corporal.";
-                const s = [{ t: "Celosías Dinámicas:", d: "Bambú o Madera para sombrear sin retener calor." }, { t: "Ventilación:", d: "Flujo laminar en fachadas opuestas." }];
-                s.forEach(e => recBox.innerHTML += `<div><h5 class="font-black text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                tipo = 'viento';
-            } else if (avgT > 32) {
-                climText.innerText = "Altas temperaturas diurnas. Calor radiante predominante, requiriendo masa térmica profunda.";
-                const s = [{ t: "Masa Pesada:", d: "Muros de Ladrillo o BTC para retrasar el flujo térmico." }, { t: "Envolvente:", d: "Cámara de aire ventilada para enfriar la estructura." }];
-                s.forEach(e => recBox.innerHTML += `<div><h5 class="font-black text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                tipo = 'masa';
+            if (tipo === 'viento') {
+                climText.innerText = "Saturación de humedad. El aire requiere renovación constante.";
+                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Solución:</h5><p class="text-slate-400 text-sm">Celosías dinámicas de madera o bambú.</p></div>`;
+            } else if (tipo === 'masa') {
+                climText.innerText = "Calor radiante extremo detectado.";
+                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Solución:</h5><p class="text-slate-400 text-sm">Muros de Inercia y doble envolvente ventilada.</p></div>`;
             } else {
-                climText.innerText = "Confort híbrido estable. Potenciar microclimas mediante vegetación.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Vegetación:</h5><p class="text-slate-400 text-sm mt-1">Barreras verdes y pavimentos permeables para refrescar el aire.</p></div>`;
-                tipo = 'vegetacion';
+                climText.innerText = "Clima moderado. Estrategias híbridas.";
+                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Solución:</h5><p class="text-slate-400 text-sm">Vegetación perimetral y pavimentos permeables.</p></div>`;
             }
             dibujarIsometrico(tipo);
         }
@@ -241,7 +207,7 @@
                 svg += `<path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${c.wall}" stroke="#64748b" stroke-width="2"/>
                 <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="${c.wall}" stroke="#64748b" stroke-width="2"/>
                 <rect x="230" y="120" width="10" height="170" fill="${c.wood}" transform="rotate(-15 235 205)"/>
-                <path d="M 20,230 Q 150,230 480,160" stroke="${c.wind}" stroke-width="10" fill="none" marker-end="url(#arr)" opacity="0.6"/>`;
+                <path d="M 20,230 Q 480,160 480,160" stroke="${c.wind}" stroke-width="12" fill="none" marker-end="url(#arr)" opacity="0.6"/>`;
             } else if (tipo === 'masa') {
                 svg += `<path d="M 100,300 L 140,280 L 140,80 L 100,100 Z" fill="#64748b" stroke="#1e293b" stroke-width="4"/>
                 <path d="M 100,100 L 400,100 L 370,120 L 80,120 Z" fill="#475569" stroke="#1e293b" stroke-width="3"/>
