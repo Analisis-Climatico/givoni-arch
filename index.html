@@ -195,7 +195,6 @@ class="tooltip-box">
 <th class="p-4 text-center">Temp Máx</th>
 <th class="p-4 text-center">Temp Mín</th>
 <th class="p-4 text-center">HR</th>
-<th class="p-4 text-center">Diagnóstico</th>
 
 </tr>
 
@@ -599,21 +598,40 @@ d3.line()
 SVG ZONES
 ========================================================= */
 
-const zonesSVG = await loadZonesSVG();
+await loadZonesSVG();
 
-g.append('foreignObject')
-.attr('x',0)
-.attr('y',0)
-.attr('width',innerWidth)
-.attr('height',innerHeight)
+const zoneContainer = g.append("g")
+.attr("class","givoni-zones");
+
+zoneContainer.append("foreignObject")
+.attr("x", 0)
+.attr("y", 0)
+.attr("width", innerWidth)
+.attr("height", innerHeight)
+
 .html(`
-<div style="
+<div xmlns="http://www.w3.org/1999/xhtml"
+style="
 width:${innerWidth}px;
 height:${innerHeight}px;
-opacity:0.75;
+display:flex;
+align-items:stretch;
+justify-content:stretch;
 pointer-events:none;
+overflow:hidden;
+opacity:0.78;
 ">
-${zonesSVG}
+
+<img
+src="pruega-de-svg.svg"
+style="
+width:100%;
+height:100%;
+object-fit:fill;
+display:block;
+"
+/>
+
 </div>
 `);
 
@@ -765,10 +783,6 @@ ${d.tMin.toFixed(1)}°C
 
 <td class="p-4 text-center text-blue-600 font-black">
 ${d.hr.toFixed(0)}%
-</td>
-
-<td class="p-4 text-center">
-Análisis climático activo
 </td>
 
 </tr>
