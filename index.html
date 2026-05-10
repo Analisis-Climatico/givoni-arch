@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Global Arch Pro - Generador Tectónico</title>
+    <title>Givoni Global Arch Pro - Calibración Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -12,72 +12,86 @@
         #map { height: 280px; border-radius: 15px; z-index: 1; border: 2px solid #e5e7eb; }
         .btn-modo { transition: all 0.3s; font-size: 1.1rem; padding: 12px 24px; border-radius: 10px; font-weight: 800; }
         .active-chip { background-color: #1e40af !important; color: white !important; }
-        .config-label { font-size: 1.1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
+        .config-label { font-size: 1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; }
         .strategy-text { font-size: 1.2rem; line-height: 1.7; }
         #architectural-diagram-container {
             width: 100%;
-            height: 550px;
+            height: 450px;
             background-color: #ffffff;
             border-radius: 20px;
-            border: 2px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
     </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-8 text-slate-800">
+<body class="bg-slate-50 p-4 md:p-8">
 
-    <main class="max-w-[1700px] mx-auto">
-        <header class="flex justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-lg border">
+    <main class="max-w-[1600px] mx-auto">
+        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-md border">
             <div>
-                <h1 class="text-3xl font-black tracking-tighter uppercase">Givoni Global Arch</h1>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase">Givoni Global Arch</h1>
                 <p id="location-name" class="text-blue-600 font-black text-xl mt-1 italic">UBICACIÓN: Selecciona un punto</p>
             </div>
             <div class="flex gap-4">
-                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-slate-100 active-chip">Análisis Meses</button>
-                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-slate-100">Análisis Años</button>
+                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-gray-100 text-slate-600 active-chip">ANÁLISIS POR MESES</button>
+                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-gray-100 text-slate-600">ANÁLISIS POR AÑOS</button>
             </div>
         </header>
 
-        <div id="map" class="mb-6 shadow-md"></div>
+        <div id="map" class="mb-8 shadow-lg"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-1 space-y-6">
                 <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-500">
-                    <h2 class="config-label mb-4 border-b-2 border-blue-500 pb-2">Configuración</h2>
-                    <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto p-2 mb-6 border rounded-xl bg-gray-50 font-black"></div>
-                    <div id="section-meses" class="mb-6">
-                        <h2 class="config-label mb-4">Meses</h2>
-                        <div id="month-selector" class="grid grid-cols-3 gap-2 font-black text-sm"></div>
+                    <h2 class="config-label mb-6 border-b-2 border-blue-500 pb-2 italic">Configuración</h2>
+                    <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto p-2 mb-8 border rounded-xl bg-gray-50 font-black"></div>
+                    <div id="section-meses" class="mb-8">
+                        <h2 class="config-label mb-6">Meses</h2>
+                        <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                     </div>
-                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-xl text-xl uppercase tracking-tighter transition-all">
+                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-2xl transition-all text-xl uppercase tracking-tighter">
                         Trazar Análisis
                     </button>
                 </div>
             </div>
 
             <div class="lg:col-span-3 space-y-8">
-                <div class="bg-white p-2 rounded-3xl shadow-2xl border">
+                <div class="bg-white p-2 rounded-3xl shadow-xl border">
                     <div id="givoni-plot" style="width:100%; height:850px;"></div>
                 </div>
 
-                <div id="strategy-box" class="bg-slate-950 p-10 rounded-3xl text-white shadow-2xl hidden">
-                    <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-800 pb-4 italic">Diagnóstico y Estrategia Arquitectónica</h3>
+                <div class="bg-white p-8 rounded-2xl shadow-md border">
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase">Registro Técnico de Datos</h3>
+                    <table class="w-full text-lg text-left">
+                        <thead>
+                            <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black text-center">
+                                <th class="p-4">Ref</th>
+                                <th class="p-4 text-left">Periodo</th>
+                                <th class="p-4">TBS Máx</th>
+                                <th class="p-4">TBS Mín</th>
+                                <th class="p-4 text-blue-600">HR %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body" class="font-bold text-slate-700"></tbody>
+                    </table>
+                </div>
+
+                <div id="strategy-box" class="bg-slate-900 p-10 rounded-3xl text-white shadow-2xl hidden">
+                    <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-700 pb-4 italic">Diagnóstico y Estrategia Arquitectónica</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div class="space-y-8">
                             <div>
-                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3">Análisis del Climograma:</h4>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 uppercase">Análisis del Climograma:</h4>
                                 <p id="climograma-text" class="strategy-text text-slate-300 italic font-light"></p>
                             </div>
                             <div>
-                                <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-blue-300">Propuesta Técnica:</h4>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-blue-300">Propuesta Tectónica:</h4>
                                 <div id="recomendacion-box" class="strategy-text text-white space-y-4"></div>
                             </div>
                         </div>
                         <div class="space-y-4 flex flex-col items-center">
-                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Sección Isométrica Técnica</h4>
+                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Isométrico Pro</h4>
                             <div id="architectural-diagram-container"></div>
                         </div>
                     </div>
@@ -97,11 +111,9 @@
         map.on('click', async (e) => {
             lat = e.latlng.lat; lon = e.latlng.lng;
             marker.setLatLng([lat, lon]);
-            try {
-                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
-                const data = await res.json();
-                document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}, ${data.sys.country}`;
-            } catch(e) {}
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
+            const data = await res.json();
+            document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}, ${data.sys.country}`;
         });
 
         function setModo(m) {
@@ -127,7 +139,7 @@
         const monthBox = document.getElementById('month-selector');
         meses.forEach((m, i) => {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-3 border-2 rounded-xl text-center font-black ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`;
+            chip.className = `cursor-pointer p-3 border-2 rounded-xl text-center font-black text-sm ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400'}`;
             chip.innerText = m;
             chip.onclick = () => { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionMeses.includes(i)) seleccionMeses = seleccionMeses.filter(idx => idx !== i); else seleccionMeses.push(i); };
             monthBox.appendChild(chip);
@@ -135,6 +147,8 @@
 
         function ejecutarAnalisis() {
             const traces = [];
+            const tableBody = document.getElementById('data-table-body');
+            tableBody.innerHTML = '';
             const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
             let sumTMax = 0, sumHR = 0;
 
@@ -147,95 +161,94 @@
                 sumTMax += tMax; sumHR += hr;
 
                 traces.push({
-                    x: [tMin, tMax], y: [hr - 5, hr + 5],
+                    x: [tMin, tMax], y: [hr - (tMax-tMin)*0.3, hr + (tMax-tMin)*0.3],
                     type: 'scatter', mode: 'lines+markers', name: label,
-                    line: { width: 6, color: color }, marker: { size: 12, line: {color:'white', width:2} }
+                    line: { width: 5, color: color }, marker: { size: 10, line: {color:'white', width:2} }
                 });
+
+                tableBody.innerHTML += `
+                    <tr class="border-b-2 border-slate-100 text-center">
+                        <td class="p-5"><div class="w-6 h-6 rounded-full inline-block border-2 border-white shadow-md" style="background:${color}"></div></td>
+                        <td class="p-5 text-xl font-black text-left">${label}</td>
+                        <td class="p-5 text-xl">${tMax.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl">${tMin.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl text-blue-600 font-black">${hr.toFixed(0)}%</td>
+                    </tr>`;
+            });
+
+            // LA "L INVERTIDA" VERDE (DIBUJO MANUAL)
+            traces.push({
+                x: [21.5, 45, 45], y: [100, 100, 0],
+                type: 'scatter', mode: 'lines',
+                line: { color: '#00aa00', width: 4 }, hoverinfo: 'none', showlegend: false
             });
 
             const layout = {
                 images: [{
-                    source: "https://raw.githubusercontent.com/analisis-climatico/givoni-arch/main/OFICIAL-GRÁFICA%20DE%20GIVONI%20(1)-Layout1.jpg",
-                    xref: "x", yref: "y", x: -5.8, y: 100, sizex: 51.5, sizey: 100,
+                    source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
+                    xref: "x", yref: "y", 
+                    x: -6.05, y: 101.5, sizex: 52.8, sizey: 104,
                     sizing: "stretch", layer: "below"
                 }],
-                xaxis: { range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.05)', title: { text: 'TBS (°C)', font: { size: 18, color: 'red', weight: '900' } } },
-                yaxis: { range: [0, 102], dtick: 10, gridcolor: 'rgba(0,0,0,0.05)', side: 'right', title: { text: 'HR (%)', font: { size: 18, color: 'green', weight: '900' } } },
-                showlegend: false, margin: { t: 50, b: 100, l: 50, r: 100 }
+                xaxis: { 
+                    range: [-6, 46], dtick: 5, gridcolor: 'rgba(0,0,0,0.03)',
+                    title: { text: 'TBS (°C)', font: { size: 18, color: 'red', weight: '900' } }
+                },
+                yaxis: { 
+                    range: [0, 105], dtick: 10, side: 'right', showline: false,
+                    gridcolor: 'rgba(0,0,0,0.03)',
+                    title: { text: 'HR (%)', font: { size: 18, color: 'green', weight: '900' } }
+                },
+                showlegend: false, margin: { t: 50, b: 80, l: 50, r: 100 },
+                plot_bgcolor: 'white'
             };
 
             Plotly.newPlot('givoni-plot', traces, layout);
             document.getElementById('strategy-box').classList.remove('hidden');
-            
-            generarVisualizacionPro(sumTMax / items.length, sumHR / items.length);
+            procesarDiagnostico(sumTMax / items.length, sumHR / items.length);
         }
 
-        function generarVisualizacionPro(avgT, avgH) {
+        function procesarDiagnostico(avgT, avgH) {
             const climText = document.getElementById('climograma-text');
             const recBox = document.getElementById('recomendacion-box');
             recBox.innerHTML = '';
-            let tipo = 'ventilacion';
+            let tipo = 'viento';
 
             if (avgH > 75) {
-                climText.innerText = "Saturación crítica de humedad detectada. El calor latente del aire exige una renovación constante para permitir el confort evaporativo.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Ventilación Cruzada Inducida:</h5><p class="text-slate-400 text-sm">Aberturas cenitales y celosías de bambú para liberar calor acumulado.</p></div>`;
-                tipo = 'ventilacion';
+                climText.innerText = "Saturación crítica de humedad detectada. El aire requiere renovación constante para permitir el confort evaporativo corporal.";
+                const s = [{ t: "Celosías Dinámicas:", d: "Bambú o Madera para sombrear sin retener calor." }, { t: "Ventilación:", d: "Flujo laminar en fachadas opuestas." }];
+                s.forEach(e => recBox.innerHTML += `<div><h5 class="font-black text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
+                tipo = 'viento';
             } else if (avgT > 32) {
-                climText.innerText = "Altas temperaturas diurnas registradas. El calor es radiante, requiriendo masa térmica profunda y sombra total.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Inercia Térmica:</h5><p class="text-slate-400 text-sm">Muros de Ladrillo o BTC con doble envolvente ventilada para enfriamiento retardado.</p></div>`;
+                climText.innerText = "Altas temperaturas diurnas. Calor radiante predominante, requiriendo masa térmica profunda.";
+                const s = [{ t: "Masa Pesada:", d: "Muros de Ladrillo o BTC para retrasar el flujo térmico." }, { t: "Envolvente:", d: "Cámara de aire ventilada para enfriar la estructura." }];
+                s.forEach(e => recBox.innerHTML += `<div><h5 class="font-black text-white text-sm uppercase">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
                 tipo = 'masa';
             } else {
-                climText.innerText = "Condiciones estables. Se recomienda potenciar microclimas mediante vegetación y patios internos.";
-                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Barreras Vegetales:</h5><p class="text-slate-400 text-sm">Vegetación caducifolia perimetral para humidificar y refrescar brisas.</p></div>`;
+                climText.innerText = "Confort híbrido estable. Potenciar microclimas mediante vegetación.";
+                recBox.innerHTML = `<div><h5 class="font-black text-white text-sm uppercase">Vegetación:</h5><p class="text-slate-400 text-sm mt-1">Barreras verdes y pavimentos permeables para refrescar el aire.</p></div>`;
                 tipo = 'vegetacion';
             }
-
-            dibujarIsometricoComplejo(tipo);
+            dibujarIsometrico(tipo);
         }
 
-        function dibujarIsometricoComplejo(tipo) {
+        function dibujarIsometrico(tipo) {
             const container = document.getElementById('architectural-diagram-container');
-            const c = { 
-                wall: '#cbd5e1', 
-                wallSection: '#94a3b8', 
-                roof: '#e2e8f0', 
-                wood: '#a16207', 
-                wind: '#38bdf8', 
-                sun: '#f97316' 
-            };
-            
-            let svg = `<svg viewBox="0 0 500 500" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">`;
-            
-            // Base Suelo
-            svg += `<path d="M 50,350 L 250,400 L 450,350 L 250,300 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>`;
-
-            if (tipo === 'ventilacion') {
-                // Sección Isométrica: Muro cortado + Celosía + Viento
-                svg += `
-                <path d="M 250,280 L 250,130 L 400,180 L 400,330 Z" fill="${c.wall}" stroke="#64748b"/>
-                <path d="M 100,330 L 100,180 L 130,170 L 130,320 Z" fill="${c.wallSection}" stroke="#475569"/>
-                <path d="M 100,180 L 250,130 L 400,180 L 250,230 Z" fill="${c.roof}" stroke="#64748b"/>
-                <path d="M 100,180 L 100,195 L 250,245 L 250,230 Z" fill="#94a3b8" stroke="#64748b"/>
-                <rect x="180" y="160" width="8" height="150" fill="${c.wood}" transform="skewY(-18)"/>
-                <rect x="210" y="175" width="8" height="150" fill="${c.wood}" transform="skewY(-18)"/>
-                <path d="M 10,300 Q 150,300 250,250" stroke="${c.wind}" stroke-width="12" fill="none" opacity="0.6" marker-end="url(#arr)"/>
-                <path d="M 250,250 Q 350,200 480,220" stroke="${c.wind}" stroke-width="12" fill="none" opacity="0.6" marker-end="url(#arr)"/>`;
+            const c = { wall: '#cbd5e1', wood: '#a16207', wind: '#38bdf8', sun: '#f97316' };
+            let svg = `<svg viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">`;
+            svg += `<path d="M 50,320 L 250,370 L 450,320 L 250,270 Z" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>`;
+            if (tipo === 'viento') {
+                svg += `<path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${c.wall}" stroke="#64748b" stroke-width="2"/>
+                <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="${c.wall}" stroke="#64748b" stroke-width="2"/>
+                <rect x="230" y="120" width="10" height="170" fill="${c.wood}" transform="rotate(-15 235 205)"/>
+                <path d="M 20,230 Q 150,230 480,160" stroke="${c.wind}" stroke-width="10" fill="none" marker-end="url(#arr)" opacity="0.6"/>`;
             } else if (tipo === 'masa') {
-                // Sección Isométrica: Muro Grueso + Protección Solar
-                svg += `
-                <path d="M 150,330 L 150,130 L 190,120 L 190,320 Z" fill="${c.wallSection}" stroke="#1e293b"/>
-                <path d="M 190,320 L 350,320 L 350,120 L 190,120 Z" fill="#475569" stroke="#1e293b"/>
-                <path d="M 50,130 L 350,130 L 300,100 L 20,100 Z" fill="#334155" stroke="#0f172a"/>
-                <circle cx="50" cy="50" r="30" fill="${c.sun}"/>
-                <line x1="50" y1="80" x2="140" y2="180" stroke="${c.sun}" stroke-width="6" stroke-dasharray="10,5"/>`;
+                svg += `<path d="M 100,300 L 140,280 L 140,80 L 100,100 Z" fill="#64748b" stroke="#1e293b" stroke-width="4"/>
+                <path d="M 100,100 L 400,100 L 370,120 L 80,120 Z" fill="#475569" stroke="#1e293b" stroke-width="3"/>
+                <circle cx="50" cy="50" r="30" fill="${c.sun}"/><line x1="50" y1="80" x2="150" y2="150" stroke="${c.sun}" stroke-width="5" stroke-dasharray="10,5"/>`;
             } else {
-                // Sección: Estructura + Vegetación
-                svg += `
-                <path d="M 180,330 L 180,130 L 350,130 L 350,330 Z" fill="${c.wall}" stroke="#64748b"/>
-                <circle cx="100" cy="220" r="70" fill="#22c55e" opacity="0.7"/>
-                <rect x="92" y="220" width="16" height="130" fill="#78350f"/>`;
+                svg += `<path d="M 120,300 L 140,290 L 140,90 L 120,100 Z" fill="${c.wall}"/><circle cx="100" cy="180" r="60" fill="#22c55e" opacity="0.6"/><rect x="95" y="180" width="10" height="130" fill="#78350f"/>`;
             }
-
             svg += `<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${c.wind}"/></marker></defs></svg>`;
             container.innerHTML = svg;
         }
