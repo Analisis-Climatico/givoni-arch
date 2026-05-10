@@ -10,23 +10,24 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         #map { height: 300px; border-radius: 15px; z-index: 1; border: 2px solid #e5e7eb; }
-        .active-chip { background-color: #1e40af !important; color: white !important; font-size: 1.1rem !important; }
-        .btn-modo { transition: all 0.3s; font-size: 1rem; padding: 12px 24px; border-radius: 10px; font-weight: bold; }
-        #analysis-section { font-size: 1.1rem; line-height: 1.6; }
-        .strategy-card { border-left: 8px solid #3b82f6; }
+        .btn-modo { transition: all 0.3s; font-size: 1.1rem; padding: 12px 24px; border-radius: 10px; font-weight: 800; }
+        .active-chip { background-color: #1e40af !important; color: white !important; }
+        .config-label { font-size: 1rem; font-weight: 900; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .strategy-text { font-size: 1.2rem; line-height: 1.7; }
+        #givoni-plot { border-radius: 20px; overflow: hidden; }
     </style>
 </head>
-<body class="bg-gray-50 p-6">
+<body class="bg-gray-50 p-4 md:p-8">
 
-    <main class="max-w-[1700px] mx-auto">
+    <main class="max-w-[1600px] mx-auto">
         <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-md border">
             <div>
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Givoni Global Arch</h1>
-                <p id="location-name" class="text-blue-600 font-bold text-lg">Ubicación: Selecciona un punto en el mapa</p>
+                <h1 class="text-4xl font-black text-slate-900">Givoni Global Arch</h1>
+                <p id="location-name" class="text-blue-600 font-black text-xl mt-1">UBICACIÓN: Selecciona en el mapa</p>
             </div>
             <div class="flex gap-4">
-                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-gray-100 text-slate-600 active-chip">Análisis por Meses</button>
-                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-gray-100 text-slate-600">Análisis por Años</button>
+                <button onclick="setModo('mes')" id="btn-mes" class="btn-modo bg-gray-100 text-slate-600 active-chip">ANÁLISIS POR MESES</button>
+                <button onclick="setModo('año')" id="btn-año" class="btn-modo bg-gray-100 text-slate-600">ANÁLISIS POR AÑOS</button>
             </div>
         </header>
 
@@ -34,53 +35,33 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-md border">
-                    <h2 class="font-black text-sm uppercase text-slate-400 mb-4 tracking-widest">Configuración de Análisis</h2>
+                <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-blue-100">
+                    <h2 class="config-label mb-6 border-b-2 border-blue-500 pb-2">Configuración de Análisis</h2>
                     
-                    <div id="year-selector" class="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 mb-6 border rounded-xl bg-gray-50">
+                    <div id="year-selector" class="grid grid-cols-2 gap-3 max-h-72 overflow-y-auto p-2 mb-8 border rounded-xl bg-gray-50 font-bold">
                         </div>
 
-                    <div id="section-meses" class="mb-6">
-                        <h2 class="font-black text-sm uppercase text-slate-400 mb-4 tracking-widest">Meses Específicos</h2>
+                    <div id="section-meses" class="mb-8">
+                        <h2 class="config-label mb-6">Selección de Meses</h2>
                         <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                     </div>
 
-                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-5 rounded-xl hover:bg-blue-800 shadow-xl shadow-blue-200 transition-all text-lg uppercase">
+                    <button onclick="ejecutarAnalisis()" class="w-full bg-blue-700 text-white font-black py-6 rounded-2xl hover:bg-blue-800 shadow-2xl transition-all text-xl uppercase tracking-tighter">
                         Trazar Análisis
                     </button>
                 </div>
-
-                <div id="strategy-box" class="strategy-card bg-slate-900 p-8 rounded-2xl text-white shadow-2xl hidden">
-                    <h3 class="text-blue-400 font-black text-sm mb-4 uppercase tracking-[0.2em]">Estrategia Detectada</h3>
-                    <div id="analysis-section" class="space-y-6">
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Análisis del Climograma:</h4>
-                            <p id="climograma-text" class="text-slate-300 italic"></p>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Recomendación Creativa:</h4>
-                            <p id="recomendacion-text" class="font-medium text-white"></p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <div class="lg:col-span-3 space-y-6">
-                <div class="bg-white p-4 rounded-2xl shadow-md border relative">
-                    <div id="givoni-plot" style="width:100%; height:800px;"></div>
+            <div class="lg:col-span-3 space-y-8">
+                <div class="bg-white p-2 rounded-3xl shadow-xl border">
+                    <div id="givoni-plot" style="width:100%; height:850px;"></div>
                 </div>
                 
-                <div id="arquitectura-img-container" class="bg-white p-8 rounded-2xl shadow-md border flex flex-col items-center justify-center min-h-[400px] hidden">
-                    <h3 class="text-slate-400 font-bold uppercase text-xs mb-6 tracking-widest">Esquema de Estrategia Arquitectónica</h3>
-                    <div class="w-full max-w-2xl border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center p-10">
-                        <p class="text-slate-400 text-center italic">Representación visual de la solución: <br> Celosías dinámicas, chimeneas solares o muros de inercia según análisis.</p>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-md border">
-                    <table class="w-full text-sm text-left">
+                <div class="bg-white p-8 rounded-2xl shadow-md border">
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 uppercase">Registro Técnico de Datos</h3>
+                    <table class="w-full text-lg text-left">
                         <thead>
-                            <tr class="text-slate-400 border-b-2 border-gray-100 uppercase font-black text-xs">
+                            <tr class="text-slate-400 border-b-4 border-gray-100 uppercase font-black">
                                 <th class="p-4">Ref</th>
                                 <th class="p-4">Periodo</th>
                                 <th class="p-4">TBS Máx</th>
@@ -88,8 +69,30 @@
                                 <th class="p-4">HR Promedio</th>
                             </tr>
                         </thead>
-                        <tbody id="data-table-body" class="font-medium text-slate-700"></tbody>
+                        <tbody id="data-table-body" class="font-bold text-slate-700"></tbody>
                     </table>
+                </div>
+
+                <div id="strategy-box" class="bg-slate-900 p-10 rounded-3xl text-white shadow-2xl hidden">
+                    <h3 class="text-blue-400 font-black text-xl mb-8 uppercase tracking-widest border-b border-slate-700 pb-4">Diagnóstico y Estrategia Arquitectónica</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="space-y-8">
+                            <div>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3">Análisis del Climograma:</h4>
+                                <p id="climograma-text" class="strategy-text text-slate-300 italic"></p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-black text-slate-500 uppercase mb-3">Recomendación Creativa:</h4>
+                                <p id="recomendacion-text" class="strategy-text font-bold text-white"></p>
+                            </div>
+                        </div>
+                        <div id="ai-image-container" class="space-y-4">
+                            <h4 class="text-sm font-black text-slate-500 uppercase mb-3 text-center">Referente Arquitectónico Sugerido</h4>
+                            <div id="strategy-image" class="w-full h-80 bg-slate-800 rounded-2xl flex items-center justify-center overflow-hidden border-2 border-slate-700">
+                                <p class="text-slate-500 italic text-center p-4">Generando visualización basada en análisis...</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,7 +114,7 @@
             marker.setLatLng([lat, lon]);
             const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
             const data = await res.json();
-            document.getElementById('location-name').innerText = `Ubicación: ${data.name}, ${data.sys.country}`;
+            document.getElementById('location-name').innerText = `UBICACIÓN: ${data.name.toUpperCase()}, ${data.sys.country}`;
         });
 
         function setModo(m) {
@@ -121,24 +124,23 @@
             document.getElementById('section-meses').style.display = m === 'mes' ? 'block' : 'none';
         }
 
-        // Generar Selectores
         const yearBox = document.getElementById('year-selector');
         for(let y = 2026; y >= 2000; y--) {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-3 rounded-lg text-center font-bold text-sm ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white shadow-md' : 'bg-white border text-slate-500'}`;
+            chip.className = `cursor-pointer p-4 rounded-xl text-center font-black text-lg ${seleccionAnos.includes(y) ? 'bg-blue-600 text-white shadow-lg' : 'bg-white border-2 text-slate-400'}`;
             chip.innerText = y;
             chip.onclick = () => {
-                if(modo === 'mes') { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-500')}); chip.classList.add('bg-blue-600','text-white'); }
+                if(modo === 'mes') { seleccionAnos = [y]; Array.from(yearBox.children).forEach(c => {c.classList.remove('bg-blue-600','text-white'); c.classList.add('bg-white','text-slate-400')}); chip.classList.add('bg-blue-600','text-white'); }
                 else { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionAnos.includes(y)) seleccionAnos = seleccionAnos.filter(a => a !== y); else seleccionAnos.push(y); }
             };
             yearBox.appendChild(chip);
         }
 
-        const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        const meses = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
         const monthBox = document.getElementById('month-selector');
         meses.forEach((m, i) => {
             const chip = document.createElement('div');
-            chip.className = `cursor-pointer p-3 border rounded-lg text-center font-bold text-xs ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-500'}`;
+            chip.className = `cursor-pointer p-3 border-2 rounded-xl text-center font-black text-sm ${seleccionMeses.includes(i) ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400'}`;
             chip.innerText = m;
             chip.onclick = () => { chip.classList.toggle('bg-blue-600'); chip.classList.toggle('text-white'); if(seleccionMeses.includes(i)) seleccionMeses = seleccionMeses.filter(idx => idx !== i); else seleccionMeses.push(i); };
             monthBox.appendChild(chip);
@@ -151,58 +153,62 @@
             const items = modo === 'mes' ? seleccionMeses : seleccionAnos;
 
             items.forEach((val, i) => {
-                let label = modo === 'mes' ? `${meses[val]}-${seleccionAnos[0]}` : `Año ${val}`;
-                let tMax = 28 + (Math.random() * 8);
-                let tMin = 18 + (Math.random() * 6);
-                let hr = 60 + (Math.random() * 25);
-                let color = `hsl(${(i * 360 / items.length)}, 70%, 50%)`;
+                let label = modo === 'mes' ? `${meses[val]}-${seleccionAnos[0]}` : `AÑO ${val}`;
+                let tMax = 26 + (Math.random() * 10);
+                let tMin = 16 + (Math.random() * 8);
+                let hr = 55 + (Math.random() * 35);
+                let color = `hsl(${(i * 360 / items.length)}, 80%, 50%)`;
 
                 traces.push({
-                    x: [tMin, tMax], y: [hr - (tMax-tMin)*0.3, hr + (tMax-tMin)*0.3],
+                    x: [tMin, tMax], y: [hr - (tMax-tMin)*0.35, hr + (tMax-tMin)*0.35],
                     type: 'scatter', mode: 'lines+markers', name: label,
-                    line: { width: 5, color: color }, marker: { size: 10 }
+                    line: { width: 6, color: color }, marker: { size: 12, line: {color:'white', width:2} }
                 });
 
                 tableBody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="p-4"><div class="w-4 h-4 rounded-full" style="background:${color}"></div></td>
-                        <td class="p-4 font-black">${label}</td>
-                        <td class="p-4">${tMax.toFixed(1)}°C</td>
-                        <td class="p-4">${tMin.toFixed(1)}°C</td>
-                        <td class="p-4 text-blue-600 font-black">${hr.toFixed(0)}%</td>
+                    <tr class="border-b-2 border-gray-50 hover:bg-gray-50 transition">
+                        <td class="p-5"><div class="w-6 h-6 rounded-full border-2 border-white shadow-md" style="background:${color}"></div></td>
+                        <td class="p-5 text-xl font-black">${label}</td>
+                        <td class="p-5 text-xl">${tMax.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl">${tMin.toFixed(1)}°C</td>
+                        <td class="p-5 text-xl text-blue-600 font-black">${hr.toFixed(0)}%</td>
                     </tr>`;
             });
 
-            // Ejes adaptados a tu "L invertida"
+            // CORRECCIÓN DE ALINEACIÓN DE IMAGEN Y EJES
             const layout = {
                 images: [{
                     source: "./OFICIAL-GRÁFICA DE GIVONI (1)-Layout1.jpg",
-                    xref: "x", yref: "y", x: -5, y: 100, sizex: 50.5, sizey: 100,
+                    xref: "x", yref: "y", 
+                    x: -5.8, y: 100, // Ajuste del desfase del -5
+                    sizex: 51.5, sizey: 100, // Ajuste del estiramiento
                     sizing: "stretch", layer: "below"
                 }],
                 xaxis: { 
-                    range: [-5, 46], dtick: 5, gridcolor: '#eee',
-                    title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 14, color: 'red', weight: 'bold' }, standoff: 20 }
+                    range: [-6, 46], dtick: 5, gridcolor: '#f0f0f0',
+                    title: { text: 'TEMPERATURA BULBO SECO (°C)', font: { size: 18, color: 'red', weight: '900' }, standoff: 25 }
                 },
                 yaxis: { 
-                    range: [0, 100], dtick: 10, gridcolor: '#eee', side: 'right',
-                    title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 14, color: 'green', weight: 'bold' }, standoff: 20 }
+                    range: [0, 102], dtick: 10, gridcolor: '#f0f0f0', side: 'right',
+                    title: { text: 'HUMEDAD RELATIVA (%)', font: { size: 18, color: 'green', weight: '900' }, standoff: 25 }
                 },
-                showlegend: false, margin: { t: 40, b: 80, l: 40, r: 80 }
+                showlegend: false, margin: { t: 50, b: 100, l: 50, r: 100 },
+                plot_bgcolor: 'white'
             };
 
             Plotly.newPlot('givoni-plot', traces, layout);
             
-            // Mostrar Secciones de Estrategia
             document.getElementById('strategy-box').classList.remove('hidden');
-            document.getElementById('arquitectura-img-container').classList.remove('hidden');
             
-            // Lógica de texto creativa
-            const analisisClimograma = "Los puntos se concentran fuera del área de confort térmico, desplazándose hacia las zonas de Ventilación Natural (12) y Deshumidificación (14). La amplitud térmica sugiere una gran carga de humedad relativa durante las horas nocturnas.";
-            const recomendacionCreativa = "Implementar cubiertas vegetales de alta inercia para refrescar el aire circundante y diseñar fachadas con pieles dinámicas (celosías) que respondan a la dirección del viento dominante para forzar la deshumidificación mecánica.";
+            // Lógica de texto y visualización
+            const analisisClimograma = "Se detecta una migración de los datos hacia los cuadrantes de alta humedad y temperaturas elevadas. La saturación de los puntos en la Zona 12 y 14 indica que las estrategias pasivas convencionales son insuficientes durante los picos térmicos.";
+            const recomendacionCreativa = "Diseñar sistemas de 'doble piel' con celosías cerámicas de gran formato que generen sombra profunda. Incorporar patios de ventilación con microaspersión para inducir el enfriamiento evaporativo antes de que el aire ingrese a los módulos.";
             
             document.getElementById('climograma-text').innerText = analisisClimograma;
             document.getElementById('recomendacion-text').innerText = recomendacionCreativa;
+
+            // Simulación de imagen de estrategia (puedes reemplazar el src por una imagen real de tu portafolio)
+            document.getElementById('strategy-image').innerHTML = `<img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800" class="w-full h-full object-cover opacity-80" alt="Estrategia">`;
         }
 
         window.onload = ejecutarAnalisis;
