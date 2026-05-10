@@ -274,3 +274,38 @@
                             <marker id="arrowhead-calor" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                                 <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
                             </marker>
+                        </defs>
+                    </svg>
+                `;
+            } else if (tipo === 'inercia') {
+                 // Esquema de Muro de Inercia
+                 svgContent = `
+                    <svg viewBox="0 0 400 300" class="w-full h-full">
+                         <rect x="150" y="50" width="60" height="200" fill="#94a3b8" rx="5"/> <text x="180" y="160" text-anchor="middle" font-family="sans-serif" font-size="12" fill="white" font-weight="bold" transform="rotate(-90, 180, 160)">MASA TÉRMICA</text>
+                        
+                        <circle cx="50" cy="50" r="25" fill="${colorSol}"/>
+                        <line x1="50" y1="50" x2="140" y2="100" stroke="${colorSol}" stroke-width="4"/>
+                        <line x1="140" y1="80" x2="140" y2="120" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/> <path d="M 220,150 L 350,150" stroke="#ef4444" stroke-width="3" stroke-dasharray="5,5" fill="none" marker-end="url(#arrowhead-calor-inercia)"/> 
+
+                         <text x="200" y="270" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold">INERCIA TÉRMICA (RETRASO TÉRMICO)</text>
+                        
+                        <defs>
+                             <marker id="arrowhead-calor-inercia" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                 `;
+            }
+
+            container.innerHTML = svgContent;
+        }
+
+        window.onload = () => {
+            // Carga inicial (ejemplo Guayaquil)
+            setModo('mes');
+            ejecutarAnalisis();
+        };
+    </script>
+</body>
+</html>
