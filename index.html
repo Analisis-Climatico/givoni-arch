@@ -65,69 +65,96 @@
         </div>
     </main>
 
-    <script>
-        const apiKey = 'b0be33523088ce87c824d0befe19820c';
-        let map = L.map('map').setView([-2.170, -79.922], 12); // Inicio en Guayaquil
+    // Reemplaza el bloque <script> actual por este:
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+<script>
+const apiKey = 'b0be33523088ce87c824d0befe19820c';
+let map = L.map('map').setView([-2.170, -79.922], 12); 
 
-        // Geometría completa de Givoni (Coordenadas precisas para las 14 zonas)
-        function getGivoniShapes() {
-            return [
-                { name: '1. Confort', x: [21, 26, 26, 21, 21], y: [20, 20, 80, 80, 20], color: 'rgba(255, 235, 156, 0.4)' },
-                { name: '2. Confort Permisible', x: [20, 27, 27, 20, 20], y: [15, 15, 85, 85, 15], color: 'rgba(255, 127, 80, 0.3)' },
-                { name: '9. Refrigeración Masa Térmica', x: [26, 36, 36, 26, 26], y: [0, 0, 10, 10, 0], color: 'rgba(255, 105, 180, 0.25)' },
-                { name: '12. Ventilación Natural', x: [20, 32, 32, 20, 20], y: [40, 90, 90, 40, 40], color: 'rgba(0, 206, 209, 0.25)' },
-                { name: '10. Enfriamiento Evaporativo', x: [36, 45, 45, 36, 36], y: [5, 5, 25, 25, 5], color: 'rgba(186, 85, 211, 0.25)' },
-                // ... Se pueden añadir las 14 zonas completas aquí siguiendo el mismo patrón
-            ];
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+// Definición de las 14 Zonas de tu referencia
+function getGivoniShapes() {
+    return [
+        { name: '1. Confort', x: [20, 25, 25, 20, 20], y: [20, 20, 80, 80, 20], color: 'rgba(255, 200, 0, 0.3)' },
+        { name: '2. Confort Permisible', x: [20, 27, 27, 20, 20], y: [12, 12, 90, 90, 12], color: 'rgba(255, 100, 0, 0.2)' },
+        { name: '8. Protección Solar', x: [20, 45, 45, 27, 20], y: [0, 0, 10, 15, 12], color: 'rgba(255, 165, 0, 0.15)' },
+        { name: '12. Ventilación Natural', x: [20, 31, 31, 20, 20], y: [40, 40, 95, 95, 40], color: 'rgba(0, 200, 200, 0.2)' },
+        { name: '10. Enfriamiento Evaporativo', x: [31, 45, 45, 31, 31], y: [10, 10, 30, 30, 10], color: 'rgba(200, 0, 200, 0.2)' },
+        { name: '11. Masa Térmica / Renov. Nocturna', x: [31, 42, 42, 31, 31], y: [0, 0, 15, 15, 0], color: 'rgba(255, 255, 0, 0.2)' },
+        { name: '13. Aire Acondicionado', x: [40, 50, 50, 40, 40], y: [0, 0, 100, 100, 0], color: 'rgba(100, 149, 237, 0.15)' },
+        // ... (Zonas de calefacción a la izquierda)
+        { name: '3-7. Calefacción', x: [-5, 20, 20, -5, -5], y: [0, 0, 100, 100, 0], color: 'rgba(0, 150, 0, 0.1)' }
+    ];
+}
+
+async function updateAnalysis(lat, lon) {
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
+        const data = await response.json();
+        
+        const tableBody = document.getElementById('data-table-body');
+        tableBody.innerHTML = '';
+        const traces = getGivoniShapes().map(z => ({
+            x: z.x, y: z.y, fill: 'toself', type: 'scatter', mode: 'lines', name: z.name, fillcolor: z.color, line: {width: 0.5, color: '#999'}
+        }));
+
+        let totalHum = 0;
+        let totalTemp = 0;
+
+        data.list.forEach((item, i) => {
+            totalHum += item.main.humidity;
+            totalTemp += item.main.temp;
+            
+            // Solo graficamos puntos clave para no saturar
+            if(i % 4 === 0) {
+                traces.push({
+                    x: [item.main.temp_min, item.main.temp_max],
+                    y: [item.main.humidity, item.main.humidity],
+                    type: 'scatter', mode: 'lines+markers',
+                    line: {width: 2, color: `hsl(${i * 20}, 70%, 50%)`},
+                    marker: {size: 6},
+                    name: new Date(item.dt * 1000).toLocaleDateString()
+                });
+
+                const row = `<tr>
+                    <td class="p-2 border-b text-xs">${new Date(item.dt * 1000).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</td>
+                    <td class="p-2 border-b font-bold">${item.main.temp_max}°</td>
+                    <td class="p-2 border-b">${item.main.temp_min}°</td>
+                    <td class="p-2 border-b text-blue-600">${item.main.humidity}%</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            }
+        });
+
+        // Lógica de Análisis General
+        const avgHum = totalHum / data.list.length;
+        const avgTemp = totalTemp / data.list.length;
+        let recomendacion = "";
+
+        if (avgHum > 70) {
+            recomendacion = "El análisis multianual muestra una saturación de humedad constante. Se requiere ventilación cruzada forzada y materiales que no retengan vapor.";
+        } else if (avgTemp > 30) {
+            recomendacion = "Tendencia de alta radiación solar. Se recomienda el uso de inercia térmica pesada y protección solar exterior tipo brise-soleil.";
+        } else {
+            recomendacion = "El clima se mantiene en zonas de confort relativo. Estrategias pasivas básicas son suficientes.";
         }
 
-        async function updateAnalysis(lat, lon) {
-            try {
-                const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
-                const data = await response.json();
-                
-                // Actualizar Tabla
-                const tableBody = document.getElementById('data-table-body');
-                tableBody.innerHTML = '';
-                const climatePoints = [];
+        Plotly.newPlot('givoni-plot', traces, {
+            xaxis: { title: 'Temperatura (°C)', range: [0, 50], gridcolor: '#eee', dtick: 5 },
+            yaxis: { title: 'Humedad (%)', range: [0, 100], gridcolor: '#eee', dtick: 10 },
+            showlegend: false,
+            margin: { t: 10, b: 40, l: 40, r: 10 }
+        });
 
-                data.list.slice(0, 16).forEach((item, i) => {
-                    climatePoints.push({x: [item.main.temp_min, item.main.temp_max], y: [item.main.humidity, item.main.humidity], color: `hsl(${i * 25}, 70%, 50%)`});
-                    const row = `<tr>
-                        <td class="p-2 border-b">${new Date(item.dt * 1000).toLocaleDateString(undefined, {month:'short'})}</td>
-                        <td class="p-2 border-b font-bold">${item.main.temp_max}°</td>
-                        <td class="p-2 border-b">${item.main.temp_min}°</td>
-                        <td class="p-2 border-b">${item.main.humidity}%</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
+        document.getElementById('analysis-section').classList.remove('hidden');
+        document.getElementById('analysis-text').innerText = recomendacion;
 
-                // Dibujar Gráfico
-                const traces = getGivoniShapes().map(z => ({
-                    x: z.x, y: z.y, fill: 'toself', type: 'scatter', mode: 'lines', name: z.name, fillcolor: z.color, line: {width: 1, color: '#ccc'}
-                }));
+    } catch (e) { console.error(e); }
+}
 
-                climatePoints.forEach(p => {
-                    traces.push({ x: p.x, y: p.y, type: 'scatter', mode: 'lines+markers', line: {width: 3, color: p.color}, marker: {size: 8} });
-                });
-
-                Plotly.newPlot('givoni-plot', traces, {
-                    xaxis: { title: 'T. Bulbo Seco (°C)', range: [0, 50], gridcolor: '#ddd' },
-                    yaxis: { title: 'HR (%)', range: [0, 100], gridcolor: '#ddd' },
-                    showlegend: false,
-                    margin: { t: 20, b: 50, l: 50, r: 20 }
-                });
-
-                document.getElementById('analysis-section').classList.remove('hidden');
-                document.getElementById('analysis-text').innerText = "Análisis Global detectado para esta zona geográfica. Se observa que la mayoría de los puntos críticos requieren estrategias de enfriamiento pasivo y protección solar rigurosa.";
-
-            } catch (e) { alert("Error al obtener datos. Intenta con otra zona."); }
-        }
-
-        map.on('click', (e) => updateAnalysis(e.latlng.lat, e.latlng.lng));
-        updateAnalysis(-2.170, -79.922); // Carga inicial en Guayaquil
-    </script>
+map.on('click', (e) => updateAnalysis(e.latlng.lat, e.latlng.lng));
+updateAnalysis(-2.170, -79.922);
+</script>
 </body>
 </html>
