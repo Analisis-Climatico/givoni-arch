@@ -81,9 +81,9 @@
                                 <div id="recomendacion-box" class="strategy-text text-white space-y-4"></div>
                             </div>
                         </div>
-                        <div class="space-y-4 flex flex-col items-center overflow-hidden">
-                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Esquema Bioclimático Isométrico Pro</h4>
-                            <div id="architectural-diagram-container" class="w-full h-[450px] bg-slate-50 rounded-2xl shadow-inner p-4 flex items-center justify-center border border-gray-100">
+                        <div class="space-y-4 flex flex-col items-center">
+                            <h4 class="text-xs font-black text-slate-500 uppercase mb-3 text-center tracking-widest">Isométrico en Sección Bioclimática Pro</h4>
+                            <div id="architectural-diagram-container" class="w-full h-[500px] bg-slate-50 rounded-2xl shadow-inner p-4 flex items-center justify-center border border-gray-100">
                             </div>
                         </div>
                     </div>
@@ -196,62 +196,52 @@
             recomendacionBox.innerHTML = ''; // Limpiar
 
             if (avgH > 75) {
-                // ESTRATEGIA CÁLIDO-HÚMEDA
-                climogramaText.innerText = "La nube de datos muestra una saturación crítica de humedad relativa. El calor latente del aire es elevado, lo que dificulta el enfriamiento evaporativo natural del cuerpo.";
-                
+                climogramaText.innerText = "Saturación crítica de humedad detectada. El aire requiere movimiento constante.";
                 const estrategias = [
-                    { t: "1. Control Solar y Sombreamiento:", d: "Forzar sombra total en fachadas ESTE y OESTE. Opciones: Grandes volados de hormigón poroso, pérgolas de bambú o celosías de ladrillo hueco." },
-                    { t: "2. Ventilación Cruzada Rigurosa:", d: "Priorizar ventilación laminar y forzada. Elementos: Ventanas de guillotina para control selectivo, lamas de vidrio o aberturas cenitales (efecto chimenea)." },
-                    { t: "3. Envolvente Tectónica Ligera:", d: "Usar materiales de baja inercia térmica. Alternativas: Pieles de madera tratada, paneles de fibrocemento o metal desplegado que permitan que la estructura 'respire'." }
+                    { t: "1. Ventilación Cruzada Laminar:", d: "Forzar sombra total en fachadas ESTE/OESTE. Usar pérgolas de bambú o celosías de ladrillo hueco." },
+                    { t: "2. Piel Tectónica Ligera:", d: "Evitar muros opacos en el sentido del viento dominante. Priorizar lamas de vidrio o metal desplegado." }
                 ];
                 estrategias.forEach(e => recomendacionBox.innerHTML += `<div><h5 class="font-black text-white text-xs uppercase tracking-wider">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                dibujarIsométricoPro('ventilacion');
+                dibujarIsométricoEnSección('ventilacion');
 
             } else if (avgT > 32) {
-                // ESTRATEGIA CÁLIDO-SECA
-                climogramaText.innerText = "Temperaturas extremas fuera del área de confort térmico diurno. El calor es predominantemente radiante y por conducción.";
+                climogramaText.innerText = "Temperaturas extremas fuera del área de confort. Calor predominantemente radiante.";
                 const estrategias = [
-                    { t: "1. Inercia Térmica Pesada:", d: "Diseñar con materiales de gran masa para retrasar la entrada de calor. Opciones: Muros de tapial, bloques de tierra comprimida (BTC) o concreto con acabado claro." },
-                    { t: "2. Protección Solar Selectiva y Doble Piel:", d: "Bloquear radiación y enfriar la envolvente. Elementos: Piel de celosía cerámica de gran formato (tipo brise-soleil), fachadas ventiladas o techos fríos (cool roofs)." },
-                    { t: "3. Microclima y Vegetación:", d: "Enfriar el aire entrante. Soluciones: Patios interiores con agua (microaspersión) y vegetación xerófila selectiva para sombrear el perímetro." }
+                    { t: "1. Masa Térmica Pesada:", d: "Muros de tapial o bloques de tierra comprimida (BTC) protegido de radiación directa." },
+                    { t: "2. Doble Envolvente y Sombra:", d: "Piel de celosía cerámica de gran formato (tipo brise-soleil) o fachadas ventiladas." }
                 ];
                 estrategias.forEach(e => recomendacionBox.innerHTML += `<div><h5 class="font-black text-white text-xs uppercase tracking-wider">${e.t}</h5><p class="text-slate-400 text-sm mt-1">${e.d}</p></div>`);
-                dibujarIsométricoPro('inercia');
+                dibujarIsométricoEnSección('inercia');
             } else {
-                // ESTRATEGIA HÍBRIDA
-                climogramaText.innerText = "El clima presenta oscilaciones moderadas dentro o cerca del rango de confort. Estrategias pasivas básicas son suficientes.";
-                recomendacionBox.innerHTML = `<div><h5 class="font-black text-white text-xs uppercase tracking-wider">Manejo Pasivo General:</h5><p class="text-slate-400 text-sm mt-1">Optimizar la ventilación cruzada selectiva, el uso de vegetación perimetral caducifolia para sombrear en verano y materiales constructivos híbridos.</p></div>`;
-                dibujarIsométricoPro('hibrido');
+                climogramaText.innerText = "Clima moderado dentro o cerca del rango de confort. Estrategias pasivas básicas son suficientes.";
+                recomendacionBox.innerHTML = `<div><h5 class="font-black text-white text-xs uppercase tracking-wider">Manejo Pasivo General:</h5><p class="text-slate-400 text-sm mt-1">Optimizar la ventilación cruzada selectiva y el uso de vegetación perimetral caducifolia para sombrear.</p></div>`;
+                dibujarIsométricoEnSección('hibrido');
             }
         }
 
-        function dibujarIsométricoPro(tipo) {
+        function dibujarIsométricoEnSección(tipo) {
             const container = document.getElementById('architectural-diagram-container');
-            const c = { base: '#f1f5f9', wall: '#cbd5e1', wind: '#0ea5e9', sun: '#f97316', roof: '#475569', bamboo: '#a16207' };
+            const c = { base: '#cbd5e1', structure: '#cbd5e1', wind: '#0ea5e9', sun: '#f97316', text: '#475569', bamboo: '#a16207' };
             let svg = `<svg viewBox="0 0 500 500" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">`;
             
-            // Base Isométrica (Un cuarto en sección)
+            // Base Isométrica en Sección
             const base = `
-                <path d="M 50,300 L 250,350 L 450,300 L 250,250 Z" fill="${c.base}" stroke="#94a3b8" stroke-width="1.5"/>
-                <path d="M 120,300 Q 250,340 380,300" stroke="#94a3b8" stroke-width="1" fill="none"/>`; // Vegetación esquemática
+                <path d="M 50,320 L 250,370 L 450,320 L 250,270 Z" fill="${c.base}" opacity="0.3" stroke="#94a3b8" stroke-width="1"/>
+                <path d="M 50,320 L 50,340 L 250,390 L 450,340 L 450,320 L 250,370 Z" fill="${c.base}" stroke="#94a3b8" stroke-width="1"/> `;
             
             svg += base;
 
             if (tipo === 'ventilacion') {
-                // MÓDULO CÁLIDO-HÚMEDO (Ligero, Celosías)
+                // MÓDULO CÁLIDO-HÚMEDO (Ligero, Celosías en sección)
                 svg += `
-                    <path d="M 100,280 L 300,330 L 300,130 L 100,80 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/> <path d="M 300,330 L 400,280 L 400,80 L 300,130 Z" fill="#94a3b8" stroke="#64748b" stroke-width="2"/> <path d="M 100,80 L 300,130 L 400,80 L 200,30 Z" fill="${c.highlight}" stroke="#a16207" stroke-width="2"/> 
-                    <line x1="200" y1="30" x2="300" y2="130" stroke="${c.bamboo}" stroke-width="6"/> <line x1="100" y1="80" x2="200" y2="105" stroke="${c.bamboo}" stroke-width="6"/>
+                    <path d="M 100,300 L 120,290 L 120,90 L 100,100 Z" fill="${c.structure}" stroke="#64748b" stroke-width="2"/> <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="${c.structure}" stroke="#64748b" stroke-width="2"/> <path d="M 120,90 L 400,90 L 380,110 L 100,110 Z" fill="#94a3b8" stroke="#64748b" stroke-width="2"/> <line x1="120" y1="90" x2="380" y2="110" stroke="${c.bamboo}" stroke-width="6"/> <rect x="230" y="120" width="10" height="170" fill="#78350f" rx="3" transform="rotate(-15 235 205)"/>
+                    <rect x="280" y="132" width="10" height="170" fill="#78350f" rx="3" transform="rotate(-15 285 217)"/>
                     
-                    <rect x="150" y="110" width="10" height="200" fill="#78350f" rx="3" transform="rotate(-10 155 210)"/>
-                    <rect x="200" y="122" width="10" height="200" fill="#78350f" rx="3" transform="rotate(-10 205 222)"/>
-                    <rect x="250" y="135" width="10" height="200" fill="#78350f" rx="3" transform="rotate(-10 255 235)"/>
+                    <path d="M 20,230 Q 150,230 250,180" stroke="${c.wind}" stroke-width="8" fill="none" marker-end="url(#arrow-ventilacion)"/>
+                    <path d="M 250,180 Q 350,150 480,160" stroke="${c.wind}" stroke-width="8" fill="none" marker-end="url(#arrow-ventilacion)"/>
                     
-                    <path d="M 20,250 Q 150,250 250,200" stroke="${c.wind}" stroke-width="10" fill="none" marker-end="url(#arrow-ventilacion)"/>
-                    <path d="M 250,200 Q 350,150 480,180" stroke="${c.wind}" stroke-width="10" fill="none" marker-end="url(#arrow-ventilacion)"/>
+                    <text x="250" y="440" text-anchor="middle" font-weight="900" fill="#475569" font-size="16 uppercase">SECCIÓN: CELOSÍAS Y VIENTO ATRAVESANDO</text>
                     
-                    <text x="250" y="440" text-anchor="middle" font-weight="900" fill="#475569" font-size="16">MÓDULO DE VENTILACIÓN LIGERO + CELOSÍAS</text>
-
                     <defs>
                         <marker id="arrow-ventilacion" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
                             <path d="M 0,0 L 10,5 L 0,10 Z" fill="${c.wind}" />
@@ -259,35 +249,24 @@
                     </defs>
                 `;
             } else if (tipo === 'inercia') {
-                // MÓDULO CÁLIDO-SECO (Pesado, Doble Piel)
+                // MÓDULO CÁLIDO-SECO (Pesado, Sección)
                 svg += `
-                     <path d="M 100,280 L 300,330 L 300,100 L 100,50 Z" fill="#94a3b8" stroke="#64748b" stroke-width="3"/> <path d="M 300,330 L 400,280 L 400,50 L 300,100 Z" fill="#64748b" stroke="#1e293b" stroke-width="3"/>
+                     <path d="M 100,300 L 140,280 L 140,70 L 100,90 Z" fill="#94a3b8" stroke="#64748b" stroke-width="4"/> <path d="M 360,300 L 400,280 L 400,70 L 360,90 Z" fill="#94a3b8" stroke="#64748b" stroke-width="4"/> <path d="M 100,90 L 400,90 L 360,110 L 60,110 Z" fill="#64748b" stroke="#1e293b" stroke-width="4"/> <circle cx="50" cy="50" r="30" fill="${c.sun}"/>
+                    <path d="M 50,85 Q 100,150 120,200" stroke="${c.sun}" stroke-width="6" stroke-dasharray="12,6"/>
                     
-                    <path d="M 100,50 L 300,100 L 400,50 L 200,0 Z" fill="#1e293b" stroke="#000" stroke-width="3"/>
-                    <line x1="200" y1="0" x2="300" y2="100" stroke="#000" stroke-width="8"/>
-
-                    <path d="M 50,150 L 150,175 L 150,300 L 50,275 Z" fill="#ca8a04" stroke="#a16207" stroke-width="1.5" opacity="0.8"/> <circle cx="100" cy="225" r="30" fill="white" opacity="0.9"/> <circle cx="50" cy="50" r="30" fill="${c.sun}"/>
-                    <path d="M 50,85 L 100,150" stroke="${c.sun}" stroke-width="6" stroke-dasharray="12,6"/>
-                    
-                    <path d="M 320,80 L 330,-10" stroke="#ef4444" stroke-width="5" fill="none" marker-end="url(#arrow-calor)"/>
-
-                    <text x="250" y="440" text-anchor="middle" font-weight="900" fill="#475569" font-size="16">MÓDULO DE INERCIA PESADO + DOBLE PIEL CERÁMICA</text>
-                    
-                    <defs>
-                        <marker id="arrow-calor" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
-                            <path d="M 0,0 L 10,5 L 0,10 Z" fill="#ef4444" />
-                        </marker>
-                    </defs>
+                    <text x="250" y="440" text-anchor="middle" font-weight="900" fill="#475569" font-size="16 uppercase">SECCIÓN: INERCIA PESADA Y VOLADO</text>
                 `;
             } else {
+                 // HÍBRIDO (Sección)
                  svg += `
-                    <path d="M 100,280 L 300,330 L 300,100 L 100,50 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
-                    <path d="M 300,330 L 400,280 L 400,50 L 300,100 Z" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
-                    
-                    <circle cx="100" cy="150" r="70" fill="#16a34a" opacity="0.7"/>
+                    <path d="M 100,300 L 120,290 L 120,90 L 100,100 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+                    <path d="M 380,300 L 400,290 L 400,90 L 380,100 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+                    <path d="M 100,100 L 400,100 L 380,120 L 120,120 Z" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+
+                    <circle cx="100" cy="150" r="70" fill="#16a34a" opacity="0.6"/>
                     <rect x="90" y="150" width="20" height="150" fill="#713f12"/>
                     
-                    <text x="250" y="440" text-anchor="middle" font-weight="900" fill="#475569" font-size="16">ESTRATEGIA HÍBRIDA + MICROCLIMA VEGETAL</text>
+                    <text x="250" y="440" text-anchor="middle" font-weight="900" fill="#475569" font-size="16 uppercase">SECCIÓN: ESTRATEGIA HÍBRIDA Y VEGETACIÓN</text>
                  `;
             }
 
