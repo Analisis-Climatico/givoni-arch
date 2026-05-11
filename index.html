@@ -46,7 +46,7 @@ z-index:2;
 #givoni-zones{
 position:absolute;
 left:0;
-top:85px;
+top:125px;
 width:100%;
 height:calc(100% - 85px);
 object-fit:contain;
@@ -154,7 +154,7 @@ Actualizar Climograma
 </div>
 
 <div class="bg-white rounded-3xl border overflow-hidden">
-<table class="w-full text-xs">
+<table class="w-full text-xs text-center">
 <thead class="bg-slate-100 text-slate-500 uppercase font-black">
 <tr>
 <th class="p-5">Color</th>
@@ -448,7 +448,7 @@ hr
 const zona=getZona(hr,tMax);
 
 tabla+=`
-<tr class="border-b border-slate-100 font-bold text-slate-600">
+<tr class="border-b border-slate-100 font-bold text-slate-600 text-center">
 <td class="p-5 text-center">
 <div class="w-4 h-4 rounded-full mx-auto" style="background:${color}"></div>
 </td>
@@ -503,7 +503,11 @@ if(hr>80){
 
 
 diagnostico=`
-Las condiciones climáticas muestran elevados niveles de humedad relativa junto con temperaturas cálidas persistentes. Esto genera sensación térmica alta, dificultad de disipación del calor corporal y riesgo de acumulación de humedad en espacios interiores. Se recomienda priorizar estrategias pasivas enfocadas en ventilación cruzada permanente, control solar y materiales de rápida disipación térmica.
+El análisis climático evidencia un comportamiento cálido-húmedo predominante, con temperaturas elevadas acompañadas de altos porcentajes de humedad relativa. Estas condiciones incrementan significativamente la sensación térmica interior y reducen la capacidad natural del cuerpo humano para disipar calor, generando ambientes de baja confortabilidad si no se aplican estrategias bioclimáticas adecuadas.
+
+El climograma muestra predominancia de zonas relacionadas con ventilación natural, deshumidificación y enfriamiento pasivo, lo cual indica la necesidad de edificaciones altamente permeables al flujo de aire, con protección solar constante y materiales que reduzcan la acumulación térmica.
+
+Se recomienda priorizar soluciones arquitectónicas pasivas como ventilación cruzada, control solar mediante elementos de sombra, vegetación perimetral, cubiertas ventiladas y fachadas ligeras que permitan disipar rápidamente el calor acumulado.
 `;
 
 estrategias=`
@@ -523,16 +527,48 @@ Implementar aleros, vegetación de sombra, fachadas ventiladas y materiales refl
 `;
 
 concepto=`
-<div class="bg-white rounded-2xl p-5 border">
-<svg viewBox="0 0 300 200" class="w-full h-40">
-<rect x="80" y="60" width="140" height="80" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
-<path d="M20 100 L80 100" stroke="#0ea5e9" stroke-width="8"/>
-<path d="M220 100 L280 100" stroke="#0ea5e9" stroke-width="8"/>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+<div class="bg-white rounded-2xl border p-5">
+<svg viewBox="0 0 300 200" class="w-full h-44">
+<rect x="70" y="55" width="160" height="90" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+<path d="M20 100 L70 100" stroke="#0ea5e9" stroke-width="10"/>
+<path d="M230 100 L280 100" stroke="#0ea5e9" stroke-width="10"/>
 <polygon points="20,100 40,90 40,110" fill="#0ea5e9"/>
 <polygon points="280,100 260,90 260,110" fill="#0ea5e9"/>
 </svg>
 <h3 class="font-black text-sm mt-4">Ventilación Cruzada</h3>
-<p class="text-xs text-slate-500 mt-2">Circulación constante de aire natural.</p>
+<p class="text-xs text-slate-500 mt-2">
+Ingreso y salida continua de aire natural para disipar calor y humedad.
+</p>
+</div>
+
+<div class="bg-white rounded-2xl border p-5">
+<svg viewBox="0 0 300 200" class="w-full h-44">
+<rect x="70" y="70" width="160" height="80" fill="#fef3c7" stroke="#f59e0b" stroke-width="4"/>
+<rect x="55" y="45" width="190" height="20" fill="#fb923c"/>
+<circle cx="250" cy="40" r="18" fill="#facc15"/>
+</svg>
+<h3 class="font-black text-sm mt-4">Protección Solar</h3>
+<p class="text-xs text-slate-500 mt-2">
+Uso de aleros y cubiertas para reducir radiación directa.
+</p>
+</div>
+
+<div class="bg-white rounded-2xl border p-5">
+<svg viewBox="0 0 300 200" class="w-full h-44">
+<rect x="90" y="55" width="120" height="90" fill="#dcfce7" stroke="#16a34a" stroke-width="4"/>
+<circle cx="60" cy="120" r="25" fill="#16a34a"/>
+<rect x="55" y="120" width="10" height="35" fill="#854d0e"/>
+<circle cx="240" cy="120" r="25" fill="#16a34a"/>
+<rect x="235" y="120" width="10" height="35" fill="#854d0e"/>
+</svg>
+<h3 class="font-black text-sm mt-4">Vegetación Estratégica</h3>
+<p class="text-xs text-slate-500 mt-2">
+Vegetación perimetral para sombra y reducción térmica.
+</p>
+</div>
+
 </div>
 `;
 
@@ -611,24 +647,6 @@ found=true;
 if(!found){
 document.getElementById('tooltip').style.display='none';
 }
-
-})
-
-let zoom=1;
-
-wrapper.addEventListener('wheel',e=>{
-
-e.preventDefault();
-
-if(e.deltaY<0){
-zoom+=0.05;
-}else{
-zoom-=0.05;
-}
-
-zoom=Math.max(1,Math.min(1.4,zoom));
-
-wrapper.style.scale=zoom;
 
 })
 
