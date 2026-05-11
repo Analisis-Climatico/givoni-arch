@@ -81,115 +81,8 @@ border-radius:12px;
 font-size:11px;
 font-weight:700;
 opacity:0;
-transition:.15s;
-z-index:99999;
-min-width:170px;
-box-shadow:0 15px 35px rgba(0,0,0,.25);
-}
-
-.download-btn{
-padding:10px 16px;
-border-radius:12px;
-background:#0f172a;
-color:white;
-font-size:11px;
-font-weight:900;
 transition:.2s;
-}
-
-.download-btn:hover{
-background:#2563eb;
-}
-
-.arch-card{
-background:white;
-border:1px solid #dbe2ea;
-border-radius:24px;
-padding:24px;
-}
-
-.arch-diagram{
-height:180px;
-border-radius:18px;
-background:linear-gradient(to top,#dbeafe,#f8fafc);
-position:relative;
-overflow:hidden;
-margin-top:20px;
-}
-
-.house{
-position:absolute;
-bottom:30px;
-left:50%;
-transform:translateX(-50%);
-width:160px;
-height:90px;
-background:#cbd5e1;
-border:4px solid #475569;
-}
-
-.house::before{
-content:'';
-position:absolute;
-top:-55px;
-left:-10px;
-border-left:90px solid transparent;
-border-right:90px solid transparent;
-border-bottom:55px solid #64748b;
-}
-
-.window{
-position:absolute;
-width:30px;
-height:30px;
-background:#93c5fd;
-border:3px solid #334155;
-top:28px;
-}
-
-.window.left{
-left:20px;
-}
-
-.window.right{
-right:20px;
-}
-
-.vent{
-position:absolute;
-width:60px;
-height:4px;
-background:#38bdf8;
-border-radius:999px;
-opacity:.8;
-}
-
-.tree{
-position:absolute;
-bottom:25px;
-width:40px;
-height:70px;
-}
-
-.tree::before{
-content:'';
-position:absolute;
-width:42px;
-height:42px;
-background:#22c55e;
-border-radius:999px;
-top:0;
-left:-1px;
-}
-
-.tree::after{
-content:'';
-position:absolute;
-width:10px;
-height:35px;
-background:#92400e;
-bottom:0;
-left:16px;
+z-index:9999;
 }
 
 </style>
@@ -204,11 +97,11 @@ left:16px;
 <div>
 
 <h1 class="text-3xl font-black uppercase tracking-tight text-slate-800">
-Givoni Climate Engine PRO
+Givoni Climate Engine
 </h1>
 
 <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">
-Arquitectura Bioclimática Interactiva
+Arquitectura Bioclimática
 </p>
 
 </div>
@@ -277,18 +170,6 @@ Actualizar Climograma
 
 <div class="xl:col-span-3 space-y-6">
 
-<div class="bg-white rounded-3xl border p-4 flex gap-3 justify-end">
-
-<button class="download-btn" onclick="downloadChart('png')">
-PNG
-</button>
-
-<button class="download-btn" onclick="downloadChart('svg')">
-SVG
-</button>
-
-</div>
-
 <div id="chart">
 
 <div id="tooltip"
@@ -299,18 +180,18 @@ class="tooltip-box">
 
 <div class="bg-white rounded-3xl border overflow-hidden shadow-sm">
 
-<table class="w-full text-xs text-center">
+<table class="w-full text-xs">
 
 <thead class="bg-slate-50 border-b text-slate-500 uppercase font-black">
 
 <tr>
 
-<th class="p-4">Color</th>
+<th class="p-4 text-center">Color</th>
 <th class="p-4">Mes/Año</th>
-<th class="p-4">Temp Máx</th>
-<th class="p-4">Temp Mín</th>
-<th class="p-4">HR</th>
-<th class="p-4">Zona Detectada</th>
+<th class="p-4 text-center">Temp Máx</th>
+<th class="p-4 text-center">Temp Mín</th>
+<th class="p-4 text-center">HR</th>
+<th class="p-4 text-center">Zonas Detectadas</th>
 
 </tr>
 
@@ -356,38 +237,6 @@ class="space-y-4">
 
 </div>
 
-<div class="arch-card">
-
-<h2 class="text-xl font-black text-slate-800">
-Concepto Arquitectónico Referencial
-</h2>
-
-<p class="text-sm text-slate-500 mt-2">
-Representación conceptual basada en el análisis bioclimático.
-</p>
-
-<div class="arch-diagram">
-
-<div class="tree" style="left:120px;"></div>
-<div class="tree" style="right:120px;"></div>
-
-<div class="house">
-
-<div class="window left"></div>
-<div class="window right"></div>
-
-</div>
-
-<div class="vent" style="left:80px; top:80px;"></div>
-<div class="vent" style="left:100px; top:95px;"></div>
-
-<div class="vent" style="right:80px; top:80px;"></div>
-<div class="vent" style="right:100px; top:95px;"></div>
-
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -401,6 +250,65 @@ const months = [
 'Jul','Ago','Sep','Oct','Nov','Dic'
 ];
 
+const zoneDictionary = {
+
+1:'Zona de Confort',
+2:'Confort Permisible',
+3:'Calefacción por Ganancias Internas',
+4:'Calefacción Solar Pasiva',
+5:'Calefacción Solar Activa',
+6:'Humidificación',
+7:'Calefacción Convencional',
+8:'Protección Solar',
+9:'Refrigeración por Alta Masa Térmica',
+10:'Enfriamiento por Evaporación',
+11:'Alta Masa Térmica + Ventilación Nocturna',
+12:'Ventilación Natural y Mecánica',
+13:'Aire Acondicionado',
+14:'Deshumidificación Convencional'
+
+};
+
+function detectZones(temp,hr){
+
+let zones = [];
+
+if(hr >= 75){
+zones.push(14);
+}
+
+if(temp >= 26 && hr >= 65){
+zones.push(12);
+}
+
+if(temp >= 30 && hr >= 55){
+zones.push(13);
+}
+
+if(temp >= 28 && hr <= 60){
+zones.push(10);
+}
+
+if(temp >= 24 && temp <= 30 && hr >= 50){
+zones.push(2);
+}
+
+if(temp >= 22 && temp <= 27 && hr >= 40 && hr <= 70){
+zones.push(1);
+}
+
+if(temp >= 20 && hr >= 70){
+zones.push(8);
+}
+
+if(zones.length === 0){
+zones.push(1);
+}
+
+return [...new Set(zones)];
+
+}
+
 let mode = 'mes';
 
 let selectedYears = [2025];
@@ -410,10 +318,6 @@ let lat = -2.17;
 let lon = -79.92;
 
 let currentZonesSVG = null;
-
-/* =========================================================
-MAP
-========================================================= */
 
 const map = L.map('map').setView([lat,lon],7);
 
@@ -438,10 +342,6 @@ await updateLocation();
 runClimateAnalysis();
 
 });
-
-/* =========================================================
-UI
-========================================================= */
 
 function setMode(m){
 
@@ -612,27 +512,6 @@ return text;
 
 }
 
-function detectZone(hr,temp){
-
-if(hr > 80 && temp > 28){
-return 'Zona 14 - Deshumidificación convencional';
-}
-
-if(hr > 70 && temp > 24){
-return 'Zona 12 - Ventilación natural y mecánica';
-}
-
-if(temp > 32){
-return 'Zona 10 - Enfriamiento por evaporación';
-}
-
-if(temp < 20){
-return 'Zona 3 - Ganancias internas';
-}
-
-return 'Zona 1 - Confort';
-}
-
 async function drawChart(data){
 
 d3.select('#chart svg').remove();
@@ -697,7 +576,11 @@ g.append('line')
 
 }
 
-for(let hr=10; hr<=100; hr+=10){
+const humidityLabels = [
+100,90,80,70,60,50,40
+];
+
+humidityLabels.forEach((hr,index)=>{
 
 let points = [];
 
@@ -733,15 +616,19 @@ d3.line()
 .attr('stroke','#cbd5e1')
 .attr('stroke-width',1);
 
+const labelX = innerWidth - (index * 80) - 90;
+
+const labelY = 18;
+
 g.append('text')
-.attr('x',x(48-(hr/10)))
-.attr('y',y(points[points.length-1][1]/50))
+.attr('x',labelX)
+.attr('y',labelY)
 .text(`${hr}%`)
-.attr('fill','#64748b')
-.attr('font-size','14px')
+.attr('fill','#334155')
+.attr('font-size','28px')
 .attr('font-weight','900');
 
-}
+});
 
 const rawSVG = await loadZonesSVG();
 
@@ -778,14 +665,15 @@ importedSVG.setAttribute(
 
 importedSVG.setAttribute(
 "transform",
-"translate(0,55)"
+"translate(0,62)"
 );
 
-importedSVG.style.opacity = "0.85";
+importedSVG.style.opacity = "0.82";
 
 importedSVG.style.pointerEvents = "none";
 
-const zoneLayer = g.append("g");
+const zoneLayer = g.append("g")
+.attr("class","zones-layer");
 
 zoneLayer.node().appendChild(importedSVG);
 
@@ -798,9 +686,6 @@ const color =
 d3.interpolateRainbow(i/data.length);
 
 d.color = color;
-
-d.zone =
-detectZone(d.hr,d.tMax);
 
 const points = [];
 
@@ -846,10 +731,10 @@ d3.line()
 tooltip.style.opacity = 1;
 
 tooltip.style.left =
-(event.pageX-120)+'px';
+(event.pageX+20)+'px';
 
 tooltip.style.top =
-(event.pageY-120)+'px';
+(event.pageY-20)+'px';
 
 tooltip.innerHTML = `
 <div class="space-y-2">
@@ -871,11 +756,6 @@ Temp Mín:
 <p>
 HR:
 <b>${d.hr.toFixed(0)}%</b>
-</p>
-
-<p>
-Zona:
-<b>${d.zone}</b>
 </p>
 
 </div>
@@ -915,30 +795,50 @@ data.forEach(d=>{
 tbody.innerHTML += `
 <tr class="border-b hover:bg-slate-50">
 
-<td class="p-4">
+<td class="p-4 text-center align-middle">
 <div class="w-4 h-4 rounded-full inline-block"
 style="background:${d.color}">
 </div>
 </td>
 
-<td class="p-4 font-black">
+<td class="p-4 text-center align-middle">
 ${d.label}
 </td>
 
-<td class="p-4">
+<td class="p-4 text-center align-middle">
 ${d.tMax.toFixed(1)}°C
 </td>
 
-<td class="p-4">
+<td class="p-4 text-center align-middle">
 ${d.tMin.toFixed(1)}°C
 </td>
 
-<td class="p-4 text-blue-600 font-black">
+<td class="p-4 text-center text-blue-600 font-black align-middle">
 ${d.hr.toFixed(0)}%
 </td>
 
-<td class="p-4 text-[11px] font-black text-slate-700">
-${d.zone}
+<td class="p-4 text-center align-middle">
+
+<div class="flex flex-col gap-2 items-center">
+
+${d.zones.map(zone=>`
+
+<div class="bg-blue-100
+text-blue-700
+px-3
+py-1
+rounded-full
+text-[10px]
+font-black">
+
+${zone}
+
+</div>
+
+`).join('')}
+
+</div>
+
 </td>
 
 </tr>
@@ -950,12 +850,6 @@ ${d.zone}
 
 function updateAnalysis(data){
 
-const avgTemp =
-data.reduce((a,b)=>a+b.tMax,0)/data.length;
-
-const avgHR =
-data.reduce((a,b)=>a+b.hr,0)/data.length;
-
 const analysis =
 document.getElementById('analysis-text');
 
@@ -964,176 +858,61 @@ document.getElementById('strategy-list');
 
 strategyList.innerHTML = '';
 
-let diagnosis = '';
+let combinedZones = [];
 
-let strategies = [];
+data.forEach(d=>{
 
-if(avgHR > 78){
+d.zones.forEach(z=>{
 
-diagnosis =
-'El análisis climático general evidencia condiciones cálidas húmedas persistentes con elevados niveles de humedad relativa y sensación térmica constante. La información obtenida en la tabla climática indica predominancia de ambientes con sobrecalentamiento húmedo, baja disipación térmica y necesidad de ventilación permanente.';
-
-strategies = [
-
-{
-title:'Ventilación Cruzada',
-desc:'Incorporar ventanas enfrentadas, celosías regulables y dobles alturas para extraer aire caliente.'
-},
-
-{
-title:'Vegetación Estratégica',
-desc:'Utilizar árboles de sombra, jardines verticales y vegetación perimetral para disminuir radiación.'
-},
-
-{
-title:'Materiales Livianos',
-desc:'Aplicar panelería ventilada, cubiertas reflectivas y materiales de baja acumulación térmica.'
+if(!combinedZones.includes(z)){
+combinedZones.push(z);
 }
+
+});
+
+});
+
+analysis.innerHTML = `
+El análisis climático evidencia una predominancia de condiciones térmicas asociadas a:
+
+<b class="text-blue-400">
+${combinedZones.join(', ')}
+</b>.
+
+Las temperaturas elevadas combinadas con altos porcentajes de humedad relativa generan ambientes con riesgo de sobrecalentamiento, sensación térmica elevada y baja disipación natural del calor corporal.
+
+El climograma indica que las estrategias arquitectónicas deben priorizar sistemas de ventilación natural cruzada, control solar pasivo, protección de envolventes y reducción de ganancias térmicas directas.
+
+Asimismo, el comportamiento climático detectado evidencia la necesidad de incorporar soluciones bioclimáticas adaptativas capaces de responder tanto al incremento térmico diurno como a la acumulación de humedad ambiental.
+`;
+
+const strategies = [
+
+'Cubiertas ventiladas con cámara de aire',
+'Parasoles verticales y horizontales',
+'Vegetación de sombra y barreras verdes',
+'Celosías permeables',
+'Ventilación cruzada permanente',
+'Materiales reflectivos de baja absorción térmica',
+'Patios internos bioclimáticos',
+'Protección solar profunda en fachadas',
+'Sistemas de extracción de aire caliente'
 
 ];
-
-}
-else if(avgTemp > 30){
-
-diagnosis =
-'El comportamiento climático refleja predominancia de temperaturas elevadas con fuerte incidencia solar directa. El cuadro de datos muestra sobrecalentamiento diurno y necesidad de reducir ganancias térmicas internas.';
-
-strategies = [
-
-{
-title:'Protección Solar',
-desc:'Incorporar aleros profundos, parasoles horizontales y fachadas ventiladas.'
-},
-
-{
-title:'Inercia Térmica',
-desc:'Utilizar muros gruesos, hormigón expuesto y pisos térmicos para estabilizar temperatura.'
-},
-
-{
-title:'Ventilación Nocturna',
-desc:'Implementar aperturas superiores para liberar calor acumulado durante la noche.'
-}
-
-];
-
-}
-else{
-
-diagnosis =
-'Las condiciones climáticas presentan estabilidad térmica moderada y confort relativamente equilibrado, permitiendo estrategias bioclimáticas pasivas simples.';
-
-strategies = [
-
-{
-title:'Iluminación Natural',
-desc:'Maximizar ingreso de luz natural con protección solar moderada.'
-},
-
-{
-title:'Ventilación Natural',
-desc:'Permitir circulación continua de aire mediante aperturas regulables.'
-}
-
-];
-
-}
-
-analysis.innerText = diagnosis;
 
 strategies.forEach(s=>{
 
 strategyList.innerHTML += `
 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
 
-<p class="text-sm font-black text-white mb-2">
-${s.title}
-</p>
-
-<p class="text-xs leading-relaxed text-slate-300">
-${s.desc}
+<p class="text-sm font-bold text-slate-300">
+${s}
 </p>
 
 </div>
 `;
 
 });
-
-}
-
-function downloadChart(type){
-
-const svg =
-document.querySelector('#chart svg');
-
-if(type === 'svg'){
-
-const serializer =
-new XMLSerializer();
-
-const source =
-serializer.serializeToString(svg);
-
-const blob =
-new Blob([source],{
-type:'image/svg+xml;charset=utf-8'
-});
-
-const url =
-URL.createObjectURL(blob);
-
-const link =
-document.createElement('a');
-
-link.href = url;
-link.download = 'climograma.svg';
-link.click();
-
-}
-
-if(type === 'png'){
-
-const serializer =
-new XMLSerializer();
-
-const source =
-serializer.serializeToString(svg);
-
-const img = new Image();
-
-img.src =
-'data:image/svg+xml;base64,' +
-btoa(unescape(encodeURIComponent(source)));
-
-img.onload = ()=>{
-
-const canvas =
-document.createElement('canvas');
-
-canvas.width = 1600;
-canvas.height = 760;
-
-const ctx =
-canvas.getContext('2d');
-
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0,0,1600,760);
-
-ctx.drawImage(img,0,0);
-
-const link =
-document.createElement('a');
-
-link.download = 'climograma.png';
-
-link.href =
-canvas.toDataURL('image/png');
-
-link.click();
-
-};
-
-}
 
 }
 
@@ -1180,13 +959,20 @@ tMin.reduce((a,b)=>a+b,0)/tMin.length;
 const avgHR =
 hr.reduce((a,b)=>a+b,0)/hr.length;
 
+const detectedZones =
+detectZones(avgMax,avgHR);
+
 results.push({
 
 label:`${months[m]} ${year}`,
 
 tMax:avgMax,
 tMin:avgMin,
-hr:avgHR
+hr:avgHR,
+
+zones:detectedZones.map(z=>
+`Zona ${z}: ${zoneDictionary[z]}`
+)
 
 });
 
@@ -1218,13 +1004,20 @@ data.daily.relative_humidity_2m_mean
 /
 data.daily.relative_humidity_2m_mean.length;
 
+const detectedZones =
+detectZones(avgMax,avgHR);
+
 results.push({
 
 label:`${year}`,
 
 tMax:avgMax,
 tMin:avgMin,
-hr:avgHR
+hr:avgHR,
+
+zones:detectedZones.map(z=>
+`Zona ${z}: ${zoneDictionary[z]}`
+)
 
 });
 
