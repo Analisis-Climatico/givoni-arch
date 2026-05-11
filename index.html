@@ -3,91 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Givoni Climate Engine</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
 
 body{
-    background:#eef2f7;
-    font-family:Inter,sans-serif;
+background:#f1f5f9;
+font-family:Inter,sans-serif;
+overflow-x:hidden;
 }
 
 #map{
-    height:260px;
-    border-radius:18px;
-    overflow:hidden;
+height:260px;
+border-radius:20px;
+overflow:hidden;
+border:1px solid #cbd5e1;
 }
 
 #chart-wrapper{
-    position:relative;
-    width:100%;
-    height:760px;
-    overflow:hidden;
-    background:white;
-    border-radius:24px;
-    border:1px solid #dce2ea;
+position:relative;
+width:100%;
+height:900px;
+background:white;
+border-radius:24px;
+overflow:hidden;
+border:1px solid #cbd5e1;
+transform-origin:center center;
 }
 
 #chart-canvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:2;
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+z-index:2;
 }
 
 #givoni-zones{
-    position:absolute;
-    left:0;
-    top:58px;
-    width:100%;
-    height:calc(100% - 58px);
-    z-index:1;
-    pointer-events:none;
-    opacity:0.97;
-}
-
-.tooltip-custom{
-    position:absolute;
-    z-index:99999;
-    background:#0f172a;
-    color:white;
-    padding:12px;
-    border-radius:14px;
-    font-size:12px;
-    font-weight:700;
-    pointer-events:none;
-    display:none;
-    min-width:180px;
-    box-shadow:0 10px 30px rgba(0,0,0,.25);
+position:absolute;
+left:0;
+top:85px;
+width:100%;
+height:calc(100% - 85px);
+object-fit:contain;
+pointer-events:none;
+opacity:.92;
+z-index:1;
 }
 
 .btn-chip{
-    padding:10px;
-    border-radius:12px;
-    font-weight:800;
-    font-size:11px;
-    border:1px solid #d7dde7;
-    cursor:pointer;
-    transition:.2s;
+padding:10px 18px;
+border-radius:10px;
+font-weight:800;
+font-size:12px;
+cursor:pointer;
+transition:.2s;
+border:1px solid #cbd5e1;
 }
 
 .active-chip{
-    background:#2563eb;
-    color:white;
+background:#2563eb;
+color:white;
+}
+
+.tooltip{
+position:absolute;
+background:#020617;
+color:white;
+padding:12px;
+border-radius:12px;
+font-size:12px;
+font-weight:700;
+pointer-events:none;
+display:none;
+z-index:999;
+min-width:160px;
 }
 
 </style>
 </head>
-
 <body class="p-6">
 
 <div class="max-w-[1900px] mx-auto space-y-6">
@@ -99,47 +97,41 @@ body{
 <div class="bg-white rounded-3xl border p-6 space-y-6">
 
 <div>
-<h3 class="text-xs font-black tracking-[3px] text-blue-700 uppercase mb-4">
-Ubicación:
-<span id="location-name">Guayaquil</span>
-</h3>
+<p id="location-display" class="text-blue-600 font-black text-xs uppercase mb-4">
+Ubicación: Guayaquil
+</p>
+</div>
 
-<div class="flex gap-2 mb-4">
+<div>
+<p class="text-[10px] font-black uppercase tracking-[4px] text-slate-400 mb-3">
+Modo de análisis
+</p>
 
-<button onclick="setModo('mes')"
-id="btn-mes"
-class="btn-chip active-chip">
+<div class="flex gap-2">
+<button onclick="setModo('mes')" id="btn-mes" class="btn-chip active-chip">
 MESES
 </button>
 
-<button onclick="setModo('año')"
-id="btn-año"
-class="btn-chip">
+<button onclick="setModo('año')" id="btn-año" class="btn-chip">
 AÑOS
 </button>
-
+</div>
 </div>
 
-<p class="text-[10px] font-black tracking-[4px] text-slate-400 uppercase mb-2">
-Seleccionar Año
+<div>
+<p class="text-[10px] font-black uppercase tracking-[4px] text-slate-400 mb-3">
+Seleccionar años
 </p>
 
-<div id="year-selector"
-class="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto">
+<div id="year-selector" class="grid grid-cols-2 gap-2"></div>
 </div>
 
-<div id="meses-box">
-
-<p class="text-[10px] font-black tracking-[4px] text-slate-400 uppercase mt-6 mb-2">
-Meses
+<div id="month-section">
+<p class="text-[10px] font-black uppercase tracking-[4px] text-slate-400 mb-3">
+Seleccionar meses
 </p>
 
-<div id="month-selector"
-class="grid grid-cols-3 gap-2">
-</div>
-
-</div>
-
+<div id="month-selector" class="grid grid-cols-3 gap-2"></div>
 </div>
 
 <button onclick="ejecutarAnalisis()"
@@ -147,660 +139,502 @@ class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xs upperca
 Actualizar Climograma
 </button>
 
-<div class="space-y-3">
-
-<button onclick="descargarPNG()"
-class="w-full bg-slate-900 text-white py-3 rounded-xl text-xs font-black">
-Descargar PNG
-</button>
-
 </div>
 
-</div>
-
-<div class="lg:col-span-3">
+<div class="lg:col-span-3 space-y-6">
 
 <div id="chart-wrapper">
 
-<img
-src="pruega-de-svg.svg"
-id="givoni-zones">
+<img src="pruega-de-svg.svg" id="givoni-zones">
 
 <canvas id="chart-canvas"></canvas>
 
-<div id="tooltip"
-class="tooltip-custom"></div>
+<div id="tooltip" class="tooltip"></div>
 
 </div>
 
-</div>
-
-</div>
-
-<div class="bg-white rounded-3xl overflow-hidden border">
-
-<table class="w-full text-sm">
-
-<thead class="bg-slate-50 text-slate-500 uppercase text-[11px]">
-
+<div class="bg-white rounded-3xl border overflow-hidden">
+<table class="w-full text-xs">
+<thead class="bg-slate-100 text-slate-500 uppercase font-black">
 <tr>
-
 <th class="p-5">Color</th>
 <th>Mes/Año</th>
 <th>Temp Máx</th>
 <th>Temp Mín</th>
 <th>HR</th>
-<th>Zona</th>
-
+<th class="w-[320px]">Zona Bioclimática</th>
 </tr>
-
 </thead>
-
-<tbody id="table-body"></tbody>
-
+<tbody id="data-table"></tbody>
 </table>
-
 </div>
 
-<div class="bg-[#081120] text-white rounded-3xl p-10">
+<div class="bg-[#020617] text-white rounded-3xl p-10 space-y-10">
 
-<h2 class="text-3xl font-black mb-8">
+<div>
+<h2 class="text-blue-400 font-black uppercase text-xs tracking-[4px] mb-5">
 Diagnóstico Bioclimático
 </h2>
 
-<p id="diagnostico"
-class="text-slate-300 leading-relaxed text-lg">
+<p id="diagnostico" class="text-slate-300 leading-relaxed text-sm">
+Esperando análisis climático...
 </p>
-
-<div id="estrategias"
-class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
 </div>
 
-<h2 class="text-3xl font-black mt-14 mb-8">
+<div>
+<h2 class="text-blue-400 font-black uppercase text-xs tracking-[4px] mb-5">
+Estrategias Arquitectónicas
+</h2>
+
+<div id="estrategias" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+</div>
+
+<div>
+<h2 class="text-blue-400 font-black uppercase text-xs tracking-[4px] mb-5">
 Concepto Arquitectónico Referencial
 </h2>
 
-<div id="concepto-arquitectonico"
-class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div id="concepto-box" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
 </div>
 
 </div>
 
+</div>
+</div>
 </div>
 
 <script>
 
-const meses = [
-"Ene","Feb","Mar","Abr","May","Jun",
-"Jul","Ago","Sep","Oct","Nov","Dic"
-];
+const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
-const apiKey = "b0be33523088ce87c824d0befe19820c";
+let modo='mes';
+let seleccionAnos=[2025];
+let seleccionMeses=[0,1,2];
 
-let modo = "mes";
+let map = L.map('map').setView([-2.17,-79.92],7);
 
-let seleccionMeses = [0,1,2];
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-let seleccionAnos = [2025];
+let marker = L.marker([-2.17,-79.92]).addTo(map);
 
-let lat = -2.17;
-let lon = -79.92;
-
-const canvas = document.getElementById("chart-canvas");
-const ctx = canvas.getContext("2d");
-
-const tooltip = document.getElementById("tooltip");
-
-const puntosInteractivos = [];
-
-let scale = 1;
-
-const map = L.map("map").setView([lat,lon],8);
-
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-).addTo(map);
-
-const marker = L.marker([lat,lon]).addTo(map);
-
-map.on("click", async(e)=>{
-
-    lat = e.latlng.lat;
-    lon = e.latlng.lng;
-
-    marker.setLatLng([lat,lon]);
-
-    try{
-
-        const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
-        );
-
-        const data = await res.json();
-
-        document.getElementById("location-name").innerText =
-        data.name;
-
-    }catch(err){}
-
+map.on('click',e=>{
+marker.setLatLng(e.latlng);
 });
 
 function setModo(m){
 
-    modo = m;
+modo=m;
 
-    document.getElementById("btn-mes")
-    .classList.remove("active-chip");
-
-    document.getElementById("btn-año")
-    .classList.remove("active-chip");
-
-    document.getElementById(`btn-${m}`)
-    .classList.add("active-chip");
-
-    document.getElementById("meses-box").style.display =
-    m === "mes" ? "block" : "none";
+if(m==='mes'){
+document.getElementById('btn-mes').classList.add('active-chip');
+document.getElementById('btn-año').classList.remove('active-chip');
+document.getElementById('month-section').style.display='block';
+}else{
+document.getElementById('btn-año').classList.add('active-chip');
+document.getElementById('btn-mes').classList.remove('active-chip');
+document.getElementById('month-section').style.display='none';
+}
 
 }
 
-function renderInterfaz(){
+function renderSelectors(){
 
-    const yearBox =
-    document.getElementById("year-selector");
+const yearBox=document.getElementById('year-selector');
+yearBox.innerHTML='';
 
-    yearBox.innerHTML = "";
+for(let y=2026;y>=2000;y--){
 
-    for(let y=2026;y>=2000;y--){
+const div=document.createElement('div');
 
-        const div = document.createElement("div");
+div.className=`btn-chip ${seleccionAnos.includes(y)?'active-chip':''}`;
 
-        div.className = `
-        btn-chip
-        ${seleccionAnos.includes(y)
-        ? 'active-chip'
-        : ''}
-        `;
+div.innerText=y;
 
-        div.innerText = y;
+if(modo==='mes'){
 
-        div.onclick = ()=>{
+div.onclick=()=>{
+seleccionAnos=[y];
+renderSelectors();
+}
 
-            if(modo === "mes"){
+}else{
 
-                seleccionAnos = [y];
+div.onclick=()=>{
 
-            }else{
+if(seleccionAnos.includes(y)){
+seleccionAnos=seleccionAnos.filter(i=>i!==y);
+}else{
+seleccionAnos.push(y);
+}
 
-                if(seleccionAnos.includes(y)){
+renderSelectors();
+}
+}
 
-                    seleccionAnos =
-                    seleccionAnos.filter(a=>a!==y);
+yearBox.appendChild(div);
+}
 
-                }else{
+const monthBox=document.getElementById('month-selector');
+monthBox.innerHTML='';
 
-                    seleccionAnos.push(y);
+meses.forEach((m,i)=>{
 
-                }
+const div=document.createElement('div');
+div.className=`btn-chip ${seleccionMeses.includes(i)?'active-chip':''}`;
+div.innerText=m;
 
-            }
+div.onclick=()=>{
 
-            renderInterfaz();
+if(seleccionMeses.includes(i)){
+seleccionMeses=seleccionMeses.filter(x=>x!==i);
+}else{
+seleccionMeses.push(i);
+}
 
-        };
+renderSelectors();
+}
 
-        yearBox.appendChild(div);
-
-    }
-
-    const monthBox =
-    document.getElementById("month-selector");
-
-    monthBox.innerHTML = "";
-
-    meses.forEach((m,i)=>{
-
-        const div = document.createElement("div");
-
-        div.className = `
-        btn-chip
-        ${seleccionMeses.includes(i)
-        ? 'active-chip'
-        : ''}
-        `;
-
-        div.innerText = m;
-
-        div.onclick = ()=>{
-
-            if(seleccionMeses.includes(i)){
-
-                seleccionMeses =
-                seleccionMeses.filter(x=>x!==i);
-
-            }else{
-
-                seleccionMeses.push(i);
-
-            }
-
-            renderInterfaz();
-
-        };
-
-        monthBox.appendChild(div);
-
-    });
+monthBox.appendChild(div);
+})
 
 }
 
-function dibujarBase(){
+renderSelectors();
 
-    canvas.width =
-    canvas.parentElement.clientWidth;
+const canvas=document.getElementById('chart-canvas');
+const wrapper=document.getElementById('chart-wrapper');
+const ctx=canvas.getContext('2d');
 
-    canvas.height =
-    canvas.parentElement.clientHeight;
-
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    const paddingLeft = 115;
-    const graphTop = 52;
-    const graphWidth = canvas.width - 175;
-    const graphHeight = canvas.height - 115;
-
-    ctx.strokeStyle = "#d9e0ea";
-
-    for(let i=-5;i<=50;i++){
-
-        const x =
-        paddingLeft + ((i+5)/55)*graphWidth;
-
-        ctx.beginPath();
-        ctx.moveTo(x,graphTop);
-        ctx.lineTo(x,graphTop+graphHeight);
-        ctx.stroke();
-
-        ctx.fillStyle = "#475569";
-        ctx.font = "11px Inter";
-
-        ctx.fillText(
-            i,
-            x-4,
-            graphTop+graphHeight+20
-        );
-
-    }
-
-    for(let h=0;h<=100;h+=10){
-
-        const y =
-        graphTop + graphHeight -
-        (h/100)*graphHeight;
-
-        ctx.beginPath();
-        ctx.moveTo(paddingLeft,y);
-        ctx.lineTo(
-            paddingLeft+graphWidth,
-            y
-        );
-
-        ctx.strokeStyle = "#edf2f7";
-        ctx.stroke();
-
-        ctx.fillStyle = "#64748b";
-        ctx.font = "12px Inter";
-
-        ctx.fillText(
-            `${h}%`,
-            paddingLeft+graphWidth+10,
-            y+4
-        );
-
-    }
-
-}
-
-function obtenerZona(t,h){
-
-    if(h>80 && t>27) return 14;
-    if(t>38) return 13;
-    if(t>32 && h<55) return 10;
-    if(t>30) return 12;
-    if(t>26) return 9;
-    if(t>22) return 2;
-    return 1;
-
-}
-
-const nombresZonas = {
-
-1:'Zona 1 · Confort',
-2:'Zona 2 · Confort Permisible',
-9:'Zona 9 · Alta Masa Térmica',
-10:'Zona 10 · Enfriamiento por Evaporación',
-12:'Zona 12 · Ventilación Natural y Mecánica',
-13:'Zona 13 · Aire Acondicionado',
-14:'Zona 14 · Deshumidificación'
-
-};
+let hoverData=[];
 
 function ejecutarAnalisis(){
 
-    dibujarBase();
+canvas.width=wrapper.clientWidth;
+canvas.height=wrapper.clientHeight;
 
-    puntosInteractivos.length = 0;
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    const table =
-    document.getElementById("table-body");
+const p=120;
+const dW=canvas.width-p*2;
+const dH=canvas.height-p*2;
 
-    table.innerHTML = "";
+hoverData=[];
 
-    const items =
-    modo === "mes"
-    ? seleccionMeses
-    : seleccionAnos;
+ctx.strokeStyle='#cbd5e1';
+ctx.lineWidth=.6;
 
-    let zonasDetectadas = [];
+for(let t=-5;t<=50;t+=1){
 
-    items.forEach((item,index)=>{
+let x=p+((t+5)/55)*dW;
 
-        let label;
+ctx.beginPath();
+ctx.moveTo(x,p);
+ctx.lineTo(x,canvas.height-p);
+ctx.stroke();
 
-        if(modo==="mes"){
-
-            label =
-            `${meses[item]} ${seleccionAnos[0]}`;
-
-        }else{
-
-            label = item;
-
-        }
-
-        const tmax =
-        29 + Math.random()*6;
-
-        const tmin =
-        22 + Math.random()*3;
-
-        const hr =
-        70 + Math.random()*25;
-
-        const zona =
-        obtenerZona(tmax,hr);
-
-        zonasDetectadas.push(zona);
-
-        const color =
-        `hsl(${index*60},80%,55%)`;
-
-        const paddingLeft = 115;
-        const graphTop = 52;
-        const graphWidth = canvas.width - 175;
-        const graphHeight = canvas.height - 115;
-
-        const x1 =
-        paddingLeft + ((tmin+5)/55)*graphWidth;
-
-        const x2 =
-        paddingLeft + ((tmax+5)/55)*graphWidth;
-
-        const y =
-        graphTop + graphHeight -
-        (hr/100)*graphHeight;
-
-        ctx.beginPath();
-
-        ctx.moveTo(x1,y);
-
-        ctx.lineTo(x2,y-80);
-
-        ctx.lineWidth = 7;
-        ctx.lineCap = "round";
-        ctx.strokeStyle = color;
-
-        ctx.stroke();
-
-        puntosInteractivos.push({
-
-            x:x2,
-            y:y-80,
-            label,
-            tmax:tmax.toFixed(1),
-            tmin:tmin.toFixed(1),
-            hr:hr.toFixed(0),
-            zona:nombresZonas[zona]
-
-        });
-
-        table.innerHTML += `
-
-        <tr class="border-t">
-
-        <td class="p-5">
-            <div
-            style="
-            width:18px;
-            height:18px;
-            border-radius:999px;
-            background:${color};
-            ">
-            </div>
-        </td>
-
-        <td>${label}</td>
-
-        <td>${tmax.toFixed(1)}°C</td>
-
-        <td>${tmin.toFixed(1)}°C</td>
-
-        <td class="text-blue-600 font-black">
-        ${hr.toFixed(0)}%
-        </td>
-
-        <td>
-        ${nombresZonas[zona]}
-        </td>
-
-        </tr>
-
-        `;
-
-    });
-
-    generarDiagnostico(zonasDetectadas);
-
+if(t<50){
+ctx.fillStyle='#475569';
+ctx.font='12px Inter';
+ctx.fillText(t,x-8,canvas.height-p+30);
+}
 }
 
-function generarDiagnostico(zonas){
+for(let h=10;h<=100;h+=10){
 
-    const diagnostico =
-    document.getElementById("diagnostico");
+ctx.beginPath();
+ctx.strokeStyle='rgba(100,116,139,.25)';
 
-    const estrategias =
-    document.getElementById("estrategias");
+for(let t=-5;t<=50;t++){
 
-    const concepto =
-    document.getElementById("concepto-arquitectonico");
+let x=p+((t+5)/55)*dW;
+let y=canvas.height-p-(h/100*dH*Math.exp(0.025*(t-25)));
 
-    if(zonas.includes(14)){
-
-        diagnostico.innerHTML = `
-        El análisis bioclimático evidencia condiciones
-        de elevada humedad relativa y altas temperaturas
-        durante gran parte del período analizado,
-        generando ambientes con sensación térmica elevada
-        y baja disipación natural del calor.
-        <br><br>
-        El climograma indica predominancia en zonas de
-        deshumidificación y ventilación natural,
-        por lo que el diseño arquitectónico debe
-        priorizar estrategias pasivas de enfriamiento,
-        ventilación cruzada permanente,
-        control solar y selección de materiales
-        de baja inercia térmica.
-        `;
-
-    }
-
-    estrategias.innerHTML = `
-
-    <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <h3 class="font-black text-lg mb-3">
-        Ventilación Cruzada
-        </h3>
-        <p class="text-slate-300 text-sm leading-relaxed">
-        Uso de aperturas opuestas,
-        celosías orientables,
-        patios ventilados y dobles alturas
-        para maximizar circulación de aire.
-        </p>
-    </div>
-
-    <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <h3 class="font-black text-lg mb-3">
-        Protección Solar
-        </h3>
-        <p class="text-slate-300 text-sm leading-relaxed">
-        Incorporación de vegetación,
-        aleros,
-        filtros solares,
-        fachadas ventiladas
-        y cubiertas reflectivas.
-        </p>
-    </div>
-
-    <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-        <h3 class="font-black text-lg mb-3">
-        Materialidad Pasiva
-        </h3>
-        <p class="text-slate-300 text-sm leading-relaxed">
-        Uso de madera,
-        bambú,
-        paneles ventilados,
-        pisos fríos
-        y materiales transpirables.
-        </p>
-    </div>
-
-    `;
-
-    concepto.innerHTML = `
-
-    <div class="bg-white rounded-2xl overflow-hidden">
-        <img
-        src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=1200"
-        class="w-full h-56 object-cover">
-    </div>
-
-    <div class="bg-white rounded-2xl overflow-hidden">
-        <img
-        src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200"
-        class="w-full h-56 object-cover">
-    </div>
-
-    <div class="bg-white rounded-2xl overflow-hidden">
-        <img
-        src="https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200"
-        class="w-full h-56 object-cover">
-    </div>
-
-    `;
-
+if(t===-5){
+ctx.moveTo(x,y);
+}else{
+ctx.lineTo(x,y);
+}
 }
 
-canvas.addEventListener('mousemove',(e)=>{
+ctx.stroke();
 
-    const rect =
-    canvas.getBoundingClientRect();
+ctx.fillStyle='#334155';
+ctx.font='14px Inter';
 
-    const mouseX =
-    e.clientX - rect.left;
+let tx=p+dW-(100-h)*18;
+let ty=p-20;
 
-    const mouseY =
-    e.clientY - rect.top;
+ctx.fillText(h+'%',tx,ty);
+}
 
-    let found = false;
+ctx.fillStyle='#111827';
+ctx.font='bold 18px Inter';
+ctx.fillText('TEMPERATURA BULBO SECO (°C)',canvas.width/2-170,canvas.height-40);
 
-    puntosInteractivos.forEach(p=>{
+let tabla='';
 
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
+let promedioT=0;
+let promedioH=0;
 
-        if(Math.sqrt(dx*dx+dy*dy)<15){
+const items=modo==='mes'?seleccionMeses:seleccionAnos;
 
-            tooltip.style.display='block';
+items.forEach((item,index)=>{
 
-            tooltip.style.left =
-            `${e.pageX+15}px`;
+let label='';
 
-            tooltip.style.top =
-            `${e.pageY-70}px`;
+let tMax;
+let tMin;
+let hr;
 
-            tooltip.innerHTML = `
-            <strong>${p.label}</strong><br>
-            Temp Máx: ${p.tmax}°C<br>
-            Temp Mín: ${p.tmin}°C<br>
-            HR: ${p.hr}%<br>
-            ${p.zona}
-            `;
+if(modo==='mes'){
 
-            found = true;
+label=`${meses[item]} ${seleccionAnos[0]}`;
 
-        }
+tMax=30+Math.random()*5;
+tMin=22+Math.random()*3;
+hr=70+Math.random()*20;
 
-    });
+}else{
 
-    if(!found){
+label=`${item}`;
 
-        tooltip.style.display='none';
+tMax=31+Math.random()*8;
+tMin=21+Math.random()*5;
+hr=65+Math.random()*20;
+}
 
-    }
+promedioT+=tMax;
+promedioH+=hr;
 
+const color=`hsl(${index*360/items.length},85%,55%)`;
+
+ctx.beginPath();
+ctx.lineWidth=7;
+ctx.strokeStyle=color;
+ctx.lineCap='round';
+
+let points=[];
+
+for(let s=0;s<=20;s++){
+
+let t=tMin+(tMax-tMin)*(s/20);
+
+let hCurva=hr*Math.exp(0.03*(t-tMax));
+
+let x=p+((t+5)/55)*dW;
+
+let y=canvas.height-p-(hCurva/100*dH*Math.exp(0.025*(t-25)));
+
+points.push({x,y});
+
+if(s===0){
+ctx.moveTo(x,y);
+}else{
+ctx.lineTo(x,y);
+}
+}
+
+ctx.stroke();
+
+hoverData.push({
+label,
+color,
+points,
+tMax,
+tMin,
+hr
 });
 
-canvas.addEventListener('wheel',(e)=>{
+const zona=getZona(hr,tMax);
 
-    e.preventDefault();
+tabla+=`
+<tr class="border-b border-slate-100 font-bold text-slate-600">
+<td class="p-5 text-center">
+<div class="w-4 h-4 rounded-full mx-auto" style="background:${color}"></div>
+</td>
+<td>${label}</td>
+<td>${tMax.toFixed(1)}°C</td>
+<td>${tMin.toFixed(1)}°C</td>
+<td class="text-blue-600 font-black">${hr.toFixed(0)}%</td>
+<td>${zona}</td>
+</tr>
+`;
 
-    if(e.deltaY<0){
+})
 
-        scale += .05;
+const avgT=promedioT/items.length;
+const avgH=promedioH/items.length;
 
-    }else{
+actualizarDiagnostico(avgT,avgH);
 
-        scale -= .05;
 
-    }
-
-    scale = Math.min(Math.max(scale,1),2);
-
-    canvas.style.transform =
-    `scale(${scale})`;
-
-    canvas.style.transformOrigin =
-    'center center';
-
-});
-
-function descargarPNG(){
-
-    const link =
-    document.createElement('a');
-
-    link.download =
-    'climograma-givoni.png';
-
-    link.href =
-    canvas.toDataURL();
-
-    link.click();
+document.getElementById('data-table').innerHTML=tabla;
 
 }
 
-renderInterfaz();
+function getZona(hr,temp){
 
-setTimeout(ejecutarAnalisis,500);
+if(hr>80 && temp>28){
+return 'Zona 14 — Deshumidificación Convencional';
+}
+
+if(temp>32){
+return 'Zona 10 — Enfriamiento por Evaporación';
+}
+
+if(temp>27){
+return 'Zona 12 — Refrigeración por Ventilación Natural';
+}
+
+if(temp<20){
+return 'Zona 3 — Calefacción por Ganancias Internas';
+}
+
+return 'Zona 1 — Zona de Confort';
+}
+
+function actualizarDiagnostico(temp,hr){
+
+let diagnostico='';
+let estrategias='';
+let concepto='';
+
+if(hr>80){
+
+
+diagnostico=`
+Las condiciones climáticas muestran elevados niveles de humedad relativa junto con temperaturas cálidas persistentes. Esto genera sensación térmica alta, dificultad de disipación del calor corporal y riesgo de acumulación de humedad en espacios interiores. Se recomienda priorizar estrategias pasivas enfocadas en ventilación cruzada permanente, control solar y materiales de rápida disipación térmica.
+`;
+
+estrategias=`
+<div class="bg-slate-900 rounded-2xl p-5 border border-slate-800">
+<h3 class="font-black text-sm mb-3">Ventilación Cruzada</h3>
+<p class="text-slate-400 text-xs leading-relaxed">
+Uso de ventanas opuestas, celosías orientables y aperturas superiores para acelerar la extracción de aire caliente.
+</p>
+</div>
+
+<div class="bg-slate-900 rounded-2xl p-5 border border-slate-800">
+<h3 class="font-black text-sm mb-3">Protección Solar</h3>
+<p class="text-slate-400 text-xs leading-relaxed">
+Implementar aleros, vegetación de sombra, fachadas ventiladas y materiales reflectivos.
+</p>
+</div>
+`;
+
+concepto=`
+<div class="bg-white rounded-2xl p-5 border">
+<svg viewBox="0 0 300 200" class="w-full h-40">
+<rect x="80" y="60" width="140" height="80" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+<path d="M20 100 L80 100" stroke="#0ea5e9" stroke-width="8"/>
+<path d="M220 100 L280 100" stroke="#0ea5e9" stroke-width="8"/>
+<polygon points="20,100 40,90 40,110" fill="#0ea5e9"/>
+<polygon points="280,100 260,90 260,110" fill="#0ea5e9"/>
+</svg>
+<h3 class="font-black text-sm mt-4">Ventilación Cruzada</h3>
+<p class="text-xs text-slate-500 mt-2">Circulación constante de aire natural.</p>
+</div>
+`;
+
+}else{
+
+diagnostico=`
+El clima presenta condiciones relativamente estables y cercanas al confort térmico. Es posible mantener confort mediante estrategias pasivas ligeras y control de radiación solar.
+`;
+
+estrategias=`
+<div class="bg-slate-900 rounded-2xl p-5 border border-slate-800">
+<h3 class="font-black text-sm mb-3">Confort Pasivo</h3>
+<p class="text-slate-400 text-xs leading-relaxed">
+Control moderado de radiación solar y aprovechamiento de iluminación natural.
+</p>
+</div>
+`;
+
+concepto=`
+<div class="bg-white rounded-2xl p-5 border">
+<svg viewBox="0 0 300 200" class="w-full h-40">
+<rect x="70" y="50" width="160" height="100" fill="#dcfce7" stroke="#16a34a" stroke-width="4"/>
+<line x1="150" y1="10" x2="150" y2="50" stroke="#f59e0b" stroke-width="8"/>
+</svg>
+<h3 class="font-black text-sm mt-4">Iluminación Natural</h3>
+<p class="text-xs text-slate-500 mt-2">Ingreso controlado de luz natural.</p>
+</div>
+`;
+
+}
+
+
+document.getElementById('diagnostico').innerText=diagnostico;
+document.getElementById('estrategias').innerHTML=estrategias;
+document.getElementById('concepto-box').innerHTML=concepto;
+
+}
+
+canvas.addEventListener('mousemove',e=>{
+
+const rect=canvas.getBoundingClientRect();
+
+const mouseX=e.clientX-rect.left;
+const mouseY=e.clientY-rect.top;
+
+let found=false;
+
+hoverData.forEach(item=>{
+
+item.points.forEach(p=>{
+
+const dist=Math.hypot(mouseX-p.x,mouseY-p.y);
+
+if(dist<10){
+
+const tooltip=document.getElementById('tooltip');
+
+tooltip.style.display='block';
+tooltip.style.left=`${mouseX+30}px`;
+tooltip.style.top=`${mouseY+30}px`;
+
+tooltip.innerHTML=`
+<div style="color:${item.color};font-weight:900">${item.label}</div>
+<div>Temp Máx: ${item.tMax.toFixed(1)}°C</div>
+<div>Temp Mín: ${item.tMin.toFixed(1)}°C</div>
+<div>HR: ${item.hr.toFixed(0)}%</div>
+`;
+
+found=true;
+}
+
+})
+
+})
+
+if(!found){
+document.getElementById('tooltip').style.display='none';
+}
+
+})
+
+let zoom=1;
+
+wrapper.addEventListener('wheel',e=>{
+
+e.preventDefault();
+
+if(e.deltaY<0){
+zoom+=0.05;
+}else{
+zoom-=0.05;
+}
+
+zoom=Math.max(1,Math.min(1.4,zoom));
+
+wrapper.style.scale=zoom;
+
+})
+
+window.onload=()=>{
+ejecutarAnalisis();
+}
 
 </script>
 
