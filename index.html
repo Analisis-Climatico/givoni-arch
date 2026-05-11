@@ -46,7 +46,7 @@ z-index:2;
 #givoni-zones{
 position:absolute;
 left:0;
-top:125px;
+top:155px;
 width:100%;
 height:calc(100% - 85px);
 object-fit:contain;
@@ -89,6 +89,18 @@ min-width:160px;
 <body class="p-6">
 
 <div class="max-w-[1900px] mx-auto space-y-6">
+
+<header class="flex justify-between items-center bg-white p-5 rounded-3xl border shadow-sm">
+
+<h1 class="text-2xl font-black tracking-tight uppercase text-slate-800">
+Givoni Climate Engine
+</h1>
+
+<p class="text-xs font-black uppercase tracking-[4px] text-slate-400">
+Psychrometric Analysis System
+</p>
+
+</header>
 
 <div id="map"></div>
 
@@ -314,16 +326,16 @@ canvas.height=wrapper.clientHeight;
 
 ctx.clearRect(0,0,canvas.width,canvas.height);
 
-const p=120;
-const dW=canvas.width-p*2;
-const dH=canvas.height-p*2;
+const p=70;
+const dW=canvas.width-p*2.5;
+const dH=canvas.height-p*2.5;
 
 hoverData=[];
 
 ctx.strokeStyle='#cbd5e1';
 ctx.lineWidth=.6;
 
-for(let t=-5;t<=50;t+=1){
+for(let t=-5;t<=50;t+=5){
 
 let x=p+((t+5)/55)*dW;
 
@@ -409,7 +421,7 @@ promedioH+=hr;
 const color=`hsl(${index*360/items.length},85%,55%)`;
 
 ctx.beginPath();
-ctx.lineWidth=7;
+ctx.lineWidth=10;
 ctx.strokeStyle=color;
 ctx.lineCap='round';
 
