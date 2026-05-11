@@ -128,8 +128,6 @@ AÑOS
 
 <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
-<!-- SIDEBAR -->
-
 <div class="bg-white rounded-3xl border shadow-sm p-6 space-y-6">
 
 <div>
@@ -169,8 +167,6 @@ Actualizar Climograma
 </button>
 
 </div>
-
-<!-- MAIN -->
 
 <div class="xl:col-span-3 space-y-6">
 
@@ -406,10 +402,6 @@ monthBox.appendChild(chip);
 
 }
 
-/* =========================================================
-LOCATION
-========================================================= */
-
 async function updateLocation(){
 
 try{
@@ -434,10 +426,6 @@ catch(err){}
 
 }
 
-/* =========================================================
-CLIMATE API
-========================================================= */
-
 async function fetchClimate(year){
 
 const url = `
@@ -458,10 +446,6 @@ return await response.json();
 
 }
 
-/* =========================================================
-SVG LOAD
-========================================================= */
-
 async function loadZonesSVG(){
 
 if(currentZonesSVG) return currentZonesSVG;
@@ -475,10 +459,6 @@ currentZonesSVG = text;
 return text;
 
 }
-
-/* =========================================================
-DRAW CHART
-========================================================= */
 
 async function drawChart(data){
 
@@ -512,10 +492,6 @@ const g = svg.append('g')
 `translate(${margin.left},${margin.top})`
 );
 
-/* =========================================================
-SCALES
-========================================================= */
-
 const x = d3.scaleLinear()
 .domain([-5,50])
 .range([0,innerWidth]);
@@ -523,10 +499,6 @@ const x = d3.scaleLinear()
 const y = d3.scaleLinear()
 .domain([0,35])
 .range([innerHeight,0]);
-
-/* =========================================================
-GRID
-========================================================= */
 
 for(let i=-5;i<=50;i+=1){
 
@@ -551,10 +523,6 @@ g.append('line')
 .attr('stroke-width',0.8);
 
 }
-
-/* =========================================================
-PSYCHROMETRIC CURVES
-========================================================= */
 
 for(let hr=10; hr<=100; hr+=10){
 
@@ -594,10 +562,6 @@ d3.line()
 
 }
 
-/* =========================================================
-SVG ZONES PERFECT SCALE
-========================================================= */
-
 const rawSVG = await loadZonesSVG();
 
 const parser = new DOMParser();
@@ -631,6 +595,11 @@ importedSVG.setAttribute(
 "none"
 );
 
+importedSVG.setAttribute(
+"transform",
+"translate(0,35)"
+);
+
 importedSVG.style.opacity = "0.82";
 
 importedSVG.style.pointerEvents = "none";
@@ -639,10 +608,6 @@ const zoneLayer = g.append("g")
 .attr("class","zones-layer");
 
 zoneLayer.node().appendChild(importedSVG);
-
-/* =========================================================
-CLIMATE LINES
-========================================================= */
 
 const tooltip =
 document.getElementById('tooltip');
@@ -738,10 +703,6 @@ tooltip.style.opacity = 0;
 
 });
 
-/* =========================================================
-X AXIS
-========================================================= */
-
 g.append('g')
 .attr(
 'transform',
@@ -753,10 +714,6 @@ d3.axisBottom(x)
 );
 
 }
-
-/* =========================================================
-TABLE
-========================================================= */
 
 function updateTable(data){
 
@@ -796,10 +753,6 @@ ${d.hr.toFixed(0)}%
 });
 
 }
-
-/* =========================================================
-ANALYSIS
-========================================================= */
 
 function updateAnalysis(data){
 
@@ -872,10 +825,6 @@ ${s}
 });
 
 }
-
-/* =========================================================
-MAIN
-========================================================= */
 
 async function runClimateAnalysis(){
 
@@ -979,10 +928,6 @@ updateTable(results);
 updateAnalysis(results);
 
 }
-
-/* =========================================================
-INIT
-========================================================= */
 
 renderSelectors();
 
