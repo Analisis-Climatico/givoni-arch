@@ -83,22 +83,6 @@ font-weight:700;
 opacity:0;
 transition:.2s;
 z-index:9999;
-min-width:220px;
-}
-
-.download-btn{
-padding:10px 18px;
-border-radius:12px;
-background:white;
-border:1px solid #dbe2ea;
-font-size:11px;
-font-weight:900;
-transition:.2s;
-}
-
-.download-btn:hover{
-background:#eff6ff;
-border-color:#2563eb;
 }
 
 </style>
@@ -113,7 +97,7 @@ border-color:#2563eb;
 <div>
 
 <h1 class="text-3xl font-black uppercase tracking-tight text-slate-800">
-GIVONI CLIMATE ENGINE
+Givoni Climate Engine
 </h1>
 
 <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">
@@ -186,22 +170,6 @@ Actualizar Climograma
 
 <div class="xl:col-span-3 space-y-6">
 
-<div class="flex gap-3">
-
-<button class="download-btn" onclick="downloadChart('png')">
-PNG
-</button>
-
-<button class="download-btn" onclick="downloadChart('jpg')">
-JPG
-</button>
-
-<button class="download-btn" onclick="downloadChart('svg')">
-SVG
-</button>
-
-</div>
-
 <div id="chart">
 
 <div id="tooltip"
@@ -239,7 +207,7 @@ class="font-bold text-slate-700">
 
 <div class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[10px] border-blue-500">
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
 <div>
 
@@ -248,7 +216,7 @@ Diagnóstico Bioclimático
 </p>
 
 <p id="analysis-text"
-class="text-slate-300 leading-relaxed text-base">
+class="text-slate-300 leading-relaxed text-lg">
 </p>
 
 </div>
@@ -261,37 +229,6 @@ Estrategias Arquitectónicas
 
 <div id="strategy-list"
 class="space-y-4">
-</div>
-
-</div>
-
-<div>
-
-<p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">
-Concepto Arquitectónico Referencial
-</p>
-
-<div class="bg-slate-900 rounded-2xl overflow-hidden border border-slate-700">
-
-<img
-src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=1200&auto=format&fit=crop"
-class="w-full h-[260px] object-cover"
-/>
-
-<div class="p-5">
-
-<p class="text-sm font-black mb-2">
-Ventilación + Protección Solar
-</p>
-
-<p class="text-xs text-slate-400 leading-relaxed">
-Diseño arquitectónico enfocado en ventilación cruzada,
-protección solar profunda y vegetación perimetral
-para disipación térmica.
-</p>
-
-</div>
-
 </div>
 
 </div>
@@ -323,6 +260,10 @@ let lon = -79.92;
 
 let currentZonesSVG = null;
 
+/* =========================================================
+MAP
+========================================================= */
+
 const map = L.map('map').setView([lat,lon],7);
 
 L.tileLayer(
@@ -346,6 +287,10 @@ await updateLocation();
 runClimateAnalysis();
 
 });
+
+/* =========================================================
+UI
+========================================================= */
 
 function setMode(m){
 
@@ -516,6 +461,85 @@ return text;
 
 }
 
+/* =========================================================
+DETECTAR ZONAS
+========================================================= */
+
+function detectZones(points){
+
+const detected = new Set();
+
+points.forEach(p=>{
+
+const t = p.temp;
+const hr = p.hr;
+
+if(t >= 20 && t <= 27 && hr >= 30 && hr <= 70){
+detected.add('Z1: Confort');
+}
+
+if(t >= 22 && t <= 30 && hr >= 20 && hr <= 80){
+detected.add('Z2: Confort Permisible');
+}
+
+if(t >= 15 && t <= 22 && hr >= 20 && hr <= 80){
+detected.add('Z3: Ganancias Internas');
+}
+
+if(t >= 8 && t <= 20 && hr >= 20 && hr <= 80){
+detected.add('Z4: Aprovechamiento Pasivo Solar');
+}
+
+if(t >= 0 && t <= 12 && hr >= 20 && hr <= 80){
+detected.add('Z5: Aprovechamiento Activo Solar');
+}
+
+if(t >= 5 && t <= 18 && hr <= 35){
+detected.add('Z6: Humidificación');
+}
+
+if(t <= 5 && hr >= 20 && hr <= 80){
+detected.add('Z7: Calefacción Convencional');
+}
+
+if(t >= 20 && t <= 28 && hr <= 30){
+detected.add('Z8: Protección Solar');
+}
+
+if(t >= 24 && t <= 36 && hr >= 20 && hr <= 60){
+detected.add('Z9: Alta Masa Térmica');
+}
+
+if(t >= 28 && t <= 40 && hr >= 20 && hr <= 50){
+detected.add('Z10: Enfriamiento Evaporativo');
+}
+
+if(t >= 32 && t <= 45 && hr >= 20 && hr <= 60){
+detected.add('Z11: Masa Térmica + Vent. Nocturna');
+}
+
+if(t >= 24 && t <= 32 && hr >= 40 && hr <= 80){
+detected.add('Z12: Ventilación Natural');
+}
+
+if(t >= 36 && hr >= 50){
+detected.add('Z13: Aire Acondicionado');
+}
+
+if(t >= 26 && hr >= 75){
+detected.add('Z14: Deshumidificación');
+}
+
+});
+
+return [...detected];
+
+}
+
+/* =========================================================
+DRAW CHART
+========================================================= */
+
 async function drawChart(data){
 
 d3.select('#chart svg').remove();
@@ -618,37 +642,9 @@ d3.line()
 
 }
 
-const humidityTop = [
-40,50,60,70,80,90,100
-];
-
-humidityTop.forEach((h,i)=>{
-
-g.append('text')
-.attr('x',x(33 + (i*2.9)))
-.attr('y',18)
-.attr('fill','#64748b')
-.attr('font-size','16px')
-.attr('font-weight','900')
-.text(`${h}%`);
-
-});
-
-const humiditySide = [
-0,10,20,30
-];
-
-humiditySide.forEach((h,i)=>{
-
-g.append('text')
-.attr('x',innerWidth-35)
-.attr('y',innerHeight-(i*190))
-.attr('fill','#64748b')
-.attr('font-size','15px')
-.attr('font-weight','900')
-.text(`${h}%`);
-
-});
+/* =========================================
+SVG ZONAS
+========================================= */
 
 const rawSVG = await loadZonesSVG();
 
@@ -685,7 +681,7 @@ importedSVG.setAttribute(
 
 importedSVG.setAttribute(
 "transform",
-"translate(0,55)"
+"translate(0,35)"
 );
 
 importedSVG.style.opacity = "0.82";
@@ -697,8 +693,16 @@ const zoneLayer = g.append("g")
 
 zoneLayer.node().appendChild(importedSVG);
 
+/* =========================================
+TOOLTIP
+========================================= */
+
 const tooltip =
 document.getElementById('tooltip');
+
+/* =========================================
+CURVAS CLIMOGRAMA
+========================================= */
 
 data.forEach((d,i)=>{
 
@@ -708,13 +712,13 @@ d3.interpolateRainbow(i/data.length);
 d.color = color;
 
 const points = [];
-const detectedZones = new Set();
+const zonePoints = [];
 
-for(let s=0;s<=40;s++){
+for(let s=0;s<=30;s++){
 
 let t =
 d.tMin +
-((d.tMax-d.tMin)*(s/40));
+((d.tMax-d.tMin)*(s/30));
 
 let saturation =
 0.61078 *
@@ -729,79 +733,19 @@ vaporPressure /
 (101.325 - vaporPressure)
 );
 
-const px = x(t);
-const py = y(humidityRatio);
+points.push([
+x(t),
+y(humidityRatio)
+]);
 
-points.push([px,py]);
-
-if(t >= 20 && t <= 27 && d.hr >= 40 && d.hr <= 70){
-
-detectedZones.add(
-'Z1: Zona de Confort'
-);
-
-}
-
-if(t >= 24 && t <= 32 && d.hr >= 55){
-
-detectedZones.add(
-'Z12: Refrigeración por Ventilación Natural y Mecánica'
-);
+zonePoints.push({
+temp:t,
+hr:d.hr
+});
 
 }
 
-if(t >= 26 && d.hr >= 70){
-
-detectedZones.add(
-'Z14: Deshumidificación Convencional'
-);
-
-}
-
-if(t >= 30 && d.hr >= 50){
-
-detectedZones.add(
-'Z10: Enfriamiento por Evaporación'
-);
-
-}
-
-if(t >= 33){
-
-detectedZones.add(
-'Z13: Aire Acondicionado'
-);
-
-}
-
-if(t >= 20 && t <= 35 && d.hr <= 60){
-
-detectedZones.add(
-'Z8: Protección Solar'
-);
-
-}
-
-if(t <= 20){
-
-detectedZones.add(
-'Z3: Calefacción por Ganancias Internas'
-);
-
-}
-
-}
-
-if(detectedZones.size === 0){
-
-detectedZones.add(
-'Z1: Zona de Confort'
-);
-
-}
-
-d.zones =
-Array.from(detectedZones);
+d.zones = detectZones(zonePoints);
 
 g.append('path')
 .attr(
@@ -811,21 +755,22 @@ d3.line()
 )
 .attr('fill','none')
 .attr('stroke',color)
-.attr('stroke-width',4)
+.attr('stroke-width',3.5)
 .attr('stroke-linecap','round')
 
 .on('mousemove',(event)=>{
 
+const [mouseX,mouseY] = d3.pointer(event);
+
 tooltip.style.opacity = 1;
 
 tooltip.style.left =
-(event.offsetX + 30)+'px';
+(mouseX + 140)+'px';
 
 tooltip.style.top =
-(event.offsetY + 30)+'px';
+(mouseY + 120)+'px';
 
 tooltip.innerHTML = `
-
 <div class="space-y-2">
 
 <p class="font-black text-blue-400">
@@ -847,12 +792,11 @@ HR:
 <b>${d.hr.toFixed(0)}%</b>
 </p>
 
-<p class="text-[10px] text-cyan-300">
-${d.zones.join('<br>')}
+<p class="text-green-400">
+${d.zones.join(', ')}
 </p>
 
 </div>
-
 `;
 
 })
@@ -877,6 +821,10 @@ d3.axisBottom(x)
 
 }
 
+/* =========================================================
+TABLE
+========================================================= */
+
 function updateTable(data){
 
 const tbody =
@@ -887,53 +835,44 @@ tbody.innerHTML = '';
 data.forEach(d=>{
 
 tbody.innerHTML += `
-
 <tr class="border-b hover:bg-slate-50">
 
-<td class="p-4 text-center align-middle">
-
+<td class="p-4 text-center">
 <div class="w-4 h-4 rounded-full inline-block"
 style="background:${d.color}">
 </div>
-
 </td>
 
-<td class="p-4 text-center align-middle">
+<td class="p-4 text-center">
 ${d.label}
 </td>
 
-<td class="p-4 text-center align-middle">
+<td class="p-4 text-center">
 ${d.tMax.toFixed(1)}°C
 </td>
 
-<td class="p-4 text-center align-middle">
+<td class="p-4 text-center">
 ${d.tMin.toFixed(1)}°C
 </td>
 
-<td class="p-4 text-center align-middle text-blue-600 font-black">
+<td class="p-4 text-center text-blue-600 font-black">
 ${d.hr.toFixed(0)}%
 </td>
 
-<td class="p-4 text-center align-middle">
+<td class="p-4 text-center">
 
-<div class="flex flex-wrap gap-2 justify-center">
+<div class="flex flex-wrap justify-center gap-2">
 
 ${d.zones.map(z=>`
-
 <span class="
-px-3 py-2
-rounded-full
-bg-slate-100
-border
+px-3 py-1 rounded-full
+bg-blue-100
+text-blue-700
 text-[10px]
 font-black
-text-slate-700
 ">
-
 ${z}
-
 </span>
-
 `).join('')}
 
 </div>
@@ -941,14 +880,23 @@ ${z}
 </td>
 
 </tr>
-
 `;
 
 });
 
 }
 
+/* =========================================================
+ANALYSIS
+========================================================= */
+
 function updateAnalysis(data){
+
+const avgTemp =
+data.reduce((a,b)=>a+b.tMax,0)/data.length;
+
+const avgHR =
+data.reduce((a,b)=>a+b.hr,0)/data.length;
 
 const analysis =
 document.getElementById('analysis-text');
@@ -958,153 +906,69 @@ document.getElementById('strategy-list');
 
 strategyList.innerHTML = '';
 
-let allZones = [];
-
-data.forEach(d=>{
-
-allZones.push(...d.zones);
-
-});
-
-allZones = [...new Set(allZones)];
-
 let diagnosis = '';
+let strategies = [];
 
-if(allZones.some(z=>z.includes('Z14'))){
+if(avgHR > 75){
 
-diagnosis += `
-El análisis bioclimático evidencia una
-alta presencia de humedad relativa y
-temperaturas cálidas que desplazan
-las condiciones hacia zonas de
-deshumidificación y ventilación
-mecánica.
-`;
+diagnosis =
+'Clima cálido húmedo con alta carga de humedad relativa y necesidad de ventilación permanente para evitar acumulación térmica y sensación de sofocamiento interior.';
 
-}
-
-if(allZones.some(z=>z.includes('Z12'))){
-
-diagnosis += `
-La ventilación natural cruzada
-resulta fundamental para disipar
-ganancias térmicas internas y
-mejorar el confort higrotérmico.
-`;
+strategies = [
+'Ventilación cruzada permanente',
+'Cubiertas ventiladas',
+'Sombreamiento solar profundo',
+'Vegetación de sombra',
+'Fachadas permeables'
+];
 
 }
+else if(avgTemp > 30){
 
-if(allZones.some(z=>z.includes('Z13'))){
+diagnosis =
+'Clima cálido seco con predominancia térmica elevada y necesidad de disipación térmica pasiva.';
 
-diagnosis += `
-En determinados periodos del año
-pueden existir condiciones extremas
-que requieran estrategias mecánicas
-de apoyo térmico.
-`;
+strategies = [
+'Inercia térmica',
+'Protección solar horizontal',
+'Ventilación nocturna',
+'Muros térmicos',
+'Patios interiores'
+];
+
+}
+else{
+
+diagnosis =
+'Condiciones climáticas relativamente templadas con potencial de confort mediante estrategias pasivas.';
+
+strategies = [
+'Ventilación natural controlada',
+'Aprovechamiento lumínico',
+'Protección solar moderada'
+];
 
 }
 
 analysis.innerText = diagnosis;
 
-const strategies = [
-
-{
-title:'Ventilación Cruzada',
-desc:'Incorporar ventanas opuestas, celosías y aperturas altas.',
-icon:'🌬️'
-},
-
-{
-title:'Control Solar',
-desc:'Uso de aleros, parasoles verticales y vegetación.',
-icon:'☀️'
-},
-
-{
-title:'Cubiertas Ventiladas',
-desc:'Cubiertas con cámara de aire y materiales reflectivos.',
-icon:'🏠'
-},
-
-{
-title:'Vegetación Estratégica',
-desc:'Árboles de sombra y jardines húmedos.',
-icon:'🌳'
-},
-
-{
-title:'Materiales Transpirables',
-desc:'Uso de madera, paneles ventilados y acabados ligeros.',
-icon:'🪵'
-}
-
-];
-
 strategies.forEach(s=>{
 
 strategyList.innerHTML += `
-
 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-
-<div class="flex items-start gap-4">
-
-<div class="text-2xl">
-${s.icon}
-</div>
-
-<div>
-
-<p class="text-sm font-black text-white mb-2">
-${s.title}
+<p class="text-sm font-bold text-slate-300">
+${s}
 </p>
-
-<p class="text-xs leading-relaxed text-slate-400">
-${s.desc}
-</p>
-
 </div>
-
-</div>
-
-</div>
-
 `;
 
 });
 
 }
 
-function downloadChart(type){
-
-const svg =
-document.querySelector('#chart svg');
-
-const serializer =
-new XMLSerializer();
-
-const source =
-serializer.serializeToString(svg);
-
-const blob =
-new Blob([source], {
-type:'image/svg+xml;charset=utf-8'
-});
-
-const url =
-URL.createObjectURL(blob);
-
-const link =
-document.createElement('a');
-
-link.href = url;
-
-link.download =
-`climograma.${type}`;
-
-link.click();
-
-}
+/* =========================================================
+RUN
+========================================================= */
 
 async function runClimateAnalysis(){
 
