@@ -238,50 +238,6 @@ class="font-bold text-slate-700 text-center">
 
 </div>
 
-<div class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[10px] border-blue-500">
-
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-
-<div>
-
-<p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">
-Diagnóstico Bioclimático
-</p>
-
-<p id="analysis-text"
-class="text-slate-300 leading-relaxed text-lg">
-</p>
-
-</div>
-
-<div>
-
-<p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">
-Estrategias Arquitectónicas
-</p>
-
-<div id="strategy-list"
-class="space-y-4">
-</div>
-
-</div>
-
-</div>
-
-<div class="mt-10">
-
-<p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">
-Gráfico Conceptual Arquitectónico
-</p>
-
-<div id="strategy-graphic"
-class="bg-white rounded-3xl p-6 flex justify-center items-center">
-</div>
-
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -511,75 +467,64 @@ return text;
 
 }
 
-function detectZones(hr,tMax,tMin){
+function detectZones(points, svgElement){
 
-let zones = [];
+const detectedZones = new Set();
 
-const avgTemp = (tMax + tMin) / 2;
+const zonePaths =
+svgElement.querySelectorAll(
+'[id], path, polygon'
+);
 
-if(avgTemp >= 20 && avgTemp <= 27 && hr >= 30 && hr <= 70){
-zones.push('Z1');
+points.forEach(point=>{
+
+const testPoint =
+svgElement.createSVGPoint();
+
+testPoint.x = point[0];
+testPoint.y = point[1];
+
+zonePaths.forEach(zone=>{
+
+try{
+
+if(zone.isPointInFill){
+
+const isInside =
+zone.isPointInFill(testPoint);
+
+if(isInside){
+
+const zoneId =
+zone.id || '';
+
+if(zoneNames[zoneId]){
+
+detectedZones.add(
+`${zoneId}: ${zoneNames[zoneId]}`
+);
+
 }
 
-if(avgTemp >= 24 && avgTemp <= 32 && hr >= 40 && hr <= 75){
-zones.push('Z2');
 }
 
-if(avgTemp >= 28 && hr <= 45){
-zones.push('Z3');
 }
 
-if(avgTemp >= 26 && hr <= 50){
-zones.push('Z4');
+}catch(err){}
+
+});
+
+});
+
+if(detectedZones.size===0){
+
+detectedZones.add(
+'Z1: Confort'
+);
+
 }
 
-if(avgTemp <= 20){
-zones.push('Z5');
-}
-
-if(hr <= 30){
-zones.push('Z6');
-}
-
-if(tMax >= 30){
-zones.push('Z7');
-}
-
-if(hr >= 75){
-zones.push('Z8');
-}
-
-if(avgTemp >= 27 && hr >= 60){
-zones.push('Z9');
-}
-
-if(tMax >= 34){
-zones.push('Z10');
-}
-
-if(tMin <= 16){
-zones.push('Z11');
-}
-
-if(hr >= 80){
-zones.push('Z12');
-}
-
-if(tMax >= 32 && hr >= 70){
-zones.push('Z13');
-}
-
-if(tMax >= 35 || (tMax >= 30 && hr >= 85)){
-zones.push('Z14');
-}
-
-zones = [...new Set(zones)];
-
-if(zones.length === 0){
-zones.push('Z1');
-}
-
-return zones;
+return [...detectedZones];
 
 }
 
@@ -647,66 +592,6 @@ g.append('line')
 
 }
 
-for(let hr=10; hr<=100; hr+=10){
-
-let points = [];
-
-for(let t=-5; t<=50; t+=0.2){
-
-let saturation =
-0.61078 *
-Math.exp((17.27*t)/(t+237.3));
-
-let vaporPressure =
-(hr/100) * saturation;
-
-let humidityRatio =
-622 * (
-vaporPressure /
-(101.325 - vaporPressure)
-);
-
-points.push([
-x(t),
-y(humidityRatio)
-]);
-
-}
-
-g.append('path')
-.attr(
-'d',
-d3.line()
-.curve(d3.curveBasis)(points)
-)
-.attr('fill','none')
-.attr('stroke','#cbd5e1')
-.attr('stroke-width',1);
-
-if(hr<=30){
-
-g.append('text')
-.attr('x',innerWidth+5)
-.attr('y',points[points.length-1][1])
-.attr('font-size','11px')
-.attr('fill','#64748b')
-.text(`${hr}%`);
-
-}else{
-
-const mid = points[Math.floor(points.length*0.70)];
-
-g.append('text')
-.attr('x',mid[0])
-.attr('y',mid[1]-10)
-.attr('font-size','11px')
-.attr('fill','#64748b')
-.text(`${hr}%`);
-
-}
-
-}
-
 const rawSVG = await loadZonesSVG();
 
 const parser = new DOMParser();
@@ -763,8 +648,6 @@ d3.interpolateRainbow(i/data.length);
 
 d.color = color;
 
-d.zones = detectZones(d.hr,d.tMax,d.tMin);
-
 const points = [];
 
 for(let s=0;s<=30;s++){
@@ -792,6 +675,8 @@ y(humidityRatio)
 ]);
 
 }
+
+d.zones = detectZones(points, importedSVG);
 
 g.append('path')
 .attr(
@@ -824,12 +709,6 @@ ${d.label}
 <p>Temp Máx: <b>${d.tMax.toFixed(1)}°C</b></p>
 <p>Temp Mín: <b>${d.tMin.toFixed(1)}°C</b></p>
 <p>HR: <b>${d.hr.toFixed(0)}%</b></p>
-
-<p>Zonas:</p>
-
-<p class="text-green-400">
-${d.zones.map(z=>`${z}`).join(', ')}
-</p>
 
 </div>
 `;
@@ -866,7 +745,7 @@ tbody.innerHTML = '';
 data.forEach(d=>{
 
 const zoneText =
-d.zones.map(z=>`${z}: ${zoneNames[z]}`).join('<br>');
+d.zones.join('<br>');
 
 tbody.innerHTML += `
 <tr class="border-b hover:bg-slate-50">
@@ -899,197 +778,6 @@ ${zoneText}
 `;
 
 });
-
-}
-
-function updateAnalysis(data){
-
-const analysis =
-document.getElementById('analysis-text');
-
-const strategyList =
-document.getElementById('strategy-list');
-
-const graphic =
-document.getElementById('strategy-graphic');
-
-strategyList.innerHTML = '';
-
-const avgTemp =
-data.reduce((a,b)=>a+b.tMax,0)/data.length;
-
-const avgHR =
-data.reduce((a,b)=>a+b.hr,0)/data.length;
-
-let diagnosis = '';
-let strategies = [];
-let graphicSVG = '';
-
-if(avgHR>=75){
-
-diagnosis =
-'El análisis climático evidencia un comportamiento cálido húmedo con elevados niveles de humedad relativa y temperaturas altas durante gran parte del periodo analizado. Las curvas del climograma se desplazan principalmente hacia zonas relacionadas con deshumidificación, ventilación cruzada y control solar.';
-
-strategies = [
-'Celosías orientables de madera',
-'Cubiertas ventiladas',
-'Vegetación tropical de sombra',
-'Ventilación cruzada permanente',
-'Materiales ligeros reflectivos'
-];
-
-graphicSVG = `
-<svg viewBox="0 0 500 250" width="100%">
-<rect x="100" y="80" width="300" height="120" fill="#e2e8f0"/>
-<polygon points="80,80 250,20 420,80" fill="#94a3b8"/>
-<line x1="30" y1="130" x2="470" y2="90" stroke="#0ea5e9" stroke-width="10"/>
-<circle cx="60" cy="180" r="30" fill="#16a34a"/>
-<circle cx="440" cy="180" r="30" fill="#16a34a"/>
-</svg>
-`;
-
-}else{
-
-diagnosis =
-'Las condiciones climáticas presentan mayor estabilidad térmica y menor carga de humedad.';
-
-strategies = [
-'Aprovechamiento lumínico',
-'Ventilación natural controlada'
-];
-
-graphicSVG = `
-<svg viewBox="0 0 500 250" width="100%">
-<rect x="120" y="70" width="260" height="130" fill="#dbeafe"/>
-<polygon points="100,70 250,20 400,70" fill="#93c5fd"/>
-</svg>
-`;
-
-}
-
-analysis.innerText = diagnosis;
-
-strategies.forEach(s=>{
-
-strategyList.innerHTML += `
-<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-<p class="text-sm font-bold text-slate-300">
-${s}
-</p>
-</div>
-`;
-
-});
-
-graphic.innerHTML = graphicSVG;
-
-}
-
-function downloadChart(type){
-
-const svg =
-document.querySelector('#chart svg');
-
-const serializer =
-new XMLSerializer();
-
-const source =
-serializer.serializeToString(svg);
-
-const image =
-new Image();
-
-image.src =
-'data:image/svg+xml;charset=utf-8,'+
-encodeURIComponent(source);
-
-image.onload = function(){
-
-const canvas =
-document.createElement('canvas');
-
-canvas.width = 1600;
-canvas.height = 760;
-
-const ctx =
-canvas.getContext('2d');
-
-ctx.fillStyle = 'white';
-ctx.fillRect(0,0,1600,760);
-
-ctx.drawImage(image,0,0);
-
-const link =
-document.createElement('a');
-
-link.download = `climograma.${type}`;
-
-link.href =
-canvas.toDataURL(`image/${type}`);
-
-link.click();
-
-};
-
-}
-
-function downloadPDF(){
-
-const { jsPDF } = window.jspdf;
-
-const pdf = new jsPDF(
-'landscape',
-'px',
-[1600,760]
-);
-
-const svg =
-document.querySelector('#chart svg');
-
-const serializer =
-new XMLSerializer();
-
-const source =
-serializer.serializeToString(svg);
-
-const image =
-new Image();
-
-image.src =
-'data:image/svg+xml;charset=utf-8,'+
-encodeURIComponent(source);
-
-image.onload = function(){
-
-const canvas =
-document.createElement('canvas');
-
-canvas.width = 1600;
-canvas.height = 760;
-
-const ctx =
-canvas.getContext('2d');
-
-ctx.fillStyle = 'white';
-ctx.fillRect(0,0,1600,760);
-
-ctx.drawImage(image,0,0);
-
-const imgData =
-canvas.toDataURL('image/png');
-
-pdf.addImage(
-imgData,
-'PNG',
-0,
-0,
-1600,
-760
-);
-
-pdf.save('climograma.pdf');
-
-};
 
 }
 
@@ -1179,8 +867,6 @@ data.daily.relative_humidity_2m_mean.length
 await drawChart(results);
 
 updateTable(results);
-
-updateAnalysis(results);
 
 }
 
