@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Climate Engine PRO - Calibración Quirúrgica</title>
+    <title>Givoni Climate Engine PRO - Calibración Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -18,15 +18,17 @@
         .selector-chip { padding: 10px; border-radius: 10px; border: 1px solid #dbe2ea; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; transition: .2s; background: white; }
         .selected-item { background: #2563eb; color: white; }
         .tooltip-box { position: absolute; pointer-events: none; background: #0f172a; color: white; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 700; opacity: 0; transition: .2s; z-index: 9999; }
-        .zone-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; margin: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; }
+        .export-btn { padding: 10px 16px; border-radius: 12px; background: white; border: 1px solid #dbe2ea; font-size: 11px; font-weight: 900; cursor: pointer; transition: .2s; }
+        .export-btn:hover { background: #2563eb; color: white; }
+        .zone-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; margin: 2px; font-size: 10px; font-weight: 900; text-transform: uppercase; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body class="p-4 md:p-8">
     <main class="max-w-[1900px] mx-auto space-y-6">
         <header class="bg-white rounded-3xl border shadow-sm p-6 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-black uppercase tracking-tight text-slate-800">Givoni Climate Engine</h1>
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">Detección de Zonas en Tiempo Real</p>
+                <h1 class="text-3xl font-black uppercase tracking-tight text-slate-800 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-slate-800">Givoni Climate Engine</h1>
+                <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">Arquitectura Bioclimática | Tesis Profesional</p>
             </div>
             <div class="flex gap-2">
                 <button onclick="setMode('mes')" id="btn-mes" class="btn-mode active-mode">MESES</button>
@@ -38,14 +40,13 @@
 
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
             <div class="bg-white rounded-3xl border shadow-sm p-6 space-y-6">
-                <div>
-                    <p id="location-text" class="text-blue-600 font-black text-xs uppercase mb-4">Ubicación: Guayaquil</p>
-                    <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1"></div>
-                </div>
+                <p id="location-text" class="text-blue-600 font-black text-xs uppercase mb-2">Ubicación: Guayaquil</p>
+                <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1"></div>
                 <div id="month-section">
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-3">Meses</p>
                     <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                 </div>
-                <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase rounded-2xl py-4 text-xs transition-all">Actualizar Climograma</button>
+                <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase rounded-2xl py-4 text-xs transition-all shadow-lg">Actualizar Climograma</button>
             </div>
 
             <div class="xl:col-span-3 space-y-6">
@@ -56,15 +57,28 @@
                         <thead class="bg-slate-50 border-b text-slate-500 uppercase font-black">
                             <tr>
                                 <th class="p-4">Color</th>
-                                <th class="p-4">Mes/Año</th>
-                                <th class="p-4">Temp Máx</th>
-                                <th class="p-4">Temp Mín</th>
-                                <th class="p-4">HR</th>
-                                <th class="p-4 text-left">Zonas Detectadas</th>
+                                <th class="p-4">Periodo</th>
+                                <th class="p-4">TBS Máx</th>
+                                <th class="p-4">TBS Mín</th>
+                                <th class="p-4">HR %</th>
+                                <th class="p-4 text-left">Zonas Givoni Detectadas</th>
                             </tr>
                         </thead>
                         <tbody id="table-body" class="font-bold text-slate-700 text-center"></tbody>
                     </table>
+                </div>
+
+                <div class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[12px] border-blue-500 shadow-xl">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">Diagnóstico Bioclimático</p>
+                            <p id="analysis-text" class="text-slate-300 leading-relaxed text-lg italic"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">Estrategias Técnicas</p>
+                            <div id="strategy-list" class="space-y-4"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,14 +86,24 @@
 
     <script>
         const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        let mode = 'mes', selectedYears = [2025], selectedMonths = [0], lat = -2.17, lon = -79.92;
+        let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4], lat = -2.17, lon = -79.92;
+        let currentZonesSVG = null;
 
         const zoneConfig = {
-            "Z1": { color: "rgb(254, 204, 102)" }, "Z2": { color: "rgb(153, 27, 30)" }, "Z3": { color: "rgb(19, 103, 52)" },
-            "Z4": { color: "rgb(19, 155, 72)" }, "Z5": { color: "rgb(24, 125, 129)" }, "Z6": { color: "rgb(209, 156, 199)" },
-            "Z7": { color: "rgb(50, 162, 210)" }, "Z8": { color: "rgb(205, 105, 40)" }, "Z9": { color: "rgb(242, 113, 114)" },
-            "Z10": { color: "rgb(147, 39, 143)" }, "Z11": { color: "rgb(241, 235, 31)" }, "Z12": { color: "rgb(46, 173, 141)" },
-            "Z13": { color: "rgb(69, 84, 165)" }, "Z14": { color: "rgb(159, 119, 197)" }
+            "Z1": { color: "rgb(254, 204, 102)", name: "Confort" },
+            "Z2": { color: "rgb(153, 27, 30)", name: "Confort Permisible" },
+            "Z3": { color: "rgb(19, 103, 52)", name: "Ganancias Internas" },
+            "Z4": { color: "rgb(19, 155, 72)", name: "Pasivo Solar" },
+            "Z5": { color: "rgb(24, 125, 129)", name: "Activo Solar" },
+            "Z6": { color: "rgb(209, 156, 199)", name: "Humidificación" },
+            "Z7": { color: "rgb(50, 162, 210)", name: "Convencional" },
+            "Z8": { color: "rgb(205, 105, 40)", name: "Protección Solar" },
+            "Z9": { color: "rgb(242, 113, 114)", name: "Alta Masa Térmica" },
+            "Z10": { color: "rgb(147, 39, 143)", name: "Evaporación" },
+            "Z11": { color: "rgb(241, 235, 31)", name: "Renovación Nocturna" },
+            "Z12": { color: "rgb(46, 173, 141)", name: "Ventilación Natural" },
+            "Z13": { color: "rgb(69, 84, 165)", name: "Aire Acondicionado" },
+            "Z14": { color: "rgb(159, 119, 197)", name: "Deshumidificación" }
         };
 
         const map = L.map('map').setView([lat,lon],7);
@@ -91,43 +115,45 @@
             updateLocation(); runClimateAnalysis();
         });
 
-        // LÓGICA DE DETECCIÓN CALIBRADA SEGÚN IMAGEN
+        // DETECCIÓN GEOMÉTRICA CALIBRADA
         function detectZones(tMin, tMax, hr) {
             let detected = [];
             const checkPoint = (t, h) => {
-                // Zona 13: Aire Acondicionado (Fuera de los polígonos de confort y estrategias pasivas)
-                if (t > 40 || h > 90 || (t > 32 && h > 50) || (t > 38)) detected.push("Z13");
-                
-                // Zona 12: Ventilación Natural y Mecánica (Inclinada hacia la derecha)
-                if (t >= 20 && t <= 32 && h >= 55 && h <= 90) detected.push("Z12");
-                
-                // Zona 14: Deshumidificación Convencional (Extremo superior izquierdo)
-                if (h > 80 && t >= 20 && t <= 28) detected.push("Z14");
-
-                // Zona 2: Confort Permisible (El polígono pequeño inclinado a la derecha de Z1)
-                if (t > 24 && t <= 27 && h >= 20 && h <= 75) detected.push("Z2");
-
-                // Zona 1: Confort (El centro)
-                if (t >= 20 && t <= 24 && h >= 20 && h <= 80) detected.push("Z1");
-
-                // Zona 9: Alta Masa Térmica (Abajo a la derecha)
+                // Zona 13: Aire Acondicionado (Fuera de límites pasivos o calor extremo)
+                if (t > 40 || (t > 31 && h > 55) || (t > 38)) detected.push("Z13");
+                // Zona 12: Ventilación (Rango intermedio-alto de HR)
+                if (t >= 20 && t <= 32 && h >= 50 && h <= 90) detected.push("Z12");
+                // Zona 14: Deshumidificación (Saturación superior)
+                if (h > 80 && t >= 20 && t <= 29) detected.push("Z14");
+                // Zona 2: Confort Permisible (Inclinado derecho)
+                if (t > 24.5 && t <= 27 && h >= 20 && h <= 80) detected.push("Z2");
+                // Zona 1: Confort (Centro exacto)
+                if (t >= 20 && t <= 24.5 && h >= 20 && h <= 80) detected.push("Z1");
+                // Zona 9: Masa Térmica
                 if (t > 27 && t <= 36 && h >= 5 && h <= 50) detected.push("Z9");
-
-                // Zona 3: Ganancias Internas (Verde a la izquierda de Z1)
-                if (t >= 15 && t < 20 && h >= 20 && h <= 80) detected.push("Z3");
+                // Zona 3: Ganancias Internas
+                if (t >= 15 && t < 20 && h >= 20 && h <= 85) detected.push("Z3");
+                // Zona 4: Pasivo Solar
+                if (t >= 5 && t < 15 && h >= 20 && h <= 85) detected.push("Z4");
             };
 
-            // Muestreamos la línea en 10 puntos para no perder ninguna zona que "toque"
+            // Muestreo de 10 puntos en la curva para capturar cruces
             for(let s=0; s<=1; s+=0.1) {
-                let t = tMin + (tMax - tMin) * s;
-                // Calculamos la HR aproximada en ese punto de la curva
-                checkPoint(t, hr);
+                checkPoint(tMin + (tMax - tMin) * s, hr);
             }
-
             return [...new Set(detected)].sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
         }
 
-        // ... (Resto de funciones de fetchClimate, updateLocation, renderSelectors iguales)
+        async function fetchClimate(year){
+            const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${year}-12-31&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`.replace(/\s+/g,'');
+            const res = await fetch(url); return await res.json();
+        }
+
+        async function loadZonesSVG(){
+            if(currentZonesSVG) return currentZonesSVG;
+            const res = await fetch('pruega-de-svg.svg');
+            currentZonesSVG = await res.text(); return currentZonesSVG;
+        }
 
         async function drawChart(data){
             d3.select('#chart svg').remove();
@@ -141,73 +167,76 @@
             const x = d3.scaleLinear().domain([-5,50]).range([0,innerWidth]);
             const y = d3.scaleLinear().domain([0,35]).range([innerHeight,0]);
 
-            // Carga de SVG de fondo (asegúrate de que el nombre sea correcto)
-            const response = await fetch('pruega-de-svg.svg'); 
-            const rawSVG = await response.text();
+            const rawSVG = await loadZonesSVG();
             const parser = new DOMParser();
             const svgDoc = parser.parseFromString(rawSVG, "image/svg+xml");
             const importedSVG = document.importNode(svgDoc.documentElement, true);
             importedSVG.setAttribute("width",innerWidth);
             importedSVG.setAttribute("height",innerHeight);
             importedSVG.setAttribute("preserveAspectRatio","none");
-            g.append("g").style("opacity","0.8").node().appendChild(importedSVG);
+            g.append("g").style("opacity","0.85").node().appendChild(importedSVG);
 
             data.forEach((d,i)=>{
                 d.color = d3.interpolateRainbow(i/data.length);
                 d.zones = detectZones(d.tMin, d.tMax, d.hr);
-
                 const points = [];
                 for(let s=0;s<=30;s++){
                     let t = d.tMin + ((d.tMax-d.tMin)*(s/30));
                     let saturation = 0.61078 * Math.exp((17.27*t)/(t+237.3));
                     let vaporPressure = (d.hr/100) * saturation;
-                    let humidityRatio = 622 * (vaporPressure / (101.325 - vaporPressure));
-                    points.push([x(t), y(humidityRatio)]);
+                    let humRatio = 622 * (vaporPressure / (101.325 - vaporPressure));
+                    points.push([x(t), y(humRatio)]);
                 }
-
                 g.append('path').attr('d', d3.line().curve(d3.curveBasis)(points))
-                    .attr('fill','none').attr('stroke',d.color).attr('stroke-width',6).attr('stroke-linecap','round');
+                    .attr('fill','none').attr('stroke',d.color).attr('stroke-width',7).attr('stroke-linecap','round');
             });
+            g.append('g').attr('transform', `translate(0,${innerHeight})`).call(d3.axisBottom(x));
         }
 
         function updateTable(data){
             const tbody = document.getElementById('table-body'); tbody.innerHTML = '';
             data.forEach(d=>{
                 const badges = d.zones.map(z => `<span class="zone-badge" style="background:${zoneConfig[z]?.color || '#999'}">${z}</span>`).join(' ');
-                tbody.innerHTML += `<tr class="border-b hover:bg-slate-50">
-                    <td class="p-4"><div class="w-4 h-4 rounded-full mx-auto" style="background:${d.color}"></div></td>
-                    <td class="p-4">${d.label}</td><td class="p-4">${d.tMax.toFixed(1)}°C</td><td class="p-4">${d.tMin.toFixed(1)}°C</td>
+                tbody.innerHTML += `<tr class="border-b hover:bg-slate-50 transition-colors">
+                    <td class="p-4"><div class="w-4 h-4 rounded-full mx-auto shadow-md" style="background:${d.color}"></div></td>
+                    <td class="p-4 font-black">${d.label}</td><td class="p-4">${d.tMax.toFixed(1)}°C</td><td class="p-4">${d.tMin.toFixed(1)}°C</td>
                     <td class="p-4 text-blue-600 font-black">${d.hr.toFixed(0)}%</td>
                     <td class="p-4 text-left">${badges}</td></tr>`;
             });
         }
 
-        // Funciones auxiliares simplificadas para que el código funcione de una vez
+        function updateAnalysis(data){
+            const avgHR = d3.mean(data, d => d.hr);
+            const analysis = document.getElementById('analysis-text');
+            const strategyList = document.getElementById('strategy-list');
+            strategyList.innerHTML = '';
+            
+            let diagnosis = avgHR > 70 ? 'Clima con alta carga de humedad. Se requiere ventilación mecánica asistida o deshumidificación.' : 'Clima moderado con alta incidencia solar.';
+            analysis.innerText = diagnosis;
+            
+            const strategies = avgHR > 70 ? ['Ventilación Cruzada', 'Deshumidificación', 'Celosías'] : ['Protección Solar', 'Masa Térmica'];
+            strategies.forEach(s => {
+                strategyList.innerHTML += `<div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><p class="text-sm font-bold text-blue-300">${s}</p></div>`;
+            });
+        }
+
         async function runClimateAnalysis(){
             let results = [];
             const year = selectedYears[0];
-            try {
-                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${year}-12-31&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`;
-                const res = await fetch(url);
-                const data = await res.json();
-                selectedMonths.forEach(m => {
-                    const tMax = data.daily.temperature_2m_max.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
-                    const tMin = data.daily.temperature_2m_min.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
-                    const hr = data.daily.relative_humidity_2m_mean.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
-                    results.push({
-                        label: `${months[m]} ${year}`,
-                        tMax: d3.mean(tMax), tMin: d3.mean(tMin), hr: d3.mean(hr)
-                    });
-                });
-                await drawChart(results);
-                updateTable(results);
-            } catch(e) { console.error(e); }
+            const data = await fetchClimate(year);
+            selectedMonths.forEach(m => {
+                const tMax = data.daily.temperature_2m_max.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
+                const tMin = data.daily.temperature_2m_min.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
+                const hr = data.daily.relative_humidity_2m_mean.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
+                results.push({ label: `${months[m]} ${year}`, tMax: d3.mean(tMax), tMin: d3.mean(tMin), hr: d3.mean(hr) });
+            });
+            await drawChart(results); updateTable(results); updateAnalysis(results);
         }
 
-        function setMode(m){ mode = m; document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active-mode')); document.getElementById(`btn-${m}`).classList.add('active-mode'); renderSelectors(); }
+        function setMode(m){ mode = m; document.getElementById('month-section').style.display = m==='mes'?'block':'none'; renderSelectors(); }
         function renderSelectors(){
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
-            [2025,2024,2023,2022].forEach(y => {
+            [2026,2025,2024,2023,2022].forEach(y => {
                 const c = document.createElement('div'); c.className = `selector-chip ${selectedYears.includes(y)?'selected-item':''}`; c.innerText = y;
                 c.onclick = () => { selectedYears = [y]; renderSelectors(); }; yb.appendChild(c);
             });
@@ -217,7 +246,7 @@
                 c.onclick = () => { if(selectedMonths.includes(i)) selectedMonths = selectedMonths.filter(x=>x!==i); else selectedMonths.push(i); renderSelectors(); }; mb.appendChild(c);
             });
         }
-        async function updateLocation(){ const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`); const data = await res.json(); document.getElementById('location-text').innerText = `Ubicación: ${data.address.city || data.address.town || 'Desconocida'}`; }
+        async function updateLocation(){ const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`); const data = await res.json(); document.getElementById('location-text').innerText = `Ubicación: ${data.address.city || data.address.town || 'Guayaquil'}`; }
 
         renderSelectors(); updateLocation(); runClimateAnalysis();
     </script>
