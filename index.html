@@ -238,38 +238,6 @@ class="font-bold text-slate-700 text-center">
 
 </div>
 
-<div class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[10px] border-blue-500">
-
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-
-<div>
-
-<p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">
-Diagnóstico Bioclimático
-</p>
-
-<p id="analysis-text"
-class="text-slate-300 leading-relaxed text-lg">
-</p>
-
-</div>
-
-<div>
-
-<p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">
-Estrategias Arquitectónicas
-</p>
-
-<div id="strategy-list"
-class="space-y-4">
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -282,6 +250,23 @@ const months = [
 'Ene','Feb','Mar','Abr','May','Jun',
 'Jul','Ago','Sep','Oct','Nov','Dic'
 ];
+
+const zoneNames = {
+'Z1':'Confort',
+'Z2':'Ventilación Natural',
+'Z3':'Masa Térmica',
+'Z4':'Enfriamiento Evaporativo',
+'Z5':'Ganancia Solar',
+'Z6':'Humidificación',
+'Z7':'Protección Solar',
+'Z8':'Deshumidificación',
+'Z9':'Ventilación Cruzada',
+'Z10':'Enfriamiento Mecánico',
+'Z11':'Calefacción Pasiva',
+'Z12':'Alta Humedad',
+'Z13':'Ventilación Intensiva',
+'Z14':'Clima Extremo'
+};
 
 let mode = 'mes';
 
@@ -359,14 +344,20 @@ chip.innerText = y;
 chip.onclick = ()=>{
 
 if(mode === 'mes'){
+
 selectedYears = [y];
+
 }else{
 
 if(selectedYears.includes(y)){
+
 selectedYears =
 selectedYears.filter(v=>v!==y);
+
 }else{
+
 selectedYears.push(y);
+
 }
 
 }
@@ -399,10 +390,14 @@ chip.innerText = m;
 chip.onclick = ()=>{
 
 if(selectedMonths.includes(i)){
+
 selectedMonths =
 selectedMonths.filter(v=>v!==i);
+
 }else{
+
 selectedMonths.push(i);
+
 }
 
 renderSelectors();
@@ -472,49 +467,79 @@ return text;
 
 }
 
-function detectZones(tMin,tMax,hr){
+async function detectZonesFromPixels(points, svgElement){
 
-let zones = [];
+const colorZones = {
 
-const avgTemp = (tMin + tMax) / 2;
+'254,204,102':'Z1',
+'153,27,30':'Z2',
+'19,103,52':'Z3',
+'19,155,72':'Z4',
+'24,125,129':'Z5',
+'209,156,199':'Z6',
+'50,162,210':'Z7',
+'205,105,40':'Z8',
+'242,113,114':'Z9',
+'147,39,143':'Z10',
+'241,235,31':'Z11',
+'46,173,141':'Z12',
+'69,84,165':'Z13',
+'159,119,197':'Z14'
 
-if(avgTemp >= 20 && avgTemp <= 27 && hr >= 30 && hr <= 70){
-zones.push('Z1: Confort');
+};
+
+const zonesDetected = new Set();
+
+const svgData =
+new XMLSerializer().serializeToString(svgElement);
+
+const canvas =
+document.createElement('canvas');
+
+canvas.width = 1600;
+canvas.height = 760;
+
+const ctx =
+canvas.getContext('2d');
+
+const img = new Image();
+
+img.src =
+'data:image/svg+xml;base64,' +
+btoa(unescape(encodeURIComponent(svgData)));
+
+return new Promise(resolve=>{
+
+img.onload = ()=>{
+
+ctx.drawImage(img,0,0,1600,760);
+
+points.forEach(p=>{
+
+const pixel =
+ctx.getImageData(
+Math.floor(p[0]),
+Math.floor(p[1]),
+1,
+1
+).data;
+
+const key =
+`${pixel[0]},${pixel[1]},${pixel[2]}`;
+
+if(colorZones[key]){
+
+zonesDetected.add(colorZones[key]);
+
 }
 
-if(avgTemp >= 24 && avgTemp <= 32 && hr >= 40 && hr <= 75){
-zones.push('Z2: Ventilación Natural');
-}
+});
 
-if(avgTemp >= 28 && hr <= 50){
-zones.push('Z4: Enfriamiento Evaporativo');
-}
+resolve([...zonesDetected]);
 
-if(avgTemp >= 26){
-zones.push('Z7: Protección Solar');
-}
+};
 
-if(hr >= 75){
-zones.push('Z8: Deshumidificación');
-}
-
-if(avgTemp >= 27 && hr >= 60){
-zones.push('Z9: Ventilación Cruzada');
-}
-
-if(hr >= 80){
-zones.push('Z12: Alta Humedad');
-}
-
-if(avgTemp >= 30 && hr >= 70){
-zones.push('Z14: Clima Extremo');
-}
-
-if(zones.length === 0){
-zones.push('Z1: Confort');
-}
-
-return [...new Set(zones)];
+});
 
 }
 
@@ -612,18 +637,12 @@ zoneLayer.node().appendChild(importedSVG);
 const tooltip =
 document.getElementById('tooltip');
 
-data.forEach((d,i)=>{
+for(const [i,d] of data.entries()){
 
 const color =
 d3.interpolateRainbow(i/data.length);
 
 d.color = color;
-
-d.zones = detectZones(
-d.tMin,
-d.tMax,
-d.hr
-);
 
 const points = [];
 
@@ -653,6 +672,18 @@ y(humidityRatio)
 
 }
 
+d.zones =
+await detectZonesFromPixels(
+points,
+importedSVG
+);
+
+if(d.zones.length===0){
+
+d.zones = ['Z1'];
+
+}
+
 g.append('path')
 .attr(
 'd',
@@ -661,7 +692,7 @@ d3.line()
 )
 .attr('fill','none')
 .attr('stroke',color)
-.attr('stroke-width',4)
+.attr('stroke-width',6)
 .attr('stroke-linecap','round')
 
 .on('mousemove',(event)=>{
@@ -696,7 +727,7 @@ tooltip.style.opacity = 0;
 
 });
 
-});
+}
 
 g.append('g')
 .attr(
@@ -720,7 +751,9 @@ tbody.innerHTML = '';
 data.forEach(d=>{
 
 const zoneText =
-d.zones.join('<br>');
+d.zones
+.map(z=>`${z}: ${zoneNames[z]}`)
+.join('<br>');
 
 tbody.innerHTML += `
 <tr class="border-b hover:bg-slate-50">
@@ -750,79 +783,6 @@ ${zoneText}
 </td>
 
 </tr>
-`;
-
-});
-
-}
-
-function updateAnalysis(data){
-
-const avgTemp =
-data.reduce((a,b)=>a+b.tMax,0)/data.length;
-
-const avgHR =
-data.reduce((a,b)=>a+b.hr,0)/data.length;
-
-const analysis =
-document.getElementById('analysis-text');
-
-const strategyList =
-document.getElementById('strategy-list');
-
-strategyList.innerHTML = '';
-
-let diagnosis = '';
-let strategies = [];
-
-if(avgHR > 75){
-
-diagnosis =
-'Clima cálido húmedo con predominancia de humedad relativa elevada y necesidad constante de ventilación cruzada, control solar y deshumidificación pasiva.';
-
-strategies = [
-'Ventilación cruzada permanente',
-'Cubiertas ventiladas',
-'Sombreamiento solar profundo',
-'Vegetación tropical',
-'Fachadas permeables'
-];
-
-}
-else if(avgTemp > 30){
-
-diagnosis =
-'Clima cálido seco con alta exposición térmica y necesidad de protección solar e inercia térmica.';
-
-strategies = [
-'Muros térmicos',
-'Protección solar horizontal',
-'Ventilación nocturna'
-];
-
-}
-else{
-
-diagnosis =
-'Condiciones climáticas relativamente templadas con posibilidades de confort pasivo natural.';
-
-strategies = [
-'Aprovechamiento lumínico',
-'Ventilación natural controlada'
-];
-
-}
-
-analysis.innerText = diagnosis;
-
-strategies.forEach(s=>{
-
-strategyList.innerHTML += `
-<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-<p class="text-sm font-bold text-slate-300">
-${s}
-</p>
-</div>
 `;
 
 });
@@ -915,116 +875,6 @@ data.daily.relative_humidity_2m_mean.length
 await drawChart(results);
 
 updateTable(results);
-
-updateAnalysis(results);
-
-}
-
-function downloadChart(type){
-
-const svg =
-document.querySelector('#chart svg');
-
-const serializer =
-new XMLSerializer();
-
-const source =
-serializer.serializeToString(svg);
-
-const image =
-new Image();
-
-image.src =
-'data:image/svg+xml;charset=utf-8,'+
-encodeURIComponent(source);
-
-image.onload = function(){
-
-const canvas =
-document.createElement('canvas');
-
-canvas.width = 1600;
-canvas.height = 760;
-
-const ctx =
-canvas.getContext('2d');
-
-ctx.fillStyle = 'white';
-ctx.fillRect(0,0,1600,760);
-
-ctx.drawImage(image,0,0);
-
-const link =
-document.createElement('a');
-
-link.download = `climograma.${type}`;
-
-link.href =
-canvas.toDataURL(`image/${type}`);
-
-link.click();
-
-};
-
-}
-
-function downloadPDF(){
-
-const { jsPDF } = window.jspdf;
-
-const pdf = new jsPDF(
-'landscape',
-'px',
-[1600,760]
-);
-
-const svg =
-document.querySelector('#chart svg');
-
-const serializer =
-new XMLSerializer();
-
-const source =
-serializer.serializeToString(svg);
-
-const image =
-new Image();
-
-image.src =
-'data:image/svg+xml;charset=utf-8,'+
-encodeURIComponent(source);
-
-image.onload = function(){
-
-const canvas =
-document.createElement('canvas');
-
-canvas.width = 1600;
-canvas.height = 760;
-
-const ctx =
-canvas.getContext('2d');
-
-ctx.fillStyle = 'white';
-ctx.fillRect(0,0,1600,760);
-
-ctx.drawImage(image,0,0);
-
-const imgData =
-canvas.toDataURL('image/png');
-
-pdf.addImage(
-imgData,
-'PNG',
-0,
-0,
-1600,
-760
-);
-
-pdf.save('climograma.pdf');
-
-};
 
 }
 
