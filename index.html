@@ -178,22 +178,99 @@
             g.append('g').attr('transform', `translate(0,${innerHeight})`).call(d3.axisBottom(x));
         }
 
-        function updateAnalysis(data){
-            const tableBody = document.getElementById('table-body'); tableBody.innerHTML = '';
-            const allZones = new Set();
-            let sumT = 0, sumH = 0;
+        function updateAnalysis(data) {
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = '';
+    const allZones = new Set();
+    let sumTMax = 0, sumTMin = 0, sumH = 0;
 
-            data.forEach(d => {
-                const zones = detectZones(d.tMin, d.tMax, d.hr);
-                zones.forEach(z => allZones.add(z));
-                sumT += d.tMax; sumH += d.hr;
+    data.forEach(d => {
+        const zones = detectZones(d.tMin, d.tMax, d.hr);
+        zones.forEach(z => allZones.add(z));
+        sumTMax += d.tMax; sumTMin += d.tMin; sumH += d.hr;
 
-                const badges = zones.map(z => `<span class="zone-badge" style="background:${zoneConfig[z]?.color}">${z}</span>`).join(' ');
-                tableBody.innerHTML += `<tr class="border-b hover:bg-slate-50 transition-colors">
-                    <td class="p-4"><div class="w-4 h-4 rounded-full mx-auto" style="background:${d.color}"></div></td>
-                    <td class="p-4 font-black">${d.label}</td><td class="p-4">${d.tMax.toFixed(1)}°C</td><td class="p-4">${d.tMin.toFixed(1)}°C</td>
-                    <td class="p-4 text-blue-600 font-black">${d.hr.toFixed(0)}%</td><td class="p-4 text-left">${badges}</td></tr>`;
-            });
+        const badges = zones.map(z => `<span class="zone-badge" style="background:${zoneConfig[z]?.color}">${z}</span>`).join(' ');
+        tableBody.innerHTML += `<tr class="border-b hover:bg-slate-50 transition-colors">
+            <td class="p-4"><div class="w-3 h-3 rounded-full mx-auto" style="background:${d.color}"></div></td>
+            <td class="p-4 font-black">${d.label}</td><td class="p-4">${d.tMax.toFixed(1)}°C</td><td class="p-4">${d.tMin.toFixed(1)}°C</td>
+            <td class="p-4 text-blue-600 font-black">${d.hr.toFixed(0)}%</td><td class="p-4 text-left">${badges}</td></tr>`;
+    });
+
+    const avgTMax = sumTMax / data.length;
+    const avgTMin = sumTMin / data.length;
+    const avgHR = sumH / data.length;
+    const oscilacion = avgTMax - avgTMin;
+
+    // --- GENERACIÓN DEL ANÁLISIS GENERAL ---
+    let analisisText = `El comportamiento climático en este sector se caracteriza por un promedio de temperaturas máximas de ${avgTMax.toFixed(1)}°C, con una humedad relativa predominante del ${avgHR.toFixed(0)}%. `;
+    
+    if (avgHR > 70) {
+        analisisText += `Esta condición de alta higrometría reduce la capacidad del cuerpo para enfriarse mediante la evaporación, lo que genera una sensación térmica superior a la real. El aire se percibe denso y saturado, lo que obliga a la arquitectura a actuar como un filtro de aire constante. `;
+    } else {
+        analisisText += `La baja presencia de humedad permite una mayor oscilación térmica, donde el calor se disipa rápidamente al caer la noche, permitiendo que la masa de la edificación juegue un papel fundamental en la estabilidad interna. `;
+    }
+
+    if (oscilacion > 10) {
+        analisisText += `Se observa una amplitud térmica significativa de ${oscilacion.toFixed(1)}°C entre el día y la noche, lo cual es favorable para estrategias de enfriamiento estructural y ventilación nocturna selectiva. `;
+    } else {
+        analisisText += `La baja oscilación térmica mantiene niveles de calor constantes durante las 24 horas, lo que sugiere que la edificación debe evitar a toda costa la acumulación de radiación solar en sus cerramientos externos. `;
+    }
+
+    document.getElementById('analysis-text').innerText = analisisText;
+
+    // --- GENERACIÓN DE RECOMENDACIONES TÉCNICAS ---
+    const sl = document.getElementById('strategy-list');
+    sl.innerHTML = '';
+
+    let recomendaciones = [];
+
+    // Recomendaciones basadas en Humedad
+    if (avgHR > 70) {
+        recomendaciones.push({
+            tit: "Permeabilidad de Envolvente",
+            desc: "Uso de celosías de madera, bambú o calados de hormigón en fachadas opuestas para forzar el flujo de aire laminar."
+        });
+        recomendaciones.push({
+            tit: "Elevación del Plano de Piso",
+            desc: "Levantar la estructura del suelo (pilotes) para permitir la circulación de aire inferior y evitar el traspaso de humedad por capilaridad."
+        });
+    }
+
+    // Recomendaciones basadas en Temperatura
+    if (avgTMax > 30) {
+        recomendaciones.push({
+            tit: "Protección Solar Profunda",
+            desc: "Implementación de aleros superiores a 1.20m, pérgolas y dobles cubiertas ventiladas para reducir la carga térmica directa sobre el techo."
+        });
+        recomendaciones.push({
+            tit: "Inercia Térmica Selectiva",
+            desc: "Muros de alta densidad (ladrillo macizo o BTC) protegidos del sol directo para retrasar la entrada de calor al interior durante el día."
+        });
+    }
+
+    // Recomendaciones de Vegetación y Materiales
+    if (avgHR > 60) {
+        recomendaciones.push({
+            tit: "Microclima y Evaporación",
+            desc: "Integración de vegetación de hoja ancha y cuerpos de agua en el sentido del viento dominante para enfriar el aire antes de ingresar."
+        });
+    }
+
+    recomendaciones.push({
+        tit: "Acabados Reflectivos",
+        desc: "Utilizar pinturas o materiales de colores claros en cubiertas para aumentar el albedo y reflejar la mayor cantidad de radiación solar."
+    });
+
+    // Inyectar en el HTML
+    recomendaciones.forEach(rec => {
+        sl.innerHTML += `
+            <div class="bg-slate-800/50 p-5 rounded-2xl border border-slate-700 hover:border-blue-500 transition-all">
+                <p class="text-blue-400 font-black text-xs uppercase tracking-widest mb-2">${rec.tit}</p>
+                <p class="text-slate-300 text-sm leading-relaxed">${rec.desc}</p>
+            </div>
+        `;
+    });
+}
 
             document.getElementById('analysis-text').innerText = `Análisis de Tesis: El sector en ${ (sumT/data.length).toFixed(1) }°C muestra requerimientos críticos de refrigeración mecánica (Z13) y ventilación natural para mitigar la humedad del ${ (sumH/data.length).toFixed(0) }%.`;
             const sl = document.getElementById('strategy-list'); sl.innerHTML = '';
