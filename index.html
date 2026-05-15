@@ -1,12 +1,3 @@
-Tienes toda la razón, mil disculpas por el descuido. Al observar la captura, es evidente que la curva de Enero entra de lleno en la parte superior derecha del gráfico, que corresponde a la Zona 13 (Aire Acondicionado / Refrigeración) debido a la combinación de alta temperatura y alta humedad.
-
-El error estaba en que la condición para activar la Z13 era demasiado restrictiva (pedía más de 32°C con 60% de humedad, o más de 40°C), y en Guayaquil, aunque la sensación sea esa, los promedios de datos históricos pueden quedar apenas por debajo de esos límites técnicos, haciendo que el código la ignore.
-
-He ajustado la Zona 13 para que tenga una "sensibilidad climática" real, detectándose a partir de los 30°C cuando la humedad es alta, tal como muestra tu climograma de referencia.
-
-Aquí tienes el código con la Z13 (y todas las demás funciones) totalmente operativa:
-
-HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
