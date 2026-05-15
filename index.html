@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Climate Engine PRO - Tesis Final</title>
+    <title>Givoni Climate Engine PRO - Final Estable</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,12 +12,12 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         body { background: #f1f5f9; font-family: 'Inter', sans-serif; }
-        #map { height: 260px; border-radius: 22px; overflow: hidden; border: 1px solid #dbe2ea; }
+        #map { height: 260px; border-radius: 22px; overflow: hidden; border: 1px solid #dbe2ea; z-index: 10; }
         #chart { width: 100%; height: 760px; background: white; border-radius: 24px; overflow: hidden; border: 1px solid #dbe2ea; position: relative; }
         .btn-mode { padding: 10px 22px; border-radius: 12px; border: 1px solid #dbe2ea; font-size: 11px; font-weight: 900; transition: .2s; }
         .active-mode { background: #2563eb; color: white; border-color: #2563eb; }
         .selector-chip { padding: 10px; border-radius: 10px; border: 1px solid #dbe2ea; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; transition: .2s; background: white; }
-        .selected-item { background: #2563eb; color: white; }
+        .selected-item { background: #2563eb; color: white; border-color: #2563eb; }
         .zone-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; margin: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; }
     </style>
 </head>
@@ -42,12 +42,12 @@
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
             <div class="bg-white rounded-3xl border shadow-sm p-6 space-y-6">
                 <div>
-                    <p id="location-text" class="text-blue-600 font-black text-xs uppercase mb-4 italic italic">Ubicación: Guayaquil</p>
-                    <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-3">Histórico (2026 - 2000)</p>
+                    <p id="location-text" class="text-blue-600 font-black text-xs uppercase mb-4 italic">Ubicación: Guayaquil, EC</p>
+                    <p id="year-label" class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-3">Seleccionar Año Base</p>
                     <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[350px] overflow-y-auto pr-2"></div>
                 </div>
                 <div id="section-meses">
-                    <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-3">Meses</p>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-3">Seleccionar Meses</p>
                     <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                 </div>
                 <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase rounded-2xl py-5 text-xs transition-all shadow-md">Actualizar Análisis</button>
@@ -62,7 +62,7 @@
                             <tr>
                                 <th class="p-4">Color</th><th class="p-4">Periodo</th>
                                 <th class="p-4">TBS Máx</th><th class="p-4">TBS Mín</th>
-                                <th class="p-4">HR %</th><th class="p-4 text-left">Zonas Detectadas</th>
+                                <th class="p-4">HR %</th><th class="p-4 text-left">Estrategias (Zonas)</th>
                             </tr>
                         </thead>
                         <tbody id="table-body" class="font-bold text-slate-700 text-center"></tbody>
@@ -72,11 +72,11 @@
                 <div class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[12px] border-blue-600 shadow-2xl">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         <div>
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5 italic">Análisis General del Cuadro de Datos</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5 italic">Análisis General de Datos</p>
                             <p id="analysis-text" class="text-slate-300 leading-relaxed text-lg font-medium"></p>
                         </div>
                         <div>
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5 italic">Propuestas de Diseño Arquitectónico</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5 italic">Recomendaciones Arquitectónicas</p>
                             <div id="strategy-list" class="space-y-4"></div>
                         </div>
                     </div>
@@ -98,20 +98,39 @@
             "Z13": { color: "rgb(69, 84, 165)" }, "Z14": { color: "rgb(159, 119, 197)" }
         };
 
-        const map = L.map('map').setView([lat,lon],7);
+        const map = L.map('map').setView([lat,lon],12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         const marker = L.marker([lat,lon]).addTo(map);
 
         map.on('click', async(e)=>{
-            lat = e.latlng.lat; lon = e.latlng.lng; marker.setLatLng([lat,lon]);
-            updateLocation(); runClimateAnalysis();
+            lat = e.latlng.lat;
+            lon = e.latlng.lng;
+            marker.setLatLng([lat,lon]);
+            await updateLocation(lat, lon); // Sincronización exacta de ubicación
+            runClimateAnalysis();
         });
+
+        async function updateLocation(l_lat, l_lon){
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${l_lat}&lon=${l_lon}`);
+                const data = await response.json();
+                const city = data.address.city || data.address.town || data.address.village || data.address.county || 'Ubicación seleccionada';
+                const country = data.address.country || '';
+                document.getElementById('location-text').innerText = `Ubicación: ${city}, ${country}`;
+            } catch(err) {
+                document.getElementById('location-text').innerText = "Ubicación: Coordenadas fijadas";
+            }
+        }
 
         function setMode(m){
             mode = m;
             document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active-mode'));
             document.getElementById(`btn-${m}`).classList.add('active-mode');
-            document.getElementById('month-section').style.display = m === 'mes' ? 'block' : 'none';
+            document.getElementById('section-meses').style.display = m === 'mes' ? 'block' : 'none';
+            document.getElementById('year-label').innerText = m === 'mes' ? 'Seleccionar Año Base' : 'Años a Comparar';
+            
+            // Reiniciar selecciones al cambiar modo para evitar conflictos
+            selectedYears = [2025];
             renderSelectors();
         }
 
@@ -122,8 +141,12 @@
                 c.className = `selector-chip ${selectedYears.includes(y)?'selected-item':''}`;
                 c.innerText = y;
                 c.onclick = () => {
-                    if(mode === 'mes') selectedYears = [y];
-                    else selectedYears.includes(y) ? selectedYears = selectedYears.filter(v=>v!==y) : selectedYears.push(y);
+                    if(mode === 'mes') {
+                        selectedYears = [y]; // Un solo año en modo mes
+                    } else {
+                        if(selectedYears.includes(y)) selectedYears = selectedYears.filter(v=>v!==y);
+                        else selectedYears.push(y); // Varios años en modo año
+                    }
                     renderSelectors();
                 };
                 yb.appendChild(c);
@@ -134,7 +157,8 @@
                 c.className = `selector-chip ${selectedMonths.includes(i)?'selected-item':''}`;
                 c.innerText = m;
                 c.onclick = () => {
-                    selectedMonths.includes(i) ? selectedMonths = selectedMonths.filter(v=>v!==i) : selectedMonths.push(i);
+                    if(selectedMonths.includes(i)) selectedMonths = selectedMonths.filter(v=>v!==i);
+                    else selectedMonths.push(i);
                     renderSelectors();
                 };
                 mb.appendChild(c);
@@ -144,7 +168,7 @@
         function detectZones(tMin, tMax, hr) {
             let detected = [];
             const check = (t, h) => {
-                if (t > 29 && h > 55) detected.push("Z13"); // Calibración crítica Enero
+                if (t > 29 && h > 55) detected.push("Z13");
                 if (t > 38) detected.push("Z13");
                 if (t < 0) detected.push("Z7");
                 if (t >= 0 && t < 10) detected.push("Z5");
@@ -175,16 +199,18 @@
             const x = d3.scaleLinear().domain([-5,50]).range([0,innerWidth]);
             const y = d3.scaleLinear().domain([0,35]).range([innerHeight,0]);
 
-            const response = await fetch('pruega-de-svg.svg');
-            const rawSVG = await response.text();
-            const parser = new DOMParser();
-            const svgDoc = parser.parseFromString(rawSVG, "image/svg+xml");
-            const importedSVG = document.importNode(svgDoc.documentElement, true);
-            importedSVG.setAttribute("width",innerWidth);
-            importedSVG.setAttribute("height",innerHeight);
-            importedSVG.setAttribute("preserveAspectRatio","none");
-            importedSVG.setAttribute("transform","translate(0,65)");
-            g.append("g").style("opacity","0.85").node().appendChild(importedSVG);
+            try {
+                const response = await fetch('pruega-de-svg.svg');
+                const rawSVG = await response.text();
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(rawSVG, "image/svg+xml");
+                const importedSVG = document.importNode(svgDoc.documentElement, true);
+                importedSVG.setAttribute("width",innerWidth);
+                importedSVG.setAttribute("height",innerHeight);
+                importedSVG.setAttribute("preserveAspectRatio","none");
+                importedSVG.setAttribute("transform","translate(0,65)");
+                g.append("g").style("opacity","0.85").node().appendChild(importedSVG);
+            } catch(e) { console.error("Error cargando el SVG base."); }
 
             data.forEach((d,i)=>{
                 d.color = d3.interpolateRainbow(i/data.length);
@@ -209,9 +235,8 @@
             data.forEach(d => {
                 const zones = detectZones(d.tMin, d.tMax, d.hr);
                 sumTMax += d.tMax; sumTMin += d.tMin; sumH += d.hr;
-                const badges = zones.map(z => `<span class="zone-badge" style="background:${zoneConfig[z]?.color}">${z}</span>`).join(' ');
-                tableBody.innerHTML += `<tr class="border-b">
-                    <td class="p-4"><div class="w-3 h-3 rounded-full mx-auto" style="background:${d.color}"></div></td>
+                const badges = zones.map(z => `<span class="zone-badge" style="background:${zoneConfig[z]?.color || '#999'}">${z}</span>`).join(' ');
+                tableBody.innerHTML += `<tr class="border-b"><td class="p-4"><div class="w-3 h-3 rounded-full mx-auto" style="background:${d.color}"></div></td>
                     <td class="p-4 uppercase">${d.label}</td><td class="p-4">${d.tMax.toFixed(1)}°C</td><td class="p-4">${d.tMin.toFixed(1)}°C</td>
                     <td class="p-4 text-blue-600">${d.hr.toFixed(0)}%</td><td class="p-4 text-left">${badges}</td></tr>`;
             });
@@ -220,34 +245,28 @@
             const avgHR = sumH / data.length;
             const osc = avgTMax - (sumTMin / data.length);
 
-            // ANÁLISIS GENERAL EXTENSO
-            let text = `El sector analizado presenta un perfil térmico con máximas de ${avgTMax.toFixed(1)}°C y una humedad del ${avgHR.toFixed(0)}%. `;
+            let text = `El sector analizado presenta un perfil térmico con máximas promedio de ${avgTMax.toFixed(1)}°C y una humedad relativa del ${avgHR.toFixed(0)}%. `;
             if(avgHR > 70) {
-                text += `La elevada carga higrométrica satura el aire, limitando la refrigeración por evaporación del cuerpo humano. Esto demanda que la arquitectura se comporte como una estructura permeable, priorizando el movimiento constante de aire para desplazar el calor latente. `;
+                text += `La elevada carga higrométrica satura el aire ambiente, limitando la refrigeración natural del cuerpo humano. Esto demanda que la arquitectura sea permeable, priorizando el movimiento constante de aire para desplazar el calor acumulado. `;
             } else {
-                text += `La atmósfera seca permite que la radiación solar sea el factor dominante, favoreciendo el uso de la inercia térmica para estabilizar el confort interior mediante el retraso del flujo de calor. `;
+                text += `La atmósfera seca permite que la radiación solar sea el factor dominante, favoreciendo el uso de la masa térmica para estabilizar el confort interior. `;
             }
-            if(osc > 9) text += `Existe una amplitud térmica de ${osc.toFixed(1)}°C, lo cual es ideal para aplicar enfriamiento estructural nocturno.`;
-            else text += `La baja oscilación térmica indica que el calor es persistente, obligando a usar dobles cubiertas y protección solar agresiva.`;
-            
+            if(osc > 9) text += `Existe una amplitud térmica de ${osc.toFixed(1)}°C, ideal para aplicar estrategias de enfriamiento estructural nocturno.`;
             document.getElementById('analysis-text').innerText = text;
 
-            // RECOMENDACIONES TÉCNICAS MATERIALES
             const sl = document.getElementById('strategy-list'); sl.innerHTML = '';
             let recs = [];
             if(avgHR > 70) {
-                recs.push({t: "Envolventes de Tejido y Celosía", d: "Uso de materiales permeables como bambú, madera o bloques calados para forzar ventilación laminar."});
-                recs.push({t: "Palafitos o Suelo Elevado", d: "Levantar la casa del terreno para permitir flujo de aire inferior y controlar la humedad ascendente."});
+                recs.push({t: "Envolventes de Tejido y Celosía", d: "Materiales permeables como madera o calados para forzar ventilación laminar."});
+                recs.push({t: "Palafitos o Suelo Elevado", d: "Levantar la casa del terreno para permitir flujo de aire inferior."});
             }
             if(avgTMax > 30) {
-                recs.push({t: "Protección Solar de Gran Escala", d: "Aleros de más de 1.50m y pérgolas con vegetación de hoja ancha para sombrear fachadas expuestas."});
-                recs.push({t: "Cubiertas de Doble Piel", d: "Cámara de aire entre el cielorraso y el techo para ventilar el calor acumulado por radiación zenital."});
+                recs.push({t: "Protección Solar de Gran Escala", d: "Aleros de más de 1.50m para sombrear fachadas expuestas."});
+                recs.push({t: "Cubiertas de Doble Piel", d: "Cámara de aire bajo el techo para ventilar el calor radiante."});
             }
-            recs.push({t: "Inercia Térmica Selectiva", d: "Uso de muros de BTC (Bloque de Tierra Comprimida) en zonas sociales para retrasar la ganancia térmica."});
-            recs.push({t: "Colores de Alto Albedo", d: "Acabados claros o pinturas térmicas reflectivas en cubiertas para reducir la absorción de calor solar."});
-
+            recs.push({t: "Inercia Térmica Selectiva", d: "Muros de alta densidad en zonas sociales para retrasar la ganancia térmica."});
             recs.forEach(r => {
-                sl.innerHTML += `<div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 hover:border-blue-500 transition-all">
+                sl.innerHTML += `<div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 transition-all">
                     <p class="text-blue-400 font-black text-[10px] uppercase tracking-widest mb-1">${r.t}</p>
                     <p class="text-slate-300 text-xs leading-relaxed">${r.d}</p>
                 </div>`;
@@ -270,7 +289,7 @@
                     }
                 }
                 await drawChart(results); updateAnalysis(results);
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Error en el análisis climático."); }
         }
 
         function downloadPDF(){
@@ -280,13 +299,11 @@
                 const pdfW = pdf.internal.pageSize.getWidth();
                 const pdfH = (canvas.height * pdfW) / canvas.width;
                 pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfW, pdfH);
-                pdf.save(`Analisis_Givoni_${lat.toFixed(2)}.pdf`);
+                pdf.save(`Analisis_Bioclimatico_Givoni.pdf`);
             });
         }
 
-        async function updateLocation(){ const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`); const data = await res.json(); document.getElementById('location-text').innerText = `Ubicación: ${data.address.city || data.address.town || 'Guayaquil'}`; }
-
-        renderSelectors(); updateLocation(); runClimateAnalysis();
+        renderSelectors(); updateLocation(lat, lon); runClimateAnalysis();
     </script>
 </body>
 </html>
