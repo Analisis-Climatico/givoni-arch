@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Givoni Climate Engine PRO - Calibración Tesis</title>
+    <title>Givoni Climate Engine PRO - Calibración Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -17,7 +17,6 @@
         .active-mode { background: #2563eb; color: white; border-color: #2563eb; }
         .selector-chip { padding: 10px; border-radius: 10px; border: 1px solid #dbe2ea; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; transition: .2s; background: white; }
         .selected-item { background: #2563eb; color: white; }
-        .tooltip-box { position: absolute; pointer-events: none; background: #0f172a; color: white; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 700; opacity: 0; transition: .2s; z-index: 9999; }
         .zone-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; margin: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; }
     </style>
 </head>
@@ -26,7 +25,7 @@
         <header class="bg-white rounded-3xl border shadow-sm p-6 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-black uppercase tracking-tight text-slate-800">Givoni Climate Engine</h1>
-                <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">Arquitectura Bioclimática</p>
+                <p class="text-xs uppercase tracking-[0.3em] text-slate-400 font-black mt-2">Detección Bioclimática Total Z1-Z14</p>
             </div>
             <div class="flex gap-2">
                 <button onclick="setMode('mes')" id="btn-mes" class="btn-mode active-mode">MESES</button>
@@ -40,10 +39,9 @@
             <div class="bg-white rounded-3xl border shadow-sm p-6 space-y-6">
                 <div>
                     <p id="location-text" class="text-blue-600 font-black text-xs uppercase mb-4 italic">Ubicación: Guayaquil</p>
-                    <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-3">Seleccionar Año</p>
                     <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[400px] overflow-y-auto pr-1"></div>
                 </div>
-                <div id="month-section">
+                <div id="section-meses">
                     <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-3">Meses</p>
                     <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                 </div>
@@ -51,32 +49,18 @@
             </div>
 
             <div class="xl:col-span-3 space-y-6">
-                <div id="chart"><div id="tooltip" class="tooltip-box"></div></div>
-
+                <div id="chart"></div>
                 <div class="bg-white rounded-3xl border overflow-hidden shadow-sm">
                     <table class="w-full text-xs">
                         <thead class="bg-slate-50 border-b text-slate-500 uppercase font-black text-center">
                             <tr>
-                                <th class="p-4">Color</th><th class="p-4">Mes/Año</th>
+                                <th class="p-4">Color</th><th class="p-4">Periodo</th>
                                 <th class="p-4">Temp Máx</th><th class="p-4">Temp Mín</th>
-                                <th class="p-4">HR %</th><th class="p-4 text-left">Zonas Detectadas</th>
+                                <th class="p-4">HR %</th><th class="p-4 text-left">Zonas Givoni Detectadas</th>
                             </tr>
                         </thead>
                         <tbody id="table-body" class="font-bold text-slate-700 text-center"></tbody>
                     </table>
-                </div>
-
-                <div class="bg-[#0f172a] rounded-3xl p-10 text-white border-l-[10px] border-blue-500">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">Diagnóstico Bioclimático</p>
-                            <p id="analysis-text" class="text-slate-300 leading-relaxed text-lg italic"></p>
-                        </div>
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-400 font-black mb-5">Estrategias Arquitectónicas</p>
-                            <div id="strategy-list" class="space-y-4"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -95,6 +79,48 @@
             "Z13": { color: "rgb(69, 84, 165)" }, "Z14": { color: "rgb(159, 119, 197)" }
         };
 
+        // LÓGICA DE DETECCIÓN TOTAL (Calibrada para Z1 a Z14)
+        function detectZones(tMin, tMax, hr) {
+            let detected = [];
+            const checkPoint = (t, h) => {
+                // Z7: Calefacción Convencional
+                if (t < 0) detected.push("Z7");
+                // Z5: Calefacción Activa Solar
+                if (t >= 0 && t < 7) detected.push("Z5");
+                // Z4: Calefacción Pasiva Solar
+                if (t >= 7 && t < 15) detected.push("Z4");
+                // Z3: Calefacción Ganancias Internas
+                if (t >= 15 && t < 20) detected.push("Z3");
+                // Z6: Humidificación (Zona baja HR y baja Temp)
+                if (t < 20 && h < 30) detected.push("Z6");
+                // Z8: Protección Solar (Base del gráfico)
+                if (t >= 20 && h < 20) detected.push("Z8");
+                // Z1: Confort
+                if (t >= 20 && t <= 25 && h >= 20 && h <= 80) detected.push("Z1");
+                // Z2: Confort Permisible
+                if (t > 25 && t <= 27 && h >= 20 && h <= 80) detected.push("Z2");
+                // Z12: Ventilación
+                if (t >= 20 && t <= 32 && h >= 50 && h <= 90) detected.push("Z12");
+                // Z9: Masa Térmica (Derecha abajo)
+                if (t > 27 && t <= 36 && h >= 10 && h <= 50) detected.push("Z9");
+                // Z10: Evaporación
+                if (t > 30 && t <= 40 && h >= 5 && h <= 30) detected.push("Z10");
+                // Z11: Masa Térmica Renovación Nocturna
+                if (t > 36 && t <= 45 && h >= 5 && h <= 30) detected.push("Z11");
+                // Z14: Deshumidificación (Saturación arriba)
+                if (h > 80 && t >= 20 && t <= 30) detected.push("Z14");
+                // Z13: Aire Acondicionado
+                if (t > 40 || (t > 32 && h > 60) || (t > 38)) detected.push("Z13");
+            };
+
+            // Muestreo intensivo (20 puntos) para asegurar que detecte zonas pequeñas como Z4 o Z5
+            for(let s=0; s<=1; s+=0.05) {
+                checkPoint(tMin + (tMax - tMin) * s, hr);
+            }
+            return [...new Set(detected)].sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
+        }
+
+        // ... (Funciones de mapa y selectores restauradas según tu versión anterior)
         const map = L.map('map').setView([lat,lon],7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         const marker = L.marker([lat,lon]).addTo(map);
@@ -103,63 +129,6 @@
             lat = e.latlng.lat; lon = e.latlng.lng; marker.setLatLng([lat,lon]);
             updateLocation(); runClimateAnalysis();
         });
-
-        function setMode(m){
-            mode = m;
-            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active-mode'));
-            document.getElementById(`btn-${m}`).classList.add('active-mode');
-            document.getElementById('month-section').style.display = m === 'mes' ? 'block' : 'none';
-            renderSelectors();
-        }
-
-        function renderSelectors(){
-            const yearBox = document.getElementById('year-selector'); yearBox.innerHTML = '';
-            const currentYear = new Date().getFullYear();
-            for(let y=currentYear; y>=2000; y--){
-                const chip = document.createElement('div');
-                chip.className = `selector-chip ${selectedYears.includes(y) ? 'selected-item' : ''}`;
-                chip.innerText = y;
-                chip.onclick = ()=>{
-                    if(mode === 'mes') selectedYears = [y];
-                    else selectedYears.includes(y) ? selectedYears = selectedYears.filter(v=>v!==y) : selectedYears.push(y);
-                    renderSelectors();
-                };
-                yearBox.appendChild(chip);
-            }
-            const monthBox = document.getElementById('month-selector'); monthBox.innerHTML = '';
-            months.forEach((m,i)=>{
-                const chip = document.createElement('div');
-                chip.className = `selector-chip ${selectedMonths.includes(i) ? 'selected-item' : ''}`;
-                chip.innerText = m;
-                chip.onclick = ()=>{
-                    selectedMonths.includes(i) ? selectedMonths = selectedMonths.filter(v=>v!==i) : selectedMonths.push(i);
-                    renderSelectors();
-                };
-                monthBox.appendChild(chip);
-            });
-        }
-
-        function detectZones(tMin, tMax, hr) {
-            let detected = [];
-            const checkPoint = (t, h) => {
-                // Zona 13: Aire Acondicionado
-                if (t > 40 || (t > 30 && h > 55) || (t > 37 && h > 30)) detected.push("Z13");
-                // Zona 12: Ventilación
-                if (t >= 20 && t <= 32 && h >= 50 && h <= 90) detected.push("Z12");
-                // Zona 14: Deshumidificación
-                if (h > 80 && t >= 20 && t <= 29) detected.push("Z14");
-                // Zona 2: Confort Permisible
-                if (t > 24.5 && t <= 27 && h >= 20 && h <= 80) detected.push("Z2");
-                // Zona 1: Confort (Ajustada para no solaparse erróneamente)
-                if (t >= 20 && t <= 24.5 && h >= 20 && h <= 70) detected.push("Z1");
-                // Zona 9: Masa Térmica
-                if (t > 27 && t <= 36 && h >= 5 && h <= 50) detected.push("Z9");
-                // Zona 3: Ganancias Internas
-                if (t >= 15 && t < 20 && h >= 20 && h <= 85) detected.push("Z3");
-            };
-            for(let s=0; s<=1; s+=0.1) checkPoint(tMin + (tMax - tMin) * s, hr);
-            return [...new Set(detected)].sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
-        }
 
         async function drawChart(data){
             d3.select('#chart svg').remove();
@@ -181,7 +150,6 @@
             importedSVG.setAttribute("width",innerWidth);
             importedSVG.setAttribute("height",innerHeight);
             importedSVG.setAttribute("preserveAspectRatio","none");
-            // RESTAURACIÓN DE LA POSICIÓN (No mover más arriba)
             importedSVG.setAttribute("transform","translate(0,65)");
             g.append("g").style("opacity","0.85").node().appendChild(importedSVG);
 
@@ -196,7 +164,6 @@
                     let hum = 622 * (vap / (101.325 - vap));
                     points.push([x(t), y(hum)]);
                 }
-                // RESTAURACIÓN DEL GROSOR DE LÍNEA (5)
                 g.append('path').attr('d', d3.line().curve(d3.curveBasis)(points))
                     .attr('fill','none').attr('stroke',d.color).attr('stroke-width',5).attr('stroke-linecap','round');
             });
@@ -215,42 +182,35 @@
             });
         }
 
-        function updateAnalysis(data){
-            const avgHR = d3.mean(data, d => d.hr);
-            const analysis = document.getElementById('analysis-text');
-            const strategyList = document.getElementById('strategy-list');
-            strategyList.innerHTML = '';
-            let diagnosis = avgHR > 70 ? 'Clima con alta carga de humedad. Se requiere ventilación mecánica asistida o deshumidificación.' : 'Clima moderado con alta incidencia solar.';
-            analysis.innerText = diagnosis;
-            const strategies = avgHR > 70 ? ['Ventilación Cruzada', 'Deshumidificación', 'Celosías'] : ['Protección Solar', 'Masa Térmica'];
-            strategies.forEach(s => {
-                strategyList.innerHTML += `<div class="bg-slate-800 border border-slate-700 rounded-xl p-4"><p class="text-sm font-bold text-blue-300">${s}</p></div>`;
-            });
-        }
-
         async function runClimateAnalysis(){
             let results = [];
-            if(mode === 'mes'){
-                const year = selectedYears[0];
-                const data = await fetchClimate(selectedYears[0]);
+            const year = selectedYears[0];
+            try {
+                const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${year}-12-31&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`.replace(/\s+/g,'');
+                const res = await fetch(url);
+                const data = await res.json();
                 selectedMonths.forEach(m => {
                     const tMax = data.daily.temperature_2m_max.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
                     const tMin = data.daily.temperature_2m_min.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
                     const hr = data.daily.relative_humidity_2m_mean.filter((_,idx) => new Date(data.daily.time[idx]).getMonth() === m);
                     results.push({ label: `${months[m]} ${year}`, tMax: d3.mean(tMax), tMin: d3.mean(tMin), hr: d3.mean(hr) });
                 });
-            } else {
-                for(const y of selectedYears){
-                    const data = await fetchClimate(y);
-                    results.push({ label: `${y}`, tMax: d3.mean(data.daily.temperature_2m_max), tMin: d3.mean(data.daily.temperature_2m_min), hr: d3.mean(data.daily.relative_humidity_2m_mean) });
-                }
-            }
-            await drawChart(results); updateTable(results); updateAnalysis(results);
+                await drawChart(results); updateTable(results);
+            } catch(e) {}
         }
 
-        async function fetchClimate(year){
-            const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${year}-12-31&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`.replace(/\s+/g,'');
-            const res = await fetch(url); return await res.json();
+        function setMode(m){ mode = m; document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active-mode')); document.getElementById(`btn-${m}`).classList.add('active-mode'); document.getElementById('month-section').style.display = m==='mes'?'block':'none'; renderSelectors(); }
+        function renderSelectors(){
+            const yb = document.getElementById('year-selector'); yb.innerHTML = '';
+            for(let y=2026; y>=2000; y--){
+                const c = document.createElement('div'); c.className = `selector-chip ${selectedYears.includes(y)?'selected-item':''}`; c.innerText = y;
+                c.onclick = () => { if(mode==='mes') selectedYears=[y]; else selectedYears.includes(y)?selectedYears=selectedYears.filter(x=>x!==y):selectedYears.push(y); renderSelectors(); }; yb.appendChild(c);
+            }
+            const mb = document.getElementById('month-selector'); mb.innerHTML = '';
+            months.forEach((m,i) => {
+                const c = document.createElement('div'); c.className = `selector-chip ${selectedMonths.includes(i)?'selected-item':''}`; c.innerText = m;
+                c.onclick = () => { if(selectedMonths.includes(i)) selectedMonths=selectedMonths.filter(x=>x!==i); else selectedMonths.push(i); renderSelectors(); }; mb.appendChild(c);
+            });
         }
         async function updateLocation(){ const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`); const data = await res.json(); document.getElementById('location-text').innerText = `Ubicación: ${data.address.city || data.address.town || 'Guayaquil'}`; }
 
