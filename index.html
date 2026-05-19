@@ -31,7 +31,7 @@
     
     <style>
         * {
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -39,24 +39,20 @@
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
         .dark .glass-panel {
-            background: rgba(13, 22, 43, 0.7);
+            background: rgba(13, 22, 43, 0.75);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
-        
-        .sidebar-transition {
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), margin-left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
 
-        /* Inversión inteligente para conservar legibilidad de textos negros del SVG original en modo oscuro */
-        .dark #chart svg {
+        /* FILTRO RESTRINGIDO: Invierte EXCLUSIVAMENTE los trazos del SVG base, sin alterar las líneas D3 del usuario */
+        .dark #chart-canvas-inside svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
     </style>
@@ -68,15 +64,19 @@
         <div class="absolute bottom-[15%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-orange-500/5 blur-[140px]"></div>
     </div>
 
-    <div class="fixed bottom-4 right-6 text-[10px] tracking-[0.2em] uppercase font-medium text-slate-400 dark:text-slate-600 z-50 pointer-events-none select-none">
-        Created by Jordan Jerez
+    <div class="fixed top-6 left-6 z-50">
+        <button onclick="toggleSidebar()" class="p-3.5 rounded-xl glass-panel text-slate-700 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-300/40 dark:border-white/10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
     </div>
 
-    <div class="flex min-h-screen relative z-10 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr] min-h-screen w-full relative z-10">
         
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-[300px] h-screen glass-panel sidebar-transition flex flex-col p-5 justify-between shadow-xl">
+        <aside id="sidebar" class="w-[300px] h-screen glass-panel flex flex-col p-5 justify-between shadow-xl sticky top-0 transition-all duration-300 z-40 pt-24">
             <div class="space-y-5 overflow-y-auto pr-1">
-                <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-3 mt-14">
+                <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800/80 pb-3">
                     <img src="Tipo1.png" alt="Isotipo" class="h-7 w-auto object-contain">
                     <span class="font-space text-[11px] tracking-[0.25em] font-bold text-slate-400 dark:text-slate-500 uppercase">Consola Global</span>
                 </div>
@@ -84,7 +84,7 @@
                 <div class="space-y-2">
                     <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Ubicación de Análisis</p>
                     <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800/60 shadow-inner relative">
-                        <div id="map" class="h-[180px] w-full z-10"></div>
+                        <div id="map" class="h-[170px] w-full z-10"></div>
                     </div>
                     <p id="location-text" class="text-[11px] font-semibold text-blue-600 dark:text-cyan-400 italic">Ubicación: Cargando...</p>
                 </div>
@@ -92,7 +92,7 @@
                 <div class="space-y-4 pt-1">
                     <div>
                         <p id="year-label" class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-1.5">Seleccionar Año Base</p>
-                        <div id="year-selector" class="grid grid-cols-3 gap-1.5 max-h-[110px] overflow-y-auto pr-1"></div>
+                        <div id="year-selector" class="grid grid-cols-3 gap-1.5 max-h-[100px] overflow-y-auto pr-1"></div>
                     </div>
                     <div id="section-meses">
                         <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-1.5">Seleccionar Meses</p>
@@ -102,25 +102,18 @@
             </div>
 
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800/60 mb-2">
-                <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-xs transition-all duration-300 shadow-md active:scale-[0.98]">
+                <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-xs transition-all shadow-md">
                     Actualizar Análisis
                 </button>
             </div>
         </aside>
 
-        <main id="main-content" class="w-full pl-[300px] min-h-screen p-4 md:p-8 xl:p-12 flex flex-col space-y-8 sidebar-transition overflow-hidden">
+        <main id="main-content" class="w-full min-h-screen p-4 md:p-8 xl:p-12 flex flex-col space-y-8 overflow-hidden pl-24 lg:pl-12">
             
             <header id="header-container" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pb-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full">
-                
-                <div class="flex items-center gap-5">
-                    <button onclick="toggleSidebar()" class="p-3 rounded-xl glass-panel text-slate-700 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all shadow-sm border border-slate-200 dark:border-slate-800/60">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    </button>
-                    
-                    <div class="flex items-center gap-5 py-1">
-                        <span class="text-xs uppercase tracking-[0.45em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
-                        <img src="Tipo3.png" alt="CLÓVINA" class="h-10 md:h-12 w-auto object-contain filter dark:drop-shadow-[0_0_12px_rgba(6,182,212,0.15)]">
-                    </div>
+                <div class="flex items-center gap-6 py-1">
+                    <span class="text-xs uppercase tracking-[0.45em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
+                    <img src="Tipo3.png" alt="CLÓVINA" class="h-10 md:h-12 w-auto object-contain filter dark:drop-shadow-[0_0_12px_rgba(6,182,212,0.15)]">
                 </div>
 
                 <div class="flex items-center gap-4 self-end sm:self-auto">
@@ -135,8 +128,8 @@
                         <button onclick="setMode('año')" id="btn-año" class="px-3.5 py-1.5 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400">AÑOS</button>
                     </div>
 
-                    <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-all shadow-sm">
-                        Exportar PDF
+                    <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-all">
+                        PDF
                     </button>
                 </div>
             </header>
@@ -148,17 +141,20 @@
                         <h2 class="font-space font-bold text-xs uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">01 / Climograma de Givoni</h2>
                         <span class="text-[9px] font-bold text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz de Confort</span>
                     </div>
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm min-h-[560px] h-[640px] flex items-center justify-center relative overflow-hidden">
-                        <div id="chart" class="w-full h-full relative min-h-[520px]"></div>
+                    
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm h-[520px] relative overflow-hidden flex items-center justify-center">
+                        <div id="chart" class="w-full h-full relative min-h-[480px]">
+                            <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
+                        </div>
                     </div>
                 </section>
 
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-8 w-full">
                     <div class="xl:col-span-7 space-y-3 overflow-hidden">
                         <h2 class="font-space font-bold text-xs uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 px-1">02 / Cuadro de Datos</h2>
-                        <div class="glass-panel rounded-[22px] border border-slate-200/50 dark:border-white/5 shadow-sm overflow-x-auto w-full">
+                        <div class="glass-panel rounded-[22px] border border-slate-200/60 dark:border-slate-800/80 shadow-sm overflow-x-auto w-full">
                             <table class="w-full text-left text-xs min-w-[500px]">
-                                <thead class="bg-slate-100/60 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-400 uppercase tracking-wider font-bold font-space">
+                                <thead class="bg-slate-100/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold font-space">
                                     <tr>
                                         <th class="p-4 text-center w-12">Color</th>
                                         <th class="p-4">Periodo</th>
@@ -176,9 +172,7 @@
                     <div class="xl:col-span-5 space-y-3">
                         <h2 class="font-space font-bold text-xs uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
                         <div class="glass-panel rounded-[22px] p-6 border border-slate-200/50 dark:border-white/5 h-[calc(100%-2rem)] flex flex-col justify-between shadow-sm min-h-[180px]">
-                            <p id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm font-light text-justify">
-                                Seleccione parámetros en el panel lateral para computar el diagnóstico de variables climatológicas locales.
-                            </p>
+                            <p id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm font-light text-justify"></p>
                             <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 text-[10px] text-slate-400 font-mono">
                                 COMPATIBLE CON ARQUITECTURA BIOCLIMÁTICA
                             </div>
@@ -199,7 +193,7 @@
                             <div class="space-y-3 relative z-10">
                                 <span class="text-[9px] font-space font-bold tracking-widest text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 uppercase">Modelado Atmosférico</span>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
-                                    Reserva espacial automatizada para la inserción de gráficos explicativos vectoriales, dinámica de vientos dominantes y esquemas de radiación directa.
+                                    Reserva espacial de diagramación conceptual bioclimática para asoleamiento, ventilación laminar y disipación de humedad relativa alta.
                                 </p>
                             </div>
                             <div class="w-full h-32 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-[11px] text-slate-400 font-mono bg-slate-50/50 dark:bg-slate-900/10 mt-4">
@@ -225,7 +219,7 @@
             "Z13": { color: "rgb(69, 84, 165)" }, "Z14": { color: "rgb(159, 119, 197)" }
         };
 
-        // MAPA CONFIGURADO EN GRIS ARQUITECTÓNICO / ANTRACITA SUAVE PERMANENTE
+        // MAPA FIJO GRIS PREMIUM (CartoDB Neutral)
         const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat,lon], 11);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
         const marker = L.marker([lat,lon]).addTo(map);
@@ -257,21 +251,21 @@
             }
         }
 
-        // TRANSICIÓN INTERACTIVA DE LA BARRA LATERAL (Sin saltos ni roturas de grid)
+        // MANEJO DE BARRA LATERAL MEDIANTE GRID DINÁMICO (Elimina colapsos destructivos)
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
             if(isSidebarVisible) {
-                sidebar.classList.add('-translate-x-full');
-                mainContent.classList.remove('pl-[300px]');
-                mainContent.classList.add('pl-4', 'md:pl-8', 'xl:pl-12');
+                sidebar.style.display = 'none';
+                mainContent.classList.remove('pl-24', 'lg:pl-12');
+                mainContent.classList.add('px-6', 'md:px-16', 'xl:px-24', 'mx-auto', 'max-w-[1600px]');
             } else {
-                sidebar.classList.remove('-translate-x-full');
-                mainContent.classList.remove('pl-4', 'md:pl-8', 'xl:pl-12');
-                mainContent.classList.add('pl-[300px]');
+                sidebar.style.display = 'flex';
+                mainContent.classList.remove('px-6', 'md:px-16', 'xl:px-24', 'mx-auto', 'max-w-[1600px]');
+                mainContent.classList.add('pl-24', 'lg:pl-12');
             }
             isSidebarVisible = !isSidebarVisible;
-            setTimeout(() => { if(window.currentData) drawChart(window.currentData); }, 400);
+            setTimeout(() => { if(window.currentData) drawChart(window.currentData); }, 150);
         }
 
         function toggleDarkMode() {
@@ -362,25 +356,25 @@
             return [...new Set(detected)].sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
         }
 
-        // ALINEACIÓN MATEMÁTICA ABSOLUTA DE CURVAS D3 SOBRE EL VIEWBOX DEL SVG NATIVO
+        // ACOPLAMIENTO DE COORDENADAS DINÁMICAS SOBRE EL VIEWBOX DEL SVG INYECTADO
         async function drawChart(data){
-            d3.select('#chart svg').remove();
+            d3.select('#chart-canvas-inside svg').remove();
             
-            const chartDom = document.getElementById('chart');
-            const width = chartDom.clientWidth || 1200;
-            const height = chartDom.clientHeight || 560;
+            const canvasContainer = document.getElementById('chart-canvas-inside');
+            const width = canvasContainer.clientWidth || 1100;
+            const height = canvasContainer.clientHeight || 480;
             
-            const svg = d3.select('#chart').append('svg')
+            const svg = d3.select('#chart-canvas-inside').append('svg')
                 .attr('width', '100%')
                 .attr('height', '100%')
                 .attr('viewBox', `0 0 ${width} ${height}`)
-                .attr('preserveAspectRatio', 'xMidYMid meet');
+                .attr('preserveAspectRatio', 'none');
                 
             const g = svg.append('g');
 
-            // Ajuste exacto de proyección cartesiana sobre el dibujo técnico
-            const x = d3.scaleLinear().domain([-5, 50]).range([30, width - 35]);
-            const y = d3.scaleLinear().domain([0, 35]).range([height - 40, 45]);
+            // Calibración exacta de los ejes cartesianos sobre las zonas del climograma
+            const x = d3.scaleLinear().domain([-5, 50]).range([28, width - 35]);
+            const y = d3.scaleLinear().domain([0, 35]).range([height - 40, 40]);
 
             try {
                 const response = await fetch('pruega-de-svg.svg');
@@ -395,10 +389,10 @@
                 
                 g.append("g").node().appendChild(importedSVG);
             } catch(e) { 
-                console.error("Error al renderizar el climograma base.", e); 
+                console.error("Error al inyectar el archivo pruega-de-svg.svg base.", e); 
             }
 
-            // Inyección de curvas D3 calculadas
+            // Dibujo de las curvas psicrométricas
             data.forEach((d, i) => {
                 d.color = d3.interpolateRainbow(i / data.length);
                 const points = [];
@@ -413,7 +407,7 @@
                     .attr('d', d3.line().curve(d3.curveBasis)(points))
                     .attr('fill', 'none')
                     .attr('stroke', d.color)
-                    .attr('stroke-width', 6)
+                    .attr('stroke-width', 5)
                     .attr('stroke-linecap', 'round');
             });
         }
@@ -428,7 +422,7 @@
                 const badges = zones.map(z => `<span class="text-[9px] font-space px-2 py-0.5 rounded font-bold text-white uppercase" style="background:${zoneConfig[z]?.color || '#999'}">${z}</span>`).join(' ');
                 
                 tableBody.innerHTML += `
-                    <tr class="border-b border-slate-200/60 dark:border-slate-800/40">
+                    <tr class="border-b border-slate-200/50 dark:border-slate-800/40 hover:bg-slate-100/20 dark:hover:bg-slate-900/10">
                         <td class="p-4"><div class="w-3 h-3 rounded-full mx-auto" style="background:${d.color}"></div></td>
                         <td class="p-4 uppercase font-bold text-slate-700 dark:text-slate-300 font-space">${d.label}</td>
                         <td class="p-4 text-center">${d.tMax.toFixed(1)}°C</td>
@@ -499,7 +493,7 @@
                 window.currentData = results;
                 await drawChart(results); 
                 updateAnalysis(results);
-            } catch(e) { console.error("Error al procesar variables Open-Meteo.", e); }
+            } catch(e) { console.error("Error obteniendo datos Open-Meteo.", e); }
         }
 
         function downloadPDF(){
