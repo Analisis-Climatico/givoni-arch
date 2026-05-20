@@ -38,7 +38,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        /* RECUADROS GLASSMORPHISM MEJORADOS (Máxima definición óptica sobre blanco) */
+        /* RECUADROS GLASSMORPHISM PREMIUM (Réplica exacta de WhatsApp) */
         .glass-panel {
             background: rgba(255, 255, 255, 0.48) !important;
             backdrop-filter: blur(32px) saturate(140%) !important;
@@ -115,10 +115,10 @@
 
     <div class="flex min-h-screen w-full relative z-10">
         
-        <aside id="sidebar" class="w-[420px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-6">
+        <aside id="sidebar" class="w-[380px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-6">
             
-            <div id="sidebar-full-content" class="space-y-6 flex-1 flex flex-col justify-between h-full">
-                <div class="space-y-6 overflow-y-auto pr-1">
+            <div id="sidebar-full-content" class="space-y-5 flex-1 flex flex-col justify-between h-full">
+                <div class="space-y-4 overflow-y-auto pr-1">
                     
                     <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-4 pt-2">
                         <div class="flex items-center gap-4">
@@ -135,28 +135,28 @@
                     <div class="space-y-2">
                         <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Buscar Ubicación</p>
                         <div class="relative flex items-center">
-                            <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Milagro..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-3.5 pl-4 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 placeholder-slate-400 dark:placeholder-slate-500" onkeypress="handleSearchKeyPress(event)">
+                            <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Milagro..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-3 pl-4 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 placeholder-slate-400 dark:placeholder-slate-500" onkeypress="handleSearchKeyPress(event)">
                             <button onclick="searchLocation()" class="absolute right-3 text-slate-400 hover:text-blue-500 dark:hover:text-cyan-400">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <div class="space-y-2.5">
+                    <div class="space-y-2">
                         <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Visualización Local (GPS)</p>
                         <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/60 shadow-sm relative">
-                            <div id="map" class="h-[280px] w-full z-10"></div>
+                            <div id="map" class="h-[220px] w-full z-10"></div>
                         </div>
                         <p id="location-text" class="text-xs font-semibold text-blue-600 dark:text-cyan-400 italic truncate">Detectando coordenadas...</p>
                     </div>
 
-                    <div class="space-y-5 pt-3">
+                    <div class="space-y-5 pt-2">
                         <div>
-                            <p id="year-label" class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2.5">Año Base</p>
+                            <p id="year-label" class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Año Base</p>
                             <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto pr-1"></div>
                         </div>
                         <div>
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2.5">Meses de Estudio</p>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Meses de Estudio</p>
                             <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                         </div>
                     </div>
@@ -182,9 +182,9 @@
             </div>
         </aside>
 
-        <main id="main-content" class="flex-1 min-h-screen p-6 md:p-10 xl:p-14 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
+        <main id="main-content" class="flex-1 min-h-screen pt-6 pb-6 px-6 md:px-10 xl:px-14 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
             
-            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 pb-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pt-4">
+            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 pb-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full">
                 <div class="flex items-center gap-6 py-2 flex-wrap">
                     <span class="text-sm md:text-base uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
                     <img src="Tipo3.png" alt="CLÓVINA" class="h-12 md:h-14 xl:h-16 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
@@ -285,7 +285,6 @@
         let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // PALETA CROMÁTICA INDUSTRIAL OSCURA: Tonos profundos para legibilidad total del texto blanco de las zonas
         const zoneConfig = {
             "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
             "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
@@ -306,7 +305,6 @@
             runClimateAnalysis();
         });
 
-        // MOTOR DE BÚSQUEDA GEOGRÁFICO (Nominatim OSM API)
         async function searchLocation() {
             const query = document.getElementById('map-search-input').value;
             if (!query) return;
@@ -345,21 +343,20 @@
             }
         }
 
-        // ALTERNANCIA INTELIGENTE DE BARRA LATERAL (Expansión completa ⟷ Dock vertical mini de 75px)
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const fullContent = document.getElementById('sidebar-full-content');
             const miniContent = document.getElementById('sidebar-mini-content');
             
             if(isSidebarVisible) {
-                sidebar.classList.remove('w-[420px]', 'p-6');
+                sidebar.classList.remove('w-[380px]', 'p-6');
                 sidebar.classList.add('w-[75px]', 'p-2');
                 fullContent.classList.add('hidden');
                 miniContent.classList.remove('hidden');
                 miniContent.classList.add('flex');
             } else {
                 sidebar.classList.remove('w-[75px]', 'p-2');
-                sidebar.classList.add('w-[420px]', 'p-6');
+                sidebar.classList.add('w-[380px]', 'p-6');
                 fullContent.classList.remove('hidden');
                 miniContent.classList.add('hidden');
                 miniContent.classList.remove('flex');
@@ -402,7 +399,6 @@
             renderSelectors();
         }
 
-        // GENERACIÓN DINÁMICA DE AÑOS EXTENDIDA HASTA EL AÑO 2000
         function renderSelectors(){
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
@@ -564,7 +560,6 @@
                 const today = new Date();
                 let endDate = `${year}-12-31`;
                 
-                // Resguardo de consulta para el año corriente (2026)
                 if (year === today.getFullYear()) {
                     const pastDate = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
                     endDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
@@ -598,7 +593,6 @@
             } catch(e) { console.error("Error Open-Meteo.", e); }
         }
 
-        // CAPTURA DE PDF EN UN LIENZO CONTINUO — TRATAMIENTO OBLIGATORIO DE FONDO BLANCO PURO (#FFFFFF)
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.querySelector("#export-container");
