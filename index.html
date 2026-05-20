@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLÓVINA — Análisis Climático & Bioclimático</title>
-    <link rel="icon" type="image/png" sizes="any" href="Tipo1.png">
+    <link rel="icon" type="image/png" sizes="256x256" href="Tipo1.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,13 +29,16 @@
     </script>
     
     <style>
-        * { transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease; }
+        * { transition: background-color 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.4); }
 
-        /* RECUADROS GLASSMORPHISM PREMIUM CON TONOS MARINOS PROFUNDOS */
+        /* GLASSMORPHISM - TONOS MARINOS PROFUNDOS Y CLAROS */
         .glass-panel {
             background: rgba(255, 255, 255, 0.35) !important;
             backdrop-filter: blur(24px) saturate(140%) !important;
@@ -43,15 +46,15 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
         }
         .dark .glass-panel {
-            background: rgba(10, 15, 25, 0.6) !important; /* Azul marino abisal translúcido */
-            backdrop-filter: blur(30px) saturate(140%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.06) !important;
-            box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.03) !important;
+            background: rgba(15, 23, 42, 0.5) !important; /* Azul marino translúcido */
+            backdrop-filter: blur(30px) saturate(130%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.04) !important;
         }
 
         .sidebar-transition { transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
 
-        /* Inversión SVG Modo Oscuro */
+        /* Inversión SVG para Modo Oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child { filter: invert(0.9) hue-rotate(180deg); }
 
         /* PDF BLANCO PURO */
@@ -63,76 +66,79 @@
         .climate-line { transition: stroke-width 0.2s, opacity 0.2s; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#02040a] dark:via-[#050a1f] dark:to-[#010206] text-slate-800 dark:text-slate-100 min-h-screen relative">
+<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-cyan-400/10 to-transparent blur-[160px] opacity-40"></div>
-        <div class="absolute bottom-[10%] left-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-blue-500/10 to-transparent blur-[160px] opacity-30"></div>
+        <div class="absolute top-[-10%] left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-cyan-400/10 to-transparent blur-[160px] opacity-50"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-fuchsia-400/10 to-transparent blur-[160px] opacity-40"></div>
     </div>
 
-    <div class="absolute top-4 right-6 text-sm tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-500/50 z-50 pointer-events-none select-none">
+    <div class="absolute top-4 right-6 text-xs tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-400/60 z-50 pointer-events-none select-none">
         Created by Jordan Jerez
     </div>
 
     <div id="floating-open-btn" class="fixed top-4 left-6 z-50 hidden">
-        <button onclick="toggleSidebar()" class="p-3 rounded-xl glass-panel text-slate-700 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-300/40 dark:border-white/10">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <button onclick="toggleSidebar()" class="p-3.5 rounded-xl glass-panel text-slate-700 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-300/40 dark:border-white/10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
     </div>
 
     <div class="flex min-h-screen w-full relative z-10">
         
-        <aside id="sidebar" class="w-[360px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-4 overflow-hidden">
+        <aside id="sidebar" class="w-[380px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-5">
             
             <div id="sidebar-full-content" class="flex-1 flex flex-col justify-between h-full overflow-hidden">
-                <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-2 mb-3">
+                
+                <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-3 mb-4 mt-1">
                     <div class="flex items-center gap-4">
-                        <img src="Tipo1.png" alt="Isotipo" class="h-20 w-auto object-contain scale-110 origin-left"> 
+                        <img src="Tipo1.png" alt="Isotipo" class="h-12 w-auto object-contain">
+                        <span class="font-space text-sm tracking-[0.2em] font-bold text-slate-500 dark:text-slate-400 uppercase">Consola Global</span>
                     </div>
                     <button onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/40 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
                 </div>
 
-                <div class="mb-3 relative">
-                    <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-1">Buscar Ubicación</p>
+                <div class="mb-4 relative">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-bold mb-1.5">Buscar Ubicación</p>
                     <div class="relative flex items-center">
-                        <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Ecuador..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2 pl-3 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 shadow-inner">
-                        <button class="absolute right-3 text-slate-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Ecuador..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2.5 pl-4 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 shadow-inner">
+                        <button class="absolute right-3 text-slate-400 hover:text-cyan-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </button>
                     </div>
                     <ul id="search-results" class="absolute top-full left-0 w-full mt-1 glass-panel rounded-xl hidden flex-col overflow-hidden z-50 text-xs shadow-2xl border border-slate-200/50 dark:border-slate-700/50"></ul>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-bold mb-1.5">Visualización Local (GPS)</p>
                     <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800/60 shadow-sm relative">
-                        <div id="map" class="h-[160px] w-full z-10"></div>
+                        <div id="map" class="h-[180px] w-full z-10"></div>
                     </div>
-                    <p id="location-text" class="text-xs font-semibold text-blue-600 dark:text-cyan-400 italic truncate mt-1">Detectando coordenadas...</p>
+                    <p id="location-text" class="text-xs font-semibold text-blue-600 dark:text-cyan-400 italic truncate mt-1.5">Detectando coordenadas...</p>
                 </div>
 
-                <div id="sidebar-content-area" class="flex-1 flex flex-col justify-between overflow-y-auto pr-1 space-y-4 pb-2">
+                <div class="flex-1 flex flex-col overflow-y-auto pr-2 space-y-5 pb-2">
                     <div>
-                        <p id="year-label" class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Año Base</p>
-                        <div id="year-selector" class="grid grid-cols-4 gap-1.5"></div>
+                        <p id="year-label" class="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-bold mb-2">Año Base</p>
+                        <div id="year-selector" class="grid grid-cols-4 gap-2 max-h-[180px] overflow-y-auto pr-1"></div>
                     </div>
-                    <div id="section-meses" class="mt-2">
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Meses de Estudio</p>
-                        <div id="month-selector" class="grid grid-cols-4 gap-1.5"></div>
+                    <div id="section-meses">
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-bold mb-2">Meses de Estudio</p>
+                        <div id="month-selector" class="grid grid-cols-4 gap-2"></div>
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-slate-200 dark:border-slate-800/60 mt-2">
-                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-3 text-sm transition-all shadow-md active:scale-[0.98]">
+                <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/60 mt-2">
+                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-sm transition-all shadow-md active:scale-[0.98]">
                         Actualizar Análisis
                     </button>
                 </div>
             </div>
 
-            <div id="sidebar-mini-content" class="hidden flex-col items-center justify-start h-full flex-1 pt-4">
+            <div id="sidebar-mini-content" class="hidden flex-col items-center justify-start h-full flex-1 pt-2">
                 <div class="flex flex-col items-center space-y-6 w-full">
-                    <img src="Tipo1.png" alt="Logo Icon" class="w-14 h-14 object-contain transition-transform hover:scale-105 cursor-pointer" onclick="toggleSidebar()">
+                    <img src="Tipo1.png" alt="Logo Icon" class="w-12 h-12 object-contain transition-transform hover:scale-105 cursor-pointer" onclick="toggleSidebar()">
                     <div class="w-full h-[1px] bg-slate-300/30 dark:bg-slate-800/50 my-2"></div>
                     <button onclick="toggleSidebar()" class="p-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/50 text-slate-400 hover:text-blue-500 transition-all active:scale-95">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -141,10 +147,10 @@
             </div>
         </aside>
 
-        <main id="main-content" class="flex-1 min-h-screen px-6 md:px-10 xl:px-14 pt-2 md:pt-3 xl:pt-4 pb-6 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
+        <main id="main-content" class="flex-1 min-h-screen px-6 md:px-10 xl:px-14 pt-4 pb-6 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
             
-            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pt-0 pb-3">
-                <div class="flex items-center gap-6 flex-wrap">
+            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-4">
+                <div class="flex items-center gap-6">
                     <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap mt-1">Bienvenido a</span>
                     <img src="Tipo3.png" alt="CLÓVINA" class="h-16 md:h-18 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
                 </div>
@@ -204,7 +210,7 @@
 
                     <div class="xl:col-span-5 space-y-4">
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
-                        <div class="glass-panel glass-panel-variant rounded-[24px] p-8 h-[calc(100%-2.5rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
+                        <div class="glass-panel rounded-[24px] p-8 h-[calc(100%-2.5rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
                             <div id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base lg:text-lg font-light text-justify space-y-4"></div>
                             <div class="mt-6 pt-4 border-t border-slate-200/60 dark:border-slate-800/60 text-xs font-mono tracking-widest text-slate-400 uppercase">
                                 COMPATIBLE CON ANÁLISIS DE ENTORNOS CLIMÁTICOS
@@ -229,7 +235,7 @@
                                     Reserva espacial paramétrica para la inserción de gráficos explicativos vectoriales, dinámica de vientos locales y simulación de asoleamiento pasivo.
                                 </p>
                             </div>
-                            <div class="w-full h-32 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-xs text-slate-400 font-mono bg-slate-50/50 dark:bg-slate-900/10 mt-5">
+                            <div class="w-full h-32 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl flex items-center justify-center text-xs text-slate-400 font-mono bg-slate-50/50 dark:bg-slate-900/20 mt-5">
                                 [ Imagen Arquitectónica Referencial ]
                             </div>
                         </div>
@@ -246,7 +252,7 @@
         let mode = 'mes', selectedYears = [2026], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // COLORES NEÓN VIBRANTES PARA LAS LÍNEAS D3
+        // COLORES NEÓN VIBRANTES PARA LÍNEAS D3
         const neonColors = [
             '#00E5FF', '#FF0055', '#00FF66', '#FFEA00', '#B026FF', 
             '#FF3300', '#00FFAA', '#FF00AA', '#FFD700', '#0088FF', '#88FF00', '#FF5500'
@@ -272,7 +278,7 @@
             runClimateAnalysis();
         });
 
-        // BÚSQUEDA AUTOCOMPLETABLE
+        // BÚSQUEDA AUTOCOMPLETABLE OBTENIDA VÍA OSM
         let searchTimeout;
         const searchInput = document.getElementById('map-search-input');
         const searchResults = document.getElementById('search-results');
@@ -314,7 +320,6 @@
             } catch (error) { console.error("Error Nominatim:", error); }
         }
 
-        // Para ocultar el dropdown si haces click fuera
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.classList.add('hidden');
@@ -391,7 +396,7 @@
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
                 const c = document.createElement('button');
-                c.className = `py-1.5 rounded-lg border text-center font-bold cursor-pointer transition-all text-[9px] ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
+                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-[11px] ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
                 c.innerText = y;
                 c.onclick = () => {
                     if(mode === 'mes') { selectedYears = [y]; }
@@ -407,7 +412,7 @@
             const mb = document.getElementById('month-selector'); mb.innerHTML = '';
             months.forEach((m,i)=>{
                 const c = document.createElement('button');
-                c.className = `py-1.5 rounded-lg border text-center font-bold cursor-pointer transition-all text-[10px] ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
+                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-xs ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
                 c.innerText = m;
                 c.onclick = () => {
                     if(selectedMonths.includes(i)) { if(selectedMonths.length > 1) selectedMonths = selectedMonths.filter(v=>v!==i); }
@@ -446,7 +451,7 @@
             
             const canvasContainer = document.getElementById('chart-canvas-inside');
             const width = canvasContainer.clientWidth || 1200;
-            const height = 760; // ALTURA RESTAURADA A LA ORIGINAL PARA EVITAR APLASTAMIENTO
+            const height = 760; // ALTURA FIJA ORIGINAL
             
             const margin = { top:20, right:20, bottom:60, left:20 };
             const innerWidth = width - margin.left - margin.right;
