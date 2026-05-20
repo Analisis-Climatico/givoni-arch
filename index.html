@@ -34,46 +34,47 @@
             transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
         }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        /* RECUADROS GLASSMORPHISM PREMIUM (Fiel a tu referencia de WhatsApp) */
+        /* RECUADROS GLASSMORPHISM PREMIUM (Réplica exacta de WhatsApp) */
         .glass-panel {
             background: rgba(255, 255, 255, 0.22) !important;
-            backdrop-filter: blur(25px) saturate(140%) !important;
-            -webkit-backdrop-filter: blur(25px) saturate(140%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.55) !important;
-            box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.08), 
-                        inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(24px) saturate(130%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(130%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            box-shadow: 0 35px 70px -15px rgba(15, 23, 42, 0.05), 
+                        inset 0 1px 2px rgba(255, 255, 255, 0.45) !important;
         }
         .dark .glass-panel {
-            background: rgba(20, 30, 54, 0.35) !important;
-            backdrop-filter: blur(30px) saturate(150%) !important;
-            -webkit-backdrop-filter: blur(30px) saturate(150%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            box-shadow: 0 40px 90px -20px rgba(0, 0, 0, 0.6), 
+            background: rgba(19, 29, 56, 0.4) !important;
+            backdrop-filter: blur(28px) saturate(140%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(140%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.07) !important;
+            box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.55), 
+                        0 0 50px -10px rgba(6, 182, 212, 0.02), 
                         inset 0 1px 1px rgba(255, 255, 255, 0.04) !important;
         }
 
-        /* Ligeras variaciones de brillo para diferenciar jerarquía entre tarjetas independientes */
-        .glass-panel-variant {
-            background: rgba(255, 255, 255, 0.28) !important;
+        .glass-panel-accent {
+            background: rgba(255, 255, 255, 0.26) !important;
         }
-        .dark .glass-panel-variant {
-            background: rgba(28, 42, 77, 0.42) !important;
+        .dark .glass-panel-accent {
+            background: rgba(24, 37, 69, 0.45) !important;
+            box-shadow: 0 50px 100px -25px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
         }
 
         .sidebar-transition {
             transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Inversión cromática del trazado base del SVG original en Modo Oscuro */
+        /* Inversión cromática del plano del SVG original en Modo Oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
 
-        /* Forzado estricto de fondo blanco puro para exportación impecable a PDF */
+        /* Estilos forzados de exportación limpia para el PDF en blanco puro */
         .pdf-print-forced {
             background: #ffffff !important;
             color: #0f172a !important;
@@ -91,14 +92,14 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#d2e9ff] via-[#f1f5f9] to-[#fce7f3] dark:bg-gradient-to-br dark:from-[#0a1128] dark:via-[#111827] dark:to-[#1e112a] text-slate-800 dark:text-slate-100 min-h-screen relative font-sans">
+<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0d1326] dark:via-[#131b35] dark:to-[#090d1a] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-cyan-400/20 to-transparent blur-[160px] opacity-70"></div>
-        <div class="absolute bottom-[10%] left-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-fuchsia-400/20 to-transparent blur-[160px] opacity-70"></div>
+        <div class="absolute top-[-10%] left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-cyan-400/15 to-transparent blur-[160px] opacity-75"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-fuchsia-400/15 to-transparent blur-[160px] opacity-70"></div>
     </div>
 
-    <div class="absolute top-4 right-6 text-[10px] tracking-[0.35em] uppercase font-black text-slate-500/60 dark:text-slate-400/40 z-50 pointer-events-none select-none">
+    <div class="absolute top-4 right-6 text-xs tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-500/50 z-50 pointer-events-none select-none">
         Created by Jordan Jerez
     </div>
 
@@ -119,7 +120,7 @@
                     
                     <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-4 pt-2">
                         <div class="flex items-center gap-4">
-                            <img src="Tipo1.png" alt="Isotipo" class="h-12 w-auto object-contain"> 
+                            <img src="Tipo1.png" alt="Isotipo" class="h-14 w-auto object-contain"> 
                             <span class="font-space text-sm tracking-[0.2em] font-bold text-slate-400 dark:text-slate-500 uppercase">Consola Global</span>
                         </div>
                         <button onclick="toggleSidebar()" class="p-2.5 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/40 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
@@ -129,28 +130,28 @@
                         </button>
                     </div>
 
-                    <div class="space-y-2.5">
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Ubicación de Análisis</p>
+                    <div class="space-y-3">
+                        <p class="text-sm uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Ubicación de Análisis</p>
                         <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/60 shadow-sm relative">
                             <div id="map" class="h-[200px] w-full z-10"></div>
                         </div>
-                        <p id="location-text" class="text-xs font-semibold text-blue-600 dark:text-cyan-400 italic truncate">Detectando coordenadas...</p>
+                        <p id="location-text" class="text-sm font-semibold text-blue-600 dark:text-cyan-400 italic truncate">Detectando coordenadas...</p>
                     </div>
 
                     <div class="space-y-5 pt-2">
                         <div>
-                            <p id="year-label" class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2.5">Año Base</p>
+                            <p id="year-label" class="text-sm uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-3">Año Base</p>
                             <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto pr-1"></div>
                         </div>
                         <div>
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2.5">Meses de Estudio</p>
+                            <p class="text-sm uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-3">Meses de Estudio</p>
                             <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="pt-4 border-t border-slate-200 dark:border-slate-800/60 mb-2">
-                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4 text-xs transition-all shadow-md active:scale-[0.98]">
+                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4.5 text-sm transition-all shadow-md active:scale-[0.98]">
                         Actualizar Análisis
                     </button>
                 </div>
@@ -158,7 +159,7 @@
 
             <div id="sidebar-mini-content" class="hidden flex-col items-center justify-start h-full flex-1 pt-4">
                 <div class="flex flex-col items-center space-y-6 w-full">
-                    <img src="Tipo1.png" alt="Logo Icon" class="w-12 h-12 object-contain transition-transform hover:scale-105 cursor-pointer" onclick="toggleSidebar()">
+                    <img src="Tipo1.png" alt="Logo Icon" class="w-14 h-14 object-contain transition-transform hover:scale-105 cursor-pointer" onclick="toggleSidebar()">
                     
                     <div class="w-full h-[1px] bg-slate-300/30 dark:bg-slate-800/50 my-2"></div>
 
@@ -175,23 +176,23 @@
             
             <header id="header-container" class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 pb-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pt-4">
                 <div class="flex items-center gap-6 py-2 flex-wrap">
-                    <span class="text-sm md:text-base uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
-                    <img src="Tipo3.png" alt="CLÓVINA" class="h-12 md:h-14 xl:h-16 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                    <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
+                    <img src="Tipo3.png" alt="CLÓVINA" class="h-14 md:h-16 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-5">
                     <button onclick="toggleDarkMode()" id="mode-switch" class="w-20 h-10 rounded-full bg-slate-200/90 dark:bg-slate-900/80 border border-slate-300/40 dark:border-white/10 relative p-1 backdrop-blur-sm flex items-center justify-between px-2.5 flex-shrink-0 shadow-inner">
                         <div id="mode-indicator" class="absolute top-[3px] left-[4px] w-[32px] h-[32px] rounded-full bg-blue-600 dark:bg-cyan-500 shadow-md transition-transform duration-300 ease-out"></div>
                         <svg class="w-4 h-4 text-orange-500 dark:text-slate-500 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         <svg class="w-4 h-4 text-slate-400 dark:text-cyan-400 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </button>
 
-                    <div class="flex gap-0.5 bg-slate-200/60 dark:bg-slate-900/60 p-0.5 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
-                        <button onclick="setMode('mes')" id="btn-mes" class="px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm">MESES</button>
-                        <button onclick="setMode('año')" id="btn-año" class="px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400">AÑOS</button>
+                    <div class="flex gap-1 bg-slate-200/60 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
+                        <button onclick="setMode('mes')" id="btn-mes" class="px-5 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm">MESES</button>
+                        <button onclick="setMode('año')" id="btn-año" class="px-5 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400">AÑOS</button>
                     </div>
 
-                    <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-5 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-all shadow-sm active:scale-95">
+                    <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95">
                         Exportar PDF
                     </button>
                 </div>
@@ -199,44 +200,44 @@
 
             <div id="export-container" class="space-y-10 w-full block p-2 rounded-2xl">
                 
-                <section class="space-y-3 w-full">
+                <section class="space-y-4 w-full">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">01 / Climograma de Givoni</h2>
-                        <span class="text-[9px] font-bold text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
+                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">01 / Climograma de Givoni</h2>
+                        <span class="text-xs font-bold text-cyan-500 bg-cyan-500/10 px-3 py-1 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 p-5 shadow-2xl glass-panel h-[560px] relative overflow-hidden flex items-center justify-center">
-                        <div id="chart" class="w-full h-full relative" style="min-h: 500px; height: 500px;">
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel h-[580px] relative overflow-hidden flex items-center justify-center">
+                        <div id="chart" class="w-full h-full relative" style="min-h: 520px; height: 520px;">
                             <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
                         </div>
                     </div>
                 </section>
 
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-10 w-full">
-                    <div class="xl:col-span-7 space-y-3 overflow-hidden">
-                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">02 / Cuadro de Datos</h2>
+                    <div class="xl:col-span-7 space-y-4 overflow-hidden">
+                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">02 / Cuadro de Datos</h2>
                         <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl overflow-x-auto w-full">
-                            <table class="w-full text-left text-xs min-w-[500px]">
-                                <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold font-space text-[10px]">
+                            <table class="w-full text-left text-sm min-w-[500px]">
+                                <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold font-space text-xs">
                                     <tr>
-                                        <th class="p-4 text-center w-12">Muestra</th>
-                                        <th class="p-4">Periodo</th>
-                                        <th class="p-4 text-center">TBS Máx</th>
-                                        <th class="p-4 text-center">TBS Mín</th>
-                                        <th class="p-4 text-center">HR %</th>
-                                        <th class="p-4 pl-6">Zonas Confort</th>
+                                        <th class="p-4.5 text-center w-14">Muestra</th>
+                                        <th class="p-4.5">Periodo</th>
+                                        <th class="p-4.5 text-center">TBS Máx</th>
+                                        <th class="p-4.5 text-center">TBS Mín</th>
+                                        <th class="p-4.5 text-center">HR %</th>
+                                        <th class="p-4.5 pl-6">Zonas Confort</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-body" class="font-medium divide-y divide-slate-200/40 dark:divide-slate-800/30 text-slate-600 dark:text-slate-300"></tbody>
+                                <tbody id="table-body" class="font-medium divide-y divide-slate-200/40 dark:divide-slate-800/30 text-slate-700 dark:text-slate-300 text-sm"></tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div class="xl:col-span-5 space-y-3">
-                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
-                        <div class="glass-panel glass-panel-variant rounded-[24px] p-6 border border-slate-200/50 dark:border-white/5 h-[calc(100%-2rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
-                            <p id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-xs font-light text-justify"></p>
-                            <div class="mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-800/60 text-[9px] text-slate-400 font-mono tracking-widest">
+                    <div class="xl:col-span-5 space-y-4">
+                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
+                        <div class="glass-panel glass-panel-variant rounded-[24px] p-6 h-[calc(100%-2rem)] flex flex-col justify-between shadow-xl min-h-[240px]">
+                            <p id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base md:text-lg font-normal text-justify"></p>
+                            <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 text-xs font-mono tracking-widest text-slate-400">
                                 COMPATIBLE CON ANÁLISIS DE ENTORNOS TROPICALES
                             </div>
                         </div>
@@ -244,22 +245,22 @@
                 </section>
 
                 <section class="grid grid-cols-1 xl:grid-cols-2 gap-10 w-full">
-                    <div class="space-y-3">
-                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">04 / Estrategias Arquitectónicas</h2>
+                    <div class="space-y-4">
+                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">04 / Estrategias Arquitectónicas</h2>
                         <div id="strategy-list" class="space-y-4"></div>
                     </div>
 
-                    <div class="space-y-3">
-                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">05 / Esquema Convectivo</h2>
-                        <div class="glass-panel rounded-[24px] p-6 border border-slate-200/50 dark:border-white/5 min-h-[240px] flex flex-col justify-between relative overflow-hidden shadow-xl group">
+                    <div class="space-y-4">
+                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">05 / Esquema Convectivo</h2>
+                        <div class="glass-panel rounded-[24px] p-6 border border-slate-200/50 dark:border-white/5 min-h-[260px] flex flex-col justify-between relative overflow-hidden shadow-xl group">
                             <div class="absolute inset-0 opacity-[0.02] bg-cover bg-center" style="background-image: url('Tipo1.png');"></div>
-                            <div class="space-y-2 relative z-10">
-                                <span class="text-[8px] font-space font-bold tracking-widest text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 uppercase">Modelado Pasivo</span>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
+                            <div class="space-y-3 relative z-10">
+                                <span class="text-xs font-space font-bold tracking-widest text-orange-500 bg-orange-500/10 px-3 py-1 rounded border border-orange-500/20 uppercase">Modelado Pasivo</span>
+                                <p class="text-sm md:text-base text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
                                     Reserva espacial paramétrica para la inserción de gráficos explicativos vectoriales, dinámica de vientos locales y simulación de asoleamiento pasivo.
                                 </p>
                             </div>
-                            <div class="w-full h-28 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-mono bg-slate-50/50 dark:bg-slate-900/10 mt-3">
+                            <div class="w-full h-32 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-xs text-slate-400 font-mono bg-slate-50/50 dark:bg-slate-900/10 mt-3">
                                 [ Esquema de Convección Natural Pasiva ]
                             </div>
                         </div>
@@ -274,7 +275,6 @@
         let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // PALETA CROMÁTICA INDUSTRIAL OSCURA: Contrastes altos para que las letras blancas no se pierdan nunca
         const zoneConfig = {
             "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
             "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
@@ -325,7 +325,7 @@
                 miniContent.classList.remove('flex');
             }
             isSidebarVisible = !isSidebarVisible;
-            setTimeout(() => { if(window.currentData) drawChart(window.currentData); }, 180);
+            setTimeout(() => { if(window.currentData) drawChart(window.currentData); }, 150);
         }
 
         function toggleDarkMode() {
@@ -353,9 +353,9 @@
         function setMode(m){
             mode = m;
             document.querySelectorAll('#header-container button').forEach(b => {
-                if(b.id === 'btn-mes' || b.id === 'btn-año') b.className = 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400';
+                if(b.id === 'btn-mes' || b.id === 'btn-año') b.className = 'px-4 py-2 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400';
             });
-            document.getElementById(`btn-${m}`).className = 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm';
+            document.getElementById(`btn-${m}`).className = 'px-4 py-2 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm';
             document.getElementById('section-meses').style.display = m === 'mes' ? 'block' : 'none';
             document.getElementById('year-label').innerText = m === 'mes' ? 'Año Base' : 'Años a Comparar';
             selectedYears = [2025];
@@ -366,7 +366,7 @@
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
                 const c = document.createElement('div');
-                c.className = `text-[10px] p-2.5 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
+                c.className = `text-sm p-3 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
                 c.innerText = y;
                 c.onclick = () => {
                     if(mode === 'mes') { selectedYears = [y]; }
@@ -381,7 +381,7 @@
             const mb = document.getElementById('month-selector'); mb.innerHTML = '';
             months.forEach((m,i)=>{
                 const c = document.createElement('div');
-                c.className = `text-[10px] p-2.5 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
+                c.className = `text-sm p-3 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
                 c.innerText = m;
                 c.onclick = () => {
                     if(selectedMonths.includes(i)) { if(selectedMonths.length > 1) selectedMonths = selectedMonths.filter(v=>v!==i); }
@@ -472,16 +472,16 @@
             data.forEach(d => {
                 const zones = detectZones(d.tMin, d.tMax, d.hr);
                 sumTMax += d.tMax; sumTMin += d.tMin; sumH += d.hr;
-                const badges = zones.map(z => `<span class="text-[9px] font-space px-2 py-0.5 rounded font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
+                const badges = zones.map(z => `<span class="text-xs font-space px-2.5 py-1 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
                 
                 tableBody.innerHTML += `
                     <tr class="border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/10">
-                        <td class="p-4 text-center"><div class="w-2.5 h-2.5 rounded-full mx-auto" style="background:${d.color}"></div></td>
-                        <td class="p-4 uppercase font-bold text-slate-700 dark:text-slate-300 font-space text-[11px]">${d.label}</td>
-                        <td class="p-4 text-center text-[11px]">${d.tMax.toFixed(1)}°C</td>
-                        <td class="p-4 text-center text-[11px]">${d.tMin.toFixed(1)}°C</td>
-                        <td class="p-4 text-center text-blue-500 font-bold text-[11px]">${d.hr.toFixed(0)}%</td>
-                        <td class="p-4 pl-6 flex flex-wrap gap-1">${badges}</td>
+                        <td class="p-4 text-center"><div class="w-3 h-3 rounded-full mx-auto" style="background:${d.color}"></div></td>
+                        <td class="p-4 uppercase font-bold text-slate-700 dark:text-slate-300 font-space text-sm">${d.label}</td>
+                        <td class="p-4 text-center text-sm">${d.tMax.toFixed(1)}°C</td>
+                        <td class="p-4 text-center text-sm">${d.tMin.toFixed(1)}°C</td>
+                        <td class="p-4 text-center text-blue-500 font-bold text Red text-sm">${d.hr.toFixed(0)}%</td>
+                        <td class="p-4 pl-6 flex flex-wrap gap-1.5">${badges}</td>
                     </tr>`;
             });
 
@@ -500,18 +500,18 @@
             const sl = document.getElementById('strategy-list'); sl.innerHTML = '';
             let recs = [];
             if(avgHR > 70) {
-                recs.push({t: "Envolventes Celosías Permeables", d: "Instalación de paneles calados orientados a sotavento para succionar flujos laminares."});
-                recs.push({t: "Elevación Estructural (Palafitos)", d: "Despejar la base para enfriar la platea inferior y mitigar humedades del suelo."});
+                recs.push({t: "Envolventes Celosías Permeables", d: "Instalación de paneles calados orientados a sotavento para succionar flujos laminares de viento constante."});
+                recs.push({t: "Elevación Estructural (Palafitos)", d: "Despejar la plataforma base para enfriar la platea inferior y mitigar humedades recurrentes del suelo."});
             }
             if(avgTMax > 30) {
-                recs.push({t: "Aleros Tecnológicos de Gran Vuelo", d: "Proyección superior mayor a 1.50 metros para anular radiación directa en fachadas."});
+                recs.push({t: "Aleros Tecnológicos de Gran Vuelo", d: "Proyección superior mayor a 1.50 metros para anular radiación directa incidente en fachadas expuestas."});
             }
             
             recs.forEach(r => {
                 sl.innerHTML += `
-                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 bg-opacity-70 shadow-sm border border-white/5">
-                        <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-[9px] uppercase tracking-wider mb-0.5">${r.t}</p>
-                        <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed font-light">${r.d}</p>
+                    <div class="p-4.5 rounded-xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 bg-opacity-70 shadow-sm border border-white/5">
+                        <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-1">${r.t}</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed font-light">${r.d}</p>
                     </div>`;
             });
         }
@@ -523,7 +523,6 @@
                 const today = new Date();
                 let endDate = `${year}-12-31`;
                 
-                // Resguardo de límites para el año corriente
                 if (year === today.getFullYear()) {
                     const pastDate = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
                     endDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
@@ -577,7 +576,7 @@
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
                 pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 6, 6, imgWidth, imgHeight);
-                pdf.save(`CLOVINA_Reporte_Bioclimatico.pdf`);
+                pdf.save(`CLOVA_Reporte_Bioclimatico.pdf`);
                 
                 if(window.currentData) drawChart(window.currentData);
             });
