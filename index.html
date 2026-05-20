@@ -29,13 +29,13 @@
     </script>
     
     <style>
-        * { transition: background-color 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        * { transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease; }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 10px; }
 
-        /* GLASSMORPHISM - COLORES NEUTROS Y PROFUNDOS */
+        /* RECUADROS GLASSMORPHISM PREMIUM CON TONOS MARINOS PROFUNDOS */
         .glass-panel {
             background: rgba(255, 255, 255, 0.35) !important;
             backdrop-filter: blur(24px) saturate(140%) !important;
@@ -43,15 +43,15 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
         }
         .dark .glass-panel {
-            background: rgba(15, 15, 17, 0.6) !important; /* Gris oscuro neutro, SIN AZUL */
-            backdrop-filter: blur(30px) saturate(120%) !important;
+            background: rgba(10, 15, 25, 0.6) !important; /* Azul marino abisal translúcido */
+            backdrop-filter: blur(30px) saturate(140%) !important;
             border: 1px solid rgba(255, 255, 255, 0.06) !important;
-            box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.03) !important;
+            box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.03) !important;
         }
 
         .sidebar-transition { transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
 
-        /* Inversión SVG para Modo Oscuro */
+        /* Inversión SVG Modo Oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child { filter: invert(0.9) hue-rotate(180deg); }
 
         /* PDF BLANCO PURO */
@@ -63,11 +63,11 @@
         .climate-line { transition: stroke-width 0.2s, opacity 0.2s; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#050505] dark:via-[#0a0a0a] dark:to-[#000000] text-slate-800 dark:text-slate-100 min-h-screen relative">
+<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#02040a] dark:via-[#050a1f] dark:to-[#010206] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-10%] left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-cyan-400/10 to-transparent blur-[160px] opacity-40"></div>
-        <div class="absolute bottom-[10%] left-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-fuchsia-400/10 to-transparent blur-[160px] opacity-30"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-blue-500/10 to-transparent blur-[160px] opacity-30"></div>
     </div>
 
     <div class="absolute top-4 right-6 text-sm tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-500/50 z-50 pointer-events-none select-none">
@@ -75,16 +75,16 @@
     </div>
 
     <div id="floating-open-btn" class="fixed top-4 left-6 z-50 hidden">
-        <button onclick="toggleSidebar()" class="p-3.5 rounded-xl glass-panel text-slate-700 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-300/40 dark:border-white/10">
+        <button onclick="toggleSidebar()" class="p-3 rounded-xl glass-panel text-slate-700 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-300/40 dark:border-white/10">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
     </div>
 
     <div class="flex min-h-screen w-full relative z-10">
         
-        <aside id="sidebar" class="w-[360px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-4">
+        <aside id="sidebar" class="w-[360px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-4 overflow-hidden">
             
-            <div id="sidebar-full-content" class="flex-1 flex flex-col justify-between h-full">
+            <div id="sidebar-full-content" class="flex-1 flex flex-col justify-between h-full overflow-hidden">
                 <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-2 mb-3">
                     <div class="flex items-center gap-4">
                         <img src="Tipo1.png" alt="Isotipo" class="h-20 w-auto object-contain scale-110 origin-left"> 
@@ -112,7 +112,7 @@
                     <p id="location-text" class="text-xs font-semibold text-blue-600 dark:text-cyan-400 italic truncate mt-1">Detectando coordenadas...</p>
                 </div>
 
-                <div class="flex-1 flex flex-col justify-between">
+                <div id="sidebar-content-area" class="flex-1 flex flex-col justify-between overflow-y-auto pr-1 space-y-4 pb-2">
                     <div>
                         <p id="year-label" class="text-[10px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Año Base</p>
                         <div id="year-selector" class="grid grid-cols-4 gap-1.5"></div>
@@ -123,7 +123,7 @@
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-slate-200 dark:border-slate-800/60 mt-3">
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-800/60 mt-2">
                     <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-3 text-sm transition-all shadow-md active:scale-[0.98]">
                         Actualizar Análisis
                     </button>
@@ -141,10 +141,10 @@
             </div>
         </aside>
 
-        <main id="main-content" class="flex-1 p-6 md:p-10 xl:p-14 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
+        <main id="main-content" class="flex-1 min-h-screen px-6 md:px-10 xl:px-14 pt-2 md:pt-3 xl:pt-4 pb-6 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
             
-            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-4">
-                <div class="flex items-center gap-6">
+            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pt-0 pb-3">
+                <div class="flex items-center gap-6 flex-wrap">
                     <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap mt-1">Bienvenido a</span>
                     <img src="Tipo3.png" alt="CLÓVINA" class="h-16 md:h-18 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
                 </div>
@@ -158,7 +158,7 @@
 
                     <div class="flex gap-1 bg-slate-200/60 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
                         <button onclick="setMode('mes')" id="btn-mes" class="px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm">MESES</button>
-                        <button onclick="setMode('año')" id="btn-año" class="px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400">AÑOS</button>
+                        <button onclick="setMode('año')" id="btn-año" class="px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50">AÑOS</button>
                     </div>
 
                     <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95">
@@ -204,7 +204,7 @@
 
                     <div class="xl:col-span-5 space-y-4">
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
-                        <div class="glass-panel rounded-[24px] p-8 h-[calc(100%-2.5rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
+                        <div class="glass-panel glass-panel-variant rounded-[24px] p-8 h-[calc(100%-2.5rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
                             <div id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base lg:text-lg font-light text-justify space-y-4"></div>
                             <div class="mt-6 pt-4 border-t border-slate-200/60 dark:border-slate-800/60 text-xs font-mono tracking-widest text-slate-400 uppercase">
                                 COMPATIBLE CON ANÁLISIS DE ENTORNOS CLIMÁTICOS
@@ -246,7 +246,7 @@
         let mode = 'mes', selectedYears = [2026], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // COLORES NEÓN VIBRANTES PARA LÍNEAS D3
+        // COLORES NEÓN VIBRANTES PARA LAS LÍNEAS D3
         const neonColors = [
             '#00E5FF', '#FF0055', '#00FF66', '#FFEA00', '#B026FF', 
             '#FF3300', '#00FFAA', '#FF00AA', '#FFD700', '#0088FF', '#88FF00', '#FF5500'
@@ -314,6 +314,7 @@
             } catch (error) { console.error("Error Nominatim:", error); }
         }
 
+        // Para ocultar el dropdown si haces click fuera
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.classList.add('hidden');
@@ -364,6 +365,14 @@
                 document.getElementById('mode-indicator').style.transform = 'translateX(34px)';
                 localStorage.setItem('theme', 'dark');
             }
+        }
+
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('mode-indicator').style.transform = 'translateX(0px)';
+        } else {
+            document.documentElement.classList.add('dark');
+            document.getElementById('mode-indicator').style.transform = 'translateX(34px)';
         }
 
         function setMode(m){
