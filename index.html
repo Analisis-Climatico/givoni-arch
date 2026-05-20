@@ -31,6 +31,8 @@
     <style>
         * { transition: background-color 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        /* Scrollbar personalizada */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
@@ -51,6 +53,8 @@
         }
 
         .sidebar-transition { transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+
+        /* Inversión SVG para Modo Oscuro en Givoni */
         .dark #chart-canvas-inside svg > g > g:first-child { filter: invert(0.9) hue-rotate(180deg); }
 
         /* PDF BLANCO PURO */
@@ -62,34 +66,39 @@
         .climate-line { transition: stroke-width 0.2s, opacity 0.2s; }
 
         /* ========================================================
-           ANIMACIONES CINEMÁTICAS PARA SVG PARAMÉTRICO
+           ANIMACIONES CINEMÁTICAS PARA SVG PARAMÉTRICO (05)
            ======================================================== */
         @keyframes draw-arch {
-            from { stroke-dashoffset: 2000; }
+            from { stroke-dashoffset: 1500; }
             to { stroke-dashoffset: 0; }
         }
         @keyframes flow-wind {
-            0% { transform: translateX(-20px); opacity: 0; }
+            0% { transform: translateX(-15px); opacity: 0; }
             50% { opacity: 1; }
-            100% { transform: translateX(30px); opacity: 0; }
+            100% { transform: translateX(20px); opacity: 0; }
         }
         @keyframes pulse-sun {
-            0% { opacity: 0.4; transform: scale(0.95); }
-            100% { opacity: 0.9; transform: scale(1.05); }
+            0% { opacity: 0.5; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1.02); }
         }
         @keyframes float-tree {
             0% { transform: translateY(0px); }
-            100% { transform: translateY(-3px); }
+            100% { transform: translateY(-2px); }
+        }
+        @keyframes pulse-glow {
+            0% { filter: drop-shadow(0 0 2px #f59e0b40); opacity: 0.6; }
+            100% { filter: drop-shadow(0 0 8px #f59e0b80); opacity: 1; }
         }
 
         .svg-arch-line {
-            stroke-dasharray: 2000;
-            animation: draw-arch 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            stroke-dasharray: 1500;
+            animation: draw-arch 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
-        .svg-wind-flow { animation: flow-wind 4s infinite cubic-bezier(0.4, 0, 0.2, 1); }
-        .svg-wind-flow-delayed { animation: flow-wind 4s infinite 2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .svg-sun-pulse { animation: pulse-sun 3s infinite alternate ease-in-out; transform-origin: center; }
-        .svg-tree-float { animation: float-tree 4s infinite alternate ease-in-out; }
+        .svg-wind-flow { animation: flow-wind 3.5s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        .svg-wind-flow-delayed { animation: flow-wind 3.5s infinite 1.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        .svg-sun-pulse { animation: pulse-sun 2.5s infinite alternate ease-in-out; transform-origin: center; }
+        .svg-tree-float { animation: float-tree 3s infinite alternate ease-in-out; }
+        .svg-inercia-glow { animation: pulse-glow 2s infinite alternate ease-in-out; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
@@ -188,7 +197,7 @@
 
                     <div class="flex gap-1 bg-slate-200/60 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
                         <button onclick="setMode('mes')" id="btn-mes" class="px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm">MESES</button>
-                        <button onclick="setMode('año')" id="btn-año" class="px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50">AÑOS</button>
+                        <button onclick="setMode('año')" id="btn-año" class="px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:text-blue-600 dark:hover:text-cyan-400">AÑOS</button>
                     </div>
 
                     <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95">
@@ -250,31 +259,22 @@
                     </div>
 
                     <div class="space-y-4">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">05 / Imagen Arquitectónica Referencial</h2>
-                        <div class="glass-panel rounded-[24px] p-8 border border-slate-200/50 dark:border-white/5 min-h-[280px] flex flex-col justify-between relative overflow-hidden shadow-xl group">
-                            
-                            <div id="dynamic-architecture-svg" class="absolute inset-0 w-full h-full flex items-center justify-center opacity-90 transition-all duration-700"></div>
-                            
-                            <div class="space-y-3 relative z-10 pointer-events-none">
-                                <span class="text-[10px] font-space font-bold tracking-widest text-orange-500 bg-orange-500/10 px-3 py-1 rounded border border-orange-500/20 uppercase">Modelado Pasivo Algorítmico</span>
-                                <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed font-light">
-                                    Generación gráfica computacional paramétrica. El esquema arquitectónico superior muta su morfología, envolvente y flujos convectivos en tiempo real respondiendo a la matriz de datos psicrométricos analizada.
-                                </p>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">05 / Esquemas Bioclimáticos Dinámicos</h2>
+                        
+                        <div id="dynamic-diagrams-container" class="space-y-8">
                             </div>
-                        </div>
                     </div>
                 </section>
             </div>
         </main>
     </div>
 
-    <div id="chart-tooltip" class="absolute opacity-0 glass-panel px-6 py-5 rounded-2xl pointer-events-none z-[100] shadow-2xl flex flex-col gap-2 text-sm border-white/40 dark:border-white/10 backdrop-blur-3xl" data-html2canvas-ignore></div>
+    <div id="chart-tooltip" class="absolute opacity-0 glass-panel px-6 py-5 rounded-2xl pointer-events-none z-[100] shadow-2xl flex flex-col gap-2 text-sm border-white/40 dark:border-white/10 Backdrop-blur-3xl" data-html2canvas-ignore></div>
 
     <script>
         const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
         let mode = 'mes', selectedYears = [2026], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
-        let currentStrategies = [];
 
         // COLORES NEÓN VIBRANTES PARA LÍNEAS D3 Y HOVER
         const neonColors = [
@@ -302,7 +302,7 @@
             runClimateAnalysis();
         });
 
-        // BÚSQUEDA AUTOCOMPLETABLE
+        // BÚSQUEDA AUTOCOMPLETABLE OBTENIDA VÍA OSM
         let searchTimeout;
         const searchInput = document.getElementById('map-search-input');
         const searchResults = document.getElementById('search-results');
@@ -407,7 +407,7 @@
         function setMode(m){
             mode = m;
             document.getElementById('btn-mes').className = mode === 'mes' ? 'px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm' : 'px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50';
-            document.getElementById('btn-año').className = mode === 'año' ? 'px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm' : 'px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50';
+            document.getElementById('btn-año').className = mode === 'año' ? 'px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm' : 'px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:text-blue-600 dark:hover:text-cyan-400';
             
             document.getElementById('section-meses').style.display = mode === 'mes' ? 'block' : 'none';
             document.getElementById('year-label').innerText = mode === 'mes' ? 'Año Base' : 'Años a Comparar';
@@ -420,7 +420,7 @@
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
                 const c = document.createElement('button');
-                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-xs ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
+                c.className = `py-1.5 rounded-lg border text-center font-bold cursor-pointer transition-all text-[11px] ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
                 c.innerText = y;
                 c.onclick = () => {
                     if(mode === 'mes') { selectedYears = [y]; }
@@ -436,7 +436,7 @@
             const mb = document.getElementById('month-selector'); mb.innerHTML = '';
             months.forEach((m,i)=>{
                 const c = document.createElement('button');
-                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-xs ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
+                c.className = `py-1.5 rounded-lg border text-center font-bold cursor-pointer transition-all text-xs ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
                 c.innerText = m;
                 c.onclick = () => {
                     if(selectedMonths.includes(i)) { if(selectedMonths.length > 1) selectedMonths = selectedMonths.filter(v=>v!==i); }
@@ -569,83 +569,154 @@
             g.append('g').attr('transform', `translate(0,${innerHeight})`).call(d3.axisBottom(x).ticks(10));
         }
 
+        // ========================================================
+        // MOTOR PARAMÉTRICO DE DIBUJO SVG BIOCLIMÁTICO MEJORADO
         // ==========================================
-        // MOTOR PARAMÉTRICO DE DIBUJO SVG BIOCLIMÁTICO
-        // ==========================================
-        function drawBioclimaticArchitecture(strategies) {
-            const container = document.getElementById('dynamic-architecture-svg');
-            
-            // Detección de activadores lógicos
-            const hasVentilation = strategies.some(s => s.t.includes('Ventilación'));
-            const hasAleros = strategies.some(s => s.t.includes('Aleros'));
-            const hasPalafitos = strategies.some(s => s.t.includes('Palafitos'));
-            const hasInercia = strategies.some(s => s.t.includes('Inercia'));
-            const hasVegetacion = strategies.some(s => s.t.includes('Paisajismo'));
-            const isCold = strategies.some(s => s.t.includes('Captación')); // Clima frío
+        function generateBioclimaticDiagrams(strategies) {
+            const container = document.getElementById('dynamic-diagrams-container');
+            container.innerHTML = ''; // Limpiar diagramas existentes
 
-            // Base Y del piso (se eleva si hay palafitos)
-            const floorY = hasPalafitos ? 260 : 320;
-
-            let svgHTML = `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-2xl">`;
-            
-            // 1. LÍNEA DE TIERRA Y ESTRUCTURA BASE
-            svgHTML += `<line x1="50" y1="320" x2="750" y2="320" stroke="currentColor" stroke-width="2" class="svg-arch-line opacity-50"/>`;
-            
-            if(hasPalafitos) {
-                // Pilares
-                svgHTML += `<line x1="300" y1="320" x2="300" y2="260" stroke="currentColor" stroke-width="6" class="svg-arch-line"/>`;
-                svgHTML += `<line x1="500" y1="320" x2="500" y2="260" stroke="currentColor" stroke-width="6" class="svg-arch-line"/>`;
+            if(strategies.length === 0) {
+                container.innerHTML = `<div class="text-center p-10 glass-panel rounded-2xl text-slate-500 text-sm">Ejecute un análisis para generar esquemas paramétricos.</div>`;
+                return;
             }
 
-            // 2. MUROS Y LOZA (Inercia térmica = Muros gruesos)
-            const wallWidth = hasInercia ? 16 : 4;
-            // Piso
-            svgHTML += `<line x1="260" y1="${floorY}" x2="540" y2="${floorY}" stroke="currentColor" stroke-width="${wallWidth}" stroke-linecap="round" class="svg-arch-line"/>`;
-            // Muro Izquierdo
-            svgHTML += `<line x1="280" y1="${floorY}" x2="280" y2="120" stroke="currentColor" stroke-width="${wallWidth}" stroke-linecap="round" class="svg-arch-line"/>`;
-            // Muro Derecho
-            svgHTML += `<line x1="520" y1="${floorY}" x2="520" y2="120" stroke="currentColor" stroke-width="${wallWidth}" stroke-linecap="round" class="svg-arch-line"/>`;
+            // Iterar sobre cada estrategia para crear un esquema específico
+            strategies.forEach((strat, index) => {
+                // Determinar colores y lógica específica basada en el texto de la estrategia
+                let badgeColor = '#f59e0b'; // Naranja cálido (defecto)
+                if(strat.t.includes('Ventilación')) badgeColor = '#06b6d4'; // Cian frío
+                if(strat.t.includes('Paisajismo') || strat.t.includes('Vegetación')) badgeColor = '#10b981'; // Verde confort
+                if(strat.t.includes('Inercia') || strat.t.includes('Masa')) badgeColor = '#b45309'; // Oro/Marron
 
-            // 3. CUBIERTA Y ALEROS
-            const roofLeftX = hasAleros ? 200 : 260;
-            const roofRightX = hasAleros ? 600 : 540;
-            
-            // Techo inclinado moderno
-            svgHTML += `<polyline points="${roofLeftX},140 400,60 ${roofRightX},140" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round" class="svg-arch-line"/>`;
-            
-            // 4. ELEMENTOS ACTIVOS (RADIACIÓN SOLAR)
-            if(hasAleros || isCold) {
-                // Sol a la derecha
-                svgHTML += `<circle cx="650" cy="80" r="25" fill="#f59e0b" class="svg-sun-pulse"/>`;
-                if(hasAleros) {
-                    // Rayos bloqueados
-                    svgHTML += `<line x1="620" y1="100" x2="550" y2="150" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6" class="opacity-60"/>`;
-                    svgHTML += `<line x1="600" y1="130" x2="570" y2="160" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6" class="opacity-60"/>`;
-                } else {
-                    // Rayos entrando al edificio (Captación)
-                    svgHTML += `<line x1="620" y1="100" x2="480" y2="200" stroke="#f59e0b" stroke-width="4" class="svg-sun-pulse"/>`;
+                // Crear wrapper de la tarjeta editorial
+                const card = document.createElement('div');
+                card.className = "grid grid-cols-1 md:grid-cols-12 gap-8 items-center glass-panel rounded-[24px] p-8 border border-slate-200/50 dark:border-white/5 shadow-xl transition-all duration-300 hover:-translate-y-1";
+
+                // --- LADO DE TEXTO (md:col-span-5) ---
+                const textArea = document.createElement('div');
+                textArea.className = "md:col-span-5 space-y-4 pointer-events-none";
+                textArea.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-space font-bold tracking-widest px-3 py-1.5 rounded border uppercase" style="color:${badgeColor}; background:${badgeColor}10; border-color:${badgeColor}20">Esquema Dinámico ${String(index+1).padStart(2,'0')}</span>
+                    </div>
+                    <h4 class="text-slate-800 dark:text-white font-bold font-space text-lg uppercase tracking-wider">${strat.t}</h4>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-light">${strat.d}</p>
+                `;
+
+                // --- LADO DE DIBUJO SVG (md:col-span-7) ---
+                const svgArea = document.createElement('div');
+                svgArea.className = "md:col-span-7 h-[280px] flex items-center justify-center relative overflow-hidden rounded-xl bg-slate-100/30 dark:bg-slate-900/10 p-4";
+                
+                // Generación de SVG paramétrico enfocado
+                let svgHTML = `<svg viewBox="0 0 700 350" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-lg">`;
+                
+                // Elementos Base Comunes (suaves, minimalistas)
+                // Línea de tierra
+                svgHTML += `<line x1="50" y1="320" x2="650" y2="320" stroke="currentColor" stroke-width="1.5" class="svg-arch-line opacity-40"/>`;
+                
+                // Función auxiliar para croquis de edificio base
+                const drawBaseCroquis = (elevatedY = 320, pilarWidth = 2, wallThickness = 2.5) => {
+                    let croquis = '';
+                    // Pilares o base
+                    if(elevatedY < 320) {
+                        croquis += `<line x1="250" y1="320" x2="250" y2="${elevatedY}" stroke="currentColor" stroke-width="5" class="svg-arch-line"/>`;
+                        croquis += `<line x1="450" y1="320" x2="450" y2="${elevatedY}" stroke="currentColor" stroke-width="5" class="svg-arch-line"/>`;
+                    }
+                    // Piso
+                    croquis += `<line x1="220" y1="${elevatedY}" x2="480" y2="${elevatedY}" stroke="currentColor" stroke-width="${pilarWidth}" stroke-linecap="round" class="svg-arch-line"/>`;
+                    // Muros minimalistas
+                    croquis += `<polyline points="250,${elevatedY} 250,120 450,120 450,${elevatedY}" fill="none" stroke="currentColor" stroke-width="${wallThickness}" stroke-linecap="round" class="svg-arch-line"/>`;
+                    // Cubierta moderna inclinada
+                    croquis += `<polyline points="210,130 350,60 490,130" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" class="svg-arch-line"/>`;
+                    return croquis;
+                };
+
+                // DIBUJAR SVG SEGÚN TIPO DE ESTRATEGIA (Lógica paramétrica)
+                
+                // 1. Elevación (Palafitos)
+                if(strat.t.includes('Elevación') || strat.t.includes('Palafitos')) {
+                    const elevatedY = 250;
+                    svgHTML += drawBaseCroquis(elevatedY);
+                    // Flujo de aire cian por debajo
+                    svgHTML += `<path d="M 100 300 C 200 300, 300 290, 400 300 S 500 310, 600 300" fill="none" stroke="#06b6d4" stroke-width="4" stroke-linecap="round" class="svg-wind-flow opacity-80"/>`;
+                } 
+                
+                // 2. Ventilación Cruzada
+                else if (strat.t.includes('Ventilación')) {
+                    svgHTML += drawBaseCroquis();
+                    // Vents invisibles para estructura
+                    svgHTML += `<line x1="250" y1="280" x2="250" y2="240" stroke="transparent" stroke-width="12"/>`; 
+                    svgHTML += `<line x1="450" y1="180" x2="450" y2="140" stroke="transparent" stroke-width="12"/>`; 
+                    // Flechas de aire cian dinámicas
+                    svgHTML += `<path d="M 100 260 C 200 260, 300 250, 400 220 S 500 160, 600 160" fill="none" stroke="#06b6d4" stroke-width="5" stroke-linecap="round" class="svg-wind-flow"/>`;
+                    svgHTML += `<path d="M 100 280 C 200 280, 300 270, 400 240 S 500 180, 600 180" fill="none" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" class="svg-wind-flow-delayed opacity-70"/>`;
                 }
-            }
-
-            // 5. VENTILACIÓN CRUZADA (Flujos de aire)
-            if(hasVentilation) {
-                // Flechas azules que atraviesan el edificio
-                svgHTML += `<path d="M 150 ${floorY - 60} C 250 ${floorY - 60}, 300 ${floorY - 100}, 400 ${floorY - 80} S 550 ${floorY - 120}, 650 ${floorY - 80}" fill="none" stroke="#06b6d4" stroke-width="4" stroke-linecap="round" class="svg-wind-flow"/>`;
-                svgHTML += `<path d="M 150 ${floorY - 30} C 250 ${floorY - 30}, 300 ${floorY - 60}, 400 ${floorY - 40} S 550 ${floorY - 80}, 650 ${floorY - 40}" fill="none" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" class="svg-wind-flow-delayed opacity-70"/>`;
-            }
-
-            // 6. PAISAJISMO
-            if(hasVegetacion) {
-                // Árbol minimalista izquierdo
-                svgHTML += `<g class="svg-tree-float">
-                                <line x1="160" y1="320" x2="160" y2="220" stroke="currentColor" stroke-width="4" class="svg-arch-line"/>
-                                <circle cx="160" cy="200" r="45" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="10 5" class="svg-arch-line"/>
-                                <circle cx="160" cy="200" r="30" fill="none" stroke="#10b981" stroke-width="2" class="svg-arch-line opacity-50"/>
+                
+                // 3. Aleros / Protección Solar (Sombras técnicas Naranja)
+                else if (strat.t.includes('Aleros')) {
+                    // Cubierta exagerada para mostrar sombra
+                    svgHTML += `<polyline points="250,320 250,140 450,140 450,320" fill="none" stroke="currentColor" stroke-width="2.5" class="svg-arch-line"/>`;
+                    svgHTML += `<polyline points="150,160 350,60 550,160" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round" class="svg-arch-line"/>`;
+                    // Sol alto
+                    svgHTML += `<circle cx="600" cy="80" r="28" fill="#f59e0b" class="svg-sun-pulse"/>`;
+                    // Rayos bloqueados
+                    svgHTML += `<line x1="560" y1="100" x2="480" y2="180" stroke="#f59e0b" stroke-width="3" stroke-dasharray="8" class="opacity-60"/>`;
+                    // Sombra geométrica suave
+                    svgHTML += `<polygon points="450,140 500,160 450,220" fill="#f59e0b15" class="opacity-80"/>`;
+                }
+                
+                // 4. Inercia Térmica (Masa térmica Oro/Naranja)
+                else if (strat.t.includes('Inercia') || strat.t.includes('Masa')) {
+                    // Muros gruesos resaltados
+                    svgHTML += `<polyline points="250,320 250,120 450,120 450,320" fill="none" stroke="currentColor" stroke-width="1.5" class="svg-arch-line opacity-40"/>`;
+                    svgHTML += `<polyline points="210,130 350,60 490,130" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" class="svg-arch-line"/>`;
+                    // Highlight de masa térmica gruesa
+                    svgHTML += `<polyline points="250,320 250,120" fill="none" stroke="#b45309" stroke-width="15" stroke-linecap="square" class="opacity-20"/>`;
+                    svgHTML += `<polyline points="450,120 450,320" fill="none" stroke="#b45309" stroke-width="15" stroke-linecap="square" class="opacity-20"/>`;
+                    svgHTML += `<polyline points="250,320 250,120 450,120 450,320" fill="none" stroke="#b45309" stroke-width="2" class="opacity-90 svg-inercia-glow"/>`;
+                }
+                
+                // 5. Captación Solar Pasiva (Clima Frío, Sol bajo Naranja entrando)
+                else if (strat.t.includes('Captación') || strat.t.includes('Solar Pasiva')) {
+                    svgHTML += `<polyline points="250,320 250,120 450,120 450,320" fill="none" stroke="currentColor" stroke-width="2" class="svg-arch-line"/>`;
+                    svgHTML += `<polyline points="210,130 350,60 490,130" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" class="svg-arch-line"/>`;
+                    // Gran ventanal transparente
+                    svgHTML += `<rect x="250" y="150" width="200" height="140" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="10 5" class="opacity-50"/>`;
+                    // Sol bajo de invierno
+                    svgHTML += `<circle cx="600" cy="240" r="28" fill="#f59e0b" class="svg-sun-pulse"/>`;
+                    // Rayos entrando profundamente
+                    svgHTML += `<line x1="560" y1="230" x2="320" y2="180" stroke="#f59e0b" stroke-width="5" class="svg-sun-pulse"/>`;
+                    // Glow de calor interior
+                    svgHTML += `<polygon points="250,150 450,150 450,290 250,290" fill="#f59e0b10" class="svg-inercia-glow"/>`;
+                }
+                
+                // 6. Paisajismo / Vegetación (Puntos Verdes)
+                else if (strat.t.includes('Paisajismo') || strat.t.includes('Barreras Vegetales')) {
+                    svgHTML += drawBaseCroquis();
+                    // Árbol minimalista conceptual
+                    svgHTML += `<g class="svg-tree-float">
+                                <line x1="150" y1="320" x2="150" y2="200" stroke="currentColor" stroke-width="3" class="svg-arch-line"/>
+                                <circle cx="150" cy="180" r="50" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="12 6" class="svg-arch-line"/>
+                                <circle cx="150" cy="180" r="30" fill="none" stroke="#10b981" stroke-width="2" class="svg-arch-line opacity-50"/>
+                                <circle cx="150" cy="180" r="15" fill="#10b981" class="opacity-15"/>
                             </g>`;
-            }
+                }
+                
+                // Fallback (Si no detecta tipo, croquis base minimalista con glow central)
+                else {
+                    svgHTML += drawBaseCroquis();
+                    svgHTML += `<circle cx="350" cy="210" r="60" fill="currentColor" class="opacity-5"/>`; 
+                }
 
-            svgHTML += `</svg>`;
-            container.innerHTML = svgHTML;
+                svgHTML += `</svg>`;
+                svgArea.innerHTML = svgHTML;
+
+                // Ensamblar tarjeta y añadir al contenedor
+                card.appendChild(textArea);
+                card.appendChild(svgArea);
+                container.appendChild(card);
+            });
         }
 
         function updateAnalysis(data){
@@ -665,7 +736,7 @@
                         <td class="p-5 text-center text-sm font-medium text-slate-800 dark:text-white">${d.tMax.toFixed(1)}°C</td>
                         <td class="p-5 text-center text-sm font-medium text-slate-500 dark:text-slate-400">${d.tMin.toFixed(1)}°C</td>
                         <td class="p-5 text-center text-blue-600 dark:text-cyan-400 font-bold text-sm">${d.hr.toFixed(0)}%</td>
-                        <td class="p-5 pl-6 flex flex-wrap justify-start gap-1.5">${badges}</td>
+                        <td class="p-4 flex flex-wrap justify-start gap-1.5">${badges}</td>
                     </tr>`;
             });
 
@@ -680,23 +751,20 @@
                 text += `<p class="mt-4">Nos encontramos ante un clima <strong>cálido-húmedo severo</strong>. La combinación de calor sostenido y alta humedad reduce significativamente la capacidad de evaporación natural de la piel, generando una sensación agobiante. Es imperativo que la envolvente arquitectónica actúe como un filtro permeable, maximizando la ventilación cruzada continua y protegiendo estrictamente de la radiación directa.</p>`;
                 recs.push({t: "Ventilación Cruzada Permeable", d: "Instalación de paneles calados, celosías o persianas orientadas a sotavento y barlovento para succionar flujos laminares de viento constante."});
                 recs.push({t: "Elevación Estructural (Palafitos)", d: "Despejar la plataforma base elevando el edificio para enfriar la platea inferior y mitigar humedades recurrentes del suelo."});
-                recs.push({t: "Cubiertas Altas y Ventiladas", d: "Diseño de techos con gran pendiente y cámaras de aire para extraer el aire caliente ascendente por efecto chimenea."});
             } else if (avgTMax > 30 && avgHR <= 70) {
-                text += `<p class="mt-4">Este perfil representa un entorno <strong>cálido-seco</strong>. La baja humedad favorece el enfriamiento evaporativo, pero las altas temperaturas exigen un control riguroso del asoleamiento. La arquitectura debe enfocarse en alta masa térmica para absorber el calor diurno y disiparlo durante la noche, utilizando patios sombreados y elementos pesados.</p>`;
+                text += `<p class="mt-4">Este perfil representa un entorno <strong>cálido-seco</strong>. La baja humedad favorece el enfriamiento evaporativo, pero las altas temperaturas exigen un control riguroso del asoleamiento. La arquitectura debe enfocarse en alta masa térmica para absorber el calor diurno y disiparlo durante la noche, utilizando patios sombreados.</p>`;
                 recs.push({t: "Alta Inercia Térmica", d: "Uso de muros gruesos de piedra, adobe o tierra compactada para estabilizar temperaturas interiores absorbiendo radiación diurna."});
                 recs.push({t: "Enfriamiento Evaporativo", d: "Integración de fuentes, espejos de agua o vegetación exuberante en patios interiores semicerrados."});
             } else if (avgTMax <= 30 && avgHR > 70) {
-                text += `<p class="mt-4">El clima es <strong>templado-húmedo</strong>. Las temperaturas son relativamente amables, pero la humedad constante puede causar problemas de condensación. La estrategia principal debe asegurar un flujo de aire constante y deshumidificación natural para evitar el estancamiento y la formación de patologías biológicas en los muros.</p>`;
-                recs.push({t: "Deshumidificación Pasiva", d: "Uso de materiales higroscópicos transpirables (madera, arcilla) en acabados interiores para regular la humedad del ambiente."});
-                recs.push({t: "Ventilación Controlada", d: "Tiro térmico pasivo a través de aperturas estratégicas en zonas altas del diseño."});
+                text += `<p class="mt-4">El clima es <strong>templado-húmedo</strong>. Las temperaturas son relativamente amables, pero la humedad constante puede causar problemas de condensación. La estrategia principal debe asegurar un flujo de aire constante y deshumidificación natural para evitar el estancamiento.</p>`;
+                recs.push({t: "Deshumidificación Pasiva", d: "Uso de materiales higroscópicos transpirables (madera, arcilla) en acabados interiores para regular la humedad del aire."});
             } else {
-                text += `<p class="mt-4">Las condiciones climáticas son <strong>templadas y equilibradas</strong>, acercándose en gran medida a la zona de confort natural. El gasto energético será mínimo. Las estrategias se centrarán en la captación solar pasiva durante los meses frescos de invierno y una ligera protección solar selectiva en verano.</p>`;
-                recs.push({t: "Captación Solar Pasiva", d: "Aperturas acristaladas maximizadas y orientadas hacia el ecuador para permitir la entrada profunda de luz y sol invernal."});
+                text += `<p class="mt-4">Las condiciones climáticas son <strong>templadas y equilibradas</strong>, acercándose en gran medida a la zona de confort natural. Las estrategias se centrarán en la captación solar pasiva durante los meses frescos y protección solar selectiva.</p>`;
+                recs.push({t: "Captación Solar Pasiva", d: "Aperturas acristaladas orientadas al ecuador para permitir la entrada de sol invernal."});
             }
 
-            // Estrategias globales por defecto para rellenar
-            recs.push({t: "Aleros Tecnológicos de Gran Vuelo", d: "Proyección estructural de cubiertas superior a 1.50 metros para anular la radiación directa incidente en las fachadas más expuestas (este y oeste)."});
-            recs.push({t: "Paisajismo Bioclimático Perimetral", d: "Uso de barreras vegetales tupidas y árboles de follaje caduco para filtrar vientos cálidos no deseados, reducir el polvo y aportar sombra estacional sobre la envolvente."});
+            recs.push({t: "Aleros Tecnológicos de Gran Vuelo", d: "Proyección superior mayor a 1.50 metros para anular radiación directa incidente en fachadas este/oeste."});
+            recs.push({t: "Barreras Vegetales Perimetrales", d: "Uso de paisajismo y árboles de follaje caduco para filtrar vientos no deseados y dar sombra estacional."});
 
             document.getElementById('analysis-text').innerHTML = text;
 
@@ -709,8 +777,8 @@
                     </div>`;
             });
 
-            // Llamar al motor de dibujo paramétrico al terminar el análisis
-            drawBioclimaticArchitecture(recs);
+            // Llamar al motor de diagramas dinámicos al terminar el análisis
+            generateBioclimaticDiagrams(recs);
         }
 
         async function runClimateAnalysis(){
