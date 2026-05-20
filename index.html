@@ -38,29 +38,31 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        /* RECUADROS GLASSMORPHISM PREMIUM */
+        /* RECUADROS GLASSMORPHISM MEJORADOS (Máxima definición óptica sobre blanco) */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.22) !important;
-            backdrop-filter: blur(24px) saturate(130%) !important;
-            -webkit-backdrop-filter: blur(24px) saturate(130%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
-            box-shadow: 0 35px 70px -15px rgba(15, 23, 42, 0.05), 
-                        inset 0 1px 2px rgba(255, 255, 255, 0.45) !important;
+            background: rgba(255, 255, 255, 0.48) !important;
+            backdrop-filter: blur(32px) saturate(140%) !important;
+            -webkit-backdrop-filter: blur(32px) saturate(140%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.65) !important;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02), 
+                        0 30px 65px -10px rgba(15, 23, 42, 0.09), 
+                        inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
         }
         .dark .glass-panel {
             background: rgba(19, 29, 56, 0.4) !important;
-            backdrop-filter: blur(28px) saturate(140%) !important;
-            -webkit-backdrop-filter: blur(28px) saturate(140%) !important;
+            backdrop-filter: blur(30px) saturate(140%) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(140%) !important;
             border: 1px solid rgba(255, 255, 255, 0.07) !important;
             box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.55), 
                         0 0 50px -10px rgba(6, 182, 212, 0.02), 
                         inset 0 1px 1px rgba(255, 255, 255, 0.04) !important;
         }
 
-        .glass-panel-accent {
-            background: rgba(255, 255, 255, 0.26) !important;
+        .glass-panel-variant {
+            background: rgba(255, 255, 255, 0.52) !important;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02), 0 35px 75px -10px rgba(15, 23, 42, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
         }
-        .dark .glass-panel-accent {
+        .dark .glass-panel-variant {
             background: rgba(24, 37, 69, 0.45) !important;
             box-shadow: 0 50px 100px -25px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
         }
@@ -69,7 +71,7 @@
             transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Inversión cromática para conservar consistencia del SVG en Modo Oscuro */
+        /* Inversión cromática del plano del SVG original en Modo Oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
@@ -113,10 +115,10 @@
 
     <div class="flex min-h-screen w-full relative z-10">
         
-        <aside id="sidebar" class="w-[390px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-6">
+        <aside id="sidebar" class="w-[420px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-6">
             
-            <div id="sidebar-full-content" class="space-y-5 flex-1 flex flex-col justify-between h-full">
-                <div class="space-y-5 overflow-y-auto pr-1">
+            <div id="sidebar-full-content" class="space-y-6 flex-1 flex flex-col justify-between h-full">
+                <div class="space-y-6 overflow-y-auto pr-1">
                     
                     <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-4 pt-2">
                         <div class="flex items-center gap-4">
@@ -131,36 +133,37 @@
                     </div>
 
                     <div class="space-y-2">
-                        <p class="text-sm uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Buscar Ubicación</p>
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Buscar Ubicación</p>
                         <div class="relative flex items-center">
-                            <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Milagro..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-3 pl-4 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 placeholder-slate-400 dark:placeholder-slate-500" onkeypress="handleSearchKeyPress(event)">
+                            <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Milagro..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-3.5 pl-4 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 placeholder-slate-400 dark:placeholder-slate-500" onkeypress="handleSearchKeyPress(event)">
                             <button onclick="searchLocation()" class="absolute right-3 text-slate-400 hover:text-blue-500 dark:hover:text-cyan-400">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <p class="text-sm uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Visualización Local (GPS)</p>
+                    <div class="space-y-2.5">
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Visualización Local (GPS)</p>
                         <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/60 shadow-sm relative">
-                            <div id="map" class="h-[240px] w-full z-10"></div> </div>
-                        <p id="location-text" class="text-sm font-semibold text-blue-600 dark:text-cyan-400 italic truncate">Detectando coordenadas...</p>
+                            <div id="map" class="h-[280px] w-full z-10"></div>
+                        </div>
+                        <p id="location-text" class="text-xs font-semibold text-blue-600 dark:text-cyan-400 italic truncate">Detectando coordenadas...</p>
                     </div>
 
-                    <div class="space-y-4 pt-1">
+                    <div class="space-y-5 pt-3">
                         <div>
-                            <p id="year-label" class="text-sm uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Año Base de Estudio</p>
+                            <p id="year-label" class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2.5">Año Base</p>
                             <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto pr-1"></div>
                         </div>
                         <div>
-                            <p class="text-sm uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Meses Sincronizados</p>
-                            <div id="month-selector" class="grid grid-cols-3 gap-1.5"></div>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2.5">Meses de Estudio</p>
+                            <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-200 dark:border-slate-800/60 mb-1">
-                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4 text-sm transition-all shadow-md active:scale-[0.98]">
+                <div class="pt-4 border-t border-slate-200 dark:border-slate-800/60 mb-2">
+                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4.5 text-sm transition-all shadow-md active:scale-[0.98]">
                         Actualizar Análisis
                     </button>
                 </div>
@@ -183,23 +186,23 @@
             
             <header id="header-container" class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 pb-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pt-4">
                 <div class="flex items-center gap-6 py-2 flex-wrap">
-                    <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
-                    <img src="Tipo3.png" alt="CLÓVINA" class="h-14 md:h-16 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                    <span class="text-sm md:text-base uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
+                    <img src="Tipo3.png" alt="CLÓVINA" class="h-12 md:h-14 xl:h-16 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
                 </div>
 
-                <div class="flex items-center gap-5">
+                <div class="flex items-center gap-4">
                     <button onclick="toggleDarkMode()" id="mode-switch" class="w-20 h-10 rounded-full bg-slate-200/90 dark:bg-slate-900/80 border border-slate-300/40 dark:border-white/10 relative p-1 backdrop-blur-sm flex items-center justify-between px-2.5 flex-shrink-0 shadow-inner">
                         <div id="mode-indicator" class="absolute top-[3px] left-[4px] w-[32px] h-[32px] rounded-full bg-blue-600 dark:bg-cyan-500 shadow-md transition-transform duration-300 ease-out"></div>
                         <svg class="w-4 h-4 text-orange-500 dark:text-slate-500 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         <svg class="w-4 h-4 text-slate-400 dark:text-cyan-400 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </button>
 
-                    <div class="flex gap-1 bg-slate-200/60 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
-                        <button onclick="setMode('mes')" id="btn-mes" class="px-5 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm">MESES</button>
-                        <button onclick="setMode('año')" id="btn-año" class="px-5 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400">AÑOS</button>
+                    <div class="flex gap-0.5 bg-slate-200/60 dark:bg-slate-900/60 p-0.5 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
+                        <button onclick="setMode('mes')" id="btn-mes" class="px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm">MESES</button>
+                        <button onclick="setMode('año')" id="btn-año" class="px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400">AÑOS</button>
                     </div>
 
-                    <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95">
+                    <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-5 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-all shadow-sm active:scale-95">
                         Exportar PDF
                     </button>
                 </div>
@@ -207,25 +210,25 @@
 
             <div id="export-container" class="space-y-10 w-full block p-2 rounded-2xl">
                 
-                <section class="space-y-4 w-full">
+                <section class="space-y-3 w-full">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">01 / Climograma de Givoni</h2>
-                        <span class="text-xs font-bold text-cyan-500 bg-cyan-500/10 px-3 py-1 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
+                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">01 / Climograma de Givoni</h2>
+                        <span class="text-[9px] font-bold text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel h-[580px] relative overflow-hidden flex items-center justify-center">
-                        <div id="chart" class="w-full h-full relative" style="min-h: 520px; height: 520px;">
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-5 shadow-2xl glass-panel h-[560px] relative overflow-hidden flex items-center justify-center">
+                        <div id="chart" class="w-full h-full relative" style="min-h: 500px;">
                             <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
                         </div>
                     </div>
                 </section>
 
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-10 w-full">
-                    <div class="xl:col-span-7 space-y-4 overflow-hidden flex flex-col justify-start">
-                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">02 / Cuadro de Datos</h2>
+                    <div class="xl:col-span-7 space-y-3 overflow-hidden flex flex-col justify-start">
+                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">02 / Cuadro de Datos</h2>
                         <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl overflow-x-auto w-full">
-                            <table class="w-full text-left text-sm table-fixed min-w-[550px]">
-                                <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold font-space text-xs">
+                            <table class="w-full text-left text-xs table-fixed min-w-[550px]">
+                                <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold font-space text-[10px]">
                                     <tr>
                                         <th class="p-4.5 text-center w-[12%]">Muestra</th>
                                         <th class="p-4.5 text-center w-[20%]">Periodo</th>
@@ -240,34 +243,34 @@
                         </div>
                     </div>
 
-                    <div class="xl:col-span-5 space-y-4">
-                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
-                        <div class="glass-panel glass-panel-variant rounded-[24px] p-6 h-[calc(100%-2rem)] flex flex-col justify-between shadow-xl min-h-[240px]">
-                            <p id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base md:text-lg font-normal text-justify"></p>
-                            <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 text-xs font-mono tracking-widest text-slate-400">
-                                COMPATIBLE CON ANÁLISIS DE ENTORNO TROPICAL
+                    <div class="xl:col-span-5 space-y-3">
+                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
+                        <div class="glass-panel glass-panel-variant rounded-[24px] p-6 h-[calc(100%-2rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
+                            <p id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-xs font-light text-justify"></p>
+                            <div class="mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-800/60 text-[9px] text-slate-400 font-mono tracking-widest">
+                                COMPATIBLE CON ANÁLISIS DE ENTORNOS TROPICALES
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <section class="grid grid-cols-1 xl:grid-cols-2 gap-10 w-full">
-                    <div class="space-y-4">
-                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">04 / Estrategias Arquitectónicas</h2>
+                    <div class="space-y-3">
+                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">04 / Estrategias Arquitectónicas</h2>
                         <div id="strategy-list" class="space-y-4"></div>
                     </div>
 
-                    <div class="space-y-4">
-                        <h2 class="font-space font-bold text-sm uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">05 / Esquema Convectivo</h2>
-                        <div class="glass-panel rounded-[24px] p-6 border border-slate-200/50 dark:border-white/5 min-h-[260px] flex flex-col justify-between relative overflow-hidden shadow-xl group">
+                    <div class="space-y-3">
+                        <h2 class="font-space font-bold text-xs uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">05 / Esquema Convectivo</h2>
+                        <div class="glass-panel rounded-[24px] p-6 border border-slate-200/50 dark:border-white/5 min-h-[240px] flex flex-col justify-between relative overflow-hidden shadow-xl group">
                             <div class="absolute inset-0 opacity-[0.02] bg-cover bg-center" style="background-image: url('Tipo1.png');"></div>
-                            <div class="space-y-3 relative z-10">
-                                <span class="text-xs font-space font-bold tracking-widest text-orange-500 bg-orange-500/10 px-3 py-1 rounded border border-orange-500/20 uppercase">Modelado Pasivo</span>
-                                <p class="text-sm md:text-base text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
+                            <div class="space-y-2 relative z-10">
+                                <span class="text-[8px] font-space font-bold tracking-widest text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 uppercase">Modelado Pasivo</span>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
                                     Reserva espacial paramétrica para la inserción de gráficos explicativos vectoriales, dinámica de vientos locales y simulación de asoleamiento pasivo.
                                 </p>
                             </div>
-                            <div class="w-full h-32 border border-dashed border-slate-200 dark:border-slate-200 rounded-xl flex items-center justify-center text-xs text-slate-400 font-mono bg-slate-50/50 dark:bg-slate-900/10 mt-3">
+                            <div class="w-full h-28 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-mono bg-slate-50/50 dark:bg-slate-900/10 mt-3">
                                 [ Esquema de Convección Natural Pasiva ]
                             </div>
                         </div>
@@ -282,6 +285,7 @@
         let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
+        // PALETA CROMÁTICA INDUSTRIAL OSCURA: Tonos profundos para legibilidad total del texto blanco de las zonas
         const zoneConfig = {
             "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
             "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
@@ -302,7 +306,7 @@
             runClimateAnalysis();
         });
 
-        // MOTOR DE BÚSQUEDA INTEGRADO (Nominatim OSM API)
+        // MOTOR DE BÚSQUEDA GEOGRÁFICO (Nominatim OSM API)
         async function searchLocation() {
             const query = document.getElementById('map-search-input').value;
             if (!query) return;
@@ -334,27 +338,28 @@
             try {
                 const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${l_lat}&lon=${l_lon}`);
                 const data = await response.json();
-                const city = data.address.city || data.address.town || data.address.village || data.address.county || 'Región Seleccionada';
+                const city = data.address.city || data.address.town || data.address.village || data.address.county || 'Guayaquil';
                 document.getElementById('location-text').innerText = `Ubicación: ${city}`;
             } catch(err) {
                 document.getElementById('location-text').innerText = `Ubicación: ${l_lat}, ${l_lon}`;
             }
         }
 
+        // ALTERNANCIA INTELIGENTE DE BARRA LATERAL (Expansión completa ⟷ Dock vertical mini de 75px)
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const fullContent = document.getElementById('sidebar-full-content');
             const miniContent = document.getElementById('sidebar-mini-content');
             
             if(isSidebarVisible) {
-                sidebar.classList.remove('w-[390px]', 'p-6');
+                sidebar.classList.remove('w-[420px]', 'p-6');
                 sidebar.classList.add('w-[75px]', 'p-2');
                 fullContent.classList.add('hidden');
                 miniContent.classList.remove('hidden');
                 miniContent.classList.add('flex');
             } else {
                 sidebar.classList.remove('w-[75px]', 'p-2');
-                sidebar.classList.add('w-[390px]', 'p-6');
+                sidebar.classList.add('w-[420px]', 'p-6');
                 fullContent.classList.remove('hidden');
                 miniContent.classList.add('hidden');
                 miniContent.classList.remove('flex');
@@ -388,20 +393,21 @@
         function setMode(m){
             mode = m;
             document.querySelectorAll('#header-container button').forEach(b => {
-                if(b.id === 'btn-mes' || b.id === 'btn-año') b.className = 'px-4 py-2 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400';
+                if(b.id === 'btn-mes' || b.id === 'btn-año') b.className = 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400';
             });
-            document.getElementById(`btn-${m}`).className = 'px-4 py-2 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm';
+            document.getElementById(`btn-${m}`).className = 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm';
             document.getElementById('section-meses').style.display = m === 'mes' ? 'block' : 'none';
             document.getElementById('year-label').innerText = m === 'mes' ? 'Año Base' : 'Años a Comparar';
             selectedYears = [2025];
             renderSelectors();
         }
 
+        // GENERACIÓN DINÁMICA DE AÑOS EXTENDIDA HASTA EL AÑO 2000
         function renderSelectors(){
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
                 const c = document.createElement('div');
-                c.className = `text-sm p-3 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
+                c.className = `text-[10px] p-2.5 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
                 c.innerText = y;
                 c.onclick = () => {
                     if(mode === 'mes') { selectedYears = [y]; }
@@ -416,7 +422,7 @@
             const mb = document.getElementById('month-selector'); mb.innerHTML = '';
             months.forEach((m,i)=>{
                 const c = document.createElement('div');
-                c.className = `text-sm p-3 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
+                c.className = `text-[10px] p-2.5 rounded-xl border text-center font-bold cursor-pointer transition-all ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500':'bg-transparent text-slate-500 border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/30'}`;
                 c.innerText = m;
                 c.onclick = () => {
                     if(selectedMonths.includes(i)) { if(selectedMonths.length > 1) selectedMonths = selectedMonths.filter(v=>v!==i); }
@@ -507,16 +513,16 @@
             data.forEach(d => {
                 const zones = detectZones(d.tMin, d.tMax, d.hr);
                 sumTMax += d.tMax; sumTMin += d.tMin; sumH += d.hr;
-                const badges = zones.map(z => `<span class="text-xs font-space px-2.5 py-1 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
+                const badges = zones.map(z => `<span class="text-[9px] font-space px-2 py-0.5 rounded font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
                 
                 tableBody.innerHTML += `
                     <tr class="border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/10">
-                        <td class="p-4 flex justify-center"><div class="w-3 h-3 rounded-full" style="background:${d.color}"></div></td>
-                        <td class="p-4 uppercase font-bold text-slate-700 dark:text-slate-300 font-space text-sm text-center">${d.label}</td>
-                        <td class="p-4 text-center text-sm text-slate-800 dark:text-slate-200">${d.tMax.toFixed(1)}°C</td>
-                        <td class="p-4 text-center text-sm text-slate-500 dark:text-slate-400">${d.tMin.toFixed(1)}°C</td>
-                        <td class="p-4 text-center text-blue-500 font-bold text-sm">${d.hr.toFixed(0)}%</td>
-                        <td class="p-4 pl-6 flex flex-wrap justify-start gap-1.5">${badges}</td>
+                        <td class="p-4 text-center flex justify-center"><div class="w-2.5 h-2.5 rounded-full" style="background:${d.color}"></div></td>
+                        <td class="p-4 uppercase font-bold text-slate-700 dark:text-slate-300 font-space text-[11px] text-center">${d.label}</td>
+                        <td class="p-4 text-center text-[11px] text-slate-800 dark:text-slate-200">${d.tMax.toFixed(1)}°C</td>
+                        <td class="p-4 text-center text-[11px] text-slate-500 dark:text-slate-400">${d.tMin.toFixed(1)}°C</td>
+                        <td class="p-4 text-center text-blue-500 font-bold text-[11px]">${d.hr.toFixed(0)}%</td>
+                        <td class="p-4 pl-6 flex flex-wrap justify-start gap-1">${badges}</td>
                     </tr>`;
             });
 
@@ -535,18 +541,18 @@
             const sl = document.getElementById('strategy-list'); sl.innerHTML = '';
             let recs = [];
             if(avgHR > 70) {
-                recs.push({t: "Envolventes Celosías Permeables", d: "Instalación de paneles calados orientados a sotavento para succionar flujos laminares de viento constante."});
-                recs.push({t: "Elevación Estructural (Palafitos)", d: "Despejar la plataforma base para enfriar la platea inferior y mitigar humedades recurrentes del suelo."});
+                recs.push({t: "Envolventes Celosías Permeables", d: "Instalación de paneles calados orientados a sotavento para succionar flujos laminares."});
+                recs.push({t: "Elevación Estructural (Palafitos)", d: "Despejar la base para enfriar la platea inferior y mitigar humedades del suelo."});
             }
             if(avgTMax > 30) {
-                recs.push({t: "Aleros Tecnológicos de Gran Vuelo", d: "Proyección superior mayor a 1.50 metros para anular radiación directa incidente en fachadas expuestas."});
+                recs.push({t: "Aleros Tecnológicos de Gran Vuelo", d: "Proyección superior mayor a 1.50 metros para anular radiación directa en fachadas."});
             }
             
             recs.forEach(r => {
                 sl.innerHTML += `
-                    <div class="p-4.5 rounded-xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 bg-opacity-70 shadow-sm border border-white/5">
-                        <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-1">${r.t}</p>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed font-light">${r.d}</p>
+                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 bg-opacity-70 shadow-sm border border-white/5">
+                        <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-[9px] uppercase tracking-wider mb-0.5">${r.t}</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed font-light">${r.d}</p>
                     </div>`;
             });
         }
@@ -558,6 +564,7 @@
                 const today = new Date();
                 let endDate = `${year}-12-31`;
                 
+                // Resguardo de consulta para el año corriente (2026)
                 if (year === today.getFullYear()) {
                     const pastDate = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
                     endDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
@@ -591,6 +598,7 @@
             } catch(e) { console.error("Error Open-Meteo.", e); }
         }
 
+        // CAPTURA DE PDF EN UN LIENZO CONTINUO — TRATAMIENTO OBLIGATORIO DE FONDO BLANCO PURO (#FFFFFF)
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.querySelector("#export-container");
