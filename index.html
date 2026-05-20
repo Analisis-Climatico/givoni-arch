@@ -38,7 +38,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        /* RECUADROS GLASSMORPHISM MEJORADOS (Máxima definición sobre fondos claros y oscuros) */
+        /* RECUADROS GLASSMORPHISM MEJORADOS */
         .glass-panel {
             background: rgba(255, 255, 255, 0.45) !important;
             backdrop-filter: blur(32px) saturate(140%) !important;
@@ -72,7 +72,7 @@
         }
 
         /* Inversión cromática del plano del SVG original en Modo Oscuro */
-        .dark #chart-canvas-inside svg > g > g:first-child {
+        .dark #chart svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
 
@@ -89,7 +89,7 @@
         .pdf-print-forced h2, .pdf-print-forced p, .pdf-print-forced td, .pdf-print-forced th, .pdf-print-forced span {
             color: #0f172a !important;
         }
-        .pdf-print-forced #chart-canvas-inside svg > g > g:first-child {
+        .pdf-print-forced #chart svg > g > g:first-child {
             filter: none !important;
         }
     </style>
@@ -155,7 +155,7 @@
                             <p id="year-label" class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Año Base</p>
                             <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[120px] overflow-y-auto pr-1"></div>
                         </div>
-                        <div>
+                        <div id="section-meses">
                             <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Meses de Estudio</p>
                             <div id="month-selector" class="grid grid-cols-3 gap-2"></div>
                         </div>
@@ -216,10 +216,9 @@
                         <span class="text-[9px] font-bold text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-5 shadow-2xl glass-panel h-[560px] relative overflow-hidden flex items-center justify-center">
-                        <div id="chart" class="w-full h-full relative" style="min-h: 500px;">
-                            <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
-                        </div>
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center" style="height: 760px;">
+                        <div id="chart" class="w-full h-full relative">
+                            </div>
                     </div>
                 </section>
 
@@ -285,13 +284,14 @@
         let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // PALETA CROMÁTICA INDUSTRIAL OSCURA
         const zoneConfig = {
-            "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
-            "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
-            "Z7": { color: "#11526d" }, "Z8": { color: "#803507" }, "Z9": { color: "#851e20" },
-            "Z10": { color: "#590d56" }, "Z11": { color: "#757100" }, "Z12": { color: "#0d5442" },
-            "Z13": { color: "#151d4d" }, "Z14": { color: "#492966" }
+            "Z1": { color: "rgb(254, 204, 102)" }, "Z2": { color: "rgb(153, 27, 30)" },
+            "Z3": { color: "rgb(19, 103, 52)" }, "Z4": { color: "rgb(19, 155, 72)" },
+            "Z5": { color: "rgb(24, 125, 129)" }, "Z6": { color: "rgb(209, 156, 199)" },
+            "Z7": { color: "rgb(50, 162, 210)" }, "Z8": { color: "rgb(205, 105, 40)" },
+            "Z9": { color: "rgb(242, 113, 114)" }, "Z10": { color: "rgb(147, 39, 143)" },
+            "Z11": { color: "rgb(241, 235, 31)" }, "Z12": { color: "rgb(46, 173, 141)" },
+            "Z13": { color: "rgb(69, 84, 165)" }, "Z14": { color: "rgb(159, 119, 197)" }
         };
 
         const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat,lon], 11);
@@ -350,14 +350,14 @@
             const miniContent = document.getElementById('sidebar-mini-content');
             
             if(isSidebarVisible) {
-                sidebar.classList.remove('w-[380px]', 'p-6');
+                sidebar.classList.remove('w-[380px]', 'p-5');
                 sidebar.classList.add('w-[75px]', 'p-2');
                 fullContent.classList.add('hidden');
                 miniContent.classList.remove('hidden');
                 miniContent.classList.add('flex');
             } else {
                 sidebar.classList.remove('w-[75px]', 'p-2');
-                sidebar.classList.add('w-[380px]', 'p-6');
+                sidebar.classList.add('w-[380px]', 'p-5');
                 fullContent.classList.remove('hidden');
                 miniContent.classList.add('hidden');
                 miniContent.classList.remove('flex');
@@ -390,14 +390,14 @@
 
         function setMode(m){
             mode = m;
-            document.querySelectorAll('#header-container button').forEach(b => {
-                if(b.id === 'btn-mes' || b.id === 'btn-año') b.className = 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400';
-            });
-            document.getElementById(`btn-${m}`).className = 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm';
-            document.getElementById('section-meses').style.display = m === 'mes' ? 'block' : 'none';
-            document.getElementById('year-label').innerText = m === 'mes' ? 'Año Base' : 'Años a Comparar';
+            document.getElementById('btn-mes').className = mode === 'mes' ? 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm' : 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400';
+            document.getElementById('btn-año').className = mode === 'año' ? 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600 shadow-sm' : 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400';
+            
+            document.getElementById('section-meses').style.display = mode === 'mes' ? 'block' : 'none';
+            document.getElementById('year-label').innerText = mode === 'mes' ? 'Año Base' : 'Años a Comparar';
             selectedYears = [2025];
             renderSelectors();
+            runClimateAnalysis();
         }
 
         function renderSelectors(){
@@ -413,6 +413,7 @@
                         else { selectedYears.push(y); }
                     }
                     renderSelectors();
+                    runClimateAnalysis();
                 };
                 yb.appendChild(c);
             }
@@ -425,6 +426,7 @@
                     if(selectedMonths.includes(i)) { if(selectedMonths.length > 1) selectedMonths = selectedMonths.filter(v=>v!==i); }
                     else { selectedMonths.push(i); }
                     renderSelectors();
+                    runClimateAnalysis();
                 };
                 mb.appendChild(c);
             });
@@ -453,22 +455,26 @@
         }
 
         async function drawChart(data){
-            d3.select('#chart-canvas-inside svg').remove();
+            d3.select('#chart svg').remove();
             
-            const canvasContainer = document.getElementById('chart-canvas-inside');
-            const width = canvasContainer.clientWidth || 900;
-            const height = canvasContainer.clientHeight || 480;
+            const canvasContainer = document.getElementById('chart');
+            const width = canvasContainer.clientWidth || 1600;
+            const height = 760; // Altura fija requerida para el SVG
             
-            const svg = d3.select('#chart-canvas-inside').append('svg')
+            const margin = { top:20, right:20, bottom:60, left:20 };
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+
+            const svg = d3.select('#chart').append('svg')
                 .attr('width', '100%')
                 .attr('height', '100%')
                 .attr('viewBox', `0 0 ${width} ${height}`)
                 .attr('preserveAspectRatio', 'none');
                 
-            const g = svg.append('g');
+            const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-            const x = d3.scaleLinear().domain([-5, 50]).range([28, width - 35]);
-            const y = d3.scaleLinear().domain([0, 35]).range([height - 40, 40]);
+            const x = d3.scaleLinear().domain([-5, 50]).range([0, innerWidth]);
+            const y = d3.scaleLinear().domain([0, 35]).range([innerHeight, 0]);
 
             try {
                 const response = await fetch('pruega-de-svg.svg');
@@ -477,11 +483,12 @@
                 const svgDoc = parser.parseFromString(rawSVG, "image/svg+xml");
                 const importedSVG = document.importNode(svgDoc.documentElement, true);
                 
-                importedSVG.setAttribute("width", width);
-                importedSVG.setAttribute("height", height);
+                importedSVG.setAttribute("width", innerWidth);
+                importedSVG.setAttribute("height", innerHeight);
                 importedSVG.setAttribute("preserveAspectRatio", "none");
+                importedSVG.setAttribute("transform", "translate(0,65)");
                 
-                g.append("g").node().appendChild(importedSVG);
+                g.append("g").style("opacity","0.85").node().appendChild(importedSVG);
             } catch(e) { console.error("Error cargando plantilla vectorial base.", e); }
 
             data.forEach((d, i) => {
@@ -498,9 +505,10 @@
                     .attr('d', d3.line().curve(d3.curveBasis)(points))
                     .attr('fill', 'none')
                     .attr('stroke', d.color)
-                    .attr('stroke-width', 4)
+                    .attr('stroke-width', 5)
                     .attr('stroke-linecap', 'round');
             });
+            g.append('g').attr('transform', `translate(0,${innerHeight})`).call(d3.axisBottom(x));
         }
 
         function updateAnalysis(data){
@@ -510,11 +518,11 @@
             data.forEach(d => {
                 const zones = detectZones(d.tMin, d.tMax, d.hr);
                 sumTMax += d.tMax; sumTMin += d.tMin; sumH += d.hr;
-                const badges = zones.map(z => `<span class="text-[9px] font-space px-2 py-0.5 rounded font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
+                const badges = zones.map(z => `<span class="text-[9px] font-space px-2.5 py-1 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
                 
                 tableBody.innerHTML += `
                     <tr class="border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/10">
-                        <td class="p-4 text-center flex justify-center"><div class="w-2.5 h-2.5 rounded-full" style="background:${d.color}"></div></td>
+                        <td class="p-4 text-center flex justify-center"><div class="w-3 h-3 rounded-full" style="background:${d.color}"></div></td>
                         <td class="p-4 uppercase font-bold text-slate-700 dark:text-slate-300 font-space text-[11px] text-center">${d.label}</td>
                         <td class="p-4 text-center text-[11px] text-slate-800 dark:text-slate-200">${d.tMax.toFixed(1)}°C</td>
                         <td class="p-4 text-center text-[11px] text-slate-500 dark:text-slate-400">${d.tMin.toFixed(1)}°C</td>
