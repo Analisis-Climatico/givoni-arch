@@ -51,12 +51,12 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        /* Ajuste de inversión cromática selectiva para preservar legibilidad del SVG base en modo oscuro */
+        /* Mantiene el contraste de los textos negros del SVG original invirtiéndolos solo en modo oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
 
-        /* Clases de anulación estrictas para impresión de PDF en fondo blanco puro */
+        /* Estilos forzados de exportación limpia para el PDF en blanco puro */
         .pdf-print-forced {
             background: #ffffff !important;
             color: #0f172a !important;
@@ -79,6 +79,10 @@
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-cyan-500/5 blur-[120px]"></div>
         <div class="absolute bottom-[15%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-orange-500/5 blur-[140px]"></div>
+    </div>
+
+    <div class="fixed bottom-4 right-6 text-[11px] tracking-[0.25em] uppercase font-semibold text-slate-400 dark:text-slate-500 z-50 pointer-events-none select-none">
+        Created by Jordan Jerez
     </div>
 
     <div id="floating-open-btn" class="fixed top-6 left-6 z-50 hidden">
@@ -167,9 +171,9 @@
                         <span class="text-[9px] font-bold text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm h-[560px] relative overflow-hidden flex items-center justify-center">
-                        <div id="chart" class="w-full h-full relative">
-                            <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm min-h-[500px] h-[550px] relative overflow-hidden flex items-center justify-center">
+                        <div id="chart" class="w-full h-full block">
+                            <div id="chart-canvas-inside" class="w-full h-full"></div>
                         </div>
                     </div>
                 </section>
@@ -320,7 +324,7 @@
             renderSelectors();
         }
 
-        // CONTROL DE RECORRIDO EXPANDIDO HASTA EL AÑO 2000
+        // SELECTOR EXTENDIDO HASTA EL AÑO 2000
         function renderSelectors(){
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
@@ -378,7 +382,7 @@
             
             const canvasContainer = document.getElementById('chart-canvas-inside');
             const width = canvasContainer.clientWidth || 900;
-            const height = canvasContainer.clientHeight || 450;
+            const height = canvasContainer.clientHeight || 480;
             
             const svg = d3.select('#chart-canvas-inside').append('svg')
                 .attr('width', '100%')
