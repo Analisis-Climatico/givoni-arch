@@ -38,14 +38,14 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        /* RECUADROS GLASSMORPHISM PREMIUM (Réplica exacta de WhatsApp) */
+        /* RECUADROS GLASSMORPHISM MEJORADOS (Máxima definición sobre fondos claros y oscuros) */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.48) !important;
+            background: rgba(255, 255, 255, 0.45) !important;
             backdrop-filter: blur(32px) saturate(140%) !important;
             -webkit-backdrop-filter: blur(32px) saturate(140%) !important;
             border: 1px solid rgba(255, 255, 255, 0.65) !important;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02), 
-                        0 30px 65px -10px rgba(15, 23, 42, 0.09), 
+            box-shadow: 0 4px 30px rgba(15, 23, 42, 0.03), 
+                        0 30px 65px -10px rgba(15, 23, 42, 0.1), 
                         inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
         }
         .dark .glass-panel {
@@ -59,7 +59,7 @@
         }
 
         .glass-panel-variant {
-            background: rgba(255, 255, 255, 0.52) !important;
+            background: rgba(255, 255, 255, 0.5) !important;
             box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02), 0 35px 75px -10px rgba(15, 23, 42, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
         }
         .dark .glass-panel-variant {
@@ -105,7 +105,7 @@
         Created by Jordan Jerez
     </div>
 
-    <div id="floating-open-btn" class="fixed top-6 left-6 z-50 hidden">
+    <div id="floating-open-btn" class="fixed top-4 left-6 z-50 hidden">
         <button onclick="toggleSidebar()" class="p-3.5 rounded-xl glass-panel text-slate-700 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all shadow-md border border-slate-300/40 dark:border-white/10">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
@@ -115,45 +115,45 @@
 
     <div class="flex min-h-screen w-full relative z-10">
         
-        <aside id="sidebar" class="w-[380px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-6">
+        <aside id="sidebar" class="w-[380px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-5">
             
-            <div id="sidebar-full-content" class="space-y-5 flex-1 flex flex-col justify-between h-full">
+            <div id="sidebar-full-content" class="space-y-4 flex-1 flex flex-col justify-between h-full">
                 <div class="space-y-4 overflow-y-auto pr-1">
                     
-                    <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-4 pt-2">
-                        <div class="flex items-center gap-4">
-                            <img src="Tipo1.png" alt="Isotipo" class="h-14 w-auto object-contain"> 
+                    <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-3 pt-1">
+                        <div class="flex items-center gap-3">
+                            <img src="Tipo1.png" alt="Isotipo" class="h-12 w-auto object-contain"> 
                             <span class="font-space text-sm tracking-[0.2em] font-bold text-slate-400 dark:text-slate-500 uppercase">Consola Global</span>
                         </div>
-                        <button onclick="toggleSidebar()" class="p-2.5 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/40 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
+                        <button onclick="toggleSidebar()" class="p-2 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/40 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
                         </button>
                     </div>
 
-                    <div class="space-y-2">
+                    <div class="space-y-1.5">
                         <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Buscar Ubicación</p>
                         <div class="relative flex items-center">
-                            <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Milagro..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-3 pl-4 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 placeholder-slate-400 dark:placeholder-slate-500" onkeypress="handleSearchKeyPress(event)">
+                            <input type="text" id="map-search-input" placeholder="Ej. Guayaquil, Milagro..." class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2.5 pl-4 pr-10 outline-none font-medium focus:border-blue-500 dark:focus:border-cyan-500 placeholder-slate-400 dark:placeholder-slate-500" onkeypress="handleSearchKeyPress(event)">
                             <button onclick="searchLocation()" class="absolute right-3 text-slate-400 hover:text-blue-500 dark:hover:text-cyan-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <div class="space-y-2">
+                    <div class="space-y-1.5">
                         <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold">Visualización Local (GPS)</p>
                         <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/60 shadow-sm relative">
-                            <div id="map" class="h-[220px] w-full z-10"></div>
+                            <div id="map" class="h-[210px] w-full z-10"></div>
                         </div>
                         <p id="location-text" class="text-xs font-semibold text-blue-600 dark:text-cyan-400 italic truncate">Detectando coordenadas...</p>
                     </div>
 
-                    <div class="space-y-5 pt-2">
+                    <div class="space-y-4 pt-1">
                         <div>
                             <p id="year-label" class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Año Base</p>
-                            <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto pr-1"></div>
+                            <div id="year-selector" class="grid grid-cols-2 gap-2 max-h-[120px] overflow-y-auto pr-1"></div>
                         </div>
                         <div>
                             <p class="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 font-bold mb-2">Meses de Estudio</p>
@@ -162,8 +162,8 @@
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-200 dark:border-slate-800/60 mb-2">
-                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4.5 text-sm transition-all shadow-md active:scale-[0.98]">
+                <div class="pt-3 border-t border-slate-200 dark:border-slate-800/60 mb-1">
+                    <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4 text-sm transition-all shadow-md active:scale-[0.98]">
                         Actualizar Análisis
                     </button>
                 </div>
@@ -182,10 +182,10 @@
             </div>
         </aside>
 
-        <main id="main-content" class="flex-1 min-h-screen pt-6 pb-6 px-6 md:px-10 xl:px-14 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
+        <main id="main-content" class="flex-1 min-h-screen pt-5 pb-6 px-6 md:px-10 xl:px-14 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
             
-            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 pb-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full">
-                <div class="flex items-center gap-6 py-2 flex-wrap">
+            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 pb-5 border-b border-slate-200/60 dark:border-slate-800/40 w-full pt-1">
+                <div class="flex items-center gap-6 flex-wrap">
                     <span class="text-sm md:text-base uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">Bienvenido a</span>
                     <img src="Tipo3.png" alt="CLÓVINA" class="h-12 md:h-14 xl:h-16 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
                 </div>
@@ -285,6 +285,7 @@
         let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
+        // PALETA CROMÁTICA INDUSTRIAL OSCURA
         const zoneConfig = {
             "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
             "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
