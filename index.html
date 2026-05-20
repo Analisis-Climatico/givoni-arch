@@ -51,25 +51,26 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        /* Inversión selectiva del fondo del SVG para legibilidad en modo oscuro */
+        /* Inversión cromática para que las etiquetas negras del SVG original se lean blancas en modo oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
 
-        /* Estilos forzados de exportación limpia para html2canvas */
-        .pdf-forced-white {
-            background-color: #ffffff !important;
-            color: #0f172a !important;
-        }
-        .pdf-forced-white .glass-panel {
+        /* Fuerza el fondo blanco puro y texto oscuro en el lienzo del PDF, anulando el modo oscuro web */
+        .pdf-print-forced {
             background: #ffffff !important;
-            border-color: #e2e8f0 !important;
-        }
-        .pdf-forced-white h2, .pdf-forced-white p, .pdf-forced-white td, .pdf-forced-white th {
             color: #0f172a !important;
         }
-        .pdf-forced-white text {
-            fill: #0f172a !important;
+        .pdf-print-forced .glass-panel {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: none !important;
+        }
+        .pdf-print-forced h2, .pdf-print-forced p, .pdf-print-forced td, .pdf-print-forced th, .pdf-print-forced span {
+            color: #0f172a !important;
+        }
+        .pdf-print-forced #chart-canvas-inside svg > g > g:first-child {
+            filter: none !important;
         }
     </style>
 </head>
@@ -95,7 +96,7 @@
                 
                 <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800/80 pb-4 pt-2">
                     <div class="flex items-center gap-4">
-                        <img src="Tipo1.png" alt="Isotipo" class="h-12 w-auto object-contain transition-transform duration-300 hover:scale-105"> 
+                        <img src="Tipo1.png" alt="Isotipo" class="h-12 w-auto object-contain"> 
                         <span class="font-space text-sm tracking-[0.2em] font-bold text-slate-400 dark:text-slate-500 uppercase">Consola Global</span>
                     </div>
                     <button onclick="toggleSidebar()" class="p-2.5 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 transition-all">
@@ -126,7 +127,7 @@
             </div>
 
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800/60 mb-2">
-                <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4 text-xs transition-all shadow-md shadow-blue-500/10 active:scale-[0.99]">
+                <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-4 text-xs transition-all shadow-md">
                     Actualizar Análisis
                 </button>
             </div>
@@ -141,10 +142,10 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleDarkMode()" id="mode-switch" class="w-20 h-10 rounded-full bg-slate-200/60 dark:bg-slate-900/40 border border-slate-300/30 dark:border-white/5 relative p-1 backdrop-blur-md flex items-center justify-between px-2">
-                        <div id="mode-indicator" class="absolute top-[3px] left-[3px] w-[32px] h-[32px] rounded-full bg-white dark:bg-blue-600/90 shadow transition-transform duration-300"></div>
-                        <svg class="w-4 h-4 text-slate-700 dark:text-slate-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        <svg class="w-4 h-4 text-slate-400 dark:text-white z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <button onclick="toggleDarkMode()" id="mode-switch" class="w-14 h-7 rounded-full bg-slate-200/80 dark:bg-slate-900/60 border border-slate-300/40 dark:border-white/10 relative backdrop-blur-md flex items-center justify-between px-1.5 flex-shrink-0">
+                        <div id="mode-indicator" class="absolute top-[2px] left-[2px] w-[20px] h-[20px] rounded-full bg-blue-600 dark:bg-cyan-500 shadow transition-transform duration-300 ease-out"></div>
+                        <svg class="w-3.5 h-3.5 text-orange-500 dark:text-slate-500 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <svg class="w-3.5 h-3.5 text-slate-400 dark:text-cyan-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </button>
 
                     <div class="flex gap-0.5 bg-slate-200/60 dark:bg-slate-900/60 p-0.5 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
@@ -166,7 +167,7 @@
                         <span class="text-[9px] font-bold text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm h-[540px] relative overflow-hidden flex items-center justify-center">
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm h-[560px] relative overflow-hidden flex items-center justify-center">
                         <div id="chart" class="w-full h-full relative">
                             <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
                         </div>
@@ -235,16 +236,15 @@
         let mode = 'mes', selectedYears = [2026], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // PALETA AJUSTADA CON COLORES MÁS OSCUROS Y PROFUNDOS PARA LEER LOS NÚMEROS BLANCOS PERFECTAMENTE
+        // PALETA CROMÁTICA INDUSTRIAL PROFUNDA: Máximo contraste para que los números blancos sean 100% legibles
         const zoneConfig = {
-            "Z1": { color: "#b27a00" }, "Z2": { color: "#800c0e" }, "Z3": { color: "#0b4d22" },
-            "Z4": { color: "#0d6e31" }, "Z5": { color: "#115b5e" }, "Z6": { color: "#8a457f" },
-            "Z7": { color: "#1a6b8c" }, "Z8": { color: "#9c460f" }, "Z9": { color: "#a82e30" },
-            "Z10": { color: "#70166d" }, "Z11": { color: "#948f00" }, "Z12": { color: "#166e57" },
-            "Z13": { color: "#222d69" }, "Z14": { color: "#5d3980" }
+            "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
+            "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
+            "Z7": { color: "#11526d" }, "Z8": { color: "#803507" }, "Z9": { color: "#851e20" },
+            "Z10": { color: "#590d56" }, "Z11": { color: "#757100" }, "Z12": { color: "#0d5442" },
+            "Z13": { color: "#151d4d" }, "Z14": { color: "#492966" }
         };
 
-        // MAPA FIJO CON COLORES TOPOGRÁFICOS REALISTAS
         const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat,lon], 11);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         const marker = L.marker([lat,lon]).addTo(map);
@@ -295,7 +295,7 @@
                 localStorage.setItem('theme', 'light');
             } else {
                 html.classList.add('dark');
-                indicator.style.transform = 'translateX(34px)';
+                indicator.style.transform = 'translateX(28px)';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -305,7 +305,7 @@
             document.getElementById('mode-indicator').style.transform = 'translateX(0px)';
         } else {
             document.documentElement.classList.add('dark');
-            document.getElementById('mode-indicator').style.transform = 'translateX(34px)';
+            document.getElementById('mode-indicator').style.transform = 'translateX(28px)';
         }
 
         function setMode(m){
@@ -320,7 +320,7 @@
             renderSelectors();
         }
 
-        // SELECTOR DE AÑOS EXTENDIDO COMPLETO HASTA EL AÑO 2000
+        // SELECTOR EXTENDIDO HASTA EL AÑO 2000
         function renderSelectors(){
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
@@ -507,17 +507,17 @@
             const element = document.querySelector("#export-container");
             
             // Forzar clases de fondo blanco justo antes de la captura
-            element.classList.add("pdf-forced-white");
+            element.classList.add("pdf-print-forced");
             
             html2canvas(element, {
                 scale: 2,
                 useCORS: true,
-                backgroundColor: "#ffffff", // Garantiza fondo blanco en el lienzo canvas
-                windowWidth: 1250, 
+                backgroundColor: "#ffffff", 
+                windowWidth: 1300, 
                 logging: false
             }).then(canvas => {
-                // Quitar clase forzada una vez hecha la instantánea para no alterar la pantalla del usuario
-                element.classList.remove("pdf-forced-white");
+                // Quitar clase forzada una vez hecha la instantánea
+                element.classList.remove("pdf-print-forced");
 
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const imgWidth = pdf.internal.pageSize.getWidth() - 12; 
@@ -525,6 +525,9 @@
                 
                 pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 6, 6, imgWidth, imgHeight);
                 pdf.save(`CLOVINA_Reporte_Bioclimatico.pdf`);
+                
+                // Refrescar el lienzo para restaurar la coherencia cromática en pantalla
+                if(window.currentData) drawChart(window.currentData);
             });
         }
 
