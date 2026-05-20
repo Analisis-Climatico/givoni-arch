@@ -51,12 +51,12 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        /* Inversión cromática para que las etiquetas negras del SVG original se lean blancas en modo oscuro */
+        /* Ajuste de inversión cromática selectiva para preservar legibilidad del SVG base en modo oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
 
-        /* Fuerza el fondo blanco puro y texto oscuro en el lienzo del PDF, anulando el modo oscuro web */
+        /* Clases de anulación estrictas para impresión de PDF en fondo blanco puro */
         .pdf-print-forced {
             background: #ffffff !important;
             color: #0f172a !important;
@@ -142,10 +142,10 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleDarkMode()" id="mode-switch" class="w-14 h-7 rounded-full bg-slate-200/80 dark:bg-slate-900/60 border border-slate-300/40 dark:border-white/10 relative backdrop-blur-md flex items-center justify-between px-1.5 flex-shrink-0">
-                        <div id="mode-indicator" class="absolute top-[2px] left-[2px] w-[20px] h-[20px] rounded-full bg-blue-600 dark:bg-cyan-500 shadow transition-transform duration-300 ease-out"></div>
-                        <svg class="w-3.5 h-3.5 text-orange-500 dark:text-slate-500 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        <svg class="w-3.5 h-3.5 text-slate-400 dark:text-cyan-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <button onclick="toggleDarkMode()" id="mode-switch" class="w-20 h-10 rounded-full bg-slate-200/90 dark:bg-slate-900/80 border border-slate-300/40 dark:border-white/10 relative backdrop-blur-sm flex items-center justify-between px-2.5 flex-shrink-0">
+                        <div id="mode-indicator" class="absolute top-[3px] left-[4px] w-[32px] h-[32px] rounded-full bg-blue-600 dark:bg-cyan-500 shadow-md transition-transform duration-300 ease-out"></div>
+                        <svg class="w-4 h-4 text-orange-500 dark:text-slate-500 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <svg class="w-4 h-4 text-slate-400 dark:text-cyan-400 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </button>
 
                     <div class="flex gap-0.5 bg-slate-200/60 dark:bg-slate-900/60 p-0.5 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
@@ -236,7 +236,7 @@
         let mode = 'mes', selectedYears = [2026], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // PALETA CROMÁTICA INDUSTRIAL PROFUNDA: Máximo contraste para que los números blancos sean 100% legibles
+        // VALORES CRROMÁTICOS DE MÁXIMA INTENSIDAD: Asegura contraste estricto sobre tipografías blancas
         const zoneConfig = {
             "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
             "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
@@ -295,7 +295,7 @@
                 localStorage.setItem('theme', 'light');
             } else {
                 html.classList.add('dark');
-                indicator.style.transform = 'translateX(28px)';
+                indicator.style.transform = 'translateX(38px)';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -305,7 +305,7 @@
             document.getElementById('mode-indicator').style.transform = 'translateX(0px)';
         } else {
             document.documentElement.classList.add('dark');
-            document.getElementById('mode-indicator').style.transform = 'translateX(28px)';
+            document.getElementById('mode-indicator').style.transform = 'translateX(38px)';
         }
 
         function setMode(m){
@@ -320,7 +320,7 @@
             renderSelectors();
         }
 
-        // SELECTOR EXTENDIDO HASTA EL AÑO 2000
+        // CONTROL DE RECORRIDO EXPANDIDO HASTA EL AÑO 2000
         function renderSelectors(){
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
@@ -501,7 +501,7 @@
             } catch(e) { console.error("Error Open-Meteo.", e); }
         }
 
-        // MOTOR DE EXPORTACIÓN REESTRUCTURADO — FONDO BLANCO PURO TOTALMENTE OBLIGATORIO
+        // CAPTURA DE PDF BLANCO FIJO OBLIGATORIO
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.querySelector("#export-container");
@@ -516,7 +516,7 @@
                 windowWidth: 1300, 
                 logging: false
             }).then(canvas => {
-                // Quitar clase forzada una vez hecha la instantánea
+                // Desactivar aislamiento de color una vez generada la instantánea
                 element.classList.remove("pdf-print-forced");
 
                 const pdf = new jsPDF('p', 'mm', 'a4');
@@ -526,7 +526,7 @@
                 pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 6, 6, imgWidth, imgHeight);
                 pdf.save(`CLOVINA_Reporte_Bioclimatico.pdf`);
                 
-                // Refrescar el lienzo para restaurar la coherencia cromática en pantalla
+                // Forzar el redibujado de D3 para restaurar la coherencia cromática en la interfaz de pantalla
                 if(window.currentData) drawChart(window.currentData);
             });
         }
