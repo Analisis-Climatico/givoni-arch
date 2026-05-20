@@ -51,7 +51,7 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        /* Mantiene el contraste de los textos negros del SVG original invirtiéndolos solo en modo oscuro */
+        /* Inversión cromática controlada para el fondo SVG original en modo oscuro */
         .dark #chart-canvas-inside svg > g > g:first-child {
             filter: invert(0.9) hue-rotate(180deg);
         }
@@ -81,7 +81,7 @@
         <div class="absolute bottom-[15%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-orange-500/5 blur-[140px]"></div>
     </div>
 
-    <div class="fixed bottom-4 right-6 text-[11px] tracking-[0.25em] uppercase font-semibold text-slate-400 dark:text-slate-500 z-50 pointer-events-none select-none">
+    <div class="fixed bottom-4 right-6 text-[11px] tracking-[0.3em] uppercase font-black text-slate-400 dark:text-slate-500 z-50 pointer-events-none select-none">
         Created by Jordan Jerez
     </div>
 
@@ -171,8 +171,8 @@
                         <span class="text-[9px] font-bold text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm min-h-[500px] h-[550px] relative overflow-hidden flex items-center justify-center">
-                        <div id="chart" class="w-full h-full block">
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0d1527] p-4 shadow-sm h-[550px] relative overflow-hidden flex items-center justify-center">
+                        <div id="chart" style="width: 100%; height: 500px;" class="relative">
                             <div id="chart-canvas-inside" class="w-full h-full"></div>
                         </div>
                     </div>
@@ -237,10 +237,10 @@
 
     <script>
         const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        let mode = 'mes', selectedYears = [2026], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
+        let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
-        // VALORES CRROMÁTICOS DE MÁXIMA INTENSIDAD: Asegura contraste estricto sobre tipografías blancas
+        // VALORES CROMÁTICOS DE CONTRASTE OSCURO: Evita que los números blancos se pierdan
         const zoneConfig = {
             "Z1": { color: "#9a6300" }, "Z2": { color: "#7a0608" }, "Z3": { color: "#063d18" },
             "Z4": { color: "#085724" }, "Z5": { color: "#0a4b4d" }, "Z6": { color: "#6e3164" },
@@ -320,11 +320,10 @@
             document.getElementById(`btn-${m}`).className = 'px-4 py-2 rounded-lg font-space font-bold text-[10px] tracking-wider uppercase transition-all text-white bg-blue-600';
             document.getElementById('section-meses').style.display = m === 'mes' ? 'block' : 'none';
             document.getElementById('year-label').innerText = m === 'mes' ? 'Año Base' : 'Años a Comparar';
-            selectedYears = [2026];
+            selectedYears = [2025];
             renderSelectors();
         }
 
-        // SELECTOR EXTENDIDO HASTA EL AÑO 2000
         function renderSelectors(){
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
@@ -482,20 +481,35 @@
         async function runClimateAnalysis(){
             let results = [];
             try {
+                const year = selectedYears[0];
+                const today = new Date();
+                let endDate = `${year}-12-31`;
+                
+                // CONTROL DE ASINCRONÍA: Si se consulta el año actual 2026, limita la búsqueda a la fecha de hoy
+                if (year === today.getFullYear()) {
+                    const pastDate = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
+                    endDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
+                }
+
                 if(mode === 'mes'){
-                    const data = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${selectedYears[0]}-01-01&end_date=${selectedYears[0]}-12-31&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`)).json();
+                    const data = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`)).json();
                     selectedMonths.forEach(m => {
                         const filter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
-                        results.push({ 
-                            label: `${months[m]} ${selectedYears[0]}`, 
-                            tMax: d3.mean(data.daily.temperature_2m_max.filter(filter)), 
-                            tMin: d3.mean(data.daily.temperature_2m_min.filter(filter)), 
-                            hr: d3.mean(data.daily.relative_humidity_2m_mean.filter(filter)) 
-                        });
+                        const tMaxFiltered = data.daily.temperature_2m_max.filter(filter);
+                        if (tMaxFiltered.length > 0) {
+                            results.push({ 
+                                label: `${months[m]} ${year}`, 
+                                tMax: d3.mean(tMaxFiltered), 
+                                tMin: d3.mean(data.daily.temperature_2m_min.filter(filter)), 
+                                hr: d3.mean(data.daily.relative_humidity_2m_mean.filter(filter)) 
+                            });
+                        }
                     });
                 } else {
                     for(const y of selectedYears){
-                        const d = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${y}-12-31&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`)).json();
+                        let yEnd = `${y}-12-31`;
+                        if (y === today.getFullYear()) yEnd = endDate;
+                        const d = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`)).json();
                         results.push({ label: `${y}`, tMax: d3.mean(d.daily.temperature_2m_max), tMin: d3.mean(d.daily.temperature_2m_min), hr: d3.mean(d.daily.relative_humidity_2m_mean) });
                     }
                 }
@@ -505,12 +519,10 @@
             } catch(e) { console.error("Error Open-Meteo.", e); }
         }
 
-        // CAPTURA DE PDF BLANCO FIJO OBLIGATORIO
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const element = document.querySelector("#export-container");
             
-            // Forzar clases de fondo blanco justo antes de la captura
             element.classList.add("pdf-print-forced");
             
             html2canvas(element, {
@@ -520,7 +532,6 @@
                 windowWidth: 1300, 
                 logging: false
             }).then(canvas => {
-                // Desactivar aislamiento de color una vez generada la instantánea
                 element.classList.remove("pdf-print-forced");
 
                 const pdf = new jsPDF('p', 'mm', 'a4');
@@ -530,7 +541,6 @@
                 pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 6, 6, imgWidth, imgHeight);
                 pdf.save(`CLOVINA_Reporte_Bioclimatico.pdf`);
                 
-                // Forzar el redibujado de D3 para restaurar la coherencia cromática en la interfaz de pantalla
                 if(window.currentData) drawChart(window.currentData);
             });
         }
