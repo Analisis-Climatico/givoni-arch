@@ -542,110 +542,163 @@
             g.append('g').attr('transform', `translate(0,${innerHeight})`).call(d3.axisBottom(x).ticks(10));
         }
 
-        // ========================================================
-        // VISUALIZADOR BIOCLIMÁTICO INTERACTIVO: DIBUJOS COMPLEJOS Y TÉCNICOS
-        // (SIN descripciones de texto internas, solo labels y gráfica)
+      // ========================================================
+        // VISUALIZADOR BIOCLIMÁTICO INTERACTIVO: SECCIONES ARQUITECTÓNICAS PREMIUM
         // ========================================================
         function buildInteractiveVisualizer(strategies) {
             const container = document.getElementById('interactive-visualizer');
             
             if(strategies.length === 0) {
-                container.innerHTML = `<div class="p-10 w-full text-center text-slate-500">Ejecute un análisis para visualizar las estrategias.</div>`;
+                container.innerHTML = `<div class="p-10 w-full text-center text-slate-500 font-space tracking-wider uppercase text-sm">Ejecute un análisis para visualizar las estrategias.</div>`;
                 return;
             }
 
-            // PATRONES TÉCNICOS ARQUITECTÓNICOS
+            // PATRONES TÉCNICOS, FILTROS Y GRADIENTES ARQUITECTÓNICOS
             const defsSVG = `
                 <defs>
+                    <!-- Blueprint Grid -->
                     <pattern id="grid-bg" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.05"/>
-                        <path d="M 200 0 L 0 0 0 200" fill="none" stroke="currentColor" stroke-width="1" opacity="0.1"/>
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                        <path d="M 200 0 L 0 0 0 200" fill="none" stroke="rgba(6,182,212,0.08)" stroke-width="1"/>
                     </pattern>
+                    <!-- Hatching de Hormigón / Masa -->
                     <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-                        <line x1="0" y1="0" x2="0" y2="10" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                        <rect width="10" height="10" fill="rgba(255,255,255,0.02)"/>
+                        <line x1="0" y1="0" x2="0" y2="10" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
                     </pattern>
+                    <!-- Suelo Natural -->
+                    <pattern id="hatch-soil" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                        <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                        <line x1="0" y1="0" x2="8" y2="0" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                    </pattern>
+                    <!-- Gradientes Térmicos -->
+                    <linearGradient id="heat-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#ea580c" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="#ea580c" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="heat-rise" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" stop-color="#ef4444" stop-opacity="0.1"/>
+                        <stop offset="100%" stop-color="#ef4444" stop-opacity="0.8"/>
+                    </linearGradient>
+                    <!-- Efectos Glow -->
+                    <filter id="glow-sun" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="6" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <filter id="glow-wind" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <!-- Puntas de Flecha -->
+                    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+                    </marker>
                 </defs>
             `;
 
-            // ESCALA HUMANA
-            const scaleFigure = `
-                <g opacity="0.5" transform="translate(420, 245) scale(0.65)">
-                    <circle cx="15" cy="10" r="7" fill="currentColor"/>
-                    <path d="M10,20 L20,20 L20,45 L25,80 L18,80 L15,50 L12,80 L5,80 L10,45 Z" fill="currentColor"/>
+            // ESCALA HUMANA MINIMALISTA (Proporción arquitectónica)
+            const humanScale = (x, y) => `
+                <g transform="translate(${x}, ${y}) scale(0.8)" opacity="0.4" stroke="currentColor" stroke-width="1.5" fill="none">
+                    <circle cx="10" cy="5" r="4"/>
+                    <line x1="10" y1="9" x2="10" y2="22"/> <!-- Tronco -->
+                    <line x1="10" y1="12" x2="4" y2="18"/> <!-- Brazo Izq -->
+                    <line x1="10" y1="12" x2="16" y2="18"/> <!-- Brazo Der -->
+                    <line x1="10" y1="22" x2="5" y2="35"/> <!-- Pierna Izq -->
+                    <line x1="10" y1="22" x2="15" y2="35"/> <!-- Pierna Der -->
                 </g>
             `;
 
             let menuHTML = `<div class="w-full lg:w-[35%] xl:w-[30%] border-b lg:border-b-0 lg:border-r border-slate-200/40 dark:border-slate-700/50 p-4 space-y-2 overflow-y-auto max-h-[550px] bg-slate-50/10 dark:bg-slate-900/10" id="strategy-menu">`;
             
             strategies.forEach((strat, i) => {
-                let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
-                if(strat.t.includes('Ventilación') || strat.t.includes('Aire') || strat.t.includes('Venturi')) icon = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-                if(strat.t.includes('Pieles') || strat.t.includes('Celosías') || strat.t.includes('Aleros')) icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
-                if(strat.t.includes('Inercia') || strat.t.includes('Masa') || strat.t.includes('Muro')) icon = `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`;
-                if(strat.t.includes('Chimenea') || strat.t.includes('Cubierta')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
+                let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>`;
+                if(strat.t.includes('Ventilación') || strat.t.includes('Venturi')) icon = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+                if(strat.t.includes('Pieles') || strat.t.includes('Celosías')) icon = `<svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>`;
+                if(strat.t.includes('Inercia') || strat.t.includes('Masa')) icon = `<svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
+                if(strat.t.includes('Chimenea') || strat.t.includes('Cubierta')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>`;
 
                 menuHTML += `
-                    <button class="w-full text-left p-4 rounded-xl transition-all duration-300 strat-btn border border-transparent hover:bg-slate-100/40 dark:hover:bg-slate-800/40 flex items-center gap-4" onclick="renderSVGForStrategy(${i})">
-                        <div class="mt-0.5">${icon}</div>
+                    <button class="w-full text-left p-4 rounded-xl transition-all duration-300 strat-btn border border-transparent hover:bg-slate-100/40 dark:hover:bg-slate-800/40 flex items-center gap-4 group" onclick="renderSVGForStrategy(${i})">
+                        <div class="mt-0.5 group-hover:scale-110 transition-transform">${icon}</div>
                         <div><p class="font-bold text-sm text-slate-800 dark:text-slate-200 font-space tracking-wide">${strat.t}</p></div>
                     </button>`;
             });
             menuHTML += `</div>`;
 
             let viewerHTML = `
-                <div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-transparent overflow-hidden min-h-[400px]">
+                <div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-[#0a0f1d] overflow-hidden min-h-[450px]">
                     <div id="svg-canvas" class="flex-1 w-full h-full relative"></div>
                 </div>
             `;
 
             container.innerHTML = menuHTML + viewerHTML;
 
-            // DIBUJO PARAMÉTRICO DE CADA ESTRATEGIA (CON LABELS Y SIN DESCRIPCIONES DE PÁRRAFO)
+            // DIBUJO ARQUITECTÓNICO PARAMÉTRICO
             window.renderSVGForStrategy = function(index) {
                 const strat = strategies[index];
                 
                 document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
-                    if(idx === index) btn.classList.add('active');
-                    else btn.classList.remove('active');
+                    if(idx === index) {
+                        btn.classList.add('bg-slate-800/40', 'border-slate-700/50', 'shadow-inner');
+                        btn.classList.remove('border-transparent');
+                    } else {
+                        btn.classList.remove('bg-slate-800/40', 'border-slate-700/50', 'shadow-inner');
+                        btn.classList.add('border-transparent');
+                    }
                 });
                 
                 let svgContent = `<rect width="100%" height="100%" fill="url(#grid-bg)" />`;
-                let groundLine = `
-                    <rect x="100" y="300" width="600" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5" class="opacity-70"/>
-                    <line x1="50" y1="300" x2="750" y2="300" stroke="currentColor" stroke-width="2" class="opacity-50"/>
+                
+                // Elementos Base Arquitectónicos
+                const groundLine = `
+                    <rect x="50" y="380" width="700" height="40" fill="url(#hatch-soil)"/>
+                    <line x1="50" y1="380" x2="750" y2="380" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
                 `;
 
-                // 1. CELOSÍAS / PIELES CALADAS (ALTO DETALLE ARQUITECTÓNICO)
+                // 1. CELOSÍAS / PIELES CALADAS (Doble Piel / Control Solar)
                 if(strat.t.includes('Pieles') || strat.t.includes('Celosías') || strat.t.includes('Aleros')) {
                     svgContent += `
                         ${groundLine}
-                        <rect x="250" y="300" width="300" height="20" fill="currentColor" opacity="0.8"/>
-                        <rect x="250" y="100" width="20" height="200" fill="currentColor" opacity="0.9"/>
-                        <polygon points="180,80 600,100 600,120 180,100" fill="currentColor" opacity="0.8"/>
+                        <!-- Estructura Principal -->
+                        <rect x="250" y="360" width="400" height="20" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="250" y="80" width="400" height="20" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="630" y="100" width="20" height="260" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
                         
-                        <line x1="520" y1="115" x2="520" y2="300" stroke="#38bdf8" stroke-width="4" stroke-dasharray="10 5" opacity="0.4"/>
-                        <rect x="515" y="115" width="10" height="15" fill="currentColor" opacity="0.9"/>
-                        <rect x="515" y="285" width="10" height="15" fill="currentColor" opacity="0.9"/>
+                        <!-- Cerramiento de Vidrio (Retranqueado) -->
+                        <rect x="350" y="100" width="8" height="260" fill="rgba(186, 230, 253, 0.15)" stroke="rgba(186, 230, 253, 0.4)"/>
+                        
+                        <!-- Piel Calada / Celosía Exterior -->
+                        <g stroke="rgba(255,255,255,0.7)" stroke-width="4" stroke-linecap="round">
+                            ${Array.from({length: 12}).map((_, i) => `<line x1="230" y1="${120 + i*20}" x2="260" y2="${135 + i*20}"/>`).join('')}
+                        </g>
+                        <!-- Estructura Portante Celosía -->
+                        <line x1="250" y1="100" x2="250" y2="360" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
 
-                        <rect x="570" y="110" width="8" height="190" fill="currentColor" opacity="0.6"/>
-                        <g stroke="#f59e0b" stroke-width="5" stroke-linecap="round">
-                            ${Array.from({length: 12}).map((_, i) => `<line x1="560" y1="${125 + i*15}" x2="590" y2="${135 + i*15}"/>`).join('')}
+                        ${humanScale(450, 325)}
+
+                        <!-- Incidencia Solar -->
+                        <circle cx="100" cy="80" r="24" fill="#f59e0b" filter="url(#glow-sun)"/>
+                        <g stroke="#fbbf24" stroke-width="2" class="svg-ray-bounce">
+                            <path d="M 120 95 L 225 150 L 180 180" fill="none"/>
+                            <path d="M 110 110 L 225 210 L 160 230" fill="none" style="animation-delay: 0.5s"/>
+                            <path d="M 100 120 L 225 270 L 140 280" fill="none" style="animation-delay: 1s"/>
                         </g>
 
-                        ${scaleFigure}
+                        <!-- Flujo de Ventilación Permeable -->
+                        <g fill="none" stroke="#06b6d4" stroke-width="2" class="svg-wind-flow" marker-end="url(#arrow-cyan)" filter="url(#glow-wind)">
+                            <path d="M 50 180 C 150 180, 200 140, 280 170 C 320 185, 330 140, 400 150 C 500 160, 550 200, 600 180" />
+                            <path d="M 50 280 C 150 280, 200 300, 280 270 C 320 255, 330 300, 400 290 C 500 280, 550 240, 600 260" style="animation-delay: 1.2s"/>
+                        </g>
 
-                        <circle cx="680" cy="50" r="22" fill="#f59e0b" class="svg-sun-pulse"/>
-                        <path d="M 660 70 L 590 140 L 640 180" fill="none" stroke="#fcd34d" stroke-width="3" class="svg-ray-bounce"/>
-                        <path d="M 670 80 L 580 190 L 630 230" fill="none" stroke="#fcd34d" stroke-width="3" class="svg-ray-bounce" style="animation-delay: 0.8s"/>
+                        <!-- Etiquetas Técnicas -->
+                        <rect x="180" y="45" width="120" height="22" rx="2" fill="rgba(15,23,42,0.7)" border="1px solid white"/>
+                        <text x="240" y="59" fill="#fbbf24" font-size="9" font-family="Space Grotesk" font-weight="bold" text-anchor="middle" letter-spacing="1">BLOQUEO TÉRMICO</text>
 
-                        <path d="M 750 200 C 650 200, 600 240, 500 220 S 400 250, 300 250 S 180 200, 100 220" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
-                        
-                        <rect x="620" y="200" width="120" height="40" rx="4" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.2)"/>
-                        <text x="680" y="215" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Bloqueo de</text>
-                        <text x="680" y="230" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Radiación Directa</text>
-
-                        <rect x="380" y="60" width="130" height="25" rx="4" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.2)"/>
-                        <text x="445" y="77" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Celosías Regulables</text>
+                        <rect x="420" y="200" width="120" height="22" rx="2" fill="rgba(15,23,42,0.7)"/>
+                        <text x="480" y="214" fill="#06b6d4" font-size="9" font-family="Space Grotesk" font-weight="bold" text-anchor="middle" letter-spacing="1">FILTRADO DE BRISA</text>
                     `;
                 }
                 
@@ -653,20 +706,42 @@
                 else if(strat.t.includes('Ventilación') || strat.t.includes('Venturi')) {
                     svgContent += `
                         ${groundLine}
-                        <rect x="250" y="120" width="300" height="20" fill="currentColor" opacity="0.9"/>
-                        <rect x="250" y="140" width="20" height="160" fill="currentColor" opacity="0.9"/>
-                        <rect x="530" y="140" width="20" height="160" fill="currentColor" opacity="0.9"/>
+                        <!-- Sección de Muros -->
+                        <rect x="150" y="360" width="500" height="20" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="150" y="80" width="500" height="20" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
                         
-                        <line x1="250" y1="280" x2="250" y2="180" stroke="transparent" stroke-width="30"/> <line x1="530" y1="290" x2="530" y2="150" stroke="transparent" stroke-width="30"/> ${scaleFigure}
+                        <!-- Muro Barlovento (Abertura Pequeña) -->
+                        <rect x="150" y="100" width="20" height="100" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="150" y="280" width="20" height="80" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <!-- Ventana Barlovento -->
+                        <rect x="155" y="200" width="10" height="80" fill="rgba(186, 230, 253, 0.1)"/>
 
-                        <path d="M 50 240 C 150 240, 200 200, 300 220 S 450 280, 550 240 S 680 180, 750 200" fill="none" stroke="#06b6d4" stroke-width="10" stroke-linecap="round" class="svg-wind-flow opacity-80"/>
-                        <path d="M 50 270 C 150 270, 200 240, 300 260 S 450 220, 550 200 S 680 150, 750 170" fill="none" stroke="#06b6d4" stroke-width="5" stroke-linecap="round" class="svg-wind-flow-delayed"/>
-                        
-                        <rect x="120" y="160" width="110" height="25" rx="4" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.2)"/>
-                        <text x="175" y="177" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Alta Presión (+)</text>
+                        <!-- Muro Sotavento (Abertura Grande) -->
+                        <rect x="630" y="100" width="20" height="40" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="630" y="320" width="20" height="40" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <!-- Ventana Sotavento -->
+                        <rect x="635" y="140" width="10" height="180" fill="rgba(186, 230, 253, 0.1)"/>
 
-                        <rect x="570" y="110" width="110" height="25" rx="4" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.2)"/>
-                        <text x="625" y="127" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Baja Presión (-)</text>
+                        ${humanScale(400, 325)}
+
+                        <!-- Dinámica de Fluidos (Viento acelerado) -->
+                        <g fill="none" stroke="#06b6d4" stroke-linecap="round" class="svg-wind-flow" filter="url(#glow-wind)" marker-end="url(#arrow-cyan)">
+                            <!-- Líneas convergiendo = Alta presión -->
+                            <path d="M 50 150 C 100 150, 130 190, 180 210 C 300 240, 450 150, 750 160" stroke-width="1.5"/>
+                            <path d="M 50 240 C 100 240, 130 240, 180 240 C 300 240, 450 240, 750 240" stroke-width="3" style="animation-delay: 0.3s"/>
+                            <path d="M 50 330 C 100 330, 130 290, 180 270 C 300 240, 450 310, 750 300" stroke-width="1.5" style="animation-delay: 0.6s"/>
+                        </g>
+
+                        <!-- Etiquetas Analíticas -->
+                        <rect x="70" y="190" width="30" height="20" rx="4" fill="#0ea5e9" opacity="0.2"/>
+                        <text x="85" y="204" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">+</text>
+                        <text x="85" y="180" fill="rgba(255,255,255,0.6)" font-size="8" font-family="Space Grotesk" text-anchor="middle" letter-spacing="1">PRESIÓN</text>
+
+                        <rect x="700" y="230" width="30" height="20" rx="4" fill="#0ea5e9" opacity="0.2"/>
+                        <text x="715" y="244" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">-</text>
+                        <text x="715" y="220" fill="rgba(255,255,255,0.6)" font-size="8" font-family="Space Grotesk" text-anchor="middle" letter-spacing="1">SUCCIÓN</text>
+
+                        <text x="400" y="210" fill="#22d3ee" font-size="9" font-family="Space Grotesk" text-anchor="middle" letter-spacing="1">ACELERACIÓN VENTURI</text>
                     `;
                 }
 
@@ -674,23 +749,38 @@
                 else if(strat.t.includes('Inercia') || strat.t.includes('Masa') || strat.t.includes('Muro')) {
                     svgContent += `
                         ${groundLine}
-                        <rect x="250" y="280" width="300" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2" class="opacity-90"/>
-                        <rect x="250" y="120" width="60" height="160" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="2"/>
-                        <rect x="490" y="120" width="60" height="160" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="2"/>
-                        <rect x="250" y="100" width="300" height="20" fill="currentColor" opacity="0.8"/>
+                        <!-- Muros Masivos -->
+                        <rect x="200" y="360" width="400" height="30" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+                        <rect x="200" y="100" width="400" height="20" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
                         
-                        ${scaleFigure}
-
-                        <rect x="255" y="120" width="50" height="160" fill="#ea580c" class="opacity-30 svg-glow-heat"/>
-                        <rect x="495" y="120" width="50" height="160" fill="#ea580c" class="opacity-30 svg-glow-heat"/>
+                        <!-- Muro expuesto absorbiendo calor -->
+                        <rect x="200" y="120" width="60" height="240" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+                        <!-- Gradiente Térmico dentro del muro -->
+                        <rect x="202" y="122" width="56" height="236" fill="url(#heat-grad)" opacity="0.9"/>
                         
-                        <circle cx="100" cy="80" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
-                        <line x1="120" y1="100" x2="240" y2="180" stroke="#f59e0b" stroke-width="5" stroke-dasharray="10 5"/>
-                        <line x1="130" y1="90" x2="240" y2="140" stroke="#f59e0b" stroke-width="5" stroke-dasharray="10 5"/>
+                        <!-- Muro interior frío -->
+                        <rect x="540" y="120" width="60" height="240" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
 
-                        <rect x="330" y="220" width="140" height="40" rx="4" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.2)"/>
-                        <text x="400" y="235" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Masa Térmica</text>
-                        <text x="400" y="250" fill="#ea580c" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">(Retención de Calor)</text>
+                        ${humanScale(400, 325)}
+
+                        <!-- Radiación Exterior -->
+                        <circle cx="80" cy="150" r="30" fill="#ea580c" filter="url(#glow-sun)"/>
+                        <g stroke="#fbbf24" stroke-width="2" stroke-dasharray="6 4" opacity="0.8">
+                            <line x1="120" y1="180" x2="190" y2="220" />
+                            <line x1="120" y1="210" x2="190" y2="260" />
+                            <line x1="110" y1="240" x2="190" y2="300" />
+                        </g>
+
+                        <!-- Termografía Visual -->
+                        <path d="M 270 150 Q 300 150 300 240 T 350 330" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.5" stroke-dasharray="4 2"/>
+                        <text x="360" y="335" fill="#ef4444" font-size="8" font-family="Space Grotesk" letter-spacing="1">ONDA TÉRMICA RETRASADA</text>
+                        
+                        <rect x="210" y="60" width="130" height="22" rx="2" fill="rgba(15,23,42,0.7)"/>
+                        <text x="275" y="74" fill="#fbbf24" font-size="9" font-family="Space Grotesk" font-weight="bold" text-anchor="middle" letter-spacing="1">ACUMULACIÓN DIURNA</text>
+
+                        <!-- Interior Fresco -->
+                        <circle cx="450" cy="240" r="80" fill="#06b6d4" opacity="0.05" filter="url(#glow-wind)"/>
+                        <text x="450" y="240" fill="#22d3ee" font-size="9" font-family="Space Grotesk" text-anchor="middle" letter-spacing="1">ESTABILIDAD TÉRMICA</text>
                     `;
                 }
 
@@ -698,64 +788,96 @@
                 else if(strat.t.includes('Chimenea') || strat.t.includes('Cubierta')) {
                     svgContent += `
                         ${groundLine}
-                        <rect x="250" y="180" width="20" height="120" fill="currentColor" opacity="0.9"/>
-                        <rect x="530" y="180" width="20" height="120" fill="currentColor" opacity="0.9"/>
-                        
-                        ${scaleFigure}
+                        <!-- Muros Laterales -->
+                        <rect x="200" y="200" width="20" height="180" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="580" y="200" width="20" height="180" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <!-- Losa Piso -->
+                        <rect x="200" y="380" width="400" height="20" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
 
-                        <polygon points="180,180 400,40 620,180 590,180 400,70 210,180" fill="currentColor" opacity="0.9"/>
-                        <line x1="380" y1="80" x2="420" y2="80" stroke="transparent" stroke-width="30"/> 
-                        
-                        <path d="M 360 260 Q 400 160 390 50" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up"/>
-                        <path d="M 440 260 Q 400 160 410 50" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up" style="animation-delay: 1.5s;"/>
-                        
-                        <path d="M 150 280 Q 250 280 350 270" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
-                        <path d="M 650 280 Q 550 280 450 270" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
+                        <!-- Cubierta Inclinada con Monitor Abierto -->
+                        <polygon points="180,200 380,80 380,60 160,190" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.4)"/>
+                        <polygon points="620,200 420,80 420,60 640,190" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.4)"/>
+                        <!-- Abertura Superior -->
+                        <line x1="380" y1="80" x2="380" y2="120" stroke="rgba(186, 230, 253, 0.2)" stroke-width="4"/>
+                        <line x1="420" y1="80" x2="420" y2="120" stroke="rgba(186, 230, 253, 0.2)" stroke-width="4"/>
 
-                        <rect x="440" y="80" width="130" height="40" rx="4" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.2)"/>
-                        <text x="505" y="95" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Efecto Chimenea</text>
-                        <text x="505" y="110" fill="#ef4444" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">(Extracción Superior)</text>
+                        ${humanScale(350, 345)}
+                        ${humanScale(420, 345)}
+
+                        <!-- Entrada de Aire Fresco Inferior -->
+                        <g fill="none" stroke="#06b6d4" stroke-width="2" class="svg-wind-flow" marker-end="url(#arrow-cyan)">
+                            <path d="M 100 350 C 150 350, 180 340, 250 360" />
+                            <path d="M 700 350 C 650 350, 620 340, 550 360" />
+                        </g>
+
+                        <!-- Extracción Convectiva de Calor -->
+                        <g fill="none" stroke="url(#heat-rise)" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-red)" class="svg-float-up">
+                            <path d="M 320 320 Q 350 200 380 40" />
+                            <path d="M 400 300 Q 400 200 400 40" style="animation-delay: 0.7s"/>
+                            <path d="M 480 320 Q 450 200 420 40" style="animation-delay: 1.4s"/>
+                        </g>
+
+                        <rect x="330" y="10" width="140" height="22" rx="2" fill="rgba(15,23,42,0.8)"/>
+                        <text x="400" y="24" fill="#ef4444" font-size="9" font-family="Space Grotesk" font-weight="bold" text-anchor="middle" letter-spacing="1">EXTRACCIÓN TÉRMICA</text>
+                        <text x="400" y="330" fill="rgba(255,255,255,0.4)" font-size="8" font-family="Space Grotesk" text-anchor="middle" letter-spacing="2">ZONA DE ESTRATIFICACIÓN</text>
                     `;
                 }
 
                 // 5. PALAFITOS / ELEVACIÓN
                 else if(strat.t.includes('Palafito') || strat.t.includes('Elevación')) {
                     svgContent += `
-                        <rect x="50" y="340" width="700" height="40" fill="#0ea5e9" opacity="0.15"/> <line x1="50" y1="340" x2="750" y2="340" stroke="#0ea5e9" stroke-width="2" class="opacity-50"/>
-                        
-                        <line x1="280" y1="340" x2="280" y2="200" stroke="currentColor" stroke-width="10"/>
-                        <line x1="520" y1="340" x2="520" y2="200" stroke="currentColor" stroke-width="10"/>
-                        
-                        <rect x="220" y="180" width="360" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2" opacity="0.9"/>
-                        <rect x="250" y="80" width="300" height="10" fill="currentColor" opacity="0.8"/>
-                        <rect x="250" y="90" width="15" height="90" fill="currentColor" opacity="0.9"/>
-                        <rect x="535" y="90" width="15" height="90" fill="currentColor" opacity="0.9"/>
-                        
-                        <g opacity="0.5" transform="translate(380, 110) scale(0.65)">
-                            <circle cx="15" cy="10" r="7" fill="currentColor"/>
-                            <path d="M10,20 L20,20 L20,45 L25,80 L18,80 L15,50 L12,80 L5,80 L10,45 Z" fill="currentColor"/>
+                        ${groundLine}
+                        <!-- Vegetación Inferior Minimalista -->
+                        <g stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round" fill="none">
+                            <path d="M 300 380 Q 310 360 320 370" />
+                            <path d="M 450 380 Q 440 350 430 360" />
+                            <path d="M 500 380 Q 510 365 520 375" />
                         </g>
 
-                        <path d="M 50 280 C 150 280, 250 260, 400 280 S 550 300, 750 270" fill="none" stroke="#0ea5e9" stroke-width="6" stroke-linecap="round" class="svg-wind-flow"/>
+                        <!-- Columnas / Pilotes -->
+                        <rect x="250" y="220" width="12" height="160" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.4)"/>
+                        <rect x="538" y="220" width="12" height="160" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.4)"/>
+
+                        <!-- Losa Elevada -->
+                        <rect x="200" y="200" width="400" height="20" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.5)"/>
+                        <!-- Cubierta -->
+                        <rect x="180" y="80" width="440" height="15" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <!-- Muros -->
+                        <rect x="220" y="95" width="10" height="105" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="570" y="95" width="10" height="105" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)"/>
+
+                        ${humanScale(400, 165)}
+
+                        <!-- Flujo de Viento Inferior (Desconexión térmica del suelo) -->
+                        <g fill="none" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" class="svg-wind-flow" marker-end="url(#arrow-cyan)" filter="url(#glow-wind)">
+                            <path d="M 50 300 C 200 300, 300 280, 400 310 S 600 280, 750 300" />
+                            <path d="M 50 340 C 200 340, 300 360, 400 340 S 600 360, 750 340" style="animation-delay: 1s"/>
+                        </g>
+
+                        <!-- Aislamiento Capilar / Humedad -->
+                        <path d="M 240 380 Q 256 340 272 380" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+                        <path d="M 528 380 Q 544 340 560 380" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+
+                        <rect x="330" y="330" width="140" height="22" rx="2" fill="rgba(15,23,42,0.7)"/>
+                        <text x="400" y="344" fill="#22d3ee" font-size="9" font-family="Space Grotesk" font-weight="bold" text-anchor="middle" letter-spacing="1">BARRIDO DE HUMEDAD</text>
                         
-                        <rect x="330" y="290" width="140" height="25" rx="4" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.2)"/>
-                        <text x="400" y="307" fill="white" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Refrigeración Inferior</text>
+                        <text x="400" y="240" fill="rgba(255,255,255,0.5)" font-size="8" font-family="Space Grotesk" text-anchor="middle" letter-spacing="1">DESCONEXIÓN TÉRMICA TERRESTRE</text>
                     `;
                 }
 
-                // DEFAULT: ESTRUCTURA BÁSICA
+                // DEFAULT: SECCIÓN LIMPIA
                 else {
                     svgContent += `
                         ${groundLine}
-                        <rect x="250" y="140" width="15" height="160" fill="currentColor" opacity="0.9"/>
-                        <rect x="535" y="140" width="15" height="160" fill="currentColor" opacity="0.9"/>
-                        <polygon points="180,140 400,60 620,140" fill="currentColor" opacity="0.8"/>
-                        ${scaleFigure}
+                        <rect x="250" y="140" width="15" height="240" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <rect x="535" y="140" width="15" height="240" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        <polygon points="180,140 400,60 620,140" fill="url(#hatch-concrete)" stroke="rgba(255,255,255,0.3)"/>
+                        ${humanScale(400, 345)}
                     `;
                 }
 
                 document.getElementById('svg-canvas').innerHTML = `
-                    <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
+                    <svg viewBox="0 0 800 450" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-2xl absolute inset-0 z-10 font-sans">
                         ${defsSVG}
                         ${svgContent}
                     </svg>
@@ -764,7 +886,7 @@
 
             window.renderSVGForStrategy(0);
         }
-
+        
         // ========================================================
         // MOTOR INTELIGENTE DE ESTRATEGIAS (TEXTOS LARGOS, CLAROS Y PROFESIONALES)
         // ========================================================
