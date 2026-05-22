@@ -62,19 +62,17 @@
         
         .climate-line { transition: stroke-width 0.2s, opacity 0.2s; }
 
-        /* ANIMACIONES ARQUITECTÓNICAS SVG COMPLETAS */
+        /* ANIMACIONES ARQUITECTÓNICAS SVG */
         @keyframes flow-wind { 0% { stroke-dashoffset: 150; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { stroke-dashoffset: -150; opacity: 0; } }
-        @keyframes flow-wind-reverse { 0% { stroke-dashoffset: -150; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { stroke-dashoffset: 150; opacity: 0; } }
         @keyframes pulse-sun { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
         @keyframes bounce-ray { 0% { stroke-dashoffset: 100; opacity: 0;} 20% { opacity: 1;} 80% {opacity: 1;} 100% { stroke-dashoffset: 0; opacity: 0;} }
-        @keyframes float-up { 0% { transform: translateY(20px); opacity: 0;} 50% { opacity: 0.9;} 100% { transform: translateY(-40px); opacity: 0;} }
+        @keyframes float-up { 0% { transform: translateY(15px); opacity: 0;} 50% { opacity: 0.9;} 100% { transform: translateY(-35px); opacity: 0;} }
         @keyframes float-up-chimney { 0% { transform: translateY(0px) scaleX(1); opacity: 0;} 30% { opacity: 1;} 80% { transform: translateY(-70px) scaleX(1.5); opacity: 1;} 100% { transform: translateY(-90px) scaleX(2); opacity: 0;} }
         @keyframes absorb-moisture { 0% { transform: translateX(-15px); opacity: 0;} 50% { opacity: 1;} 100% { transform: translateX(15px); opacity: 0;} }
         @keyframes heat-radiate { 0% { opacity: 0.2; transform: scale(0.98); } 100% { opacity: 0.6; transform: scale(1.02); } }
 
         .svg-wind-flow { stroke-dasharray: 40 20; animation: flow-wind 3s linear infinite; }
         .svg-wind-flow-delayed { stroke-dasharray: 40 20; animation: flow-wind 3s linear infinite 1.5s; opacity: 0; }
-        .svg-wind-flow-reverse { stroke-dasharray: 40 20; animation: flow-wind-reverse 3s linear infinite; }
         .svg-sun-pulse { animation: pulse-sun 3s infinite alternate ease-in-out; transform-origin: center; }
         .svg-ray-bounce { stroke-dasharray: 100; animation: bounce-ray 3s infinite linear; }
         .svg-float-up { animation: float-up 3s infinite ease-out; }
@@ -226,7 +224,7 @@
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
                         <div class="glass-panel glass-panel-variant rounded-[24px] p-8 h-[calc(100%-2.5rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
                             <div id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base lg:text-lg font-light text-justify space-y-4">
-                                <span class="animate-pulse font-space tracking-widest text-xs uppercase text-blue-500">Conectando con archivo meteorológico...</span>
+                                <span class="animate-pulse font-space tracking-widest text-xs uppercase text-blue-500">Iniciando motor termodinámico... procesando matrices de datos locales.</span>
                             </div>
                             <div class="mt-6 pt-4 border-t border-slate-200/60 dark:border-slate-800/60 text-xs font-mono tracking-widest text-slate-400 uppercase">
                                 COMPATIBLE CON ANÁLISIS DE ENTORNOS CLIMÁTICOS
@@ -256,7 +254,7 @@
 
     <script>
         const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-        let mode = 'mes', selectedYears = [2025], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
+        let mode = 'mes', selectedYears = [2026], selectedMonths = [0,1,2,3,4,5,6,7,8,9,10,11], lat = -2.17, lon = -79.92;
         let isSidebarVisible = true;
 
         const neonColors = [
@@ -272,10 +270,7 @@
             "Z13": { color: "#151d4d" }, "Z14": { color: "#492966" }
         };
 
-        // ========================================================
-        // BASE DE DATOS DE ESTRATEGIAS: DICCIONARIO GIVONI (14 Zonas)
-        // Estrategias 100% independientes para garantizar esquemas SVG únicos
-        // ========================================================
+        // BASE DE DATOS DE ESTRATEGIAS: DICCIONARIO GIVONI (14 Zonas Independientes)
         const strategyDB = {
             "Z1": [{ t: "Aperturas Operables (Free-running)", d: "El clima exterior permite el confort natural absoluto. El diseño exige cerramientos totalmente operables (puertas plegables tipo bi-fold o fachadas pivotantes completas) que diluyan el límite físico entre el interior y el exterior para una permeabilidad absoluta sin uso de climatización mecánica." }],
             "Z2": [{ t: "Confort Permisible", d: "El clima oscila en el límite del confort. Se recomienda la implementación de micro-ventilación controlable y contraventanas móviles de uso manual. El usuario debe poder regular de forma micrométrica el flujo de aire y la insolación para adaptar la temperatura de los ambientes." }],
@@ -407,7 +402,7 @@
             
             document.getElementById('section-meses').style.display = mode === 'mes' ? 'block' : 'none';
             document.getElementById('year-label').innerText = mode === 'mes' ? 'Año Base' : 'Años a Comparar';
-            selectedYears = [2025]; // DEFAULT SEGURO A 2025
+            selectedYears = [2026];
             renderSelectors();
             runClimateAnalysis();
         }
@@ -471,7 +466,7 @@
             
             const canvasContainer = document.getElementById('chart-canvas-inside');
             const width = canvasContainer.clientWidth || 1200;
-            const height = 760; 
+            const height = 760; // ALTURA FIJA ORIGINAL DE GIVONI
             
             const margin = { top:20, right:20, bottom:60, left:20 };
             const innerWidth = width - margin.left - margin.right;
@@ -484,6 +479,10 @@
                 .attr('preserveAspectRatio', 'none');
                 
             const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // ¡IMPORTANTE! DECLARACIÓN DE VARIABLES x e y RESTAURADAS AQUI
+            const x = d3.scaleLinear().domain([-5, 50]).range([0, innerWidth]);
+            const y = d3.scaleLinear().domain([0, 35]).range([innerHeight, 0]);
 
             try {
                 const response = await fetch('pruega-de-svg.svg');
@@ -562,10 +561,6 @@
             g.append('g').attr('transform', `translate(0,${innerHeight})`).call(d3.axisBottom(x).ticks(10));
         }
 
-        // ========================================================
-        // VISUALIZADOR BIOCLIMÁTICO INTERACTIVO: DIBUJOS CAD PUROS (SIN GRID)
-        // Secciones independientes y de extrema complejidad técnica.
-        // ========================================================
         function buildInteractiveVisualizer(strategies) {
             const container = document.getElementById('interactive-visualizer');
             
@@ -574,28 +569,22 @@
                 return;
             }
 
-            // PATRONES TÉCNICOS ARQUITECTÓNICOS
             const defsSVG = `
                 <defs>
                     <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-                        <line x1="0" y1="0" x2="0" y2="10" stroke="currentColor" stroke-width="2" opacity="0.3"/>
+                        <line x1="0" y1="0" x2="0" y2="10" stroke="currentColor" stroke-width="2" opacity="0.4"/>
                     </pattern>
-                    <pattern id="hatch-glass" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(45)">
-                        <line x1="0" y1="0" x2="0" y2="12" stroke="#38bdf8" stroke-width="1.5" opacity="0.4"/>
+                    <pattern id="hygroscopic-dots" patternUnits="userSpaceOnUse" width="12" height="12">
+                        <circle cx="3" cy="3" r="1.5" fill="#3b82f6" opacity="0.5"/>
                     </pattern>
-                    <pattern id="hygroscopic-dots" patternUnits="userSpaceOnUse" width="10" height="10">
-                        <circle cx="3" cy="3" r="1.5" fill="#3b82f6" opacity="0.8"/>
-                    </pattern>
-                    <pattern id="hatch-insulation" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(45)">
-                        <line x1="0" y1="0" x2="0" y2="12" stroke="#f59e0b" stroke-width="2" opacity="0.5"/>
-                        <line x1="12" y1="0" x2="0" y2="12" stroke="#f59e0b" stroke-width="2" opacity="0.5"/>
+                    <pattern id="glass-lines" patternUnits="userSpaceOnUse" width="15" height="15" patternTransform="rotate(45)">
+                        <line x1="0" y1="0" x2="0" y2="15" stroke="#38bdf8" stroke-width="2" opacity="0.3"/>
                     </pattern>
                 </defs>
             `;
 
-            // SILUETA HUMANA A ESCALA
             const scaleFigure = `
-                <g opacity="0.4" transform="translate(420, 245) scale(0.65)">
+                <g opacity="0.4" transform="translate(450, 245) scale(0.65)">
                     <circle cx="15" cy="10" r="7" fill="currentColor"/>
                     <path d="M10,20 L20,20 L20,45 L25,80 L18,80 L15,50 L12,80 L5,80 L10,45 Z" fill="currentColor"/>
                 </g>
@@ -606,11 +595,10 @@
             strategies.forEach((strat, i) => {
                 let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
                 
-                // Iconos Lógicos
                 if(strat.t.includes('Operables') || strat.t.includes('Permisible')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>`;
                 if(strat.t.includes('Ventilación') || strat.t.includes('Venturi')) icon = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-                if(strat.t.includes('Pieles') || strat.t.includes('Celosías') || strat.t.includes('Aleros')) icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
-                if(strat.t.includes('Inercia') || strat.t.includes('Masa') || strat.t.includes('Trombe')) icon = `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`;
+                if(strat.t.includes('Pieles') || strat.t.includes('Celosías') || strat.t.includes('Aleros') || strat.t.includes('Protección')) icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
+                if(strat.t.includes('Inercia') || strat.t.includes('Masa') || strat.t.includes('Muro') || strat.t.includes('Trombe')) icon = `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`;
                 if(strat.t.includes('Chimenea') || strat.t.includes('Sobrecubierta')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
                 if(strat.t.includes('Deshumidificación') || strat.t.includes('Evaporativa') || strat.t.includes('Humidificación')) icon = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`;
                 if(strat.t.includes('SATE') || strat.t.includes('Aislamiento')) icon = `<svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
@@ -626,7 +614,6 @@
             });
             menuHTML += `</div>`;
 
-            // ÁREA DE DIBUJO (Fondo limpio sin grids)
             let viewerHTML = `
                 <div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-transparent overflow-hidden min-h-[450px]">
                     <div id="svg-canvas" class="flex-1 w-full h-full relative"></div>
@@ -649,11 +636,7 @@
                     <line x1="50" y1="320" x2="750" y2="320" stroke="currentColor" stroke-width="2" class="opacity-50"/>
                 `;
 
-                // ========================================================
-                // DIBUJOS 100% INDEPENDIENTES PARA LAS 14 ZONAS GIVONI
-                // ========================================================
-
-                // Z1: APERTURAS OPERABLES (Puertas Plegables tipo Bi-Fold)
+                // 1. Z1: APERTURAS OPERABLES (Puertas Bi-Fold)
                 if(strat.t.includes('Aperturas Operables')) {
                     svgContent += `
                         ${groundLine}
@@ -669,8 +652,8 @@
                             <line x1="550" y1="120" x2="550" y2="320" stroke-width="1.5" stroke-dasharray="4" opacity="0.4"/>
                         </g>
 
-                        <polygon points="250,120 160,150 250,320" fill="url(#hatch-glass)" stroke="none"/>
-                        <polygon points="550,120 640,150 550,320" fill="url(#hatch-glass)" stroke="none"/>
+                        <polygon points="250,120 160,150 250,320" fill="url(#glass-lines)" stroke="none"/>
+                        <polygon points="550,120 640,150 550,320" fill="url(#glass-lines)" stroke="none"/>
 
                         ${scaleFigure}
 
@@ -682,7 +665,7 @@
                     `;
                 }
 
-                // Z2: CONFORT PERMISIBLE (Micro-ventilación / Persianas)
+                // 2. Z2: CONFORT PERMISIBLE (Micro-ventilación)
                 else if(strat.t.includes('Permisible')) {
                     svgContent += `
                         ${groundLine}
@@ -692,7 +675,9 @@
                         
                         <line x1="240" y1="200" x2="270" y2="250" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
                         <line x1="530" y1="220" x2="560" y2="180" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
-                        <line x1="270" y1="250" x2="270" y2="200" stroke="#38bdf8" stroke-width="3" opacity="0.6"/> ${scaleFigure}
+                        <line x1="270" y1="250" x2="270" y2="200" stroke="#38bdf8" stroke-width="3" opacity="0.6"/>
+
+                        ${scaleFigure}
 
                         <path d="M 150 250 Q 250 260 280 200 T 450 200 T 550 260 T 650 250" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
                         
@@ -702,14 +687,14 @@
                     `;
                 }
 
-                // Z3: MURO TROMBE
+                // 3. Z3: MURO TROMBE
                 else if(strat.t.includes('Trombe')) {
                     svgContent += `
                         ${groundLine}
                         <rect x="250" y="80" width="320" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5" class="opacity-90"/>
-                        
                         <rect x="250" y="100" width="80" height="220" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="3"/>
-                        <rect x="250" y="100" width="80" height="220" fill="#000000" opacity="0.4"/> <line x1="210" y1="80" x2="210" y2="320" stroke="#38bdf8" stroke-width="4" stroke-dasharray="10 5" opacity="0.8"/>
+                        <rect x="250" y="100" width="80" height="220" fill="#000000" opacity="0.4"/>
+                        <line x1="210" y1="80" x2="210" y2="320" stroke="#38bdf8" stroke-width="4" stroke-dasharray="10 5" opacity="0.8"/>
                         
                         <line x1="250" y1="140" x2="250" y2="120" stroke="transparent" stroke-width="20"/>
                         <line x1="250" y1="300" x2="250" y2="280" stroke="transparent" stroke-width="20"/>
@@ -721,10 +706,9 @@
                         <line x1="110" y1="60" x2="210" y2="120" stroke="#f59e0b" stroke-width="5" stroke-dasharray="10 5"/>
 
                         <rect x="250" y="100" width="80" height="220" fill="#ea580c" class="svg-heat-radiate"/>
-                        
                         <path d="M 330 300 Q 230 300 230 200 T 330 120" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
 
-                        <rect x="130" y="180" width="70" height="25" rx="4" fill="rgba(15,23,42,0.85)" stroke="currentColor" stroke-opacity="0.5"/>
+                        <rect x="130" y="180" width="70" height="25" rx="4" fill="rgba(15,23,42,0.85)" stroke="#38bdf8" stroke-opacity="0.5"/>
                         <text x="165" y="197" fill="white" font-size="9" font-family="Inter" text-anchor="middle">VIDRIO</text>
 
                         <rect x="360" y="150" width="120" height="40" rx="4" fill="rgba(15,23,42,0.85)" stroke="currentColor" stroke-opacity="0.2"/>
@@ -733,14 +717,14 @@
                     `;
                 }
 
-                // Z4: CAPTACIÓN SOLAR PASIVA (Sol entrando profundo en la losa)
+                // 4. Z4: CAPTACIÓN SOLAR PASIVA
                 else if(strat.t.includes('Captación Solar')) {
                     svgContent += `
                         ${groundLine}
                         <rect x="250" y="100" width="300" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5" class="opacity-80"/>
                         <rect x="530" y="120" width="20" height="200" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5" class="opacity-80"/>
                         
-                        <rect x="250" y="120" width="10" height="200" fill="url(#hatch-glass)" stroke="none"/>
+                        <rect x="250" y="120" width="10" height="200" fill="url(#glass-lines)" stroke="none"/>
                         <line x1="250" y1="120" x2="250" y2="320" stroke="#38bdf8" stroke-width="4" stroke-dasharray="10 5"/>
                         
                         ${scaleFigure}
@@ -749,21 +733,24 @@
                         <line x1="100" y1="210" x2="450" y2="300" stroke="#fcd34d" stroke-width="5" stroke-dasharray="15 5"/>
                         <line x1="90" y1="190" x2="380" y2="300" stroke="#fcd34d" stroke-width="5" stroke-dasharray="15 5"/>
                         
-                        <rect x="260" y="315" width="270" height="5" fill="#ea580c" class="svg-heat-radiate"/>
+                        <rect x="260" y="310" width="270" height="10" fill="#1e293b"/>
+                        <rect x="260" y="310" width="270" height="10" fill="#ea580c" class="svg-heat-radiate"/>
                         
-                        <rect x="360" y="270" width="140" height="40" rx="4" fill="rgba(15,23,42,0.85)"/>
-                        <text x="430" y="285" fill="#fcd34d" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">EFECTO INVERNADERO</text>
-                        <text x="430" y="300" fill="white" font-size="9" font-family="Inter" text-anchor="middle">(Captación Sol Bajo)</text>
+                        <rect x="360" y="240" width="140" height="40" rx="4" fill="rgba(15,23,42,0.85)"/>
+                        <text x="430" y="255" fill="#fcd34d" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">EFECTO INVERNADERO</text>
+                        <text x="430" y="270" fill="white" font-size="9" font-family="Inter" text-anchor="middle">(Sol Bajo Invernal)</text>
                     `;
                 }
 
-                // Z5: INVERNADERO ADOSADO (Buffer Térmico)
+                // 5. Z5: INVERNADERO ADOSADO (Buffer)
                 else if(strat.t.includes('Invernadero')) {
                     svgContent += `
                         ${groundLine}
                         <rect x="400" y="100" width="20" height="220" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
                         <rect x="400" y="80" width="200" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
-                        <line x1="400" y1="280" x2="400" y2="200" stroke="transparent" stroke-width="30"/> <polygon points="150,180 400,120 400,320 150,320" fill="url(#hatch-glass)" stroke="none"/>
+                        <line x1="400" y1="280" x2="400" y2="200" stroke="transparent" stroke-width="30"/>
+
+                        <polygon points="150,180 400,120 400,320 150,320" fill="url(#glass-lines)" stroke="none"/>
                         <line x1="150" y1="180" x2="400" y2="120" stroke="#38bdf8" stroke-width="4" stroke-dasharray="10 5"/>
                         <line x1="150" y1="180" x2="150" y2="320" stroke="#38bdf8" stroke-width="4" stroke-dasharray="10 5"/>
                         
@@ -779,7 +766,7 @@
                     `;
                 }
 
-                // Z6: HUMIDIFICACIÓN PASIVA
+                // 6. Z6: HUMIDIFICACIÓN PASIVA
                 else if(strat.t.includes('Humidificación')) {
                     svgContent += `
                         ${groundLine}
@@ -801,15 +788,16 @@
                     `;
                 }
 
-                // Z7: AISLAMIENTO SATE
+                // 7. Z7: AISLAMIENTO SATE
                 else if(strat.t.includes('SATE') || strat.t.includes('Aislamiento')) {
                     svgContent += `
                         ${groundLine}
                         <rect x="300" y="80" width="40" height="240" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
                         <rect x="250" y="80" width="50" height="240" fill="#f59e0b" opacity="0.6"/>
-                        <rect x="250" y="60" width="300" height="20" fill="#f59e0b" opacity="0.6"/> <rect x="300" y="80" width="250" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
+                        <rect x="250" y="60" width="300" height="20" fill="#f59e0b" opacity="0.6"/> 
+                        <rect x="300" y="80" width="250" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
                         
-                        <path d="M 100 150 L 230 200 L 100 250" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-ray-bounce"/>
+                        <path d="M 100 150 L 220 200 L 100 250" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-ray-bounce"/>
                         
                         ${scaleFigure}
 
@@ -822,7 +810,7 @@
                     `;
                 }
 
-                // Z8: PROTECCIÓN SOLAR ESTRICTA
+                // 8. Z8: PROTECCIÓN SOLAR ESTRICTA
                 else if(strat.t.includes('Protección Solar')) {
                     svgContent += `
                         ${groundLine}
@@ -841,7 +829,7 @@
                     `;
                 }
 
-                // Z9: INERCIA TÉRMICA MASIVA
+                // 9. Z9: INERCIA TÉRMICA MASIVA
                 else if(strat.t.includes('Inercia Térmica Masiva')) {
                     svgContent += `
                         ${groundLine}
@@ -860,7 +848,7 @@
                     `;
                 }
 
-                // Z10: REFRIGERACIÓN EVAPORATIVA
+                // 10. Z10: REFRIGERACIÓN EVAPORATIVA
                 else if(strat.t.includes('Evaporativa')) {
                     svgContent += `
                         ${groundLine}
@@ -882,7 +870,7 @@
                     `;
                 }
 
-                // Z11: RENOVACIÓN NOCTURNA
+                // 11. Z11: RENOVACIÓN NOCTURNA
                 else if(strat.t.includes('Nocturna')) {
                     svgContent += `
                         ${groundLine}
@@ -903,7 +891,7 @@
                     `;
                 }
 
-                // Z12: EFECTO VENTURI (Aceleración Eólica por Asimetría)
+                // 12. Z12: EFECTO VENTURI
                 else if(strat.t.includes('Venturi')) {
                     svgContent += `
                         ${groundLine}
@@ -930,7 +918,7 @@
                     `;
                 }
 
-                // Z13: EFECTO CHIMENEA (Doble Cubierta a distintas alturas con Monitor Central)
+                // 13. Z13: EFECTO CHIMENEA (Doble Cubierta a diferentes alturas)
                 else if(strat.t.includes('Chimenea') || strat.t.includes('Cubierta')) {
                     svgContent += `
                         ${groundLine}
@@ -939,25 +927,24 @@
                         
                         ${scaleFigure}
 
-                        <polygon points="250,180 380,80 380,100 270,180" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
-                        <polygon points="550,180 420,80 420,100 530,180" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
+                        <polygon points="250,180 400,90 400,110 270,180" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
+                        <polygon points="550,180 420,130 420,150 530,180" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
+                        <polygon points="380,70 460,70 460,80 380,80" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
                         
-                        <polygon points="360,60 440,60 440,70 360,70" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
-                        
-                        <path d="M 380 260 Q 400 160 385 40" fill="none" stroke="#ef4444" stroke-width="8" class="svg-float-up-chimney"/>
-                        <path d="M 420 260 Q 400 160 415 40" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up-chimney" style="animation-delay: 1.5s;"/>
+                        <path d="M 380 260 Q 400 160 395 50" fill="none" stroke="#ef4444" stroke-width="8" class="svg-float-up-chimney"/>
+                        <path d="M 420 260 Q 400 160 415 50" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up-chimney" style="animation-delay: 1.5s;"/>
                         
                         <path d="M 150 280 Q 250 280 350 270" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
                         <path d="M 650 280 Q 550 280 450 270" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow-reverse"/>
 
-                        <rect x="450" y="50" width="130" height="40" rx="4" fill="rgba(15,23,42,0.85)" stroke="currentColor" stroke-opacity="0.2"/>
-                        <text x="515" y="65" fill="#ef4444" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">MONITOR TÉRMICO</text>
-                        <text x="515" y="80" fill="white" font-size="9" font-family="Inter" text-anchor="middle">(Tiro de Extracción)</text>
+                        <rect x="470" y="60" width="130" height="40" rx="4" fill="rgba(15,23,42,0.85)" stroke="currentColor" stroke-opacity="0.2"/>
+                        <text x="535" y="75" fill="#ef4444" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">MONITOR TÉRMICO</text>
+                        <text x="535" y="90" fill="white" font-size="9" font-family="Inter" text-anchor="middle">(Tiro de Extracción)</text>
                     `;
                 }
 
-                // Z14: DESHUMIDIFICACIÓN MATERIAL / PALAFITOS
-                else if(strat.t.includes('Deshumidificación') || strat.t.includes('Palafítica') || strat.t.includes('Palafitos')) {
+                // 14. Z14: DESHUMIDIFICACIÓN MATERIAL / PALAFITOS
+                else if(strat.t.includes('Deshumidificación') || strat.t.includes('Palafítica')) {
                     svgContent += `
                         <line x1="280" y1="360" x2="280" y2="200" stroke="currentColor" stroke-width="15"/>
                         <line x1="520" y1="360" x2="520" y2="200" stroke="currentColor" stroke-width="15"/>
@@ -991,12 +978,8 @@
                         <rect x="530" y="140" width="20" height="160" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
                         <polygon points="180,140 400,60 620,140" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="1.5"/>
                         ${scaleFigure}
-
-                        <g class="svg-sun-pulse">
-                            <line x1="180" y1="300" x2="180" y2="180" stroke="currentColor" stroke-width="4"/>
-                            <circle cx="180" cy="160" r="40" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="8 4"/>
-                        </g>
-
+                        <line x1="180" y1="300" x2="180" y2="180" stroke="currentColor" stroke-width="4"/>
+                        <circle cx="180" cy="160" r="40" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="8 4"/>
                         <rect x="110" y="80" width="140" height="25" rx="4" fill="rgba(15,23,42,0.85)"/>
                         <text x="180" y="97" fill="#10b981" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">FILTRO VEGETAL PASIVO</text>
                     `;
@@ -1015,6 +998,7 @@
 
         // ========================================================
         // MOTOR DE ANÁLISIS: MAPEO DE 14 ZONAS GIVONI
+        // (Resumen Lógico, Extenso y Comprensible)
         // ========================================================
         function updateAnalysis(data){
             const tableBody = document.getElementById('table-body'); tableBody.innerHTML = '';
@@ -1048,8 +1032,7 @@
             const avgTMin = sumTMin / data.length;
             const avgHR = sumH / data.length;
 
-            // RESUMEN GENERAL AVANZADO, EXTENSO Y SENCILLO DE ENTENDER
-            let text = `<p>El análisis climático de esta ubicación nos indica que la temperatura máxima promedio que sentiremos será de <strong>${avgTMax.toFixed(1)}°C</strong>, y bajará hasta unos <strong>${avgTMin.toFixed(1)}°C</strong>. Sin embargo, el factor más importante aquí es la humedad relativa constante del <strong>${avgHR.toFixed(0)}%</strong>.</p>`;
+            let text = `<p>El análisis climático de esta ubicación nos indica que la temperatura máxima promedio que sentiremos será de <strong>${avgTMax.toFixed(1)}°C</strong>, y bajará hasta unos <strong>${avgTMin.toFixed(1)}°C</strong>. Sin embargo, el factor más importante y decisivo aquí es la humedad relativa constante del <strong>${avgHR.toFixed(0)}%</strong>.</p>`;
 
             const uniqueZones = [...new Set(allDetectedZones)];
             let recs = [];
@@ -1067,23 +1050,23 @@
             });
 
             if (uniqueZones.includes("Z13") || uniqueZones.includes("Z14")) {
-                text += `<p class="mt-4">Para entenderlo de forma sencilla: cuando el aire está "lleno" de agua (humedad muy alta), nuestro cuerpo no puede evaporar el sudor. Si el sudor no se seca, sentimos esa pesadez pegajosa y el calor se vuelve sofocante, incluso si la temperatura no es extrema. Además, el sol es intenso y cualquier superficie que toque la calentará rápidamente.</p>
-                <p class="mt-4">Por lo tanto, la arquitectura aquí no puede ser una "caja cerrada". Al contrario, debe ser un <strong>filtro permeable</strong> que bloquee el sol pero deje pasar el viento. Debemos diseñar cubiertas con aberturas elevadas que actúen como chimeneas para botar el aire caliente que sube, levantar la casa sobre pilares (palafitos) para que el viento pase por debajo alejándonos del suelo húmedo, y forrar el interior con maderas o arcillas que funcionen como "esponjas" absorbiendo la humedad pegajosa del aire.</p>`;
+                text += `<p class="mt-4">Para entenderlo de forma sencilla: cuando el aire está "lleno" de agua (humedad muy alta), nuestro cuerpo pierde su principal mecanismo de enfriamiento, que es evaporar el sudor. Al no poder secarse, el sudor se queda en la piel, creando esa pesadez pegajosa y haciendo que el calor se vuelva sofocante y agobiante, sin importar que la temperatura no parezca tan alta en el termómetro. Además, en esta latitud el sol golpea con gran intensidad y calentará brutalmente cualquier muro o vidrio que toque.</p>
+                <p class="mt-4">Por lo tanto, la arquitectura aquí no puede ser bajo ningún motivo una "caja cerrada". Al contrario, debe comportarse como un <strong>filtro permeable y activo</strong>. Debemos diseñar dobles techos o lucernarios altos para que el aire caliente escape por arriba (como una chimenea), levantar los recintos sobre pilares (palafitos modernos) para que la brisa barra el suelo y nos aleje de la humedad de la tierra, e instalar celosías o paneles calados alrededor de la casa para que el sol rebote afuera, pero la brisa fresca pase al interior sin obstáculos. Finalmente, usar maderas sin barnizar o arcillas en los interiores ayudará, ya que estos materiales actúan como esponjas que absorben la humedad pegajosa del aire.</p>`;
             } else if (uniqueZones.includes("Z8") || uniqueZones.includes("Z9") || uniqueZones.includes("Z10")) {
-                text += `<p class="mt-4">El perfil indica un entorno de <strong>calor seco y ardiente</strong>. La gran ventaja aquí es que, como no hay mucha humedad, podemos usar el agua a nuestro favor. Si colocamos fuentes o estanques en patios interiores, el viento caliente chocará con el agua, se enfriará por evaporación y entrará a las habitaciones fresco y agradable.</p>
-                <p class="mt-4">Sin embargo, el sol es el enemigo número uno. La casa debe actuar como una cueva protectora: usar muros muy gruesos (como tapial, adobe u hormigón pesado) que bloqueen el impacto del sol durante el día, absorban ese calor y lo suelten despacio cuando llegue el frío de la noche. Además, los techos deben ser inmensos para asegurar que ningún rayo de sol toque los vidrios de las ventanas.</p>`;
+                text += `<p class="mt-4">El perfil indica un entorno de <strong>calor seco y ardiente</strong>. La gran ventaja de la falta de humedad es que podemos usar el agua a nuestro favor. Si incluimos espejos de agua o fuentes en patios interiores cerrados, el viento caliente chocará con el agua, evaporándola; al hacerlo, el aire perderá temperatura y entrará a las habitaciones como una brisa fresca (refrigeración evaporativa).</p>
+                <p class="mt-4">Sin embargo, el sol directo es letal. La casa debe actuar como una "cueva" protectora: usar muros masivos y pesados (como tapial, adobe u hormigón de alto grosor) que absorban el impacto brutal del sol durante el día y actúen como un escudo protector, liberando ese calor lentamente cuando llegue el frío de la noche. Además, deben construirse aleros inmensos para asegurar que ningún rayo de luz solar toque jamás los cristales.</p>`;
             } else if (uniqueZones.includes("Z1") || uniqueZones.includes("Z2")) {
-                text += `<p class="mt-4">El clima oscila primordialmente dentro de lo que llamamos la <strong>Zona de Confort Natural</strong>. Esto significa que la mayor parte del año el cuerpo humano se siente excelente sin necesidad de ventiladores, calentadores o aire acondicionado.</p>
-                <p class="mt-4">El diseño arquitectónico debe ser completamente libre. Debemos construir grandes muros o puertas que se puedan plegar (tipo bi-fold) o abrir por completo, borrando la línea que separa la sala de estar del jardín, permitiendo que la brisa natural cruce toda la planta de la casa a voluntad de quien viva ahí.</p>`;
+                text += `<p class="mt-4">El clima oscila permanentemente dentro de la <strong>Zona de Confort Natural</strong>. Esto significa que la mayor parte del año el cuerpo humano se siente excelente sin necesidad de ventiladores ni aire acondicionado.</p>
+                <p class="mt-4">El diseño arquitectónico debe ser completamente "libre". En lugar de paredes fijas, debemos utilizar puertas plegables de formato gigante (bi-fold) que permitan abrir toda una fachada de la casa hacia un jardín o patio, borrando la frontera entre el interior y el exterior para que la brisa natural cruce todos los espacios a voluntad.</p>`;
             } else {
-                text += `<p class="mt-4">El perfil nos dice que el reto de esta ubicación no es el calor, sino <strong>conservar una temperatura cálida y agradable</strong> frente al frío. El objetivo arquitectónico es diseñar una casa que actúe como una trampa de calor natural.</p>
-                <p class="mt-4">Necesitamos maximizar las ventanas orientadas hacia la ruta del sol para capturar su calor por efecto invernadero. A su vez, los muros deben ser gruesos y oscuros para absorber este sol y actuar como estufas naturales durante la noche. Todo el edificio deberá envolverse con capas de aislamiento térmico muy gruesas por el exterior (SATE) para asegurar que el calor que ganamos en el día no se fugue hacia afuera.</p>`;
+                text += `<p class="mt-4">El perfil nos dice que el gran reto de esta ubicación no es el calor, sino <strong>conservar una temperatura agradable frente al frío</strong>. El objetivo arquitectónico es diseñar una casa que actúe como una trampa térmica natural.</p>
+                <p class="mt-4">Necesitamos maximizar grandes ventanales de cristal orientados a la ruta del sol para capturar su calor mediante efecto invernadero. Además, toda la casa debe envolverse con gruesas placas de aislamiento térmico por el exterior (sistemas SATE), asegurando que el edificio se comporte como un termo y no deje escapar el valioso calor ganado durante el día hacia la fría noche.</p>`;
             }
 
             document.getElementById('analysis-text').innerHTML = text;
 
             if(recs.length === 0 || !addedTitles.has("Paisajismo Bioclimático")) {
-                recs.push({t: "Paisajismo Bioclimático", d: "Uso de barreras vegetales tupidas y árboles de follaje caduco para filtrar vientos extremos, controlar el asoleamiento estacional y crear un microclima sombreado y fresco alrededor del volumen arquitectónico."});
+                recs.push({t: "Paisajismo Bioclimático", d: "Uso de barreras vegetales tupidas y árboles de follaje caduco para filtrar vientos extremos, controlar el asoleamiento estacional y crear microclimas confortables alrededor del volumen arquitectónico."});
             }
 
             const sl = document.getElementById('strategy-list'); sl.innerHTML = '';
@@ -1095,12 +1078,12 @@
                     </div>`;
             });
 
-            // EJECUTAR MOTOR INTERACTIVO SVG DE PLANOS
+            // EJECUTAR MOTOR INTERACTIVO SVG
             buildInteractiveVisualizer(recs);
         }
 
         async function runClimateAnalysis(){
-            document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Compilando variables.</span>";
+            document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos históricos de la API.</span>";
             let results = [];
             try {
                 const year = selectedYears[0];
@@ -1139,7 +1122,7 @@
                         const response = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`);
                         const d = await response.json();
                         
-                        if (d.error) continue; // Si un año falla, saltarlo
+                        if (d.error) continue;
                         
                         results.push({ label: `${y}`, tMax: d3.mean(d.daily.temperature_2m_max), tMin: d3.mean(d.daily.temperature_2m_min), hr: d3.mean(d.daily.relative_humidity_2m_mean) });
                     }
@@ -1171,7 +1154,7 @@
 
         window.addEventListener('resize', () => { if(window.currentData) drawChart(window.currentData); });
         
-        // EJECUCIÓN INICIAL AL CARGAR LA PÁGINA
+        // EJECUCIÓN INICIAL AUTOMÁTICA
         setMode('mes'); 
         updateLocation(lat, lon);
     </script>
