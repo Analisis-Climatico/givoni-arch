@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="es" class="dark">
-<head>
+<!DOCTYPE html><html lang="es" class="dark"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLÓVINA — Análisis Climático & Bioclimático</title>
@@ -87,9 +85,7 @@
         .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
         .pdf-table th, .pdf-table td { border: 1px solid #cbd5e1; padding: 16px; text-align: center; font-size: 16px; color: #1e293b; }
         .pdf-table th { background: #f1f5f9; font-weight: bold; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
+    </style></head><body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-10%] left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-cyan-400/10 to-transparent blur-[160px] opacity-40"></div>
@@ -629,7 +625,7 @@
         }
 
         // ========================================================
-        // MOTOR LÓGICO DE DIAGNÓSTICO ARQUITECTÓNICO (Corregido humedad frío/calor)
+        // MOTOR LÓGICO DE DIAGNÓSTICO ARQUITECTÓNICO
         // ========================================================
         function updateAnalysis(data){
             const tableBody = document.getElementById('table-body'); tableBody.innerHTML = '';
@@ -677,7 +673,6 @@
                 }
             });
 
-            // Resumen arquitectónico técnico corrigiendo Frío vs Calor
             if (avgTMax > 26 && avgHR > 65) {
                 text += `<p class="mt-4">El perfil detecta un entorno de <strong>Calor y Alta Humedad (Bochorno Tropical)</strong>. En términos arquitectónicos, el aire saturado impide el enfriamiento corporal natural. El diseño no puede ser una caja cerrada; requiere actuar como un filtro altamente permeable. Es prioritario desvincular el contenedor de la humedad del suelo mediante palafitos, forzar una ventilación cruzada continua, y utilizar dobles cubiertas ventiladas que extraigan el aire caliente por efecto chimenea. El bloqueo de la radiación directa debe ser total y absoluto mediante el uso de celosías que permitan el paso del aire.</p>`;
             } else if (avgTMin <= 22 && avgHR > 65) {
@@ -706,13 +701,11 @@
 
         // ========================================================
         // MOTOR SVG AXONOMÉTRICO / CORTES (BLUEPRINT LIMPIO Y SIN GRID)
-        // Parametrización aislada para cada recomendación
         // ========================================================
         function buildInteractiveVisualizer(strategies) {
             const container = document.getElementById('interactive-visualizer');
             if(strategies.length === 0) return;
 
-            // PATRONES TÉCNICOS ARQUITECTÓNICOS
             const defsSVG = `
                 <defs>
                     <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
@@ -731,7 +724,6 @@
                 </defs>
             `;
 
-            // SILUETA HUMANA
             const scaleFigure = `
                 <g opacity="0.5" transform="translate(420, 245) scale(0.65)">
                     <circle cx="15" cy="10" r="7" fill="#cbd5e1"/>
@@ -744,7 +736,6 @@
             strategies.forEach((strat, i) => {
                 let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
                 
-                // Mapeo Inteligente Iconos
                 if(strat.t.includes('regulable') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>`;
                 if(strat.t.includes('Ventilación') || strat.t.includes('Venturi') || strat.t.includes('cruzada')) icon = `<svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
                 if(strat.t.includes('Protección') || strat.t.includes('Parasoles') || strat.t.includes('doble piel') || strat.t.includes('extendida')) icon = `<svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
@@ -786,11 +777,7 @@
                     <line x1="50" y1="320" x2="750" y2="320" stroke="#e2e8f0" stroke-width="2" class="opacity-50"/>
                 `;
 
-                // ==========================================
-                // DIBUJOS TÉCNICOS AISLADOS POR RECOMENDACIÓN
-                // ==========================================
-
-                // 1. APERTURAS OPERABLES / FACHADA PERMEABLE (Puertas Bi-Fold 100%)
+                // 1. APERTURAS OPERABLES
                 if(strat.t.includes('regulable') || strat.t.includes('permeable')) {
                     svgContent += `
                         ${groundLine}
@@ -819,7 +806,7 @@
                     `;
                 }
 
-                // 2. CUBIERTA VENTILADA / EFECTO CHIMENEA / LUCERNARIO TÉRMICO
+                // 2. CUBIERTA VENTILADA
                 else if(strat.t.includes('Cubierta ventilada') || strat.t.includes('Chimenea') || strat.t.includes('Lucernario') || strat.t.includes('extractora')) {
                     svgContent += `
                         ${groundLine}
@@ -843,7 +830,7 @@
                     `;
                 }
 
-                // 3. DESHUMIDIFICACIÓN MATERIAL / MATERIAL HIGROSCÓPICO
+                // 3. DESHUMIDIFICACIÓN
                 else if(strat.t.includes('Deshumidificación') || strat.t.includes('higroscópico')) {
                     svgContent += `
                         ${groundLine}
@@ -872,7 +859,7 @@
                     `;
                 }
 
-                // 4. EFECTO VENTURI / VENTILACIÓN CRUZADA PROFUNDA
+                // 4. EFECTO VENTURI
                 else if(strat.t.includes('cruzada') || strat.t.includes('Venturi') || strat.t.includes('Purgado') || strat.t.includes('elevada')) {
                     svgContent += `
                         ${groundLine}
@@ -899,7 +886,7 @@
                     `;
                 }
 
-                // 5. INERCIA TÉRMICA / MURO ACUMULADOR / NÚCLEO COMPACTO
+                // 5. INERCIA TÉRMICA
                 else if(strat.t.includes('acumulador') || strat.t.includes('masa térmica') || strat.t.includes('inercia térmica') || strat.t.includes('compacto')) {
                     svgContent += `
                         ${groundLine}
@@ -947,7 +934,7 @@
                     `;
                 }
 
-                // 7. REFRIGERACIÓN EVAPORATIVA / PATIO HÚMEDO
+                // 7. REFRIGERACIÓN EVAPORATIVA
                 else if(strat.t.includes('evaporativa') || strat.t.includes('húmedo') || strat.t.includes('agua') || strat.t.includes('Vegetación refrescante') || strat.t.includes('Nebulización')) {
                     svgContent += `
                         ${groundLine}
@@ -971,7 +958,7 @@
                     `;
                 }
 
-                // 8. AISLAMIENTO SATE / ENVOLVENTE TÉRMICA / CARPINTERÍA
+                // 8. AISLAMIENTO
                 else if(strat.t.includes('Aislamiento') || strat.t.includes('envolvente térmica') || strat.t.includes('hermética') || strat.t.includes('aislada')) {
                     svgContent += `
                         ${groundLine}
@@ -1015,7 +1002,7 @@
                     `;
                 }
 
-                // 10. PROTECCIÓN SOLAR TOTAL / ALEROS / FACHADA DE DOBLE PIEL (Regla Exclusión Solar 100%)
+                // 10. PROTECCIÓN SOLAR TOTAL
                 else if(strat.t.includes('Protección solar') || strat.t.includes('Parasoles') || strat.t.includes('doble piel') || strat.t.includes('Aleros') || strat.t.includes('Cubierta extendida')) {
                     svgContent += `
                         ${groundLine}
@@ -1034,7 +1021,7 @@
                     `;
                 }
 
-                // 11. CAPTACIÓN SOLAR PASIVA / PANEL SOLAR / GALERÍA
+                // 11. CAPTACIÓN SOLAR PASIVA
                 else if(strat.t.includes('Captación') || strat.t.includes('solar térmica') || strat.t.includes('Galería') || strat.t.includes('Panel') || strat.t.includes('Orientación')) {
                     svgContent += `
                         ${groundLine}
@@ -1109,10 +1096,10 @@
         }
 
         // ========================================================
-        // MOTOR LÓGICO DE LA API (Exactamente la proporcionada, sin inyección de datos falsos)
+        // MOTOR LÓGICO DE LA API - OPEN-METEO CORREGIDO
         // ========================================================
         async function runClimateAnalysis(){
-            document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest text-xs uppercase text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos psicrométricos históricos.</span>";
+            document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest text-[10px] lg:text-xs uppercase text-cyan-500'>Conectando a base meteorológica... procesando matrices.</span>";
             let results = [];
             try {
                 const year = selectedYears[0];
@@ -1122,17 +1109,22 @@
                     const pastDate = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
                     endDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
                 }
+                
                 if(mode === 'mes'){
-                    const data = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`)).json();
+                    // FIX OPEN-METEO: hourly=relative_humidity_2m
+                    const data = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`)).json();
+                    
                     selectedMonths.forEach(m => {
-                        const filter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
-                        const tMaxFiltered = data.daily.temperature_2m_max.filter(filter);
+                        const dailyFilter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
+                        const hourlyFilter = (_,idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
+                        
+                        const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
                         if (tMaxFiltered.length > 0) {
                             results.push({
                                 label: `${months[m]} ${year}`,
                                 tMax: d3.mean(tMaxFiltered),
-                                tMin: d3.mean(data.daily.temperature_2m_min.filter(filter)),
-                                hr: d3.mean(data.daily.relative_humidity_2m_mean.filter(filter))
+                                tMin: d3.mean(data.daily.temperature_2m_min.filter(dailyFilter)),
+                                hr: d3.mean(data.hourly.relative_humidity_2m.filter(hourlyFilter))
                             });
                         }
                     });
@@ -1140,8 +1132,15 @@
                     for(const y of selectedYears){
                         let yEnd = `${y}-12-31`;
                         if (y === today.getFullYear()) yEnd = endDate;
-                        const d = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&timezone=auto`)).json();
-                        results.push({ label: `${y}`, tMax: d3.mean(d.daily.temperature_2m_max), tMin: d3.mean(d.daily.temperature_2m_min), hr: d3.mean(d.daily.relative_humidity_2m_mean) });
+                        
+                        const d = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`)).json();
+                        
+                        results.push({ 
+                            label: `${y}`, 
+                            tMax: d3.mean(d.daily.temperature_2m_max), 
+                            tMin: d3.mean(d.daily.temperature_2m_min), 
+                            hr: d3.mean(d.hourly.relative_humidity_2m) 
+                        });
                     }
                 }
                 window.currentData = results;
@@ -1216,5 +1215,5 @@
         setMode('mes'); 
         updateLocation(lat, lon);
     </script>
-</body>
+    </body>
 </html>
