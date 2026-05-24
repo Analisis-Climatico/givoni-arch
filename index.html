@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLÓVINA — Análisis Climático & Bioclimático</title>
+    <title>CLÓVINA — Análisis Climático modular para alojamiento modular</title>
     <link rel="icon" type="image/png" sizes="256x256" href="Tipo1.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -46,6 +46,7 @@
 
         .strat-btn.active { background: rgba(37, 99, 235, 0.15); border-left: 4px solid #3b82f6; box-shadow: inset 0 0 20px rgba(37, 99, 235, 0.05); }
         .dark .strat-btn.active { background: rgba(6, 182, 212, 0.15); border-left: 4px solid #06b6d4; box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05); }
+
         .climate-line {transition: stroke-width 0.2s, opacity 0.2s; }
 
         /* ANIMACIONES ARQUITECTÓNICAS SVG COMPLEJAS */
@@ -64,23 +65,18 @@
         .svg-moisture { animation: absorb-moisture 2.5s infinite ease-in-out; }
         .svg-heat-radiate { animation: heat-radiate 3s infinite alternate ease-in-out; transform-origin: center; }
 
-        /* ESTILOS PDF (BLANCO PURO) */
-        .pdf-print-forced { background: #ffffff !important; color: #0f172a !important; }
-        .pdf-print-forced .glass-panel { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: none !important; }
-        .pdf-print-forced h2, .pdf-print-forced p, .pdf-print-forced td, .pdf-print-forced th, .pdf-print-forced span { color: #0f172a !important; }
-        .pdf-print-forced #chart-canvas-inside svg > g > g:first-child { filter: none !important; }
-
+        /* ESTILOS PDF (BLANCO PURO COMPLETO) */
         #pdf-generator-container { position: absolute; left: -9999px; top: 0; width: 1200px; background: white; color: #0f172a; font-family: 'Inter', sans-serif; z-index: -9999; visibility: hidden; opacity: 0; }
         .pdf-page { width: 1200px; height: 1697px; padding: 60px; background: white; box-sizing: border-box; position: relative; }
         .pdf-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #cbd5e1; padding-bottom: 20px; margin-bottom: 40px; }
         .pdf-header img { height: 70px; }
         .pdf-meta-box { text-align: right; color: #475569; font-size: 16px; font-weight: 600; line-height: 1.5; font-family: 'Space Grotesk', sans-serif; }
         .pdf-title { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 25px; letter-spacing: 2px; text-transform: uppercase; border-left: 5px solid #3b82f6; padding-left: 15px; }
-        .pdf-text { font-size: 14px; color: #334155; line-height: 1.6; text-align: justify; margin-bottom: 25px; }
-        .pdf-strat-box { border: 1px solid #e2e8f0; border-left: 6px solid #06b6d4; padding: 20px; border-radius: 12px; margin-bottom: 20px; background: #f8fafc; page-break-inside: avoid; }
-        .pdf-strat-title { font-weight: 800; color: #0f172a; font-size: 16px; text-transform: uppercase; margin-bottom: 8px; font-family: 'Space Grotesk', sans-serif; }
+        .pdf-text { font-size: 18px; color: #334155; line-height: 1.8; text-align: justify; margin-bottom: 25px; }
+        .pdf-strat-box { border: 1px solid #e2e8f0; border-left: 6px solid #06b6d4; padding: 25px; border-radius: 12px; margin-bottom: 25px; background: #f8fafc; page-break-inside: avoid; }
+        .pdf-strat-title { font-weight: 800; color: #0f172a; font-size: 20px; text-transform: uppercase; margin-bottom: 12px; font-family: 'Space Grotesk', sans-serif; }
         .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-        .pdf-table th, .pdf-table td { border: 1px solid #cbd5e1; padding: 12px; text-align: center; font-size: 14px; color: #1e293b; }
+        .pdf-table th, .pdf-table td { border: 1px solid #cbd5e1; padding: 16px; text-align: center; font-size: 16px; color: #1e293b; }
         .pdf-table th { background: #f1f5f9; font-weight: bold; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; }
     </style>
 </head>
@@ -305,78 +301,78 @@
         };
 
         // ========================================================
-        // BASE DE DATOS EXACTA CON LAS 42 DESCRIPCIONES (PROMPTS)
+        // BASE DE DATOS EXACTA CORREGIDA CON LAS 42 DEFINICIONES
         // ========================================================
         const strategyDB = {
             "Z1": [
-                { t: "Ventilación regulable", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando claramente el funcionamiento de la ventilación regulable y el flujo de aire natural dentro del edificio. Incorporar ventanas operables, aperturas graduables y paneles abatibles en distintas posiciones para evidenciar el control de entrada y salida del aire según las condiciones térmicas. Representar mediante flechas dinámicas la ventilación cruzada, indicando el ingreso de aire fresco y la evacuación del aire caliente a través de aperturas superiores. Utilizar una representación arquitectónica limpia, profesional y bioclimática, con elementos constructivos simples pero entendibles." },
-                { t: "Cubierta ventilada", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando el funcionamiento de una cubierta ventilada separada de la estructura principal para permitir la disipación del calor acumulado antes de ingresar al interior del edificio. Representar claramente la cámara de aire entre ambas cubiertas y el recorrido del aire caliente que asciende y se evacúa naturalmente. Incorporar flechas dinámicas que indiquen la circulación del aire y el control térmico pasivo, utilizando una representación arquitectónica limpia, profesional y bioclimática con elementos constructivos simples y entendibles." },
-                { t: "Protección solar ligera", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando el funcionamiento de sistemas de protección solar ligera a través de aleros y elementos de sombra que reduzcan las ganancias térmicas sin bloquear completamente la iluminación natural. Representar la incidencia solar, las zonas de sombra proyectadas y el ingreso controlado de luz al interior del edificio. Incorporar flechas y recursos gráficos que expliquen el control climático pasivo, utilizando una representación arquitectónica limpia, profesional y bioclimática con elementos constructivos simples y entendibles." }
+                { t: "Ventilación regulable", d: "Incorporar ventanas operables y aperturas graduables que permitan controlar el flujo de aire según las condiciones térmicas del ambiente." },
+                { t: "Cubierta ventilada", d: "Diseñar cubiertas separadas de la estructura principal para permitir la disipación del calor acumulado antes de ingresar al interior." },
+                { t: "Protección solar ligera", d: "Utilizar aleros y elementos de sombra que reduzcan ganancias térmicas sin bloquear completamente la iluminación natural." }
             ],
             "Z2": [
-                { t: "Espacios de transición", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando espacios de transición como corredores, terrazas o galerías que funcionen como amortiguadores térmicos entre el exterior y el interior del edificio. Representar claramente la relación entre las áreas abiertas y cerradas, evidenciando cómo estos espacios ayudan a reducir la ganancia térmica y favorecen la ventilación natural. Incorporar flechas de circulación de aire y recursos gráficos que expliquen el confort climático pasivo, utilizando una representación arquitectónica limpia, profesional y bioclimática con elementos constructivos simples y entendibles." },
-                { t: "Fachada permeable", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una fachada permeable compuesta por celosías o paneles perforados que permitan una ventilación constante y reduzcan la sensación de encierro térmico en el interior del edificio. Representar el paso del aire a través de la fachada, el control de la radiación solar y la relación entre ventilación, sombra y confort térmico. Incorporar flechas dinámicas de circulación de aire y recursos gráficos bioclimáticos, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Ventilación elevada", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un sistema de ventilación elevada mediante aperturas superiores que faciliten la salida natural del aire caliente acumulado en el interior del edificio. Representar claramente el ascenso del aire caliente y el ingreso de aire fresco desde zonas inferiores para evidenciar el funcionamiento de la ventilación natural pasiva. Incorporar flechas dinámicas de circulación de aire y recursos gráficos bioclimáticos, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Espacios de transición", d: "Incorporar corredores, terrazas o galerías que funcionen como amortiguadores térmicos entre exterior e interior." },
+                { t: "Fachada permeable", d: "Utilizar celosías o paneles perforados que permitan ventilación constante y reduzcan sensación de encierro térmico." },
+                { t: "Ventilación elevada", d: "Diseñar aperturas superiores que faciliten la salida natural del aire caliente acumulado." }
             ],
             "Z3": [
-                { t: "Núcleo compacto", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un núcleo compacto donde los espacios de uso frecuente se organizan alrededor de zonas centrales para conservar y distribuir mejor el calor interior generado por la ocupación y los equipos. Representar la concentración térmica en las áreas centrales y la relación entre los espacios interiores para evidenciar una mayor eficiencia térmica y confort ambiental. Incorporar recursos gráficos y flechas que expliquen el comportamiento térmico pasivo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Envolvente térmica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando una envolvente térmica compuesta por cerramientos aislantes que reduzcan las pérdidas de calor hacia el exterior. Representar claramente las capas constructivas del muro o cubierta y el comportamiento térmico entre el interior y el exterior del edificio. Incorporar recursos gráficos y flechas que expliquen la conservación del calor y la eficiencia térmica pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Carpintería hermética", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando carpinterías herméticas con puertas y ventanas provistas de sellos térmicos que eviten infiltraciones de aire frío hacia el interior del edificio. Representar claramente el cierre hermético de los vanos y la diferencia térmica entre exterior e interior, evidenciando la conservación del calor y el confort ambiental. Incorporar recursos gráficos y flechas que expliquen el control de infiltraciones y la eficiencia térmica pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Núcleo compacto", d: "Organizar espacios de uso frecuente alrededor de zonas centrales para conservar mejor el calor interior generado por ocupación y equipos." },
+                { t: "Envolvente térmica", d: "Utilizar cerramientos aislantes que reduzcan pérdidas de calor hacia el exterior." },
+                { t: "Carpintería hermética", d: "Incorporar puertas y ventanas con sellos térmicos que eviten infiltraciones de aire frío." }
             ],
             "Z4": [
-                { t: "Muro Trombe", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un muro Trombe compuesto por un muro oscuro y una capa de vidrio exterior que permita captar la radiación solar, acumular calor y transferirlo lentamente al interior del edificio. Representar claramente la cámara de aire entre el vidrio y el muro, así como el recorrido y almacenamiento del calor térmico. Incorporar flechas y recursos gráficos que expliquen el funcionamiento de la ganancia térmica pasiva y la distribución gradual del calor, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Galería solar", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una galería solar compuesta por espacios acristalados que funcionen como captadores de calor durante el día. Representar claramente el ingreso de radiación solar, la acumulación de calor en el espacio intermedio y su aporte térmico hacia el interior del edificio. Incorporar flechas y recursos gráficos que expliquen la ganancia térmica pasiva y el comportamiento climático del espacio, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Orientación solar estratégica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una orientación solar estratégica donde las áreas principales del edificio se ubiquen hacia las fachadas con mayor incidencia solar para maximizar la captación térmica natural. Representar claramente la trayectoria del sol, la incidencia de la radiación sobre las fachadas y la distribución de los espacios interiores según el aprovechamiento térmico. Incorporar recursos gráficos y flechas que expliquen la ganancia solar pasiva y el confort ambiental, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Muro Trombe", d: "Incorporar muros oscuros con vidrio exterior que acumulen calor solar y lo transfieran lentamente al interior." },
+                { t: "Galería solar", d: "Diseñar espacios acristalados que funcionen como captadores de calor durante el día." },
+                { t: "Orientación solar estratégica", d: "Ubicar las áreas principales hacia fachadas con mayor incidencia solar para maximizar captación térmica natural." }
             ],
             "Z5": [
-                { t: "Panel solar térmico", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando paneles solares térmicos incorporados en la cubierta o fachada del edificio para la captación de energía solar destinada a la producción de agua caliente o calefacción interior. Representar claramente la incidencia solar, el funcionamiento del sistema de captación y la distribución térmica hacia los espacios interiores. Incorporar flechas y recursos gráficos que expliquen el aprovechamiento de energía solar y el funcionamiento térmico pasivo-activo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Cubierta captadora", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una cubierta captadora con techos inclinados orientados estratégicamente hacia el sol para optimizar el rendimiento energético y la captación solar. Representar claramente la incidencia de la radiación solar sobre la cubierta y el aprovechamiento térmico o energético del sistema. Incorporar flechas y recursos gráficos que expliquen el comportamiento solar y la eficiencia energética pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Acumulación térmica hidráulica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un sistema de acumulación térmica hidráulica mediante depósitos de agua caliente destinados a conservar energía térmica durante más tiempo. Representar claramente el almacenamiento del calor, la circulación del agua y la transferencia térmica hacia los espacios interiores o sistemas del edificio. Incorporar flechas y recursos gráficos que expliquen el funcionamiento térmico y la eficiencia energética del sistema, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Panel solar térmico", d: "Incorporar sistemas de captación solar para producir agua caliente o calefacción interior." },
+                { t: "Cubierta captadora", d: "Diseñar techos inclinados orientados hacia el sol para optimizar el rendimiento energético." },
+                { t: "Acumulación térmica hidráulica", d: "Utilizar depósitos de agua caliente para conservar energía térmica durante más tiempo." }
             ],
             "Z6": [
-                { t: "Patio húmedo", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un patio húmedo interior con vegetación y elementos de agua destinados a incrementar naturalmente la humedad ambiental y mejorar el confort térmico del edificio. Representar claramente la relación entre el agua, la vegetación y la circulación del aire dentro del espacio. Incorporar flechas y recursos gráficos que expliquen el proceso de humidificación natural y el comportamiento bioclimático, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Fuente evaporativa", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una fuente evaporativa compuesta por pequeños cuerpos de agua que aporten humedad al aire mediante evaporación continua. Representar claramente la relación entre el agua, el flujo de aire y el incremento de humedad ambiental dentro del espacio arquitectónico. Incorporar flechas y recursos gráficos que expliquen el proceso de evaporación y el funcionamiento bioclimático pasivo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Material higroscópico", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando el uso de materiales higroscópicos como acabados de arcilla, barro o madera natural capaces de absorber y liberar humedad gradualmente para regular el ambiente interior. Representar claramente las superficies materiales y su interacción con la humedad del aire dentro del espacio arquitectónico. Incorporar recursos gráficos y flechas que expliquen el proceso de absorción y liberación de humedad, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Patio húmedo", d: "Incorporar espacios interiores con vegetación y agua para incrementar naturalmente la humedad ambiental." },
+                { t: "Fuente evaporativa", d: "Utilizar cuerpos de agua pequeños que aporten humedad al aire mediante evaporación continua." },
+                { t: "Material higroscópico", d: "Emplear acabados de arcilla, barro o madera natural capaces de absorber y liberar humedad gradualmente." }
             ],
             "Z7": [
-                { t: "Doble envolvente térmica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando una doble envolvente térmica con cámaras de aire entre las capas de fachada para disminuir las pérdidas de calor hacia el exterior. Representar claramente las distintas capas constructivas, la cámara de aire intermedia y el comportamiento térmico del sistema. Incorporar flechas y recursos gráficos que expliquen el aislamiento y la conservación térmica pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Acceso amortiguador", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un acceso amortiguador mediante vestíbulos cerrados que reduzcan el ingreso directo de aire frío al interior al momento de abrir las puertas exteriores. Representar claramente la transición entre exterior e interior y el control de intercambio térmico en el acceso. Incorporar flechas y recursos gráficos que expliquen la contención del aire frío y la conservación del calor interior, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Aislamiento continuo", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un sistema de aislamiento continuo mediante materiales térmicos incorporados en cubiertas, muros y pisos para conservar temperaturas interiores estables. Representar claramente las capas de aislamiento y la reducción de intercambio térmico entre el interior y el exterior del edificio. Incorporar flechas y recursos gráficos que expliquen la conservación térmica y el confort ambiental pasivo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Doble envolvente térmica", d: "Incorporar cámaras de aire entre capas de fachada para disminuir pérdidas de calor." },
+                { t: "Acceso amortiguador", d: "Diseñar vestíbulos cerrados que reduzcan el ingreso directo de aire frío al abrir puertas exteriores." },
+                { t: "Aislamiento continuo", d: "Utilizar materiales térmicos en cubiertas, muros y pisos para conservar temperaturas interiores estables." }
             ],
             "Z8": [
-                { t: "Parasoles móviles", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando parasoles móviles compuestos por elementos ajustables que permitan controlar la incidencia solar según la hora del día y las condiciones climáticas. Representar claramente las diferentes posiciones de los parasoles, la trayectoria del sol y el ingreso regulado de luz y calor al interior del edificio. Incorporar flechas y recursos gráficos que expliquen el control solar pasivo y el confort térmico, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Fachada de doble piel", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando una fachada de doble piel compuesta por una segunda capa exterior ventilada que reduzca el calentamiento directo de la envolvente del edificio. Representar claramente la cámara de aire entre ambas fachadas, la circulación del aire y la disminución de la radiación térmica sobre el cerramiento principal. Incorporar flechas y recursos gráficos que expliquen el funcionamiento bioclimático y el control térmico pasivo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Cubierta extendida", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una cubierta extendida con grandes volados o aleros destinados a proteger fachadas y aberturas de la radiación solar intensa. Representar claramente la proyección de sombra sobre ventanas y muros, así como la reducción de ganancia térmica en el interior del edificio. Incorporar flechas y recursos gráficos que expliquen el control solar pasivo y el confort térmico, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Parasoles móviles", d: "Incorporar elementos ajustables que controlen la incidencia solar según la hora del día." },
+                { t: "Fachada de doble piel", d: "Diseñar una segunda capa exterior ventilada que reduzca el calentamiento directo de la envolvente." },
+                { t: "Cubierta extendida", d: "Utilizar grandes volados o aleros para proteger fachadas y aberturas de radiación intensa." }
             ],
             "Z9": [
-                { t: "Muro acumulador", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando un muro acumulador construido con materiales de alta inercia térmica como adobe, piedra o concreto, capaz de absorber calor durante el día y retrasar su ingreso al interior del edificio. Representar claramente el almacenamiento térmico en el muro y la liberación gradual del calor hacia los espacios interiores. Incorporar flechas y recursos gráficos que expliquen el comportamiento térmico pasivo y la regulación de temperatura, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Piso de inercia térmica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un piso de inercia térmica compuesto por superficies de piedra o concreto pulido capaces de mantener temperaturas más frescas durante mayor tiempo. Representar claramente la absorción y conservación térmica del piso, así como su influencia en el confort interior del edificio. Incorporar flechas y recursos gráficos que expliquen el comportamiento térmico pasivo y la regulación de temperatura, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Protección de masa térmica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando la protección de masa térmica mediante elementos de sombra exterior permanente que eviten la exposición solar directa sobre materiales acumuladores como muros o pisos de alta inercia térmica. Representar claramente las zonas protegidas del sol, la reducción de ganancia térmica y el comportamiento pasivo de los materiales. Incorporar flechas y recursos gráficos que expliquen el control solar y la conservación del confort térmico, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Muro acumulador", d: "Utilizar muros gruesos de adobe, piedra o concreto que absorban calor durante el día y retrasen su ingreso al interior." },
+                { t: "Piso de inercia térmica", d: "Incorporar superficies de piedra o concreto pulido que mantengan temperaturas más frescas por mayor tiempo." },
+                { t: "Protección de masa térmica", d: "Evitar exposición solar directa sobre materiales acumuladores mediante sombra exterior permanente." }
             ],
             "Z10": [
-                { t: "Espejo de agua climático", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un espejo de agua climático compuesto por superficies de agua poco profundas destinadas a refrescar el aire circundante mediante evaporación natural. Representar claramente la relación entre el agua, la circulación del aire y la disminución de temperatura en los espacios cercanos. Incorporar flechas y recursos gráficos que expliquen el proceso de evaporación y el funcionamiento bioclimático pasivo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Nebulización pasiva", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un sistema de nebulización pasiva mediante microaspersores ubicados en patios o áreas exteriores para disminuir la temperatura ambiental. Representar claramente la dispersión de partículas de agua, la circulación del aire y el efecto de enfriamiento evaporativo sobre los espacios cercanos. Incorporar flechas y recursos gráficos que expliquen el funcionamiento bioclimático y la reducción térmica pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Vegetación refrescante", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando vegetación refrescante mediante jardines densos capaces de reducir el calor ambiental a través de la evapotranspiración natural. Representar claramente la relación entre la vegetación, la sombra y la circulación del aire en los espacios arquitectónicos. Incorporar flechas y recursos gráficos que expliquen el enfriamiento pasivo y el comportamiento bioclimático del sistema vegetal, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Espejo de agua climático", d: "Incorporar superficies de agua poco profundas que refresquen el aire circundante mediante evaporación." },
+                { t: "Nebulización pasiva", d: "Utilizar sistemas de microaspersión en patios o áreas exteriores para disminuir temperatura ambiental." },
+                { t: "Vegetación refrescante", d: "Incorporar jardines densos capaces de reducir el calor mediante evapotranspiración." }
             ],
             "Z11": [
-                { t: "Purgado nocturno", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un sistema de purgado nocturno mediante aperturas estratégicas que permitan liberar durante la noche el calor almacenado en muros y pisos térmicos. Representar claramente la salida del aire caliente acumulado y el ingreso de aire más fresco durante el periodo nocturno. Incorporar flechas y recursos gráficos que expliquen el enfriamiento pasivo y la regulación térmica del edificio, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Lucernario térmico", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un lucernario térmico mediante aperturas superiores que favorezcan la extracción natural del aire caliente acumulado en el interior del edificio. Representar claramente el ascenso del aire caliente hacia la cubierta y su evacuación a través del lucernario, así como el ingreso de aire más fresco desde zonas inferiores. Incorporar flechas y recursos gráficos que expliquen el funcionamiento de la ventilación térmica pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Chimenea solar invertida", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una chimenea solar invertida que utilice diferencias térmicas y de altura para acelerar la salida del aire caliente acumulado durante la noche. Representar claramente el recorrido ascendente del aire caliente, las aperturas de extracción y el ingreso de aire fresco desde niveles inferiores para favorecer la ventilación natural. Incorporar flechas y recursos gráficos que expliquen el efecto térmico y el funcionamiento bioclimático pasivo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Purgado nocturno", d: "Mantener aperturas nocturnas para liberar el calor almacenado en muros y pisos térmicos." },
+                { t: "Lucernario térmico", d: "Incorporar aperturas superiores que favorezcan la extracción natural del aire caliente acumulado." },
+                { t: "Chimenea solar invertida", d: "Utilizar diferencias térmicas y de altura para acelerar la salida del aire caliente durante la noche." }
             ],
             "Z12": [
-                { t: "Ventilación cruzada profunda", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un sistema de ventilación cruzada profunda donde los recorridos de aire atraviesen completamente la edificación para mejorar la disipación térmica y el confort interior. Representar claramente las aperturas de entrada y salida, el flujo continuo del aire a través de los espacios y la evacuación del calor acumulado. Incorporar flechas dinámicas y recursos gráficos que expliquen el funcionamiento de la ventilación natural pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Cubierta extractora", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una cubierta extractora mediante cubiertas elevadas o ventiladas que favorezcan la salida constante del aire caliente acumulado en el interior del edificio. Representar claramente la separación de la cubierta, las aperturas de ventilación y el recorrido ascendente del aire caliente hacia el exterior. Incorporar flechas y recursos gráficos que expliquen el funcionamiento de la extracción térmica pasiva y el confort climático, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Ventilación mecánica asistida", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando un sistema de ventilación mecánica asistida mediante extractores o ventiladores estratégicamente ubicados para reforzar el movimiento natural del aire dentro del edificio. Representar claramente el recorrido del flujo de aire, las zonas de extracción y el apoyo mecánico a la ventilación pasiva. Incorporar flechas dinámicas y recursos gráficos que expliquen la circulación y renovación del aire, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Ventilación cruzada profunda", d: "Diseñar recorridos de aire que atraviesen completamente la edificación para mejorar disipación térmica." },
+                { t: "Cubierta extractora", d: "Incorporar cubiertas elevadas o ventiladas que favorezcan la salida constante del aire caliente." },
+                { t: "Ventilación mecánica asistida", d: "Utilizar extractores o ventiladores estratégicamente ubicados para reforzar el movimiento natural del aire." }
             ],
             "Z13": [
-                { t: "Sectorización térmica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una sectorización térmica donde las áreas interiores se dividan según su demanda climática para reducir el consumo energético innecesario. Representar claramente las diferentes zonas térmicas del edificio, sus niveles de uso y las estrategias de control ambiental aplicadas en cada sector. Incorporar recursos gráficos y flechas que expliquen la distribución térmica y la eficiencia energética pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Vidrio de control solar", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando el uso de vidrio de control solar en la envolvente del edificio, incorporando acristalamientos capaces de reducir el ingreso de radiación y la ganancia de calor desde el exterior. Representar claramente la incidencia solar sobre el vidrio, su filtrado selectivo y la disminución de carga térmica hacia el interior. Incorporar recursos gráficos y flechas que expliquen el comportamiento solar y el control térmico pasivo, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Fachada aislada", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando una fachada aislada compuesta por materiales de baja transmitancia térmica para reducir la carga de enfriamiento artificial del edificio. Representar claramente las capas del cerramiento, el comportamiento del flujo de calor entre exterior e interior y la mejora del confort térmico. Incorporar recursos gráficos y flechas que expliquen la reducción de transferencia térmica y la eficiencia energética pasiva, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Sectorización térmica", d: "Dividir áreas interiores según demanda climática para reducir consumo energético innecesario." },
+                { t: "Vidrio de control solar", d: "Incorporar acristalamientos capaces de disminuir el ingreso de radiación y calor exterior." },
+                { t: "Fachada aislada", d: "Utilizar materiales con baja transmitancia térmica para reducir la carga de enfriamiento artificial." }
             ],
             "Z14": [
-                { t: "Elevación palafítica", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte axonométrico o sección perspectivada, mostrando una elevación palafítica donde la edificación se separa del suelo mediante pilotes para evitar la acumulación de humedad ascendente y mejorar la ventilación inferior del edificio. Representar claramente el espacio ventilado bajo la estructura, el flujo de aire en la base y la relación del edificio con el terreno. Incorporar recursos gráficos y flechas que expliquen la circulación del aire y el control de humedad, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Deshumidificación material", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando un sistema de deshumidificación material mediante el uso de materiales transpirables e higroscópicos como madera natural, morteros de cal o arcilla que regulen la humedad ambiental de forma pasiva. Representar claramente la interacción entre el aire interior y las superficies constructivas, evidenciando cómo los materiales absorben y liberan humedad según las condiciones del entorno. Incorporar recursos gráficos y flechas que expliquen el equilibrio higrotérmico y el confort ambiental, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." },
-                { t: "Cámara ventilada", d: "Crear un diagrama arquitectónico conceptual y técnico mediante un corte de muro de manera axonométrico o sección perspectivada, mostrando una cámara ventilada en cubiertas y muros mediante separaciones de aire que eviten la condensación y la acumulación de humedad interior en el edificio. Representar claramente las capas constructivas, la cámara de aire y el flujo de ventilación que permite el secado y control higrotérmico del sistema. Incorporar recursos gráficos y flechas que expliquen la circulación del aire y la prevención de humedad, utilizando una representación arquitectónica limpia, profesional y entendible con elementos constructivos simples." }
+                { t: "Elevación palafítica", d: "Separar la edificación del suelo mediante pilotes para evitar acumulación de humedad ascendente y mejorar ventilación inferior." },
+                { t: "Deshumidificación material", d: "Utilizar materiales transpirables e higroscópicos como madera natural, morteros de cal o arcilla que regulen la humedad ambiental." },
+                { t: "Cámara ventilada", d: "Incorporar separaciones de aire en cubiertas y muros para evitar condensación y acumulación de humedad interior." }
             ]
         };
 
@@ -540,6 +536,7 @@
             let detected = [];
             const check = (t, h) => {
                 if (t > 29 && h > 55) detected.push("Z13");
+                if (t < 0) detected.push("Z7");
                 if (t >= 0 && t < 10) detected.push("Z5");
                 if (t >= 10 && t < 18) detected.push("Z4");
                 if (t >= 18 && t < 21) detected.push("Z3");
@@ -654,7 +651,7 @@
         }
 
         // ========================================================
-        // MOTOR SVG AXONOMÉTRICO (DIBUJO DE ESTRATEGIAS)
+        // MOTOR SVG AXONOMÉTRICO (DIBUJO DE ESTRATEGIAS CORREGIDO)
         // ========================================================
         function buildInteractiveVisualizer(strategies) {
             const container = document.getElementById('interactive-visualizer');
@@ -742,7 +739,7 @@
                 `;
 
                 // =====================================================================
-                // ESTRUCTURA PREPARADA PARA TUS INSTRUCCIONES GRÁFICAS DE LAS 42 ZONAS
+                // MOTOR SVG PREPARADO PARA INSTRUCCIONES GRÁFICAS DE LAS 42 ZONAS
                 // =====================================================================
                 
                 if(strat.t === "Vidrio de control solar") {
@@ -833,37 +830,8 @@
                         <text x="335" y="68" fill="white" font-size="8" font-family="Inter" text-anchor="middle">(Absorción de Humedad)</text>
                     `;
                 }
-                else if(strat.t === "Protección Solar Estricta" || strat.t === "Cubierta extendida") {
-                    svgContent += `
-                        ${groundLine}
-                        <rect x="350" y="160" width="200" height="160" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
-                        <polygon points="100,160 350,160 350,140 100,140" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
-                        <line x1="150" y1="160" x2="150" y2="280" stroke="currentColor" stroke-width="6"/>
-                        ${scaleFigure}
-                        <circle cx="100" cy="50" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
-                        <path d="M 120 70 L 150 140 L 100 180" fill="none" stroke="#fcd34d" stroke-width="3" class="svg-ray-bounce"/>
-                        <rect x="180" y="200" width="150" height="40" rx="4" fill="rgba(15,23,42,0.85)"/>
-                        <text x="255" y="215" fill="white" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">SOMBRA GEOMÉTRICA</text>
-                        <text x="255" y="230" fill="#f59e0b" font-size="9" font-family="Inter" text-anchor="middle">(Protección contra radiación)</text>
-                    `;
-                }
-                else if(strat.t === "Aislamiento continuo" || strat.t === "Envolvente térmica") {
-                    svgContent += `
-                        ${groundLine}
-                        <rect x="300" y="80" width="40" height="240" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
-                        <rect x="250" y="80" width="50" height="240" fill="url(#hatch-insulation)" stroke="#f59e0b" stroke-width="2"/>
-                        <rect x="250" y="60" width="300" height="20" fill="url(#hatch-insulation)" stroke="#f59e0b" stroke-width="2"/> 
-                        <rect x="300" y="80" width="250" height="20" fill="url(#hatch-concrete)" stroke="currentColor" stroke-width="2"/>
-                        <path d="M 100 150 L 230 200 L 100 250" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-ray-bounce"/>
-                        ${scaleFigure}
-                        <rect x="340" y="100" width="180" height="220" fill="#ef4444" class="opacity-10 svg-heat-radiate"/>
-                        <rect x="150" y="40" width="180" height="40" rx="4" fill="rgba(15,23,42,0.85)"/>
-                        <text x="240" y="55" fill="#f59e0b" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">SISTEMA AISLANTE</text>
-                        <text x="240" y="70" fill="white" font-size="9" font-family="Inter" text-anchor="middle">(Cero Puentes Térmicos)</text>
-                    `;
-                }
                 else {
-                    // GENÉRICO TEMPORAL HASTA RECIBIR MÁS PROMPTS
+                    // GENÉRICO TEMPORAL HASTA RECIBIR INSTRUCCIONES DE DIBUJO
                     svgContent += `
                         ${groundLine}
                         ${basicWalls}
@@ -919,7 +887,7 @@
             let recs = [];
 
             if (avgTMax > 26 && avgHR > 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Calor y Alta Humedad (Tropical)</strong>. El diseño exige permeabilidad extrema, elevación para evitar capilaridad y exclusión solar total.</p>`;
+                text += `<p class="mt-4">Entorno detectado: <strong>Calor y Alta Humedad (Tropical)</strong>. El aire saturado impide el enfriamiento corporal. El diseño exige permeabilidad extrema, elevación palafítica y exclusión solar total.</p>`;
                 recs.push(strategyDB["Z14"][0], strategyDB["Z1"][0], strategyDB["Z12"][0], strategyDB["Z8"][2], strategyDB["Z13"][1]);
             } else if (avgTMin <= 22 && avgHR > 65) {
                 text += `<p class="mt-4">Entorno detectado: <strong>Frío y Alta Humedad</strong>. Riesgo alto de condensación y moho. La prioridad es aislar la envolvente por el exterior y emplear acabados que absorban el agua del aire.</p>`;
@@ -1035,7 +1003,6 @@
                     strategiesContainer.innerHTML += `<div class="pdf-strat-box"><div class="pdf-strat-title">${title}</div><div class="pdf-text">${desc}</div></div>`;
                 });
 
-                // Hacemos el div opaco casi invisible para que html2canvas pueda renderizar sin colgar el hilo
                 const pdfContainer = document.getElementById('pdf-generator-container');
                 pdfContainer.style.left = "0px";
                 pdfContainer.style.opacity = "0.01";
@@ -1055,7 +1022,6 @@
                 const canvas2 = await html2canvas(document.getElementById('pdf-page-2'), opt);
                 pdf.addImage(canvas2.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas2.height * pdfWidth) / canvas2.width);
 
-                // Ocultar de nuevo
                 pdfContainer.style.left = "-9999px";
                 pdfContainer.style.opacity = "0";
                 pdfContainer.style.visibility = "hidden";
