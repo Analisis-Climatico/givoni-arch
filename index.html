@@ -129,800 +129,766 @@
         // 3. TU MOTOR SVG PARAMÉTRICO (PEGADO EXACTAMENTE COMO LO ENVIASTE)
         // =====================================================================
 window.renderSVGForStrategy = function(index) {
-const strat = strategies[index];
+    const strat = strategies[index];
+    
+    // Control de botones activos en el menú
+    document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
+        if(idx === index) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+    
+    const t = strat.t; 
+    let svgContent = `<rect width="100%" height="100%" fill="url(#blueprint-grid)" />`;
 
-// Control de botones activos en el menú
-document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
-    if(idx === index) btn.classList.add('active');
-    else btn.classList.remove('active');
-});
+    // 1. DEFINICIÓN DE PATRONES, MARCADORES Y ESTILOS AVANZADOS
+    const defsSVG = `
+        <defs>
+            <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.75" opacity="0.08"/>
+                <path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1.25" opacity="0.12"/>
+            </pattern>
+            <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="10" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/>
+            </pattern>
+            <pattern id="hatch-insulation" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                <line x1="0" y1="4" x2="8" y2="4" stroke="#f59e0b" stroke-width="2" opacity="0.6"/>
+            </pattern>
+            <pattern id="hatch-mass" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                <rect width="10" height="10" fill="#a16207" opacity="0.3"/>
+                <line x1="0" y1="0" x2="0" y2="10" stroke="#713f12" stroke-width="1.25" opacity="0.4"/>
+                <line x1="0" y1="0" x2="10" y2="0" stroke="#713f12" stroke-width="1.25" opacity="0.4"/>
+            </pattern>
+            <pattern id="hatch-water" patternUnits="userSpaceOnUse" width="12" height="10">
+                <rect width="12" height="10" fill="#3b82f6" opacity="0.4"/>
+                <path d="M 0 5 Q 3 0 6 5 T 12 5" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.6"/>
+            </pattern>
+            <pattern id="dots-humidity" patternUnits="userSpaceOnUse" width="12" height="12">
+                <circle cx="3" cy="3" r="1.75" fill="#06b6d4" opacity="0.55"/>
+                <circle cx="9" cy="9" r="1.75" fill="#06b6d4" opacity="0.55"/>
+            </pattern>
+            <pattern id="dots-glass-lines" patternUnits="userSpaceOnUse" width="15" height="15" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="15" stroke="#38bdf8" stroke-width="2.5" opacity="0.3"/>
+            </pattern>
+            <pattern id="dots-higroscopic-dots" patternUnits="userSpaceOnUse" width="12" height="12">
+                <circle cx="3" cy="3" r="1.5" fill="#cbd5e1" opacity="0.5"/>
+                <circle cx="9" cy="9" r="1.5" fill="#cbd5e1" opacity="0.5"/>
+            </pattern>
+            <pattern id="dots-soil" patternUnits="userSpaceOnUse" width="15" height="15">
+                <circle cx="2" cy="2" r="1.5" fill="#cbd5e1" opacity="0.3"/>
+                <circle cx="8" cy="8" r="1.5" fill="#cbd5e1" opacity="0.3"/>
+                <circle cx="14" cy="14" r="1.5" fill="#cbd5e1" opacity="0.3"/>
+            </pattern>
+            <pattern id="dots-sand" patternUnits="userSpaceOnUse" width="5" height="5">
+                <circle cx="2" cy="2" r="0.75" fill="#d1d5db" opacity="0.25"/>
+            </pattern>
+            <pattern id="dots-perforated" width="4" height="4" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="1" fill="#cbd5e1" opacity="0.5"/>
+            </pattern>
+            <pattern id="pattern-trees" patternUnits="userSpaceOnUse" width="60" height="60">
+                <circle cx="30" cy="30" r="28" fill="#16a34a" opacity="0.08"/>
+                <path d="M 30 5 L 35 15 L 25 15 Z" fill="#15803d" opacity="0.2"/>
+            </pattern>
+            <pattern id="pattern-crystal" patternUnits="userSpaceOnUse" width="20" height="20">
+                <rect x="0" y="0" width="19" height="19" fill="#fafafa" stroke="#e2e8f0" stroke-width="0.5"/>
+                <line x1="0" y1="0" x2="20" y2="20" stroke="#e2e8f0" stroke-width="0.25" opacity="0.3"/>
+            </pattern>
+            <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
+            </marker>
+            <marker id="arrow-red" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+            </marker>
+            <marker id="arrow-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#fcd34d" />
+            </marker>
+            <style type="text/css">
+                .text-blueprint { fill: white; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+                .text-blueprint-night { fill: #fcd34d; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+                .svg-sun-pulse { animation: sun-pulse 3s ease-in-out infinite; }
+                @keyframes sun-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+                .dots-soil-class { fill: url(#dots-soil); stroke: none; opacity: 0.5; }
+                .dots-sand-class { fill: url(#dots-sand); stroke: none; opacity: 0.5; }
+                .dots-humidity-class { fill: url(#dots-humidity); stroke: none; opacity: 0.6; }
+                .linear-gradient-stack-class { fill: url(#gradient-stack); stroke: none; opacity: 0.5; }
+                .linear-gradient-humidity-class { fill: url(#gradient-humidity); stroke: none; opacity: 0.6; }
+                .dots- trees-class { fill: url(#pattern-trees); stroke: none; }
+                .dots-perforated-class { fill: url(#perforated); stroke: none; opacity: 0.5; }
+                .hatch-concrete-class { fill: url(#hatch-concrete); stroke: none; }
+                .dots-glass-lines-class { fill: url(#glass-lines); stroke: none; opacity: 0.5; }
+                .hatch-water-class { fill: url(#hatch-water); stroke: none; }
+                .hatch-insulation-class { fill: url(#hatch-insulation); stroke: none; }
+                .dots-higroscopic-dots-class { fill: url(#hygroscopic-dots); stroke: none; }
+            </style>
+        </defs>
+    `;
 
-const t = strat.t; 
-let svgContent = `<rect width="100%" height="100%" fill="url(#blueprint-grid)" />`;
+    // 2. ELEMENTOS TÉCNICOS ESTÁNDAR
+    const textObj = (x, y, text, type = 'standard') => `<text x="${x}" y="${y}" class="text-blueprint${type === 'standard' ? '' : `-${type}`}">${text}</text>`;
+    const standardDoor = (x, y, scale = 1, flip = false) => `<g transform="translate(${x}, ${y}) scale(${scale}) ${flip ? 'scale(-1, 1)' : ''}" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="0" y="0" width="50" height="100" rx="2" class="hatch-concrete-class"/><path d="M 0 100 A 50 100 0 0 0 50 100"/><circle cx="42" cy="50" r="3" fill="#cbd5e1"/></g>`;
+    const groundLine = `<rect x="0" y="340" width="800" height="60" fill="#111827"/><rect x="0" y="340" width="800" height="40" class="dots-sand-class"/><rect x="0" y="340" width="800" height="10" class="dots-soil-class"/><line x1="0" y1="340" x2="800" y2="340" stroke="#cbd5e1" stroke-width="2" class="opacity-50"/>`;
+    const scaleFigure = `<g opacity="0.3" transform="translate(680, 245) scale(0.65)"><circle cx="15" cy="10" r="7" fill="#cbd5e1"/><path d="M10,20 L20,20 L20,45 L25,80 L18,80 L15,50 L12,80 L5,80 L10,45 Z" fill="#cbd5e1"/></g>`;
+    const sunObj = `<circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/><circle cx="100" cy="70" r="30" fill="none" stroke="#fcd34d" stroke-width="1" stroke-dasharray="5 5" class="svg-sun-pulse"/>`;
+    const sunContextAxo = `<circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/><path d="M 120 90 L 180 150" fill="none" stroke="#fcd34d" stroke-width="3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>`;
 
-// 1. DEFINICIÓN DE PATRONES, MARCADORES Y ESTILOS AVANZADOS
-const defsSVG = `
-    <defs>
-        <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.75" opacity="0.08"/>
-            <path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1.25" opacity="0.12"/>
-        </pattern>
-        <pattern id="blueprint-axes" width="80" height="80" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="40" x2="80" y2="40" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="10 5" opacity="0.2"/>
-            <line x1="40" y1="0" x2="40" y2="80" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="10 5" opacity="0.2"/>
-            <circle cx="40" cy="40" r="1.5" fill="#e2e8f0" opacity="0.4"/>
-        </pattern>
-        <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-            <line x1="0" y1="0" x2="0" y2="10" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/>
-        </pattern>
-        <pattern id="hatch-insulation" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-            <line x1="0" y1="4" x2="8" y2="4" stroke="#f59e0b" stroke-width="2" opacity="0.6"/>
-        </pattern>
-        <pattern id="hatch-mass" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-            <rect width="10" height="10" fill="#a16207" opacity="0.3"/>
-            <line x1="0" y1="0" x2="0" y2="10" stroke="#713f12" stroke-width="1.25" opacity="0.4"/>
-            <line x1="0" y1="0" x2="10" y2="0" stroke="#713f12" stroke-width="1.25" opacity="0.4"/>
-        </pattern>
-        <pattern id="hatch-water" patternUnits="userSpaceOnUse" width="12" height="10">
-            <rect width="12" height="10" fill="#3b82f6" opacity="0.4"/>
-            <path d="M 0 5 Q 3 0 6 5 T 12 5" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.6"/>
-        </pattern>
-        <pattern id="dots-humidity" patternUnits="userSpaceOnUse" width="12" height="12">
-            <circle cx="3" cy="3" r="1.75" fill="#06b6d4" opacity="0.55"/>
-            <circle cx="9" cy="9" r="1.75" fill="#06b6d4" opacity="0.55"/>
-        </pattern>
-        <pattern id="dots-des dehumid" patternUnits="userSpaceOnUse" width="8" height="8">
-            <circle cx="4" cy="4" r="1.25" fill="#cbd5e1" opacity="0.6"/>
-        </pattern>
-        <pattern id="pattern-crystal" patternUnits="userSpaceOnUse" width="20" height="20">
-            <rect x="0" y="0" width="19" height="19" fill="#fafafa" stroke="#e2e8f0" stroke-width="0.5"/>
-            <line x1="0" y1="0" x2="20" y2="20" stroke="#e2e8f0" stroke-width="0.25" opacity="0.3"/>
-        </pattern>
-        <pattern id="dots-soil" patternUnits="userSpaceOnUse" width="15" height="15">
-            <circle cx="2" cy="2" r="1.5" fill="#cbd5e1" opacity="0.3"/>
-            <circle cx="8" cy="8" r="1.5" fill="#cbd5e1" opacity="0.3"/>
-            <circle cx="14" cy="14" r="1.5" fill="#cbd5e1" opacity="0.3"/>
-        </pattern>
-        <pattern id="dots-sand" patternUnits="userSpaceOnUse" width="5" height="5">
-            <circle cx="2" cy="2" r="0.75" fill="#d1d5db" opacity="0.25"/>
-        </pattern>
-        <pattern id="pattern-trees" patternUnits="userSpaceOnUse" width="60" height="60">
-            <circle cx="30" cy="30" r="28" fill="#16a34a" opacity="0.08"/>
-            <path d="M 30 5 L 35 15 L 25 15 Z" fill="#15803d" opacity="0.2"/>
-        </pattern>
-        <pattern id="hatch-shading" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(60)">
-            <line x1="0" y1="4" x2="8" y2="4" stroke="#e2e8f0" stroke-width="2" opacity="0.6"/>
-        </pattern>
-        <linearGradient id="gradient-stack" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/>
-            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.1"/>
-        </linearGradient>
-        <linearGradient id="gradient-humidity" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.6"/>
-            <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="gradient-thermal" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#0f172a" stop-opacity="0.2"/>
-            <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
-        </linearGradient>
-        <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
-        </marker>
-        <marker id="arrow-red" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
-        </marker>
-        <marker id="arrow-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#fcd34d" />
-        </marker>
-        <style type="text/css">
-            .text-blueprint { fill: white; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
-            .text-blueprint-label { fill: #f8fafc; font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 500; text-anchor: middle; text-transform: uppercase; }
-            .text-blueprint-night { fill: #fcd34d; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
-            .svg-sun-pulse { animation: sun-pulse 3s ease-in-out infinite; }
-            @keyframes sun-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-            .svg-standard-door { fill: none; stroke: #cbd5e1; stroke-width: 1.5; }
-            .dots-soil-class { fill: url(#dots-soil); stroke: none; opacity: 0.5; }
-            .dots-sand-class { fill: url(#dots-sand); stroke: none; opacity: 0.5; }
-            .dots-humidity-class { fill: url(#dots-humidity); stroke: none; opacity: 0.6; }
-            .linear-gradient-stack-class { fill: url(#gradient-stack); stroke: none; opacity: 0.5; }
-            .linear-gradient-humidity-class { fill: url(#gradient-humidity); stroke: none; opacity: 0.6; }
-            .dots- trees-class { fill: url(#pattern-trees); stroke: none; }
-            .dots-perforated-class { fill: url(#perforated); stroke: none; opacity: 0.5; }
-            .hatch-concrete-class { fill: url(#hatch-concrete); stroke: none; }
-            .dots-glass-lines-class { fill: url(#glass-lines); stroke: none; opacity: 0.5; }
-            .hatch-water-class { fill: url(#hatch-water); stroke: none; }
-            .hatch-insulation-class { fill: url(#hatch-insulation); stroke: none; }
-            .dots-higroscopic-dots-class { fill: url(#hygroscopic-dots); stroke: none; }
-        </style>
-    </defs>
-`;
+    // 3. LÓGICA CONDICIONAL DE DIBUJO DETALLADO (LAS 39 ESTRATEGIAS)
+    
+    // --- BLOQUE 1 (1 - 10) ---
+    if (t === "Ventilación regulable") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M 150 130 L 650 130" fill="none" stroke="#cbd5e1" stroke-width="1" opacity="0.3"/>
+            <g transform="translate(400, 60)"><line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="4"/><line x1="-20" y1="-5" x2="0" y2="-30" stroke="#cbd5e1" stroke-width="2" opacity="0.8"/></g>
+            ${textObj(400, 250, "CEN. VENTILADA")}
+            <rect x="145" y="160" width="10" height="130" fill="#38bdf8" opacity="0.3" stroke="#38bdf8" stroke-width="1"/><line x1="145" y1="160" x2="110" y2="135" stroke="#38bdf8" stroke-width="2.5"/>
+            <rect x="645" y="160" width="10" height="130" class="dots-perforated-class"/><line x1="645" y1="160" x2="680" y2="135" stroke="#cbd5e1" stroke-width="1.5"/>
+            <rect x="145" y="160" width="10" height="130" rx="1" fill="#38bdf8" opacity="0.2"/>
+            <rect x="645" y="160" width="10" height="130" rx="1" fill="#cbd5e1" opacity="0.2"/>
+            <path d="M 50 220 L 140 220" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 160 220 C 350 220, 450 170, 400 70" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.8" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+            ${standardDoor(230, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Cubierta ventilada") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 250 340 L 250 160 L 550 160 L 550 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="230,160 400,90 570,160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
+            <polygon points="230,140 400,70 570,140" fill="none" stroke="#e2e8f0" stroke-width="4"/><polygon points="230,140 400,70 570,140" fill="#cbd5e1" opacity="0.05"/>
+            <polygon points="230,160 400,90 570,160" fill="#ea580c" opacity="0.1"/>
+            <path d="M 230,160 L 230,135 M 400,90 L 400,65 M 570,160 L 570,135" stroke="#cbd5e1" stroke-width="1" opacity="0.4"/>
+            <line x1="250" y1="160" x2="250" y2="137" stroke="#cbd5e1" stroke-width="4"/><line x1="550" y1="160" x2="550" y2="137" stroke="#cbd5e1" stroke-width="4"/>
+            ${sunObj}
+            ${textObj(400, 240, "ESPACIO VENTILADO")}
+            <path d="M 200 135 L 300 115" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 320 110 L 400 80" fill="none" stroke="#ea580c" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
+            <path d="M 400 70 L 480 95" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-float-up"/>
+            ${standardDoor(360, 240, 0.7)}
+        `;
+    }
+    else if (t === "Protección solar ligera") {
+        svgContent += `
+            ${groundLine}
+            <rect x="250" y="100" width="300" height="240" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="330" y="150" width="140" height="120" class="dots-glass-lines-class" stroke="#38bdf8"/><rect x="330" y="150" width="140" height="120" fill="#fafafa" opacity="0.1"/>
+            <line x1="220" y1="80" x2="220" y2="340" stroke="#a1a1aa" stroke-width="1" stroke-dasharray="4 2"/>
+            <rect x="215" y="120" width="10" height="80" class="dots-perforated-class"/><rect x="215" y="220" width="10" height="90" class="dots-perforated-class"/>
+            ${sunObj}
+            ${textObj(400, 190, "PROTECCIÓN SOLAR")}
+            <path d="M 130 90 L 215 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 225 165 L 330 200" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce" style="animation-delay: 0.5s"/>
+            <path d="M 215 160 L 160 120" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            ${standardDoor(270, 240, 0.7)}
+            ${standardDoor(480, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Espacios de transición") {
+        // Mantener como image_0.png
+        svgContent += `
+            ${groundLine}
+            <rect x="150" y="100" width="500" height="240" rx="5" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="150" y="150" width="120" height="140" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="1"/>
+            <polygon points="120,150 150,110 300,110 330,150" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
+            <line x1="150" y1="150" x2="150" y2="290" stroke="#cbd5e1" stroke-width="6"/>
+            ${textObj(210, 210, "ZONA TRANSICIÓN")} ${textObj(430, 210, "HABITACIÓN")}
+            ${standardDoor(210, 290, 0.7)}
+            ${standardDoor(540, 290, 0.7, true)}
+        `;
+    }
+    else if (t === "Fachada permeable") {
+        svgContent += `
+            ${groundLine}
+            <rect x="100" y="80" width="600" height="260" fill="none" stroke="#cbd5e1" stroke-width="2"/><rect x="100" y="80" width="600" height="260" fill="#0f172a" opacity="0.05"/>
+            <g transform="translate(100, 80)">
+                <line x1="0" y1="20" x2="600" y2="50" stroke="#cbd5e1" stroke-width="5"/>
+                <line x1="0" y1="70" x2="600" y2="100" stroke="#cbd5e1" stroke-width="5"/>
+                <line x1="0" y1="120" x2="600" y2="150" stroke="#cbd5e1" stroke-width="5"/>
+                <line x1="0" y1="170" x2="600" y2="200" stroke="#cbd5e1" stroke-width="5"/>
+                <line x1="0" y1="220" x2="600" y2="250" stroke="#cbd5e1" stroke-width="5"/>
+            </g>
+            <rect x="100" y="80" width="600" height="260" rx="3" fill="#38bdf8" opacity="0.1"/>
+            <path d="M 50 180 L 150 200" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 200 130 L 300 130" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 0.5s"/>
+            <path d="M 400 230 L 500 230" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 1s"/>
+            ${standardDoor(360, 240, 0.7)}
+        `;
+    }
+    else if (t === "Ventilación elevada") {
+        // Mantener como image_2.png
+        svgContent += `
+            ${groundLine}
+            <path d="M 250 340 L 250 180 L 550 180 L 550 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="380" y="60" width="40" height="20" class="dots-glass-lines-class"/><rect x="380" y="60" width="40" height="20" fill="#fafafa" opacity="0.1"/>
+            <path d="M 350 250 Q 400 150 395 50" fill="none" stroke="#ef4444" stroke-width="6" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
+            <path d="M 450 250 Q 400 150 405 50" fill="none" stroke="#ef4444" stroke-width="6" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up" style="animation-delay: 0.5s"/>
+            ${textObj(400, 200, "ZONA CALIENTE")}
+            ${scaleFigure}
+            ${standardDoor(360, 240, 0.7)}
+        `;
+    }
+    else if (t === "Núcleo compacto") {
+        svgContent += `
+            <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#0f172a" opacity="0.05"/>
+            <rect x="150" y="100" width="500" height="200" rx="5" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="2"/><rect x="150" y="100" width="500" height="200" rx="5" fill="#334155" opacity="0.1"/>
+            <rect x="275" y="125" width="250" height="150" rx="3" class="hatch-mass-class" stroke="#ea580c" stroke-width="2"/><rect x="275" y="125" width="250" height="150" rx="3" class="hatch-mass-class"/>
+            <line x1="275" y1="125" x2="150" y2="100" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/><line x1="525" y1="125" x2="650" y2="100" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/><line x1="275" y1="275" x2="150" y2="300" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/><line x1="525" y1="275" x2="650" y2="300" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/>
+            ${textObj(210, 160, "SALA")} ${textObj(210, 240, "COMEDOR")} ${textObj(590, 200, "HABITACIÓN")}
+            <circle cx="400" cy="200" r="50" fill="#ea580c" class="opacity-10 svg-heat-radiate"/>
+            <path d="M 500 200 L 580 200" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="5 3" opacity="0.5" marker-end="url(#arrow-red)"/>
+            ${standardDoor(350, 125, 0.6)}
+            ${standardDoor(350, 275, 0.6, true)}
+        `;
+    }
+    else if (t === "Envolvente térmica") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="dots-perforated-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="dots-sand-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" fill="#64748b"/><rect x="0" y="0" width="10" height="260" class="dots-soil-class"/>
+                <rect x="10" y="0" width="25" height="260" class="hatch-concrete-class"/>
+                <rect x="35" y="0" width="10" height="260" class="hatch-insulation-class"/>
+                <rect x="45" y="0" width="5" height="260" fill="#94a3b8"/><rect x="45" y="0" width="5" height="260" class="dots-perforated-class"/>
+            </g>
+            ${textObj(400, 200, "CEN. AISLADA")}
+            <circle cx="50" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 70 90 L 120 130" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 130 135 L 160 150" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+        `;
+    }
+    else if (t === "Carpinteria hermética") {
+        svgContent += `
+            ${groundLine}
+            <rect x="300" y="60" width="200" height="130" class="hatch-concrete-class" stroke="#cbd5e1"/><rect x="300" y="60" width="200" height="130" class="hatch-concrete-class"/>
+            <rect x="300" y="210" width="200" height="130" class="hatch-concrete-class" stroke="#cbd5e1"/><rect x="300" y="210" width="200" height="130" class="hatch-concrete-class"/>
+            <rect x="380" y="120" width="40" height="120" fill="#d1d5db" stroke="#71717a" stroke-width="2"/>
+            <rect x="395" y="125" width="10" height="110" class="dots-glass-lines-class" stroke="#38bdf8"/>
+            <circle cx="380" cy="120" r="4" fill="#ef4444" class="animate-pulse"/>
+            <circle cx="420" cy="120" r="4" fill="#ef4444" class="animate-pulse"/>
+            <circle cx="380" cy="240" r="4" fill="#ef4444" class="animate-pulse"/>
+            <circle cx="420" cy="240" r="4" fill="#ef4444" class="animate-pulse"/>
+            ${textObj(400, 200, "CARPINTERÍA HERMÉTICA")}
+            <path d="M 600 210 L 430 210" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 425 210 Q 415 210 420 200 T 425 190" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7"/>
+            <line x1="380" y1="120" x2="380" y2="110" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <line x1="420" y1="120" x2="420" y2="110" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 2"/>
+        `;
+    }
+    else if (t === "Muro Trombe") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="dots-higroscopic-dots-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="dots-soil-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" class="hatch-mass-class"/><rect x="0" y="0" width="10" height="260" class="hatch-mass-class"/>
+                <rect x="10" y="0" width="25" height="260" class="dots-sand-class"/><rect x="10" y="0" width="25" height="260" class="dots-glass-lines-class" opacity="0.2"/>
+                <rect x="35" y="0" width="10" height="260" class="pattern-crystal-class"/><rect x="35" y="0" width="10" height="260" fill="#fafafa" opacity="0.1"/>
+                <rect x="45" y="0" width="5" height="260" class="hatch-insulation-class"/><rect x="45" y="0" width="5" height="260" class="dots- sand-class"/>
+            </g>
+            ${textObj(400, 200, "CEN. MURO TROMBE")}
+            <circle cx="50" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 70 90 L 120 130" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 130 135 L 160 150" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 530 310 Q 535 250 530 190" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 535 310 Q 535 250 535 190" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" marker-end="url(#arrow-red)" class="svg-wind-flow-delayed"/>
+            <path d="M 490 280 L 450 280" fill="none" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" class="svg-wind-flow" style="animation-delay: 1.5s"/>
+        `;
+    }
 
-// 2. HELPER FUNCTIONS PARA ELEMENTOS TÉCNICOS ESTÁNDAR
-const technicalIndication = `<rect x="20" y="20" width="760" height="360" fill="url(#blueprint-axes)" opacity="0.3"/>`;
-const textObj = (x, y, text, type = 'standard') => `<text x="${x}" y="${y}" class="text-blueprint${type === 'standard' ? '' : `-${type}`}">${text}</text>`;
-const standardDoor = (x, y, scale = 1, flip = false) => `<g transform="translate(${x}, ${y}) scale(${scale}) ${flip ? 'scale(-1, 1)' : ''}" class="svg-standard-door"><rect x="0" y="0" width="50" height="100" rx="2" class="hatch-concrete-class"/><path d="M 0 100 A 50 100 0 0 0 50 100"/><circle cx="42" cy="50" r="3" fill="#cbd5e1"/></g>`;
-const groundLine = `
-    <rect x="0" y="340" width="800" height="60" fill="#111827"/>
-    <rect x="0" y="340" width="800" height="40" class="dots-sand-class"/>
-    <rect x="0" y="340" width="800" height="10" class="dots-soil-class"/>
-    <line x1="0" y1="340" x2="800" y2="340" stroke="#cbd5e1" stroke-width="2" class="opacity-50"/>
-`;
-const scaleFigure = `<g opacity="0.3" transform="translate(680, 245) scale(0.65)"><circle cx="15" cy="10" r="7" fill="#cbd5e1"/><path d="M10,20 L20,20 L20,45 L25,80 L18,80 L15,50 L12,80 L5,80 L10,45 Z" fill="#cbd5e1"/></g>`;
-const sunObj = `<circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/><circle cx="100" cy="70" r="30" fill="none" stroke="#fcd34d" stroke-width="1" stroke-dasharray="5 5" class="svg-sun-pulse"/>`;
+    // --- BLOQUE 2 (11 - 20) ---
+    else if (t === "Galería solar") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="dots- soil-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="dots-higroscopic-dots-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" class="dots-perforated-class"/><rect x="0" y="0" width="10" height="260" class="dots-perforated-class"/>
+                <rect x="10" y="0" width="25" height="260" class="pattern-crystal-class"/><rect x="10" y="0" width="25" height="260" class="dots-perforated-class" opacity="0.2"/>
+                <rect x="35" y="0" width="10" height="260" class="hatch-concrete-class"/><rect x="35" y="0" width="10" height="260" fill="#fafafa" opacity="0.1"/>
+            </g>
+            ${textObj(400, 200, "CEN. GALERÍA SOLAR")}
+            <circle cx="50" cy="200" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 50 200 L 130 200" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 150 200 C 250 200, 300 150, 350 150" fill="none" stroke="#ea580c" stroke-width="5" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
+        `;
+    }
+    else if (t === "Orientación solar estratégica") {
+        svgContent += `
+            <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5 5"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#0f172a" opacity="0.05"/>
+            <g transform="translate(680, 100)">
+                <line x1="0" y1="-30" x2="0" y2="30" stroke="#cbd5e1" stroke-width="2"/>
+                <line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="1.5"/>
+            </g>
+            <path d="M 150 300 A 250 150 0 0 1 650 300" fill="none" stroke="#fcd34d" stroke-width="2.5" stroke-dasharray="10 5"/>
+            <circle cx="150" cy="300" r="10" fill="#fcd34d"/>
+            <circle cx="400" cy="110" r="18" fill="#f59e0b" class="svg-sun-pulse"/>
+            <circle cx="650" cy="300" r="10" fill="#fcd34d"/>
+            <rect x="250" y="150" width="300" height="120" rx="5" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/><rect x="250" y="150" width="300" height="120" rx="5" fill="#1e293b" opacity="0.2"/>
+            <path d="M 400 128 L 400 160" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 300 135 L 330 160" fill="none" stroke="#fcd34d" stroke-width="4.5" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 500 135 L 470 160" fill="none" stroke="#fcd34d" stroke-width="4.5" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            ${standardDoor(360, 210, 0.6)}
+        `;
+    }
+    else if (t === "Panel solar térmico") {
+        // Mantener como image_0.png
+        svgContent += `
+            ${groundLine}
+            ${sunContextAxo}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <g transform="translate(320, 100) rotate(-24)">
+                <rect x="0" y="0" width="100" height="12" fill="#111827" stroke="#cbd5e1" stroke-width="1.5"/><rect x="0" y="0" width="100" height="12" fill="#ea580c" opacity="0.05"/>
+                <rect x="5" y="2" width="90" height="8" fill="#1e3a8a" stroke="#38bdf8" stroke-width="1"/><rect x="5" y="2" width="90" height="8" fill="#3b82f6" opacity="0.3"/>
+            </g>
+            <rect x="480" y="200" width="40" height="100" rx="5" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><rect x="480" y="200" width="40" height="100" rx="5" fill="#1e293b" opacity="0.1"/>
+            <path d="M 330 110 L 330 200 L 480 230" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 400 115 L 450 115 L 480 210" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+            ${textObj(400, 250, "CEN. PANEL TÉRMICO")}
+            ${scaleFigure}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Cubierta captadora") {
+        // Mantener como image_0.png
+        svgContent += `
+            ${groundLine}
+            ${sunContextAxo}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#ea580c" stroke="#c2410c" stroke-width="1.5"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
+            <polygon points="150,140 400,70 650,145" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="5 5" opacity="0.6"/>
+            <path d="M 120 70 L 320 110" fill="none" stroke="#fcd34d" stroke-width="7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            ${textObj(400, 200, "CEN. CUBIERTA CAPTADORA")}
+            ${scaleFigure}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Acumulación térmica hidráulica") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <g transform="translate(380, 130)">
+                <ellipse cx="20" cy="10" rx="20" ry="8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><ellipse cx="20" cy="10" rx="20" ry="8" fill="#1e293b" opacity="0.1"/>
+                <rect x="0" y="10" width="40" height="150" class="hatch-water-class" stroke="#94a3b8" stroke-width="1.5"/><rect x="0" y="10" width="40" height="150" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
+                <ellipse cx="20" cy="160" rx="20" ry="8" fill="#a1a1aa" stroke="#94a3b8" stroke-width="1.5"/>
+            </g>
+            <path d="M 400 130 L 400 80 L 480 80" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 400 280 L 400 320 L 480 320" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            ${textObj(400, 250, "CEN. ACUMULACIÓN HIDRÁULICA")}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Patio húmedo") {
+        svgContent += `
+            <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#06b6d4" opacity="0.05"/>
+            <rect x="150" y="100" width="500" height="200" rx="5" fill="#fafafa" opacity="0.1" stroke="#cbd5e1" stroke-width="2"/><rect x="150" y="100" width="500" height="200" rx="5" fill="#fafafa" opacity="0.05"/>
+            <rect x="250" y="125" width="300" height="150" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+            <circle cx="300" cy="160" r="15" class="dots- trees-class"/><circle cx="300" cy="160" r="15" class="dots- sand-class" opacity="0.2"/>
+            <circle cx="500" cy="160" r="18" class="dots- trees-class" opacity="0.8"/><circle cx="500" cy="160" r="18" class="dots- sand-class" opacity="0.2"/>
+            <circle cx="500" cy="240" r="15" class="dots- trees-class"/><circle cx="500" cy="240" r="15" class="dots- sand-class" opacity="0.2"/>
+            <circle cx="300" cy="240" r="12" class="dots- trees-class"/><circle cx="300" cy="240" r="12" class="dots- sand-class" opacity="0.2"/>
+            <rect x="390" y="190" width="20" height="20" rx="2" class="hatch-water-class"/><rect x="390" y="190" width="20" height="20" rx="2" fill="#3b82f6" opacity="0.2"/>
+            <path d="M 400 180 C 400 130, 350 100, 300 100" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 400 220 C 400 270, 450 300, 500 300" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            ${textObj(400, 200, "CEN. PATIO HÚMEDO")}
+            ${standardDoor(350, 125, 0.6)}
+            ${standardDoor(350, 275, 0.6, true)}
+        `;
+    }
+    else if (t === "Fuente evaporativa") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="250" y="100" width="20" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><rect x="250" y="100" width="20" height="240" fill="#ea580c" opacity="0.05"/>
+            <rect x="150" y="100" width="100" height="20" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="150" y="100" width="100" height="20" fill="#ea580c" opacity="0.05"/>
+            <rect x="300" y="325" width="300" height="15" rx="2" class="hatch-water-class" stroke="#cbd5e1" stroke-width="1"/><rect x="300" y="325" width="300" height="15" fill="#3b82f6" opacity="0.2"/>
+            <rect x="300" y="325" width="300" height="15" fill="#38bdf8" opacity="0.1" class="animate-pulse"/>
+            ${textObj(400, 250, "CEN. FUENTE EVAPORATIVA")}
+            ${scaleFigure}
+            <path d="M 50 250 L 320 280 Q 400 280 500 320" fill="none" stroke="#06b6d4" stroke-width="7" marker-mid="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 350 320 C 350 300, 370 280, 400 280 S 450 300, 450 320" fill="#06b6d4" opacity="0.1"/>
+            <circle cx="380" cy="310" r="10" fill="#06b6d4" opacity="0.1" class="animate-pulse"/><circle cx="420" cy="310" r="10" fill="#06b6d4" opacity="0.1" class="animate-pulse"/>
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Material higroscopico") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="dots-perforated-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="pattern-crystal-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" class="dots-higroscopic-dots-class"/><rect x="0" y="0" width="10" height="260" class="hatch-concrete-class" opacity="0.2"/>
+                <rect x="10" y="0" width="25" height="260" class="pattern-trees-class"/><rect x="10" y="0" width="25" height="260" fill="#fafafa" opacity="0.1"/>
+            </g>
+            ${textObj(400, 200, "CEN. MATERIAL HIGROSCÓPICO")}
+            <circle cx="50" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 70 90 L 120 130" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 130 135 L 160 150" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 600 180 Q 550 180 520 180" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <circle cx="515" cy="180" r="5" fill="#06b6d4" class="svg-moisture"/>
+            <path d="M 520 220 Q 550 220 600 220" fill="none" stroke="#cbd5e1" stroke-width="3" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+            <circle cx="525" cy="220" r="3" fill="#cbd5e1" class="svg-moisture" style="animation-delay: 0.5s"/>
+        `;
+    }
+    else if (t === "Doble envolvente térmica") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="dots-sand-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="dots-higroscopic-dots-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" class="dots-perforated-class"/><rect x="0" y="0" width="10" height="260" class="dots- sand-class" opacity="0.2"/>
+                <rect x="10" y="0" width="25" height="260" class="pattern-crystal-class"/><rect x="10" y="0" width="25" height="260" fill="#fafafa" opacity="0.1"/>
+            </g>
+            ${textObj(400, 200, "CEN. DOBLE ENVOLVENTE")}
+            <circle cx="50" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 70 90 L 120 130" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 130 135 L 160 150" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+        `;
+    }
+    else if (t === "Acceso amortiguador") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="hatch-mass-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="hatch-mass-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <rect x="120" y="100" width="200" height="200" rx="3" class="hatch-mass-class"/><rect x="120" y="100" width="200" height="200" rx="3" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
+            ${textObj(400, 200, "ZONA AMORTIGUADORA")} ${textObj(210, 200, "CEN. ACCESO")}
+            <path d="M 50 200 L 140 200" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 160 200 C 200 200, 220 200, 240 200" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 0.5s"/>
+            <path d="M 260 200 C 350 200, 380 200, 500 200" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 1.5s"/>
+            ${standardDoor(210, 100, 0.5)}
+            ${standardDoor(540, 100, 0.5, true)}
+        `;
+    }
 
-// 3. INICIO DE LÓGICA CONDICIONAL DE DIBUJO DETALLADO (LAS 39 ESTRATEGIAS)
+    // --- BLOQUE 3 (21 - 30) ---
+    else if (t === "Aislamiento continuo") {
+        // Mantener como image_0.png
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" class="dots-higroscopic-dots-class" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
+            <rect x="150" y="320" width="500" height="20" class="hatch-concrete-class" stroke="#cbd5e1"/><rect x="150" y="320" width="500" height="20" fill="#0f172a" opacity="0.05"/>
+            <rect x="150" y="330" width="500" height="10" class="hatch-insulation-class"/>
+            <g transform="translate(150, 130)"><rect x="0" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="15" y="0" width="10" height="190" class="hatch-insulation-class"/><rect x="25" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="0" y="0" width="40" height="190" fill="#0f172a" opacity="0.05"/></g>
+            <g transform="translate(610, 130)"><rect x="0" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="15" y="0" width="10" height="190" class="hatch-insulation-class"/><rect x="25" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="0" y="0" width="40" height="190" fill="#0f172a" opacity="0.05"/></g>
+            <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" class="hatch-insulation-class"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
+            ${sunObj}
+            ${textObj(400, 200, "CEN. AISLAMIENTO CONTINUO")}
+            <path d="M 120 90 L 180 150" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 195 165 L 210 180" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Parasoles moviles") {
+        svgContent += `
+            ${groundLine}
+            <rect x="250" y="100" width="300" height="240" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="250" y="100" width="300" height="240" rx="3" class="hatch-mass-class"/>
+            <rect x="330" y="150" width="140" height="120" class="dots-glass-lines-class" stroke="#38bdf8"/><rect x="330" y="150" width="140" height="120" fill="#fafafa" opacity="0.1"/>
+            <g transform="translate(330, 150)"><rect x="0" y="0" width="140" height="5" class="pattern-crystal-class"/><rect x="0" y="115" width="140" height="5" class="pattern-crystal-class"/><line x1="10" y1="5" x2="10" y2="115" stroke="#cbd5e1" stroke-width="4"/><line x1="130" y1="5" x2="130" y2="115" stroke="#cbd5e1" stroke-width="4"/></g>
+            <g transform="translate(220, 150)"><rect x="0" y="0" width="10" height="120" rx="1" fill="#71717a" opacity="0.7"/><rect x="0" y="0" width="10" height="120" rx="1" fill="#cbd5e1" opacity="0.1"/><g transform="translate(0, 10) rotate(70)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.9"/></g><g transform="translate(0, 40) rotate(70)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.9"/></g><g transform="translate(0, 80) rotate(20)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.6"/></g><g transform="translate(0, 110) rotate(20)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.6"/></g></g>
+            ${sunObj}
+            ${textObj(400, 210, "CEN. PARASOLES MÓVILES")}
+            <path d="M 130 90 L 215 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 215 160 L 160 120" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 130 110 L 215 240" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce" style="animation-delay: 0.5s"/>
+            ${standardDoor(270, 240, 0.7)}
+            ${standardDoor(480, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Fachada de doble piel") {
+        // Mantener como image_0.png
+        svgContent += `
+            ${groundLine}
+            <g transform="translate(300, 100)"><polygon points="0,0 50,-20 250,-20 200,0" fill="#d1d5db" stroke="#cbd5e1" opacity="0.3"/><rect x="0" y="0" width="200" height="240" fill="#cbd5e1" stroke="#cbd5e1" opacity="0.3"/><polygon points="200,0 250,-20 250,220 200,240" fill="#a1a1aa" stroke="#cbd5e1" opacity="0.3"/></g>
+            <rect x="250" y="150" width="40" height="190" class="hatch-concrete-class" stroke="#cbd5e1" stroke-width="2"/><rect x="250" y="150" width="40" height="190" fill="#1e293b" opacity="0.2"/>
+            <rect x="260" y="200" width="20" height="60" class="dots-glass-lines-class" stroke="#38bdf8"/><rect x="260" y="200" width="20" height="60" fill="#fafafa" opacity="0.1"/>
+            <rect x="210" y="150" width="40" height="190" rx="3" fill="#06b6d4" opacity="0.1"/><rect x="210" y="150" width="40" height="190" rx="3" fill="#3b82f6" opacity="0.05"/>
+            <rect x="205" y="140" width="5" height="210" fill="#e2e8f0" stroke="#cbd5e1" opacity="0.8"/><rect x="205" y="140" width="5" height="210" fill="#fafafa" opacity="0.1"/>
+            <rect x="200" y="200" width="15" height="60" class="dots-glass-lines-class" stroke="#38bdf8" opacity="0.6"/><rect x="200" y="200" width="15" height="60" fill="#fafafa" opacity="0.1"/>
+            <path d="M 230 360 L 230 330" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 230 310 Q 230 250 230 190" fill="none" stroke="#06b6d4" stroke-width="7" opacity="0.7" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+            <path d="M 230 170 L 230 130" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            ${sunObj}
+            ${textObj(400, 200, "CEN. FACHADA DOBLE PIEL")}
+            <path d="M 120 90 L 205 180" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            ${standardDoor(250, 150, 0.5)}
+        `;
+    }
+    else if (t === "Cubierta extendida") {
+        // Mantener como image_0.png
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="150" y="150" width="20" height="100" class="dots-glass-lines-class" stroke="#38bdf8"/><rect x="150" y="150" width="20" height="100" fill="#fafafa" opacity="0.1"/>
+            <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
+            <path d="M 120,130 L 0,160 L 0,170 L 120,140 Z" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><path d="M 120,130 L 0,160 L 0,170 L 120,140 Z" fill="#0f172a" opacity="0.1"/>
+            <line x1="120" y1="130" x2="120" y2="340" stroke="#cbd5e1" stroke-width="6"/><line x1="120" y1="130" x2="120" y2="340" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+            ${sunObj}
+            ${textObj(400, 200, "CEN. CUBIERTA EXTENDIDA")}
+            <path d="M 120 70 L 180 180" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 180 180 L 150 250" fill="none" stroke="#fcd34d" stroke-width="4.5" stroke-dasharray="8 4" opacity="0.7"/>
+            <rect x="0" y="160" width="120" height="180" rx="3" fill="#1e293b" opacity="0.15"/>
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Muro acumulado") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="hatch-mass-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="hatch-mass-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" class="dots- sand-class"/><rect x="0" y="0" width="10" height="260" class="dots- sand-class"/>
+                <rect x="10" y="0" width="25" height="260" class="dots-higroscopic-dots-class"/><rect x="10" y="0" width="25" height="260" class="dots-higroscopic-dots-class" opacity="0.2"/>
+                <rect x="35" y="0" width="10" height="260" class="hatch-concrete-class"/><rect x="35" y="0" width="10" height="260" fill="#fafafa" opacity="0.1"/>
+            </g>
+            ${textObj(400, 200, "CEN. MURO ACUMULADOR")}
+            <circle cx="50" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 70 90 L 120 130" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 130 135 L 160 150" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 490 280 L 450 280" fill="none" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" class="svg-wind-flow" style="animation-delay: 1.5s"/>
+        `;
+    }
+    else if (t === "Piso de inercia Térmica") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="dots-higroscopic-dots-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="dots- sand-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 280)">
+                <rect x="0" y="0" width="560" height="10" class="hatch-insulation-class"/>
+                <rect x="0" y="10" width="560" height="25" class="hatch-concrete-class"/>
+                <rect x="0" y="35" width="560" height="15" class="dots-perforated-class"/>
+                <rect x="0" y="50" width="560" height="5" class="pattern-crystal-class"/>
+            </g>
+            ${textObj(400, 200, "CEN. PISO INERCIA TÉRMICA")}
+            <path d="M 300 250 L 300 180" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
+            <path d="M 500 250 L 500 180" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up" style="animation-delay: 0.5s"/>
+        `;
+    }
+    else if (t === "Protección de masa térmica") {
+        svgContent += `
+            ${groundLine}
+            <rect x="250" y="100" width="300" height="240" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="250" y="100" width="300" height="240" rx="3" class="hatch-mass-class"/><rect x="250" y="100" width="300" height="240" rx="3" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
+            <rect x="350" y="100" width="100" height="240" rx="3" class="pattern-trees-class"/><rect x="350" y="100" width="100" height="240" rx="3" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
+            <polygon points="200,100 350,100 350,70 200,70" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="200,100 350,100 350,70 200,70" fill="#0f172a" opacity="0.05"/>
+            <line x1="200" y1="100" x2="200" y2="340" stroke="#cbd5e1" stroke-width="6"/><line x1="200" y1="100" x2="200" y2="340" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+            ${sunObj}
+            ${textObj(400, 200, "CEN. PROTECCIÓN MASA")}
+            <path d="M 130 70 L 280 100" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 300 120 L 350 180" fill="none" stroke="#fcd34d" stroke-width="2.5" stroke-dasharray="8 4" opacity="0.2"/>
+            ${standardDoor(270, 240, 0.7)}
+        `;
+    }
+    else if (t === "Espejo de agua climático") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="50" y="325" width="300" height="15" rx="2" class="hatch-water-class" stroke="#cbd5e1" stroke-width="1"/><rect x="50" y="325" width="300" height="15" fill="#3b82f6" opacity="0.2"/>
+            <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
+            ${textObj(400, 200, "CEN. ESPEJO DE AGUA")}
+            ${scaleFigure}
+            <path d="M 50 250 L 150 250" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 150 250 C 250 250, 300 280, 350 250" fill="none" stroke="#06b6d4" stroke-width="8" opacity="0.6" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Nebulización pasiva") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="150" y="130" width="10" height="210" fill="#cbd5e1" opacity="0.2"/>
+            <rect x="145" y="310" width="20" height="20" rx="10" fill="#3b82f6" opacity="0.3"/>
+            <rect x="145" y="310" width="20" height="20" rx="10" fill="#fafafa" opacity="0.05"/>
+            <rect x="135" y="150" width="10" height="150" rx="3" class="dots- glass-lines-class"/><rect x="135" y="150" width="10" height="150" rx="3" fill="#fafafa" opacity="0.02"/>
+            <path d="M 160 320 C 250 320, 350 280, 450 280 S 550 320, 640 320" fill="url(#pattern-soil)" stroke="#06b6d4" stroke-width="5" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            ${textObj(400, 200, "CEN. NEBULIZADOR")}
+            ${scaleFigure}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Vegetación refrescante") {
+        // Mantener como image_1.png
+        svgContent += `
+            ${groundLine}
+            ${sunContextAxo}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
+            <rect x="50" y="150" width="200" height="190" class="dots- trees-class"/><rect x="50" y="150" width="200" height="190" class="dots- trees-class" opacity="0.2"/>
+            <rect x="600" y="200" width="150" height="140" class="dots- trees-class"/><rect x="600" y="200" width="150" height="140" class="dots- trees-class" opacity="0.2"/>
+            <path d="M 50 280 C 150 280, 200 250, 300 250" fill="none" stroke="#06b6d4" stroke-width="9" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 500 280 L 600 280" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            ${textObj(400, 200, "CEN. VEGETACIÓN")}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
 
-// --- BLOQUE 1 (1 - 10) ---
-if (t === "Ventilación regulable") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <path d="M 150 130 L 650 130" fill="none" stroke="#cbd5e1" stroke-width="1" opacity="0.3"/>
-        <g transform="translate(400, 60)"><line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="4"/><line x1="-20" y1="-5" x2="0" y2="-30" stroke="#cbd5e1" stroke-width="2" opacity="0.8"/></g>
-        ${textObj(400, 250, "C", "label")} ${textObj(400, 100, "F", "label")}
-        <rect x="145" y="160" width="10" height="130" fill="#38bdf8" opacity="0.3" stroke="#38bdf8" stroke-width="1"/><line x1="145" y1="160" x2="110" y2="135" stroke="#38bdf8" stroke-width="2.5"/>
-        <rect x="645" y="160" width="10" height="130" class="dots-perforated-class"/><line x1="645" y1="160" x2="680" y2="135" stroke="#cbd5e1" stroke-width="1.5"/>
-        <rect x="145" y="160" width="10" height="130" rx="1" fill="#38bdf8" opacity="0.2"/>
-        <rect x="645" y="160" width="10" height="130" rx="1" fill="#cbd5e1" opacity="0.2"/>
-        <path d="M 50 220 L 140 220" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 160 220 C 350 220, 450 170, 400 70" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.8" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        ${standardDoor(230, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-        <line x1="110" y1="135" x2="120" y2="135" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 2"/>
-        <line x1="680" y1="135" x2="670" y2="135" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 2"/>
-    `;
-}
-else if (t === "Cubierta ventilada") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 250 340 L 250 160 L 550 160 L 550 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <polygon points="230,160 400,90 570,160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
-        <polygon points="230,140 400,70 570,140" fill="none" stroke="#e2e8f0" stroke-width="4"/><polygon points="230,140 400,70 570,140" fill="#cbd5e1" opacity="0.05"/>
-        <polygon points="230,160 400,90 570,160" fill="#ea580c" opacity="0.1"/>
-        <path d="M 230,160 L 230,135 M 400,90 L 400,65 M 570,160 L 570,135" stroke="#cbd5e1" stroke-width="1" opacity="0.4"/>
-        <line x1="250" y1="160" x2="250" y2="137" stroke="#cbd5e1" stroke-width="4"/><line x1="550" y1="160" x2="550" y2="137" stroke="#cbd5e1" stroke-width="4"/>
-        ${sunObj}
-        ${textObj(400, 240, "C", "label")} ${textObj(400, 110, "F", "label")}
-        <path d="M 200 135 L 300 115" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 320 110 L 400 80" fill="none" stroke="#ea580c" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-        <path d="M 400 70 L 480 95" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-        ${standardDoor(360, 240, 0.7)}
-    `;
-}
-else if (t === "Protección solar ligera") {
-    svgContent += `
-        ${groundLine}
-        <rect x="250" y="100" width="300" height="240" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="330" y="150" width="140" height="120" fill="url(#glass-lines)" stroke="#38bdf8"/><rect x="330" y="150" width="140" height="120" fill="#fafafa" opacity="0.1"/>
-        <line x1="220" y1="80" x2="220" y2="340" stroke="#a1a1aa" stroke-width="1" stroke-dasharray="4 2"/>
-        <rect x="215" y="120" width="10" height="80" class="dots-perforated-class"/><rect x="215" y="220" width="10" height="90" class="dots-perforated-class"/>
-        ${sunObj}
-        ${textObj(400, 190, "C", "label")}
-        <path d="M 130 90 L 215 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 225 165 L 330 200" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce" style="animation-delay: 0.5s"/>
-        <path d="M 215 160 L 160 120" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${standardDoor(270, 240, 0.7)}
-        ${standardDoor(480, 240, 0.7, true)}
-    `;
-}
-else if (t === "Espacios de transición") {
-    svgContent += `
-        ${groundLine}
-        <rect x="150" y="100" width="500" height="240" rx="5" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="150" y="150" width="120" height="140" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="1"/>
-        <polygon points="120,150 150,110 300,110 330,150" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
-        <line x1="150" y1="150" x2="150" y2="290" stroke="#cbd5e1" stroke-width="6"/>
-        ${textObj(210, 210, "C", "label")} ${textObj(430, 210, "F", "label")}
-        ${standardDoor(210, 290, 0.7)}
-        ${standardDoor(540, 290, 0.7, true)}
-    `;
-}
-else if (t === "Fachada permeable") {
-    svgContent += `
-        ${groundLine}
-        <rect x="100" y="80" width="600" height="260" fill="none" stroke="#cbd5e1" stroke-width="2"/><rect x="100" y="80" width="600" height="260" fill="#0f172a" opacity="0.05"/>
-        <g transform="translate(100, 80)">
-            <line x1="0" y1="20" x2="600" y2="50" stroke="#cbd5e1" stroke-width="5"/>
-            <line x1="0" y1="70" x2="600" y2="100" stroke="#cbd5e1" stroke-width="5"/>
-            <line x1="0" y1="120" x2="600" y2="150" stroke="#cbd5e1" stroke-width="5"/>
-            <line x1="0" y1="170" x2="600" y2="200" stroke="#cbd5e1" stroke-width="5"/>
-            <line x1="0" y1="220" x2="600" y2="250" stroke="#cbd5e1" stroke-width="5"/>
-        </g>
-        <rect x="100" y="80" width="600" height="260" rx="3" fill="#38bdf8" opacity="0.1"/>
-        <path d="M 50 180 L 150 200" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 200 130 L 300 130" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 0.5s"/>
-        <path d="M 400 230 L 500 230" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 1s"/>
-        ${standardDoor(360, 240, 0.7)}
-    `;
-}
-else if (t === "Ventilación elevada") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <g transform="translate(400, 60)"><line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="4"/><line x1="-20" y1="-5" x2="0" y2="-30" stroke="#cbd5e1" stroke-width="2" opacity="0.8"/></g>
-        ${textObj(400, 250, "C", "label")} ${textObj(400, 100, "F", "label")}
-        <rect x="145" y="160" width="10" height="130" fill="#38bdf8" opacity="0.3" stroke="#38bdf8" stroke-width="1"/><line x1="145" y1="160" x2="110" y2="135" stroke="#38bdf8" stroke-width="2.5"/>
-        <rect x="645" y="160" width="10" height="130" class="dots-perforated-class"/><line x1="645" y1="160" x2="680" y2="135" stroke="#cbd5e1" stroke-width="1.5"/>
-        <rect x="145" y="160" width="10" height="130" rx="1" fill="#38bdf8" opacity="0.2"/>
-        <rect x="645" y="160" width="10" height="130" rx="1" fill="#cbd5e1" opacity="0.2"/>
-        <path d="M 50 220 L 140 220" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 160 220 C 350 220, 450 170, 400 70" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.8" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        ${standardDoor(230, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Núcleo compacto") {
-    svgContent += `
-        <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#0f172a" opacity="0.05"/>
-        <rect x="150" y="100" width="500" height="200" rx="5" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="2"/><rect x="150" y="100" width="500" height="200" rx="5" fill="#334155" opacity="0.1"/>
-        <rect x="275" y="125" width="250" height="150" rx="3" fill="url(#hatch-mass)" stroke="#ea580c" stroke-width="2"/>
-        <line x1="275" y1="125" x2="150" y2="100" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/><line x1="525" y1="125" x2="650" y2="100" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/><line x1="275" y1="275" x2="150" y2="300" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/><line x1="525" y1="275" x2="650" y2="300" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/>
-        ${textObj(210, 160, "SALA", "label")} ${textObj(210, 240, "COMEDOR", "label")} ${textObj(590, 200, "HABITACIÓN", "label")}
-        <circle cx="400" cy="200" r="50" fill="#ea580c" class="opacity-10 svg-heat-radiate"/>
-        <path d="M 500 200 L 580 200" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="5 3" opacity="0.5" marker-end="url(#arrow-red)"/>
-        ${standardDoor(350, 125, 0.6)}
-        ${standardDoor(350, 275, 0.6, true)}
-    `;
-}
-else if (t === "Envolvente térmica") {
-    svgContent += `
-        ${groundLine}
-        <polygon points="300,100 350,80 550,80 500,100" fill="#d1d5db" stroke="#cbd5e1"/>
-        <rect x="300" y="100" width="200" height="240" fill="#cbd5e1" stroke="#cbd5e1"/>
-        <polygon points="500,100 550,80 550,320 500,340" fill="#a1a1aa" stroke="#cbd5e1"/>
-        <g transform="translate(500, 100)">
-            <rect x="0" y="0" width="10" height="240" fill="#64748b"/><rect x="0" y="0" width="10" height="240" fill="url(#pattern-trees)" opacity="0.3"/>
-            <rect x="10" y="0" width="25" height="240" fill="url(#hatch-concrete)"/>
-            <rect x="35" y="0" width="10" height="240" fill="url(#hatch-insulation)"/>
-            <rect x="45" y="0" width="5" height="240" fill="#94a3b8"/><rect x="45" y="0" width="5" height="240" class="hatch-insulation-class"/>
-        </g>
-        ${textObj(400, 200, "C", "label")} ${textObj(560, 200, "F", "label")}
-        <circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
-        <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 265 165 L 300 180" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-    `;
-}
-else if (t === "Carpinteria hermética") {
-    svgContent += `
-        ${groundLine}
-        <rect x="300" y="60" width="200" height="130" fill="url(#hatch-concrete)" stroke="#cbd5e1"/>
-        <rect x="300" y="210" width="200" height="130" fill="url(#hatch-concrete)" stroke="#cbd5e1"/>
-        <rect x="300" y="60" width="200" height="280" fill="#ea580c" opacity="0.05"/>
-        <rect x="380" y="160" width="40" height="80" fill="#d1d5db" stroke="#71717a" stroke-width="2"/>
-        <rect x="395" y="165" width="10" height="70" fill="url(#glass-lines)" stroke="#38bdf8"/>
-        <circle cx="380" cy="160" r="4" fill="#ef4444" class="animate-pulse"/>
-        <circle cx="420" cy="160" r="4" fill="#ef4444" class="animate-pulse"/>
-        <circle cx="380" cy="240" r="4" fill="#ef4444" class="animate-pulse"/>
-        <circle cx="420" cy="240" r="4" fill="#ef4444" class="animate-pulse"/>
-        ${textObj(350, 200, "C", "label")} ${textObj(450, 200, "F", "label")}
-        <path d="M 600 210 L 430 210" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 425 210 Q 415 210 420 200 T 425 190" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7"/>
-        <line x1="380" y1="160" x2="380" y2="150" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 2"/>
-        <line x1="420" y1="160" x2="420" y2="150" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 2"/>
-    `;
-}
-else if (t === "Muro Trombe") {
-    svgContent += `
-        ${groundLine}
-        <polygon points="300,100 350,80 550,80 500,100" fill="#d1d5db" stroke="#cbd5e1"/>
-        <rect x="300" y="100" width="200" height="240" fill="#cbd5e1" stroke="#cbd5e1"/>
-        <polygon points="500,100 550,80 550,320 500,340" fill="#a1a1aa" stroke="#cbd5e1"/>
-        <g transform="translate(500, 100)">
-            <rect x="0" y="0" width="10" height="240" fill="url(#hatch-concrete)"/>
-            <rect x="10" y="0" width="25" height="240" fill="url(#pattern-crystal)"/>
-            <rect x="35" y="0" width="10" height="240" class="hatch-water-class"/>
-            <rect x="45" y="0" width="5" height="240" fill="#94a3b8"/><rect x="45" y="0" width="5" height="240" class="dots-sand-class"/>
-        </g>
-        ${textObj(400, 200, "C", "label")} ${textObj(560, 200, "F", "label")}
-        <circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
-        <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 265 165 L 300 180" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 530 310 Q 535 250 530 190" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 535 310 Q 535 250 535 190" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" marker-end="url(#arrow-red)" class="svg-wind-flow-delayed"/>
-        <path d="M 490 280 L 450 280" fill="none" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)" class="svg-wind-flow" style="animation-delay: 1.5s"/>
-        ${standardDoor(460, 240, 0.7, true)}
-    `;
-}
+    // --- BLOQUE 4 (31 - 39) ---
+    else if (t === "Purgado nocturno") {
+        svgContent += `
+            <rect width="100%" height="100%" fill="#0f172a"/><rect width="100%" height="100%" fill="#fafafa" opacity="0.05"/>
+            ${groundLine}
+            <rect x="0" y="340" width="800" height="60" fill="#111827" opacity="0.3"/>
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <circle cx="100" cy="80" r="25" fill="#f8fafc" class="svg-sun-pulse"/><circle cx="100" cy="80" r="30" fill="none" stroke="#fafafa" stroke-width="1.5" stroke-dasharray="5 5" class="svg-sun-pulse"/>
+            <rect x="250" y="140" width="30" height="60" class="hatch-mass-class"/><rect x="250" y="140" width="30" height="60" class="hatch-mass-class"/>
+            <rect x="250" y="260" width="30" height="60" class="hatch-mass-class"/><rect x="250" y="260" width="30" height="60" class="hatch-mass-class"/>
+            <rect x="150" y="160" width="10" height="140" rx="1" fill="#38bdf8" opacity="0.1"/>
+            <rect x="640" y="160" width="10" height="140" rx="1" fill="#38bdf8" opacity="0.1"/>
+            <path d="M 50 230 C 250 230, 300 280, 500 230 S 650 200, 750 200" fill="none" stroke="#38bdf8" stroke-width="12" marker-mid="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 300 200 Q 400 150 500 180" fill="none" stroke="#ef4444" stroke-width="6" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
+            ${textObj(400, 200, "CEN. PURGADO NOCTURNO")}
+            ${scaleFigure}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Lucernario térmico") {
+        // Mantener como image_2.png
+        svgContent += `
+            ${groundLine}
+            <path d="M 250 340 L 250 180 L 550 180 L 550 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="380" y="60" width="40" height="20" class="dots-glass-lines-class"/><rect x="380" y="60" width="40" height="20" fill="#fafafa" opacity="0.1"/>
+            <rect x="380" y="60" width="40" height="20" rx="2" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
+            ${textObj(400, 200, "CEN. LUCERNARIO CALIENTE")}
+            <path d="M 350 250 Q 400 150 395 20" fill="none" stroke="#ef4444" stroke-width="7" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
+            <path d="M 450 250 Q 400 150 405 20" fill="none" stroke="#ef4444" stroke-width="7" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up" style="animation-delay: 0.5s"/>
+            ${scaleFigure}
+            ${standardDoor(360, 240, 0.7)}
+        `;
+    }
+    else if (t === "Chimenea solar invertida") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="250" y="130" width="20" height="210" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><rect x="250" y="130" width="20" height="210" fill="#ea580c" opacity="0.05"/>
+            <rect x="150" y="20" width="30" height="320" fill="#ea580c" opacity="0.2" stroke="#c2410c" stroke-width="1.5"/><rect x="150" y="20" width="30" height="320" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
+            <path d="M 250 300 L 180 300" fill="none" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="5 5"/>
+            <path d="M 350 250 C 300 250, 250 280, 200 300 C 165 300, 165 200, 165 20" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-float-up"/>
+            ${sunObj}
+            <path d="M 100 70 L 140 100" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            ${textObj(400, 200, "CEN. CHIMENEA SOLAR")}
+            ${scaleFigure}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    // ESTRATEGIA 34 REMOVIDA
+    else if (t === "Ventilación mecánica asistida") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="250" y="100" width="100" height="80" rx="3" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><rect x="250" y="100" width="100" height="80" rx="3" fill="#fafafa" opacity="0.1"/>
+            <rect x="150" y="150" width="20" height="40" class="dots-glass-lines-class"/>
+            <circle cx="300" cy="140" r="10" fill="#3b82f6" opacity="0.2"/><circle cx="300" cy="140" r="10" fill="#3b82f6" opacity="0.1" class="animate-pulse"/>
+            <path d="M 270 140 A 30 30 0 1 1 330 140" fill="none" stroke="#3b82f6" stroke-width="3" opacity="0.7"/>
+            <line x1="170" y1="170" x2="250" y2="170" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 350 170 C 400 170, 420 170, 450 170" fill="none" stroke="#06b6d4" stroke-width="6" opacity="0.7" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+            ${textObj(400, 220, "CEN. VENTILACIÓN MECÁNICA")}
+            ${scaleFigure}
+            ${standardDoor(210, 240, 0.7)}
+            ${standardDoor(570, 240, 0.7, true)}
+        `;
+    }
+    else if (t === "Sectorización térmica") {
+        // Mantener como image_0.png
+        svgContent += `
+            <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="3"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#cbd5e1" opacity="0.05"/>
+            <line x1="400" y1="50" x2="400" y2="350" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="150" y1="180" x2="400" y2="180" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="155" y="55" width="240" height="120" fill="#ef4444" opacity="0.2"/><rect x="155" y="55" width="240" height="120" fill="#ef4444" opacity="0.05"/>
+            <rect x="155" y="185" width="240" height="160" fill="#06b6d4" opacity="0.1"/><rect x="155" y="185" width="240" height="160" fill="#06b6d4" opacity="0.05"/>
+            <rect x="405" y="55" width="240" height="290" fill="#f59e0b" opacity="0.1"/><rect x="405" y="55" width="240" height="290" fill="#f59e0b" opacity="0.05"/>
+            ${textObj(275, 115, "SALA")} ${textObj(275, 265, "COMEDOR")} ${textObj(525, 200, "HABITACIÓN")}
+            ${textObj(400, 200, "SECTORIZACIÓN")}
+            ${standardDoor(350, 55, 0.6)}
+            ${standardDoor(350, 185, 0.6, true)}
+        `;
+    }
+    else if (t === "Fachada aislada") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="pattern-trees-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="dots- sand-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" fill="#cbd5e1" opacity="0.2"/><rect x="0" y="0" width="10" height="260" class="pattern-trees-class"/>
+                <rect x="10" y="0" width="25" height="260" class="hatch-concrete-class"/>
+                <rect x="35" y="0" width="10" height="260" fill="#94a3b8"/><rect x="35" y="0" width="10" height="260" class="dots- sand-class"/>
+            </g>
+            ${textObj(400, 200, "CEN. FACHADA AISLADA")}
+            <circle cx="50" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 70 90 L 120 130" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 130 135 L 160 150" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+        `;
+    }
+    else if (t === "Camara ventilada") {
+        // Mantener como image_0.png
+        svgContent += `
+            ${groundLine}
+            <path d="M 250 340 L 250 160 L 550 160 L 550 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="230,160 400,90 570,160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="230,160 400,90 570,160" fill="#0f172a" opacity="0.05"/>
+            <rect x="250" y="160" width="300" height="15" class="hatch-concrete-class" stroke="#cbd5e1" stroke-width="1.5"/><rect x="250" y="160" width="300" height="15" fill="#0f172a" opacity="0.05"/>
+            <rect x="250" y="170" width="300" height="5" class="hatch-insulation-class"/>
+            <path d="M 230,140 L 400,70 L 570,140 L 550,160 L 400,90 L 250,160 Z" class="dots- glass-lines-class"/><path d="M 230,140 L 400,70 L 570,140 L 550,160 L 400,90 L 250,160 Z" fill="#fafafa" opacity="0.1"/>
+            <path d="M 230,140 L 400,70 L 570,140" fill="none" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="8 4" opacity="0.6"/>
+            <line x1="250" y1="160" x2="250" y2="140" stroke="#cbd5e1" stroke-width="4"/><line x1="550" y1="160" x2="550" y2="140" stroke="#cbd5e1" stroke-width="4"/>
+            <rect x="250" y="160" width="300" height="15" fill="#3b82f6" opacity="0.05"/>
+            ${textObj(400, 200, "CEN. CÁMARA VENTILADA")}
+            ${scaleFigure}
+            ${standardDoor(360, 240, 0.7)}
+        `;
+    }
+    // NUEVAS ESTRATEGIAS
+    else if (t === "Elevación palafítica") {
+        svgContent += `
+            ${groundLine}
+            <path d="M 150 280 L 150 130 L 400 60 L 650 130 L 650 280 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="150" y="280" width="500" height="20" rx="3" class="hatch-concrete-class" stroke="#cbd5e1" stroke-width="1.5"/><rect x="150" y="280" width="500" height="20" rx="3" fill="#ea580c" opacity="0.05"/>
+            <rect x="150" y="280" width="500" height="60" class="dots- trees-class"/><rect x="150" y="280" width="500" height="60" fill="#16a34a" opacity="0.05"/>
+            <line x1="200" y1="280" x2="200" y2="340" stroke="#6b7280" stroke-width="6"/><line x1="200" y1="280" x2="200" y2="340" stroke="#6b7280" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+            <line x1="300" y1="280" x2="300" y2="340" stroke="#6b7280" stroke-width="6"/><line x1="300" y1="280" x2="300" y2="340" stroke="#6b7280" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+            <line x1="400" y1="280" x2="400" y2="340" stroke="#6b7280" stroke-width="6"/><line x1="400" y1="280" x2="400" y2="340" stroke="#6b7280" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+            <line x1="500" y1="280" x2="500" y2="340" stroke="#6b7280" stroke-width="6"/><line x1="500" y1="280" x2="500" y2="340" stroke="#6b7280" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+            <line x1="600" y1="280" x2="600" y2="340" stroke="#6b7280" stroke-width="6"/><line x1="600" y1="280" x2="600" y2="340" stroke="#6b7280" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
+            <rect x="0" y="325" width="800" height="15" fill="#3b82f6" opacity="0.15"/>
+            <rect x="0" y="325" width="800" height="15" rx="7" fill="#3b82f6" opacity="0.05"/><rect x="0" y="325" width="800" height="15" rx="7" fill="#3b82f6" opacity="0.02" class="svg-heat-radiate"/>
+            ${textObj(400, 200, "CEN. PALAFÍTICA")} ${textObj(400, 310, "FLUJO INFERIOR FRESCO")}
+            <path d="M 50 310 L 150 310" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+            <path d="M 200 310 C 350 310, 400 330, 600 330" fill="none" stroke="#06b6d4" stroke-width="9" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+            ${standardDoor(230, 180, 0.7)}
+            ${standardDoor(570, 180, 0.7, true)}
+        `;
+    }
+    else if (t === "Deshumidificación material") {
+        svgContent += `
+            <rect x="100" y="50" width="600" height="300" rx="10" class="dots- soil-class"/><rect x="100" y="50" width="600" height="300" rx="10" class="dots-higroscopic-dots-class"/>
+            <rect x="120" y="70" width="560" height="260" rx="5" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(120, 70)">
+                <rect x="0" y="0" width="10" height="260" class="dots-des dehumid-class"/><rect x="0" y="0" width="10" height="260" fill="#cbd5e1" opacity="0.1"/>
+                <rect x="130" y="100" width="120" height="200" rx="3" class="pattern-crystal-class"/><rect x="130" y="100" width="120" height="200" rx="3" class="dots-soil-class" opacity="0.2"/>
+            </g>
+            ${textObj(210, 200, "CEN. DESHUMIDIFICACIÓN")} ${textObj(400, 200, "HABITACIÓN SECA")}
+            <circle cx="50" cy="200" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 50 200 L 130 200" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
+            <path d="M 150 200 C 250 200, 300 150, 350 150" fill="none" stroke="#ea580c" stroke-width="5" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
+            ${standardDoor(380, 220, 0.7, true)}
+        `;
+    }
+    // --- FALLBACK ---
+    else {
+        svgContent += `
+            ${groundLine}
+            <rect x="300" y="200" width="200" height="40" rx="4" fill="rgba(15,23,42,0.8)" stroke="#334155"/>
+            ${textObj(400, 220, "CEN. ESQUEMÁTICA")}
+        `;
+    }
 
-// --- BLOQUE 2 (11 - 20) ---
-else if (t === "Galería solar") {
-    svgContent += `
-        <rect x="100" y="50" width="600" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="2"/><rect x="100" y="50" width="600" height="300" rx="10" fill="#ea580c" opacity="0.05"/>
-        <rect x="250" y="100" width="300" height="200" rx="5" fill="#fafafa" opacity="0.2" stroke="#e2e8f0" stroke-width="2"/><rect x="250" y="100" width="300" height="200" rx="5" fill="#fafafa" opacity="0.05"/>
-        <rect x="130" y="100" width="120" height="200" rx="3" fill="url(#pattern-crystal)" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="130" y="100" width="120" height="200" rx="3" fill="#38bdf8" opacity="0.1"/>
-        ${textObj(210, 200, "C", "label")} ${textObj(400, 200, "F", "label")}
-        <circle cx="50" cy="200" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
-        <path d="M 50 200 L 130 200" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 150 200 C 250 200, 300 150, 350 150" fill="none" stroke="#ea580c" stroke-width="5" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
-        ${standardDoor(380, 220, 0.7, true)}
-        ${standardDoor(250, 100, 0.5)}
+    document.getElementById('svg-canvas').innerHTML = `
+        <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
+            ${defsSVG}
+            ${svgContent}
+        </svg>
     `;
-}
-else if (t === "Orientación solar estratégica") {
-    svgContent += `
-        <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5 5"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#0f172a" opacity="0.05"/>
-        <g transform="translate(680, 100)">
-            <line x1="0" y1="-30" x2="0" y2="30" stroke="#cbd5e1" stroke-width="2"/>
-            <line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="1.5"/>
-        </g>
-        <path d="M 150 300 A 250 150 0 0 1 650 300" fill="none" stroke="#fcd34d" stroke-width="2.5" stroke-dasharray="10 5"/>
-        <circle cx="150" cy="300" r="10" fill="#fcd34d"/>
-        <circle cx="400" cy="110" r="18" fill="#f59e0b" class="svg-sun-pulse"/>
-        <circle cx="650" cy="300" r="10" fill="#fcd34d"/>
-        <rect x="250" y="150" width="300" height="120" rx="5" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/><rect x="250" y="150" width="300" height="120" rx="5" fill="#1e293b" opacity="0.2"/>
-        <path d="M 400 128 L 400 160" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 300 135 L 330 160" fill="none" stroke="#fcd34d" stroke-width="4.5" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 500 135 L 470 160" fill="none" stroke="#fcd34d" stroke-width="4.5" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${standardDoor(360, 210, 0.6)}
-    `;
-}
-else if (t === "Panel solar térmico") {
-    svgContent += `
-        ${groundLine}
-        ${sunContextAxo}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <g transform="translate(320, 100) rotate(-24)">
-            <rect x="0" y="0" width="100" height="12" fill="#111827" stroke="#cbd5e1" stroke-width="1.5"/><rect x="0" y="0" width="100" height="12" fill="#ea580c" opacity="0.05"/>
-            <rect x="5" y="2" width="90" height="8" fill="#1e3a8a" stroke="#38bdf8" stroke-width="1"/><rect x="5" y="2" width="90" height="8" fill="#3b82f6" opacity="0.3"/>
-        </g>
-        <rect x="480" y="200" width="40" height="100" rx="5" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><rect x="480" y="200" width="40" height="100" rx="5" fill="#1e293b" opacity="0.1"/>
-        <path d="M 330 110 L 330 200 L 480 230" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 400 115 L 450 115 L 480 210" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        ${textObj(350, 200, "C", "label")} ${textObj(550, 200, "F", "label")}
-        ${scaleFigure}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Cubierta captadora") {
-    svgContent += `
-        ${groundLine}
-        ${sunContextAxo}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#ea580c" stroke="#c2410c" stroke-width="1.5"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
-        <polygon points="150,140 400,70 650,145" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="5 5" opacity="0.6"/>
-        <path d="M 120 70 L 320 110" fill="none" stroke="#fcd34d" stroke-width="7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(400, 100, "C", "label")}
-        ${scaleFigure}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Acumulación térmica hidráulica") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <g transform="translate(380, 130)">
-            <ellipse cx="20" cy="10" rx="20" ry="8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><ellipse cx="20" cy="10" rx="20" ry="8" fill="#1e293b" opacity="0.1"/>
-            <rect x="0" y="10" width="40" height="150" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><rect x="0" y="10" width="40" height="150" fill="#1e293b" opacity="0.1"/>
-            <ellipse cx="20" cy="160" rx="20" ry="8" fill="#a1a1aa" stroke="#94a3b8" stroke-width="1.5"/>
-            <rect x="0" y="10" width="40" height="150" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        </g>
-        <path d="M 400 130 L 400 80 L 480 80" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 400 280 L 400 320 L 480 320" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Patio húmedo") {
-    svgContent += `
-        <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#06b6d4" opacity="0.05"/>
-        <rect x="150" y="100" width="500" height="200" rx="5" fill="#fafafa" opacity="0.1" stroke="#cbd5e1" stroke-width="2"/><rect x="150" y="100" width="500" height="200" rx="5" fill="#fafafa" opacity="0.05"/>
-        <rect x="250" y="125" width="300" height="150" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-        <circle cx="300" cy="160" r="15" fill="#16a34a" opacity="0.7"/><circle cx="300" cy="160" r="15" fill="#15803d" opacity="0.2"/>
-        <circle cx="500" cy="160" r="18" fill="#15803d" opacity="0.8"/><circle cx="500" cy="160" r="18" fill="#15803d" opacity="0.2"/>
-        <circle cx="500" cy="240" r="15" fill="#16a34a" opacity="0.7"/><circle cx="500" cy="240" r="15" fill="#15803d" opacity="0.2"/>
-        <circle cx="300" cy="240" r="12" fill="#16a34a" opacity="0.7"/><circle cx="300" cy="240" r="12" fill="#15803d" opacity="0.2"/>
-        <rect x="390" y="190" width="20" height="20" rx="2" fill="#3b82f6" opacity="0.8"/><rect x="390" y="190" width="20" height="20" rx="2" fill="#3b82f6" opacity="0.2"/>
-        <path d="M 400 180 C 400 130, 350 100, 300 100" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 400 220 C 400 270, 450 300, 500 300" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        ${textObj(210, 160, "F", "label")} ${textObj(590, 160, "F", "label")} ${textObj(400, 200, "C", "label")}
-        ${standardDoor(350, 125, 0.6)}
-        ${standardDoor(350, 275, 0.6, true)}
-    `;
-}
-else if (t === "Fuente evaporativa") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="250" y="100" width="20" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><rect x="250" y="100" width="20" height="240" fill="#ea580c" opacity="0.05"/>
-        <rect x="150" y="100" width="100" height="20" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="150" y="100" width="100" height="20" fill="#ea580c" opacity="0.05"/>
-        <rect x="300" y="325" width="300" height="15" rx="2" fill="#3b82f6" stroke="#cbd5e1" stroke-width="1"/><rect x="300" y="325" width="300" height="15" fill="#3b82f6" opacity="0.2"/>
-        <rect x="300" y="325" width="300" height="15" fill="#38bdf8" opacity="0.1" class="animate-pulse"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(400, 300, "F", "label")}
-        ${scaleFigure}
-        <path d="M 50 250 L 320 280 Q 400 280 500 320" fill="none" stroke="#06b6d4" stroke-width="7" marker-mid="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 350 320 C 350 300, 370 280, 400 280 S 450 300, 450 320" fill="#06b6d4" opacity="0.1"/>
-        <circle cx="380" cy="310" r="10" fill="#06b6d4" opacity="0.1" class="animate-pulse"/><circle cx="420" cy="310" r="10" fill="#06b6d4" opacity="0.1" class="animate-pulse"/>
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Material higroscopico") {
-    svgContent += `
-        ${groundLine}
-        <polygon points="300,100 350,80 550,80 500,100" fill="#d1d5db" stroke="#cbd5e1"/>
-        <rect x="300" y="100" width="200" height="240" fill="#cbd5e1" stroke="#cbd5e1"/>
-        <polygon points="500,100 550,80 550,320 500,340" fill="#a1a1aa" stroke="#cbd5e1"/>
-        <g transform="translate(500, 100)">
-            <rect x="0" y="0" width="15" height="240" class="dots-higroscopic-dots-class"/><rect x="0" y="0" width="15" height="240" fill="#3b82f6" opacity="0.1"/>
-            <rect x="15" y="0" width="30" height="240" fill="url(#hatch-concrete)" opacity="0.5"/>
-        </g>
-        ${textObj(400, 200, "C", "label")} ${textObj(560, 200, "F", "label")}
-        <path d="M 600 180 Q 550 180 520 180" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <circle cx="515" cy="180" r="5" fill="#06b6d4" class="svg-moisture"/>
-        <path d="M 520 220 Q 550 220 600 220" fill="none" stroke="#cbd5e1" stroke-width="3" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        <circle cx="525" cy="220" r="3" fill="#cbd5e1" class="svg-moisture" style="animation-delay: 0.5s"/>
-        ${standardDoor(460, 240, 0.7, true)}
-    `;
-}
-else if (t === "Doble envolvente térmica") {
-    svgContent += `
-        ${groundLine}
-        <polygon points="300,100 350,80 550,80 500,100" fill="#d1d5db" stroke="#cbd5e1"/>
-        <rect x="300" y="100" width="200" height="240" fill="#cbd5e1" stroke="#cbd5e1"/>
-        <polygon points="500,100 550,80 550,320 500,340" fill="#a1a1aa" stroke="#cbd5e1"/>
-        <g transform="translate(500, 100)">
-            <rect x="0" y="0" width="10" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1"/>
-            <rect x="10" y="0" width="25" height="240" fill="#ea580c" opacity="0.1"/><rect x="10" y="0" width="25" height="240" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-            <rect x="35" y="0" width="10" height="240" fill="#94a3b8"/><rect x="35" y="0" width="10" height="240" fill="#ea580c" opacity="0.1"/>
-        </g>
-        ${textObj(400, 200, "C", "label")} ${textObj(560, 200, "F", "label")}
-        <circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
-        <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 265 165 L 300 180" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${standardDoor(460, 240, 0.7, true)}
-    `;
-}
-else if (t === "Acceso amortiguador") {
-    svgContent += `
-        <rect x="100" y="50" width="600" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="2"/><rect x="100" y="50" width="600" height="300" rx="10" fill="#06b6d4" opacity="0.05"/>
-        <rect x="150" y="100" width="500" height="200" rx="5" fill="#fafafa" opacity="0.1" stroke="#cbd5e1" stroke-width="2"/><rect x="150" y="100" width="500" height="200" rx="5" fill="#fafafa" opacity="0.05"/>
-        <rect x="250" y="125" width="300" height="150" rx="3" fill="#cbd5e1" opacity="0.1" stroke="#cbd5e1" stroke-width="1.5"/><rect x="250" y="125" width="300" height="150" rx="3" fill="#ea580c" opacity="0.05"/>
-        ${textObj(210, 200, "C", "label")} ${textObj(400, 200, "T", "label")} ${textObj(590, 200, "F", "label")}
-        <path d="M 50 200 L 140 200" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 160 200 C 200 200, 220 200, 240 200" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 0.5s"/>
-        <path d="M 260 200 C 350 200, 380 200, 500 200" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 1.5s"/>
-        ${standardDoor(210, 100, 0.5)}
-        ${standardDoor(540, 100, 0.5, true)}
-    `;
-}
-
-// --- BLOQUE 3 (21 - 30) ---
-else if (t === "Aislamiento continuo") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
-        <rect x="150" y="320" width="500" height="20" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="150" y="320" width="500" height="20" fill="#0f172a" opacity="0.05"/>
-        <rect x="150" y="330" width="500" height="10" class="hatch-insulation-class"/>
-        <g transform="translate(150, 130)"><rect x="0" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="15" y="0" width="10" height="190" class="hatch-insulation-class"/><rect x="25" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="0" y="0" width="40" height="190" fill="#0f172a" opacity="0.05"/></g>
-        <g transform="translate(610, 130)"><rect x="0" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="15" y="0" width="10" height="190" class="hatch-insulation-class"/><rect x="25" y="0" width="15" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="0" y="0" width="40" height="190" fill="#0f172a" opacity="0.05"/></g>
-        <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" class="hatch-insulation-class"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        ${sunObj}
-        ${textObj(400, 200, "C", "label")} ${textObj(400, 110, "F", "label")}
-        <path d="M 120 90 L 180 150" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 195 165 L 210 180" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Parasoles moviles") {
-    svgContent += `
-        ${groundLine}
-        <rect x="250" y="100" width="300" height="240" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="250" y="100" width="300" height="240" fill="#fafafa" opacity="0.05"/>
-        <rect x="330" y="150" width="140" height="120" fill="url(#glass-lines)" stroke="#38bdf8"/><rect x="330" y="150" width="140" height="120" fill="#fafafa" opacity="0.1"/>
-        <g transform="translate(330, 150)"><rect x="0" y="0" width="140" height="5" class="dots-sand-class"/><rect x="0" y="115" width="140" height="5" class="dots-sand-class"/><line x1="10" y1="5" x2="10" y2="115" stroke="#cbd5e1" stroke-width="4"/><line x1="130" y1="5" x2="130" y2="115" stroke="#cbd5e1" stroke-width="4"/></g>
-        <g transform="translate(220, 150)"><rect x="0" y="0" width="10" height="120" rx="1" fill="#71717a" opacity="0.7"/><rect x="0" y="0" width="10" height="120" rx="1" fill="#cbd5e1" opacity="0.1"/><g transform="translate(0, 10) rotate(70)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.9"/></g><g transform="translate(0, 40) rotate(70)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.9"/></g><g transform="translate(0, 80) rotate(20)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.6"/></g><g transform="translate(0, 110) rotate(20)"><rect x="-5" y="-30" width="10" height="60" fill="#71717a" opacity="0.6"/></g></g>
-        ${sunObj}
-        ${textObj(400, 210, "C", "label")}
-        <path d="M 130 90 L 215 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 215 160 L 160 120" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 130 110 L 215 240" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce" style="animation-delay: 0.5s"/>
-        ${standardDoor(270, 240, 0.7)}
-        ${standardDoor(480, 240, 0.7, true)}
-    `;
-}
-else if (t === "Fachada de doble piel") {
-    svgContent += `
-        ${groundLine}
-        <g transform="translate(300, 100)"><polygon points="0,0 50,-20 250,-20 200,0" fill="#d1d5db" stroke="#cbd5e1" opacity="0.3"/><rect x="0" y="0" width="200" height="240" fill="#cbd5e1" stroke="#cbd5e1" opacity="0.3"/><polygon points="200,0 250,-20 250,220 200,240" fill="#a1a1aa" stroke="#cbd5e1" opacity="0.3"/></g>
-        <rect x="250" y="150" width="40" height="190" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/><rect x="250" y="150" width="40" height="190" fill="#1e293b" opacity="0.2"/>
-        <rect x="260" y="200" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/><rect x="260" y="200" width="20" height="60" fill="#fafafa" opacity="0.1"/>
-        <rect x="210" y="150" width="40" height="190" rx="3" fill="#06b6d4" opacity="0.1"/><rect x="210" y="150" width="40" height="190" rx="3" fill="#3b82f6" opacity="0.05"/>
-        <rect x="205" y="140" width="5" height="210" fill="#e2e8f0" stroke="#cbd5e1" opacity="0.8"/><rect x="205" y="140" width="5" height="210" fill="#fafafa" opacity="0.1"/>
-        <rect x="200" y="200" width="15" height="60" fill="url(#glass-lines)" stroke="#38bdf8" opacity="0.6"/><rect x="200" y="200" width="15" height="60" fill="#fafafa" opacity="0.1"/>
-        <path d="M 230 360 L 230 330" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 230 310 Q 230 250 230 190" fill="none" stroke="#06b6d4" stroke-width="7" opacity="0.7" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        <path d="M 230 170 L 230 130" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        ${sunObj}
-        ${textObj(230, 200, "C", "label")} ${textObj(400, 200, "F", "label")}
-        <path d="M 120 90 L 205 180" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${standardDoor(250, 150, 0.5)}
-    `;
-}
-else if (t === "Cubierta extendida") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="150" y="150" width="20" height="100" fill="url(#glass-lines)" stroke="#38bdf8"/><rect x="150" y="150" width="20" height="100" fill="#fafafa" opacity="0.1"/>
-        <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
-        <path d="M 120,130 L 0,160 L 0,170 L 120,140 Z" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><path d="M 120,130 L 0,160 L 0,170 L 120,140 Z" fill="#0f172a" opacity="0.1"/>
-        <line x1="120" y1="130" x2="120" y2="340" stroke="#cbd5e1" stroke-width="6"/><line x1="120" y1="130" x2="120" y2="340" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
-        ${sunObj}
-        ${textObj(400, 200, "C", "label")}
-        <path d="M 120 70 L 180 180" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 180 180 L 150 250" fill="none" stroke="#fcd34d" stroke-width="4.5" stroke-dasharray="8 4" opacity="0.7"/>
-        <rect x="0" y="160" width="120" height="180" rx="3" fill="#1e293b" opacity="0.15"/>
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Muro acumulado") {
-    svgContent += `
-        ${groundLine}
-        <polygon points="300,100 350,80 550,80 500,100" fill="#a16207" stroke="#713f12" opacity="0.5"/><polygon points="300,100 350,80 550,80 500,100" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        <rect x="300" y="100" width="200" height="240" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="2"/><rect x="300" y="100" width="200" height="240" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
-        <polygon points="500,100 550,80 550,320 500,340" fill="#a16207" stroke="#713f12" opacity="0.8"/><polygon points="500,100 550,80 550,320 500,340" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        <circle cx="650" cy="120" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
-        <path d="M 610 150 L 530 150" fill="none" stroke="#ea580c" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 330 220 L 250 220" fill="none" stroke="#ea580c" stroke-width="5" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(260, 200, "C", "label")}
-        ${standardDoor(300, 100, 0.5)}
-    `;
-}
-else if (t === "Piso de inercia Térmica") {
-    svgContent += `
-        ${groundLine}
-        <polygon points="150,250 650,250 700,200 200,200" fill="#d1d5db" stroke="#cbd5e1" stroke-width="2"/><polygon points="150,250 650,250 700,200 200,200" fill="#0f172a" opacity="0.05"/>
-        <rect x="150" y="250" width="500" height="40" fill="url(#hatch-concrete)" stroke="#cbd5e1"/><rect x="150" y="250" width="500" height="40" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        <polygon points="650,250 700,200 700,240 650,290" fill="#a1a1aa" stroke="#cbd5e1"/><polygon points="650,250 700,200 700,240 650,290" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        <rect x="150" y="250" width="500" height="40" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
-        ${textObj(400, 235, "C", "label")}
-        <path d="M 300 250 L 300 180" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
-        <path d="M 500 250 L 500 180" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up" style="animation-delay: 0.5s"/>
-        ${standardDoor(200, 150, 0.5)}
-    `;
-}
-else if (t === "Protección de masa térmica") {
-    svgContent += `
-        ${groundLine}
-        <rect x="250" y="100" width="300" height="240" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="350" y="100" width="100" height="240" rx="3" fill="url(#hatch-mass)" stroke="#ea580c" stroke-width="2"/><rect x="350" y="100" width="100" height="240" rx="3" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        <polygon points="200,100 350,100 350,70 200,70" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="200,100 350,100 350,70 200,70" fill="#0f172a" opacity="0.05"/>
-        <line x1="200" y1="100" x2="200" y2="340" stroke="#cbd5e1" stroke-width="6"/><line x1="200" y1="100" x2="200" y2="340" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
-        ${sunObj}
-        ${textObj(400, 200, "C", "label")}
-        <path d="M 130 70 L 280 100" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 300 120 L 350 180" fill="none" stroke="#fcd34d" stroke-width="2.5" stroke-dasharray="8 4" opacity="0.2"/>
-        <rect x="350" y="100" width="100" height="240" rx="3" fill="#1e293b" opacity="0.1"/>
-        ${standardDoor(270, 240, 0.7)}
-    `;
-}
-else if (t === "Espejo de agua climático") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="50" y="325" width="300" height="15" rx="2" fill="url(#hatch-water)" stroke="#cbd5e1" stroke-width="1"/><rect x="50" y="325" width="300" height="15" fill="#3b82f6" opacity="0.2"/>
-        <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
-        ${textObj(350, 200, "C", "label")} ${textObj(250, 310, "F", "label")}
-        ${scaleFigure}
-        <path d="M 50 250 L 150 250" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 150 250 C 250 250, 300 280, 350 250" fill="none" stroke="#06b6d4" stroke-width="8" opacity="0.6" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Nebulización pasiva") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="150" y="130" width="10" height="210" fill="#cbd5e1" opacity="0.2"/>
-        <rect x="145" y="310" width="20" height="20" rx="10" fill="#3b82f6" opacity="0.3"/>
-        <rect x="145" y="310" width="20" height="20" rx="10" fill="#fafafa" opacity="0.05"/>
-        <rect x="135" y="150" width="10" height="150" rx="3" fill="#cbd5e1" opacity="0.1"/>
-        <path d="M 160 320 C 250 320, 350 280, 450 280 S 550 320, 640 320" fill="url(#pattern-soil)" stroke="#06b6d4" stroke-width="5" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(400, 300, "F", "label")}
-        ${scaleFigure}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Vegetación refrescante") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
-        <rect x="50" y="150" width="200" height="190" fill="url(#pattern-trees)"/><rect x="50" y="150" width="200" height="190" fill="#16a34a" opacity="0.05"/>
-        <rect x="600" y="200" width="150" height="140" fill="url(#pattern-trees)"/><rect x="600" y="200" width="150" height="140" fill="#16a34a" opacity="0.05"/>
-        <circle cx="100" cy="50" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
-        <path d="M 120 70 L 150 130" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 50 280 C 150 280, 200 250, 300 250" fill="none" stroke="#06b6d4" stroke-width="9" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 500 280 L 600 280" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(250, 310, "F", "label")} ${textObj(650, 310, "F", "label")}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-
-// --- BLOQUE 4 (31 - 42) ---
-else if (t === "Purgado nocturno") {
-    svgContent += `
-        <rect width="100%" height="100%" fill="#0f172a"/><rect width="100%" height="100%" fill="#fafafa" opacity="0.05"/>
-        ${groundLine}
-        <rect x="0" y="340" width="800" height="60" fill="#111827" opacity="0.3"/>
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <circle cx="100" cy="80" r="25" fill="#f8fafc" class="svg-sun-pulse"/><circle cx="100" cy="80" r="30" fill="none" stroke="#fafafa" stroke-width="1.5" stroke-dasharray="5 5" class="svg-sun-pulse"/>
-        <rect x="250" y="140" width="30" height="60" rx="3" fill="url(#hatch-mass)" stroke="#cbd5e1" stroke-width="1"/><rect x="250" y="140" width="30" height="60" rx="3" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
-        <rect x="250" y="260" width="30" height="60" rx="3" fill="url(#hatch-mass)" stroke="#cbd5e1" stroke-width="1"/><rect x="250" y="260" width="30" height="60" rx="3" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
-        <rect x="520" y="140" width="30" height="20" rx="3" fill="url(#hatch-mass)" stroke="#cbd5e1" stroke-width="1"/>
-        <rect x="520" y="260" width="30" height="60" rx="3" fill="url(#hatch-mass)" stroke="#cbd5e1" stroke-width="1"/><rect x="520" y="260" width="30" height="60" rx="3" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
-        <rect x="150" y="160" width="10" height="140" rx="1" fill="#38bdf8" opacity="0.1"/>
-        <rect x="640" y="160" width="10" height="140" rx="1" fill="#38bdf8" opacity="0.1"/>
-        <path d="M 50 230 C 250 230, 300 280, 500 230 S 650 200, 750 200" fill="none" stroke="#38bdf8" stroke-width="12" marker-mid="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 300 200 Q 400 150 500 180" fill="none" stroke="#ef4444" stroke-width="6" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-        ${textObj(400, 200, "C", "night")} ${textObj(230, 230, "F", "night")}
-        ${scaleFigure}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Lucernario térmico") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <polygon points="120,130 380,40 420,40 680,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/><polygon points="120,130 380,40 420,40 680,130" fill="#0f172a" opacity="0.05"/>
-        <rect x="380" y="30" width="40" height="20" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/><rect x="380" y="30" width="40" height="20" fill="#fafafa" opacity="0.1"/>
-        <rect x="380" y="30" width="40" height="20" rx="2" fill="#ea580c" opacity="0.05" class="svg-heat-radiate"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(400, 90, "F", "label")}
-        <path d="M 350 250 Q 400 150 395 20" fill="none" stroke="#ef4444" stroke-width="7" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-        <path d="M 450 250 Q 400 150 405 20" fill="none" stroke="#ef4444" stroke-width="7" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up" style="animation-delay: 0.5s"/>
-        ${scaleFigure}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Chimenea solar invertida") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="250" y="130" width="20" height="210" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><rect x="250" y="130" width="20" height="210" fill="#ea580c" opacity="0.05"/>
-        <polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="120,130 400,40 680,130 650,130 400,60 150,130" fill="#0f172a" opacity="0.05"/>
-        <rect x="150" y="20" width="30" height="320" fill="#ea580c" opacity="0.2" stroke="#c2410c" stroke-width="1.5"/><rect x="150" y="20" width="30" height="320" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
-        <path d="M 250 300 L 180 300" fill="none" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="5 5"/>
-        <path d="M 350 250 C 300 250, 250 280, 200 300 C 165 300, 165 200, 165 20" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-        ${sunObj}
-        <path d="M 100 70 L 140 100" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(200, 310, "F", "label")}
-        ${scaleFigure}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-// ESTRATEGIA 34 REMOVIDA
-else if (t === "Ventilación mecánica asistida") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 150 340 L 150 130 L 400 60 L 650 130 L 650 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="250" y="100" width="100" height="80" rx="3" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/><rect x="250" y="100" width="100" height="80" rx="3" fill="#fafafa" opacity="0.1"/>
-        <rect x="150" y="150" width="20" height="40" class="dots-glass-lines-class"/>
-        <circle cx="300" cy="140" r="10" fill="#3b82f6" opacity="0.2"/><circle cx="300" cy="140" r="10" fill="#3b82f6" opacity="0.1" class="animate-pulse"/>
-        <path d="M 270 140 A 30 30 0 1 1 330 140" fill="none" stroke="#3b82f6" stroke-width="3" opacity="0.7"/>
-        <line x1="170" y1="170" x2="250" y2="170" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 350 170 C 400 170, 420 170, 450 170" fill="none" stroke="#06b6d4" stroke-width="6" opacity="0.7" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        ${textObj(400, 220, "C", "label")} ${textObj(400, 110, "F", "label")}
-        ${standardDoor(210, 240, 0.7)}
-        ${standardDoor(570, 240, 0.7, true)}
-    `;
-}
-else if (t === "Sectorización térmica") {
-    svgContent += `
-        <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="3"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#cbd5e1" opacity="0.05"/>
-        <line x1="400" y1="50" x2="400" y2="350" stroke="#cbd5e1" stroke-width="2"/>
-        <line x1="150" y1="180" x2="400" y2="180" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="155" y="55" width="240" height="120" fill="#ef4444" opacity="0.2"/><rect x="155" y="55" width="240" height="120" fill="#ef4444" opacity="0.05"/>
-        <rect x="155" y="185" width="240" height="160" fill="#06b6d4" opacity="0.1"/><rect x="155" y="185" width="240" height="160" fill="#06b6d4" opacity="0.05"/>
-        <rect x="405" y="55" width="240" height="290" fill="#f59e0b" opacity="0.1"/><rect x="405" y="55" width="240" height="290" fill="#f59e0b" opacity="0.05"/>
-        ${textObj(275, 115, "SALA", "label")} ${textObj(275, 265, "COMEDOR", "label")} ${textObj(525, 200, "HABITACIÓN", "label")}
-        ${standardDoor(350, 55, 0.6)}
-        ${standardDoor(350, 185, 0.6, true)}
-        ${standardDoor(405, 125, 0.6)}
-    `;
-}
-else if (t === "Fachada aislada") {
-    svgContent += `
-        ${groundLine}
-        <polygon points="300,100 350,80 550,80 500,100" fill="#d1d5db" stroke="#cbd5e1"/>
-        <rect x="300" y="100" width="200" height="240" fill="#cbd5e1" stroke="#cbd5e1"/>
-        <polygon points="500,100 550,80 550,320 500,340" fill="#a1a1aa" stroke="#cbd5e1"/>
-        <g transform="translate(500, 100)">
-            <rect x="0" y="0" width="10" height="240" fill="url(#pattern-trees)" opacity="0.3"/>
-            <rect x="10" y="0" width="25" height="240" fill="url(#hatch-concrete)"/>
-            <rect x="35" y="0" width="10" height="240" fill="#94a3b8"/><rect x="35" y="0" width="10" height="240" class="dots- sand-class"/>
-            <rect x="45" y="0" width="5" height="240" fill="#fafafa" stroke="#cbd5e1"/><rect x="45" y="0" width="5" height="240" fill="#fafafa" opacity="0.1"/>
-        </g>
-        ${textObj(400, 200, "C", "label")} ${textObj(560, 200, "F", "label")}
-        <circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
-        <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 265 165 L 300 180" fill="none" stroke="#fcd34d" stroke-width="2.5" opacity="0.3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        ${standardDoor(460, 240, 0.7, true)}
-    `;
-}
-else if (t === "Camara ventilada") {
-    svgContent += `
-        ${groundLine}
-        <path d="M 250 340 L 250 160 L 550 160 L 550 340 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <polygon points="230,160 400,90 570,160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><polygon points="230,160 400,90 570,160" fill="#0f172a" opacity="0.05"/>
-        <rect x="250" y="160" width="300" height="15" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><rect x="250" y="160" width="300" height="15" fill="#0f172a" opacity="0.05"/>
-        <rect x="250" y="170" width="300" height="5" class="hatch-insulation-class"/>
-        <path d="M 230,140 L 400,70 L 570,140 L 550,160 L 400,90 L 250,160 Z" class="dots- glass-lines-class"/><path d="M 230,140 L 400,70 L 570,140 L 550,160 L 400,90 L 250,160 Z" fill="#fafafa" opacity="0.1"/>
-        <path d="M 230,140 L 400,70 L 570,140" fill="none" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="8 4" opacity="0.6"/>
-        <line x1="250" y1="160" x2="250" y2="140" stroke="#cbd5e1" stroke-width="4"/><line x1="550" y1="160" x2="550" y2="140" stroke="#cbd5e1" stroke-width="4"/>
-        <rect x="250" y="160" width="300" height="15" fill="#3b82f6" opacity="0.05"/>
-        ${sunObj}
-        ${textObj(400, 240, "C", "label")} ${textObj(400, 110, "F", "label")}
-        <path d="M 200 135 L 300 115" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 320 110 L 400 80" fill="none" stroke="#ea580c" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-        <path d="M 400 70 L 480 95" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-        ${scaleFigure}
-        ${standardDoor(360, 240, 0.7)}
-    `;
-}
-else if (t === "Elevación palafítica") {
-    svgContent += `
-        ${groundLine}
-        <rect x="0" y="340" width="800" height="60" fill="none" stroke="#713f12" stroke-width="2" opacity="0.4"/>
-        <path d="M 150 280 L 150 130 L 400 60 L 650 130 L 650 280 Z" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="150" y="280" width="500" height="20" rx="3" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/><rect x="150" y="280" width="500" height="20" rx="3" fill="#ea580c" opacity="0.05"/>
-        <rect x="150" y="280" width="500" height="60" class="dots- trees-class"/><rect x="150" y="280" width="500" height="60" fill="#16a34a" opacity="0.05"/>
-        <line x1="200" y1="280" x2="200" y2="340" stroke="#713f12" stroke-width="6"/><line x1="200" y1="280" x2="200" y2="340" stroke="#713f12" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
-        <line x1="300" y1="280" x2="300" y2="340" stroke="#713f12" stroke-width="6"/><line x1="300" y1="280" x2="300" y2="340" stroke="#713f12" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
-        <line x1="400" y1="280" x2="400" y2="340" stroke="#713f12" stroke-width="6"/><line x1="400" y1="280" x2="400" y2="340" stroke="#713f12" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
-        <line x1="500" y1="280" x2="500" y2="340" stroke="#713f12" stroke-width="6"/><line x1="500" y1="280" x2="500" y2="340" stroke="#713f12" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
-        <line x1="600" y1="280" x2="600" y2="340" stroke="#713f12" stroke-width="6"/><line x1="600" y1="280" x2="600" y2="340" stroke="#713f12" stroke-width="2" stroke-dasharray="10 5" opacity="0.5"/>
-        <rect x="0" y="325" width="800" height="15" fill="#3b82f6" opacity="0.15"/>
-        <rect x="0" y="325" width="800" height="15" rx="7" fill="#3b82f6" opacity="0.05"/><rect x="0" y="325" width="800" height="15" rx="7" fill="#3b82f6" opacity="0.02" class="svg-heat-radiate"/>
-        ${textObj(400, 200, "C", "label")} ${textObj(400, 310, "F", "label")}
-        <path d="M 50 310 L 150 310" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
-        <path d="M 200 310 C 350 310, 400 330, 600 330" fill="none" stroke="#06b6d4" stroke-width="9" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-        ${standardDoor(230, 180, 0.7)}
-        ${standardDoor(570, 180, 0.7, true)}
-    `;
-}
-else if (t === "Deshumidificación material") {
-    svgContent += `
-        <rect width="100%" height="100%" fill="none" stroke="#111827" stroke-width="2"/><rect width="100%" height="100%" fill="#fafafa" opacity="0.05"/>
-        <rect x="50" y="50" width="700" height="300" rx="10" fill="none" stroke="#cbd5e1" stroke-width="3"/><rect x="50" y="50" width="700" height="300" rx="10" fill="#ea580c" opacity="0.05"/>
-        <rect x="250" y="100" width="300" height="200" rx="5" fill="#fafafa" opacity="0.2" stroke="#e2e8f0" stroke-width="2"/><rect x="250" y="100" width="300" height="200" rx="5" fill="#fafafa" opacity="0.05"/>
-        <rect x="130" y="100" width="120" height="200" rx="3" class="dots-des dehumid-class"/><rect x="130" y="100" width="120" height="200" rx="3" fill="#cbd5e1" opacity="0.1"/>
-        <rect x="130" y="100" width="120" height="200" rx="3" fill="#fafafa" opacity="0.02" class="svg-heat-radiate"/>
-        <g transform="translate(130, 100)"><rect x="0" y="0" width="120" height="200" rx="3" fill="#fafafa" opacity="0.05"/><circle cx="10" cy="10" r="2.5" fill="#cbd5e1"/><circle cx="30" cy="30" r="2.5" fill="#cbd5e1"/><circle cx="50" cy="50" r="2.5" fill="#cbd5e1"/></g>
-        ${textObj(210, 200, "C", "label")} ${textObj(400, 200, "F", "label")} ${textObj(100, 100, "H", "label")}
-        <circle cx="50" cy="200" r="30" fill="#f59e0b" class="svg-sun-pulse"/><circle cx="50" cy="200" r="35" fill="none" stroke="#fcd34d" stroke-width="1.5" stroke-dasharray="5 5" class="svg-sun-pulse"/>
-        <path d="M 50 200 L 130 200" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-        <path d="M 150 200 C 250 200, 300 150, 350 150" fill="none" stroke="#ea580c" stroke-width="5" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
-        ${standardDoor(380, 220, 0.7, true)}
-        ${standardDoor(250, 100, 0.5)}
-    `;
-}
-// --- FALLBACK ---
-else {
-    svgContent += `
-        ${groundLine}
-        <rect x="300" y="200" width="200" height="40" rx="4" fill="rgba(15,23,42,0.8)" stroke="#334155"/>
-        ${textObj(400, 220, "C", "label")}
-    `;
-}
-
-document.getElementById('svg-canvas').innerHTML = `
-    <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
-        ${technicalIndication}
-        ${defsSVG}
-        ${svgContent}
-    </svg>
-`;
 };
         // Iniciar el renderizado con el primer elemento
         window.renderSVGForStrategy(0);
