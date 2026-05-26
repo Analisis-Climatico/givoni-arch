@@ -129,7 +129,7 @@
         // 3. TU MOTOR SVG PARAMÉTRICO (PEGADO EXACTAMENTE COMO LO ENVIASTE)
         // =====================================================================
 window.renderSVGForStrategy = function(index) {
-    const strat = strategies[index];
+    const strat = strategies[index] || { t: "" };
     
     // Control de botones activos en la UI
     document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
@@ -140,12 +140,12 @@ window.renderSVGForStrategy = function(index) {
     const t = strat.t; 
     let svgContent = `<rect width="100%" height="100%" fill="url(#blueprint-grid)" />`;
 
-    // 1. DEFINICIÓN DE PATRONES, GRADIENTES Y MARCADORES (Verificados)
+    // 1. DEFINICIÓN DE PATRONES Y MARCADORES
     const defsSVG = `
         <defs>
             <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.05"/>
-                <path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.1"/>
+                <path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.75" opacity="0.08"/>
+                <path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1.25" opacity="0.12"/>
             </pattern>
             <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
                 <line x1="0" y1="0" x2="0" y2="10" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/>
@@ -207,9 +207,9 @@ window.renderSVGForStrategy = function(index) {
         <line x1="${x-20}" y1="${y}" x2="${x+w+20}" y2="${y}" stroke="#cbd5e1" stroke-width="3"/>
     `;
 
-    // 3. LÓGICA DE DIBUJO ESPECÍFICA (Verificada contra referencias)
+    // 3. LÓGICAS CONDICIONALES DE DIBUJO ESTRATÉGICO
     
-    if (t === "Ventilación regulable") {
+    if (t === "Ventilación regulable" || index === 0) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -222,7 +222,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 550 250 L 680 250" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Cubierta ventilada") {
+    else if (t === "Cubierta ventilada" || index === 1) {
         svgContent += `
             ${groundLine}
             <rect x="250" y="180" width="300" height="160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -236,7 +236,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 400 60 L 480 30" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Protección solar ligera") {
+    else if (t === "Protección solar ligera" || index === 2) {
         svgContent += `
             ${groundLine}
             ${drawHouse(300, 160, 250, 180)}
@@ -248,7 +248,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 215 170 L 160 130" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.8" marker-end="url(#arrow-yellow)"/>
         `;
     }
-    else if (t === "Espacios de transición") {
+    else if (t === "Espacios de transición" || index === 3) {
         svgContent += `
             ${groundLine}
             <rect x="400" y="120" width="200" height="220" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -262,7 +262,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 170 180 C 250 180, 300 200, 390 200" fill="none" stroke="#06b6d4" stroke-width="4" opacity="0.8" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Fachada permeable") {
+    else if (t === "Fachada permeable" || index === 4) {
         svgContent += `
             ${groundLine}
             <rect x="200" y="120" width="15" height="220" fill="url(#perforated)" stroke="#94a3b8" stroke-width="2"/>
@@ -272,7 +272,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 230 260 L 290 260" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Ventilación elevada") {
+    else if (t === "Ventilación elevada" || index === 5) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -284,7 +284,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 520 190 L 600 170" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Núcleo compacto") {
+    else if (t === "Núcleo compacto" || index === 6) {
         svgContent += `
             <rect x="150" y="50" width="500" height="300" fill="none" stroke="#cbd5e1" stroke-width="4"/>
             <line x1="150" y1="200" x2="325" y2="200" stroke="#cbd5e1" stroke-width="2"/>
@@ -297,18 +297,17 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 400 200 L 310 200" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Envolvente térmica") {
+    else if (t === "Envolvente térmica" || index === 7) {
         svgContent += `
             ${groundLine}
-            <rect x="350" y="80" width="60" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="330" y="80" width="20" height="260" fill="url(#hatch-insulation)"/>
-            <rect x="320" y="80" width="10" height="260" fill="#64748b"/>
+            ${drawHouse(300, 160, 250, 180)}
+            <rect x="290" y="160" width="10" height="180" fill="url(#hatch-insulation)"/>
+            <rect x="285" y="160" width="5" height="180" fill="#64748b"/>
             ${sunObj}
-            <path d="M 120 90 L 300 150" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
-            <path d="M 310 155 L 260 130" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.6" marker-end="url(#arrow-yellow)"/>
+            <path d="M 120 90 L 275 160" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
         `;
     }
-    else if (t === "Carpintería hermética") {
+    else if (t === "Carpintería hermética" || index === 8) {
         svgContent += `
             ${groundLine}
             <rect x="350" y="50" width="100" height="80" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -323,7 +322,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 430 200 Q 415 200 420 170" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
         `;
     }
-    else if (t === "Muro Trombe") {
+    else if (t === "Muro Trombe" || index === 9) {
         svgContent += `
             ${groundLine}
             <rect x="340" y="90" width="10" height="250" fill="url(#glass-lines)" stroke="#38bdf8"/>
@@ -331,7 +330,7 @@ window.renderSVGForStrategy = function(index) {
             <rect x="380" y="90" width="40" height="250" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="2"/>
             <rect x="380" y="90" width="10" height="250" fill="#1f2937"/>
             <rect x="420" y="90" width="20" height="250" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-            <polygon points="320,80 500,40 500,60 360,90" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="320,80 460,50 460,70 340,90" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
             ${sunObj}
             <path d="M 120 100 L 330 180" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
             <rect x="380" y="90" width="40" height="250" fill="#ea580c" opacity="0.2"/>
@@ -339,23 +338,23 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 450 250 L 550 250" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Galería solar") {
+    else if (t === "Galería solar" || index === 10) {
         svgContent += `
             <rect x="150" y="80" width="500" height="240" fill="none" stroke="#cbd5e1" stroke-width="4"/>
             <rect x="150" y="80" width="20" height="240" fill="url(#glass-block)"/>
             <rect x="250" y="80" width="15" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="170" y="80" width="80" height="240" fill="#ea580c" opacity="0.1"/>
-            <circle cx="60" cy="200" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
+            <circle cx="60" cy="200" r="30" fill="#f59e0b"/>
             <path d="M 90 200 L 140 200" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
             <path d="M 180 200 L 230 200" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
             <path d="M 280 200 L 350 200" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Orientación solar estratégica") {
+    else if (t === "Orientación solar estratégica" || index === 11) {
         svgContent += `
             <rect x="100" y="50" width="600" height="300" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/>
             <path d="M 150 280 A 250 150 0 0 1 650 280" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="8 4"/>
-            <circle cx="200" cy="110" r="20" fill="#f59e0b" class="svg-sun-pulse"/>
+            <circle cx="200" cy="110" r="20" fill="#f59e0b"/>
             <g transform="translate(400, 200) rotate(-25)">
                 <rect x="-150" y="-80" width="300" height="160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="3"/>
                 <line x1="-150" y1="0" x2="150" y2="0" stroke="#cbd5e1" stroke-dasharray="5 5" stroke-width="2"/>
@@ -364,7 +363,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 335 150 L 300 180" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.6" marker-end="url(#arrow-yellow)"/>
         `;
     }
-    else if (t === "Panel solar térmico") {
+    else if (t === "Panel solar térmico" || index === 12) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -379,7 +378,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 90 L 280 130" fill="none" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow-yellow)"/>
         `;
     }
-    else if (t === "Cubierta captadora") {
+    else if (t === "Cubierta captadora" || index === 13) {
         svgContent += `
             ${groundLine}
             <rect x="250" y="160" width="300" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -391,7 +390,7 @@ window.renderSVGForStrategy = function(index) {
             <rect x="250" y="160" width="300" height="180" fill="#ea580c" opacity="0.1"/>
         `;
     }
-    else if (t === "Acumulación térmica hidráulica") {
+    else if (t === "Acumulación térmica hidráulica" || index === 14) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -405,24 +404,33 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 420 290 L 500 290" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)"/>
         `;
     }
-    // ESTRATEGIA 16: PATIO HÚMEDO (Planta Corregida según referencia)
+    // ESTRATEGIA 16: PATIO HÚMEDO CORREGIDO EXACTO A REFERENCIA (Índice 15)
     else if (t === "Patio húmedo" || index === 15) {
         svgContent += `
-            <rect x="150" y="60" width="500" height="280" fill="none" stroke="#cbd5e1" stroke-width="4"/>
-            <rect x="150" y="60" width="150" height="280" fill="url(#hatch-concrete)" opacity="0.2" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="500" y="60" width="150" height="280" fill="url(#hatch-concrete)" opacity="0.2" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="300" y="60" width="200" height="80" fill="url(#hatch-concrete)" opacity="0.2" stroke="#cbd5e1" stroke-width="2"/>
-            
-            <rect x="300" y="140" width="200" height="200" fill="url(#pattern-trees)"/>
-            <line x1="300" y1="240" x2="500" y2="240" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 4"/>
-            <line x1="400" y1="140" x2="400" y2="340" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 4"/>
-            <circle cx="400" cy="240" r="35" fill="#3b82f6" opacity="0.6"/>
-            
-            <path d="M 400 380 C 400 320, 400 280, 400 240" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)"/>
-            <path d="M 400 200 C 400 180, 450 160, 550 160" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)"/>
+            <rect x="150" y="40" width="500" height="320" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+            <line x1="150" y1="140" x2="300" y2="140" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="150" y1="260" x2="300" y2="260" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="500" y1="140" x2="650" y2="140" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="500" y1="260" x2="650" y2="260" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="300" y1="40" x2="300" y2="100" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="500" y1="40" x2="500" y2="100" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="300" y1="300" x2="300" y2="360" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="500" y1="300" x2="500" y2="360" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M 300 170 A 30 30 0 0 0 270 200" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="300" y1="170" x2="270" y2="170" stroke="#cbd5e1" stroke-width="3"/>
+            <path d="M 500 230 A 30 30 0 0 0 530 200" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="500" y1="230" x2="530" y2="230" stroke="#cbd5e1" stroke-width="3"/>
+            <rect x="300" y="100" width="200" height="200" fill="#0f172a" opacity="0.3" stroke="#cbd5e1" stroke-width="2"/>
+            <circle cx="340" cy="140" r="25" fill="#16a34a" opacity="0.85"/>
+            <circle cx="450" cy="145" r="35" fill="#15803d" opacity="0.9"/>
+            <circle cx="350" cy="255" r="40" fill="#16a34a" opacity="0.75"/>
+            <circle cx="460" cy="260" r="20" fill="#15803d" opacity="0.8"/>
+            <circle cx="400" cy="200" r="15" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+            <path d="M 80 250 C 200 250, 250 280, 320 250 C 370 230, 380 140, 450 120 C 520 100, 580 150, 700 150" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)"/>
+            <path d="M 80 150 C 200 150, 250 120, 320 150 C 370 170, 380 260, 450 280 C 520 300, 580 250, 700 250" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Fuente evaporativa") {
+    else if (t === "Fuente evaporativa" || index === 16) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -434,7 +442,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 260 250 C 350 250, 400 280, 500 280" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.7" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Material higroscópico") {
+    else if (t === "Material higroscópico" || index === 17) {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="40" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -445,7 +453,7 @@ window.renderSVGForStrategy = function(index) {
             <circle cx="315" cy="250" r="2" fill="#cbd5e1"/>
         `;
     }
-    else if (t === "Doble envolvente térmica") {
+    else if (t === "Doble envolvente térmica" || index === 18) {
         svgContent += `
             ${groundLine}
             <rect x="450" y="80" width="40" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -457,7 +465,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 390 155 Q 405 155 400 180" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
         `;
     }
-    else if (t === "Acceso amortiguador") {
+    else if (t === "Acceso amortiguador" || index === 19) {
         svgContent += `
             <rect x="250" y="80" width="300" height="200" fill="none" stroke="#cbd5e1" stroke-width="3"/>
             <rect x="350" y="280" width="100" height="80" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="3"/>
@@ -467,7 +475,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 400 350 L 370 320" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.4"/>
         `;
     }
-    else if (t === "Aislamiento continuo") {
+    else if (t === "Aislamiento continuo" || index === 20) {
         svgContent += `
             ${groundLine}
             <rect x="250" y="320" width="300" height="20" fill="url(#hatch-concrete)" stroke="#cbd5e1"/>
@@ -484,7 +492,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 245 155 L 265 170" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.3"/>
         `;
     }
-    else if (t === "Parasoles móviles") {
+    else if (t === "Parasoles móviles" || index === 21) {
         svgContent += `
             ${groundLine}
             <polygon points="220,160 400,80 580,160" fill="none" stroke="#cbd5e1" stroke-width="3"/>
@@ -505,7 +513,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 230 190 L 190 220" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="6 4" opacity="0.6"/>
         `;
     }
-    else if (t === "Fachada de doble piel") {
+    else if (t === "Fachada de doble piel" || index === 22) {
         svgContent += `
             ${groundLine}
             <rect x="400" y="80" width="60" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -519,23 +527,21 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 90 L 310 160" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
         `;
     }
-    // ESTRATEGIA 24: CUBIERTA EXTENDIDA (Corte Corregido eliminando perspectiva señalada)
+    // ESTRATEGIA 24: CUBIERTA EXTENDIDA (Índice 23 - Limpia de la línea diagonal extra)
     else if (t === "Cubierta extendida" || index === 23) {
         svgContent += `
             ${groundLine}
             <rect x="350" y="160" width="200" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             
-            <polygon points="120,160 450,60 600,160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="120,160 450,60 600,160" fill="none" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="120" y1="160" x2="600" y2="160" stroke="#cbd5e1" stroke-width="3"/>
             
-            <line x1="150" y1="160" x2="150" y2="340" stroke="#cbd5e1" stroke-width="4"/>
             ${sunObj}
             <path d="M 120 70 L 180 120" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)"/>
             <path d="M 180 120 L 140 160" fill="none" stroke="#fcd34d" stroke-width="4" opacity="0.7"/>
-            <rect x="150" y="160" width="200" height="180" fill="#0f172a" opacity="0.15"/>
         `;
     }
-    else if (t === "Muro acumulador") {
+    else if (t === "Muro acumulador" || index === 24) {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="80" height="260" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="3"/>
@@ -545,7 +551,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 440 210 L 550 210" fill="none" stroke="#ea580c" stroke-width="5" stroke-dasharray="8 4" marker-end="url(#arrow-red)"/>
         `;
     }
-    // ESTRATEGIA 26: PISO DE INERCIA TÉRMICA (Corte Corregido según referencia)
+    // ESTRATEGIA 26: PISO DE INERCIA TÉRMICA (Índice 25)
     else if (t === "Piso de inercia térmica" || index === 25) {
         svgContent += `
             ${groundLine}
@@ -563,7 +569,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 450 300 L 450 220" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#arrow-red)" style="animation-delay: 0.5s"/>
         `;
     }
-    else if (t === "Protección de masa térmica") {
+    else if (t === "Protección de masa térmica" || index === 26) {
         svgContent += `
             ${groundLine}
             ${drawHouse(300, 160, 250, 180)}
@@ -575,7 +581,7 @@ window.renderSVGForStrategy = function(index) {
             <rect x="280" y="160" width="40" height="180" fill="#0f172a" opacity="0.15"/>
         `;
     }
-    else if (t === "Espejo de agua climático") {
+    else if (t === "Espejo de agua climático" || index === 27) {
         svgContent += `
             ${groundLine}
             ${drawHouse(300, 160, 250, 180)}
@@ -585,7 +591,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 310 250 L 450 250" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.7" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Nebulización pasiva") {
+    else if (t === "Nebulización pasiva" || index === 28) {
         svgContent += `
             ${groundLine}
             ${drawHouse(350, 160, 250, 180)}
@@ -600,7 +606,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 160 290 C 200 290, 250 280, 330 260" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Vegetación refrescante") {
+    else if (t === "Vegetación refrescante" || index === 29) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -614,7 +620,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 260 260 L 350 260" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Purgado nocturno") {
+    else if (t === "Purgado nocturno" || index === 30) {
         svgContent += `
             <rect width="100%" height="100%" fill="#0f172a" opacity="0.9"/>
             ${groundLine}
@@ -628,7 +634,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 540 200 L 620 180" fill="none" stroke="#ef4444" stroke-width="6" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Lucernario térmico") {
+    else if (t === "Lucernario térmico" || index === 31) {
         svgContent += `
             ${groundLine}
             <rect x="250" y="160" width="300" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -639,7 +645,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 450 250 Q 400 150 405 70" fill="none" stroke="#ef4444" stroke-width="5" stroke-dasharray="8 4" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Chimenea solar invertida") {
+    else if (t === "Chimenea solar invertida" || index === 32) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -651,7 +657,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 450 280 C 400 280, 360 250, 340 200 L 340 30" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Elevación palafítica") {
+    // ESTRATEGIA 34: ELEVACIÓN PALAFÍTICA (Anclada al índice 33)
+    else if (t === "Elevación palafítica" || index === 33) {
         svgContent += `
             ${groundLine}
             <rect x="250" y="100" width="300" height="140" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -665,7 +672,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 550 290 L 700 290" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)"/>
         `;
     }
-    else if (t === "Ventilación mecánica asistida") {
+    else if (t === "Ventilación mecánica asistida" || index === 34) {
         svgContent += `
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
@@ -678,7 +685,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 530 210 L 600 210" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-red)"/>
         `;
     }
-    else if (t === "Sectorización térmica") {
+    else if (t === "Sectorización térmica" || index === 35) {
         svgContent += `
             <rect x="150" y="80" width="500" height="220" fill="none" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="400" y1="80" x2="400" y2="300" stroke="#cbd5e1" stroke-width="3"/>
@@ -690,7 +697,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 525 190 C 525 150, 450 150, 450 190 C 450 230, 525 230, 525 190" fill="none" stroke="#f59e0b" stroke-width="3"/>
         `;
     }
-    else if (t === "Fachada aislada") {
+    else if (t === "Fachada aislada" || index === 36) {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="60" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -701,7 +708,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 450 150 L 420 150" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" marker-end="url(#arrow-yellow)"/>
         `;
     }
-    else if (t === "Cámara ventilada") {
+    else if (t === "Cámara ventilada" || index === 37) {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="30" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -712,7 +719,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 380 100 L 330 100" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
         `;
     }
-    else if (t === "Deshumidificación material") {
+    // ESTRATEGIA 39: DESHUMIDIFICACIÓN DE MATERIAL (Anclada al índice 38)
+    else if (t === "Deshumidificación de material" || t === "Deshumidificación material" || index === 38) {
         svgContent += `
             ${groundLine}
             ${drawHouse(300, 160, 250, 180)}
@@ -721,6 +729,14 @@ window.renderSVGForStrategy = function(index) {
             <circle cx="535" cy="180" r="3" fill="#3b82f6"/>
             <circle cx="535" cy="220" r="3" fill="#3b82f6"/>
             <circle cx="535" cy="260" r="3" fill="#3b82f6"/>
+            <circle cx="535" cy="300" r="3" fill="#3b82f6"/>
+        `;
+    }
+    // FALLBACK
+    else {
+        svgContent += `
+            ${groundLine}
+            <rect x="300" y="200" width="200" height="40" rx="4" fill="rgba(15,23,42,0.8)" stroke="#334155"/>
         `;
     }
 
