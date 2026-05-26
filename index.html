@@ -42,8 +42,8 @@
         @keyframes pulse-sun { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
         @keyframes bounce-ray { 0% { stroke-dashoffset: 100; opacity: 0;} 20% { opacity: 1;} 80% {opacity: 1;} 100% { stroke-dashoffset: 0; opacity: 0;} }
         @keyframes float-up { 0% { transform: translateY(15px); opacity: 0;} 50% { opacity: 0.9;} 100% { transform:translateY(-35px); opacity: 0;} }
+        @keyframes heat-radiate { 0% { opacity: 0.1; filter: drop-shadow(0 0 4px #ef4444); } 100% { opacity: 0.5; filter: drop-shadow(0 0 15px #ef4444); } }
         @keyframes absorb-moisture { 0% { transform:translateX(-15px); opacity: 0;} 50% { opacity: 1;} 100% { transform:translateX(15px); opacity: 0;} }
-        @keyframes heat-radiate { 0% { opacity: 0.1; filter: drop-shadow(0 0 4px #ea580c); } 100% { opacity: 0.5; filter: drop-shadow(0 0 15px #ea580c); } }
 
         .svg-wind-flow { stroke-dasharray: 40 20; animation: flow-wind 3s linear infinite; }
         .svg-wind-flow-delayed { stroke-dasharray: 40 20; animation: flow-wind 3s linear infinite 1.5s; opacity: 0; }
@@ -288,7 +288,9 @@
             "Z13": { color: "#151d4d" }, "Z14": { color: "#492966" }
         };
 
-        // BASE DE DATOS EXACTA CON LAS 42 DEFINICIONES
+        // ========================================================
+        // BASE DE DATOS EXACTA CON LAS 42 DEFINICIONES CORTAS
+        // ========================================================
         const strategyDB = {
             "Z1": [
                 { t: "Ventilación regulable", d: "Incorporar ventanas operables y aperturas graduables que permitan controlar el flujo de aire según las condiciones térmicas del ambiente." },
@@ -393,7 +395,7 @@
                     searchResults.classList.remove('hidden');
                     data.forEach(item => {
                         const li = document.createElement('li');
-                        li.className = 'px-4 py-3 hover:bg-blue-500/20 dark:hover:bg-cyan-500/20 cursor-pointer border-b border-slate-200/20 dark:border-slate-700/50 last:border-0 transition-colors text-slate-700 dark:text-slate-200';
+                        li.className = 'px-4 py-3 hover:bg-slate-800 cursor-pointer border-b border-slate-700/50 text-slate-200';
                         li.innerText = item.display_name;
                         li.onclick = () => {
                             lat = parseFloat(parseFloat(item.lat).toFixed(4));
@@ -490,7 +492,7 @@
             const yb = document.getElementById('year-selector'); yb.innerHTML = '';
             for(let y=2026; y>=2000; y--){
                 const c = document.createElement('button');
-                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-[11px] ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
+                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-[11px] ${selectedYears.includes(y)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-800'}`;
                 c.innerText = y;
                 c.onclick = () => {
                     if(mode === 'mes') { selectedYears = [y]; }
@@ -506,7 +508,7 @@
             const mb = document.getElementById('month-selector'); mb.innerHTML = '';
             months.forEach((m,i)=>{
                 const c = document.createElement('button');
-                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-xs ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-200/50 dark:hover:bg-slate-800/50'}`;
+                c.className = `py-2 rounded-lg border text-center font-bold cursor-pointer transition-all text-xs ${selectedMonths.includes(i)?'bg-blue-600 text-white border-blue-500 shadow-md':'bg-transparent text-slate-500 border-slate-300 dark:border-slate-700 hover:bg-slate-800'}`;
                 c.innerText = m;
                 c.onclick = () => {
                     if(selectedMonths.includes(i)) { if(selectedMonths.length > 1) selectedMonths = selectedMonths.filter(v=>v!==i); }
@@ -548,7 +550,11 @@
             const innerHeight = height - margin.top - margin.bottom;
 
             const svg = d3.select('#chart-canvas-inside').append('svg')
-                .attr('width', '100%').attr('height', '100%').attr('viewBox', `0 0 ${width} ${height}`).attr('preserveAspectRatio', 'none');
+                .attr('width', '100%')
+                .attr('height', '100%')
+                .attr('viewBox', `0 0 ${width} ${height}`)
+                .attr('preserveAspectRatio', 'none');
+            
             const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
             const x = d3.scaleLinear().domain([-5, 50]).range([0, innerWidth]);
@@ -560,10 +566,12 @@
                 const parser = new DOMParser();
                 const svgDoc = parser.parseFromString(rawSVG, "image/svg+xml");
                 const importedSVG = document.importNode(svgDoc.documentElement, true);
+                
                 importedSVG.setAttribute("width", innerWidth);
                 importedSVG.setAttribute("height", innerHeight);
                 importedSVG.setAttribute("preserveAspectRatio", "none");
                 importedSVG.setAttribute("transform", "translate(0,65)");
+                
                 g.append("g").style("opacity","0.85").node().appendChild(importedSVG);
             } catch(e) {}
 
@@ -580,11 +588,22 @@
                     points.push([x(t), y(hum)]);
                 }
                 
-                g.append('path').attr('id', `line-visible-${i}`).attr('class', 'climate-line').attr('d', d3.line().curve(d3.curveBasis)(points))
-                    .attr('fill', 'none').attr('stroke', d.color).attr('stroke-width', 4).attr('stroke-linecap', 'round')
-                    .style('filter', `drop-shadow(0 0 6px ${d.color})`).style('pointer-events', 'none');
+                g.append('path')
+                    .attr('id', `line-visible-${i}`)
+                    .attr('class', 'climate-line')
+                    .attr('d', d3.line().curve(d3.curveBasis)(points))
+                    .attr('fill', 'none')
+                    .attr('stroke', d.color)
+                    .attr('stroke-width', 4)
+                    .attr('stroke-linecap', 'round')
+                    .style('filter', `drop-shadow(0 0 6px ${d.color})`)
+                    .style('pointer-events', 'none');
 
-                g.append('path').attr('d', d3.line().curve(d3.curveBasis)(points)).attr('fill', 'none').attr('stroke', 'transparent').attr('stroke-width', 24)
+                g.append('path')
+                    .attr('d', d3.line().curve(d3.curveBasis)(points))
+                    .attr('fill', 'none')
+                    .attr('stroke', 'transparent')
+                    .attr('stroke-width', 24)
                     .style('cursor', 'pointer')
                     .on('mouseover', (event) => {
                         d3.selectAll('.climate-line').style('opacity', 0.15);
@@ -593,14 +612,22 @@
                     })
                     .on('mousemove', (event) => {
                         tooltip.html(`
-                            <div class="flex items-center gap-4 mb-3 border-b border-slate-300/40 dark:border-slate-600/50 pb-3">
+                            <div class="flex items-center gap-4 mb-3 border-b border-slate-600 pb-3">
                                 <div class="w-4 h-4 rounded-full" style="background:${d.color}; box-shadow: 0 0 15px ${d.color}"></div>
-                                <strong class="uppercase text-slate-800 dark:text-white tracking-[0.2em] text-lg font-space">${d.label}</strong>
+                                <strong class="uppercase text-white tracking-[0.2em] text-lg font-space">${d.label}</strong>
                             </div>
-                            <div class="flex justify-between items-center text-slate-600 dark:text-slate-300 text-sm mb-1"><span>Temp. Máxima:</span> <span class="font-bold text-slate-800 dark:text-white text-base">${d.tMax.toFixed(1)}°C</span></div>
-                            <div class="flex justify-between items-center text-slate-600 dark:text-slate-300 text-sm mb-1"><span>Temp. Mínima:</span> <span class="font-bold text-slate-800 dark:text-white text-base">${d.tMin.toFixed(1)}°C</span></div>
-                            <div class="flex justify-between items-center text-slate-600 dark:text-slate-300 text-sm"><span>Humedad Relativa:</span> <span class="font-bold text-blue-500 dark:text-cyan-400 text-base">${d.hr.toFixed(0)}%</span></div>
-                        `).style('left', (event.pageX + 20) + 'px').style('top', (event.pageY - 30) + 'px');
+                            <div class="flex justify-between items-center text-slate-300 text-sm mb-1">
+                                <span>Temp. Máxima:</span> <span class="font-bold text-white text-base">${d.tMax.toFixed(1)}°C</span>
+                            </div>
+                            <div class="flex justify-between items-center text-slate-300 text-sm mb-1">
+                                <span>Temp. Mínima:</span> <span class="font-bold text-white text-base">${d.tMin.toFixed(1)}°C</span>
+                            </div>
+                            <div class="flex justify-between items-center text-slate-300 text-sm">
+                                <span>Humedad Relativa:</span> <span class="font-bold text-cyan-400 text-base">${d.hr.toFixed(0)}%</span>
+                            </div>
+                        `)
+                        .style('left', (event.pageX + 20) + 'px')
+                        .style('top', (event.pageY - 30) + 'px');
                     })
                     .on('mouseout', () => {
                         d3.selectAll('.climate-line').style('opacity', 1).attr('stroke-width', 4).style('filter', function() { return `drop-shadow(0 0 6px ${d3.select(this).attr('stroke')})`; });
@@ -611,54 +638,14 @@
         }
 
         // ========================================================
-        // MOTOR SVG: DIBUJANDO LAS 42 ESTRATEGIAS (EL CÓDIGO COMPLETO)
+        // MOTOR SVG PARAMÉTRICO - LAS 42 ESTRATEGIAS UNIFICADAS
         // ========================================================
         function buildInteractiveVisualizer(strategies) {
             const container = document.getElementById('interactive-visualizer');
             if(strategies.length === 0) return;
 
-            // --- DEFS GENERALES Y COMUNES PARA TODOS LOS DIBUJOS ---
-            const defsSVG = `
-                <defs>
-                    <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.05"/>
-                        <path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.1"/>
-                    </pattern>
-                    <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-                        <line x1="0" y1="0" x2="0" y2="10" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/>
-                    </pattern>
-                    <pattern id="hatch-insulation" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
-                        <line x1="0" y1="4" x2="8" y2="4" stroke="#f59e0b" stroke-width="2" opacity="0.6"/>
-                    </pattern>
-                    <pattern id="hatch-mass" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
-                        <rect width="10" height="10" fill="#a16207" opacity="0.3"/>
-                        <line x1="0" y1="0" x2="0" y2="10" stroke="#713f12" stroke-width="1" opacity="0.4"/>
-                        <line x1="0" y1="0" x2="10" y2="0" stroke="#713f12" stroke-width="1" opacity="0.4"/>
-                    </pattern>
-                    <pattern id="hatch-water" patternUnits="userSpaceOnUse" width="12" height="10">
-                        <rect width="12" height="10" fill="#3b82f6" opacity="0.4"/>
-                        <path d="M 0 5 Q 3 0 6 5 T 12 5" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.6"/>
-                    </pattern>
-                    <pattern id="hygroscopic-dots" patternUnits="userSpaceOnUse" width="12" height="12">
-                        <circle cx="3" cy="3" r="1.5" fill="#3b82f6" opacity="0.5"/>
-                    </pattern>
-                    <pattern id="glass-lines" patternUnits="userSpaceOnUse" width="15" height="15" patternTransform="rotate(45)">
-                        <line x1="0" y1="0" x2="0" y2="15" stroke="#38bdf8" stroke-width="2" opacity="0.3"/>
-                    </pattern>
-                    <pattern id="perforated" width="4" height="4" patternUnits="userSpaceOnUse">
-                        <circle cx="2" cy="2" r="1" fill="#cbd5e1" opacity="0.5"/>
-                    </pattern>
-                    <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
-                    </marker>
-                    <marker id="arrow-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#fcd34d" />
-                    </marker>
-                </defs>
-            `;
-
-            // Construcción del menú izquierdo con los íconos de cada tipo
             let menuHTML = `<div class="w-full lg:w-[35%] xl:w-[30%] border-b lg:border-b-0 lg:border-r border-slate-200/40 dark:border-slate-700/50 p-4 space-y-2 overflow-y-auto max-h-[550px]" id="strategy-menu">`;
+            
             strategies.forEach((strat, i) => {
                 let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
                 if(strat.t.includes('regulable') || strat.t.includes('transición') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>`;
@@ -672,28 +659,83 @@
                 if(strat.t.includes('Purgado nocturno')) icon = `<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>`;
                 if(strat.t.includes('Elevación palafítica')) icon = `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>`;
 
-                menuHTML += `<button class="w-full text-left p-4 rounded-xl transition-all duration-300 strat-btn flex items-center gap-4 active:scale-95" onclick="renderSVGForStrategy(${i})">
-                    <div class="mt-0.5">${icon}</div>
-                    <div><p class="font-bold text-sm text-slate-800 dark:text-slate-200 font-space tracking-wide leading-tight">${strat.t}</p></div>
-                </button>`;
+                menuHTML += `
+                    <button class="w-full text-left p-4 rounded-xl transition-all duration-300 strat-btn flex items-center gap-4 active:scale-95" onclick="renderSVGForStrategy(${i})">
+                        <div class="mt-0.5">${icon}</div>
+                        <div><p class="font-bold text-sm text-slate-800 dark:text-slate-200 font-space tracking-wide leading-tight">${strat.t}</p></div>
+                    </button>`;
             });
-            menuHTML += `</div><div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-transparent overflow-hidden min-h-[450px]"><div id="svg-canvas" class="flex-1 w-full h-full relative"></div></div>`;
-            container.innerHTML = menuHTML;
+            menuHTML += `</div>`;
+
+            let viewerHTML = `
+                <div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-transparent overflow-hidden min-h-[450px]">
+                    <div id="svg-canvas" class="flex-1 w-full h-full relative"></div>
+                </div>
+            `;
+
+            container.innerHTML = menuHTML + viewerHTML;
 
             window.renderSVGForStrategy = function(index) {
                 const strat = strategies[index];
-                document.querySelectorAll('.strat-btn').forEach((btn, idx) => idx === index ? btn.classList.add('active') : btn.classList.remove('active'));
                 
-                const t = strat.t;
+                document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
+                    if(idx === index) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+                
+                const t = strat.t; 
                 let svgContent = `<rect width="100%" height="100%" fill="url(#blueprint-grid)" />`;
+
+                const defsSVG = `
+                    <defs>
+                        <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.05"/>
+                            <path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.1"/>
+                        </pattern>
+                        <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                            <line x1="0" y1="0" x2="0" y2="10" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/>
+                        </pattern>
+                        <pattern id="hatch-insulation" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                            <line x1="0" y1="4" x2="8" y2="4" stroke="#f59e0b" stroke-width="2" opacity="0.6"/>
+                        </pattern>
+                        <pattern id="hatch-mass" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                            <rect width="10" height="10" fill="#a16207" opacity="0.3"/>
+                            <line x1="0" y1="0" x2="0" y2="10" stroke="#713f12" stroke-width="1" opacity="0.4"/>
+                            <line x1="0" y1="0" x2="10" y2="0" stroke="#713f12" stroke-width="1" opacity="0.4"/>
+                        </pattern>
+                        <pattern id="hatch-water" patternUnits="userSpaceOnUse" width="12" height="10">
+                            <rect width="12" height="10" fill="#3b82f6" opacity="0.4"/>
+                            <path d="M 0 5 Q 3 0 6 5 T 12 5" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.6"/>
+                        </pattern>
+                        <pattern id="hygroscopic-dots" patternUnits="userSpaceOnUse" width="12" height="12">
+                            <circle cx="3" cy="3" r="1.5" fill="#3b82f6" opacity="0.5"/>
+                        </pattern>
+                        <pattern id="glass-lines" patternUnits="userSpaceOnUse" width="15" height="15" patternTransform="rotate(45)">
+                            <line x1="0" y1="0" x2="0" y2="15" stroke="#38bdf8" stroke-width="2" opacity="0.3"/>
+                        </pattern>
+                        <pattern id="perforated" width="4" height="4" patternUnits="userSpaceOnUse">
+                            <circle cx="2" cy="2" r="1" fill="#cbd5e1" opacity="0.5"/>
+                        </pattern>
+                        <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
+                        </marker>
+                        <marker id="arrow-red" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+                        </marker>
+                        <marker id="arrow-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#fcd34d" />
+                        </marker>
+                    </defs>
+                `;
+
                 const groundLine = `<rect x="50" y="340" width="700" height="40" fill="url(#hatch-concrete)" stroke="#e2e8f0" stroke-width="1.5" class="opacity-80"/><line x1="50" y1="340" x2="750" y2="340" stroke="#e2e8f0" stroke-width="2" class="opacity-50"/>`;
                 const scaleFigure = `<g opacity="0.4" transform="translate(450, 245) scale(0.65)"><circle cx="15" cy="10" r="7" fill="#cbd5e1"/><path d="M10,20 L20,20 L20,45 L25,80 L18,80 L15,50 L12,80 L5,80 L10,45 Z" fill="#cbd5e1"/></g>`;
                 const sunObj = `<circle cx="100" cy="70" r="25" fill="#f59e0b" class="svg-sun-pulse"/>`;
-                const rayBounce = `<path d="M 120 90 L 180 150" fill="none" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>`;
+                const sunContextAxo = `${sunObj}<path d="M 120 90 L 180 150" fill="none" stroke="#fcd34d" stroke-width="3" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>`;
 
-                // =========================================================================================
-                // LÓGICA DE DIBUJO MASIVA (LAS 42 ESTRATEGIAS)
-                // =========================================================================================
+                // ==========================================
+                // LÓGICA DE DIBUJO DE LAS 42 ESTRATEGIAS
+                // ==========================================
 
                 if (t === "Ventilación regulable") {
                     svgContent += `
@@ -702,11 +744,14 @@
                         <path d="M 200 150 L 600 150" fill="none" stroke="#cbd5e1" stroke-width="1" opacity="0.5"/>
                         <rect x="195" y="180" width="10" height="100" fill="#38bdf8" opacity="0.3" stroke="#38bdf8"/>
                         <line x1="195" y1="180" x2="160" y2="160" stroke="#38bdf8" stroke-width="2"/>
-                        <g transform="translate(400, 80)"><line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="3"/><line x1="-20" y1="-5" x2="0" y2="-25" stroke="#cbd5e1" stroke-width="2" opacity="0.8"/></g>
+                        <g transform="translate(400, 80)">
+                            <line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="3"/>
+                            <line x1="-20" y1="-5" x2="0" y2="-25" stroke="#cbd5e1" stroke-width="2" opacity="0.8"/>
+                        </g>
                         <rect x="595" y="180" width="10" height="100" fill="#cbd5e1" stroke="#cbd5e1"/>
                         <path d="M 100 230 L 190 230" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 210 230 C 350 230, 450 180, 400 70" fill="none" stroke="#06b6d4" stroke-width="4" opacity="0.7" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-                        ${scaleFigure}
+                        <text x="400" y="300" fill="#06b6d4" font-size="12" font-weight="bold" font-family="Inter" text-anchor="middle">Ingreso Aire Fresco / Control de Salida</text>
                     `;
                 }
                 else if (t === "Cubierta ventilada") {
@@ -720,7 +765,7 @@
                         <path d="M 220 170 L 300 135" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 320 125 L 400 85" fill="none" stroke="#ea580c" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-float-up"/>
                         <path d="M 400 80 L 480 120" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-                        ${scaleFigure}
+                        <text x="400" y="60" fill="#ef4444" font-size="11" font-weight="bold" font-family="Inter" text-anchor="middle">Evacuación Calor Acumulado</text>
                     `;
                 }
                 else if (t === "Protección solar ligera") {
@@ -735,7 +780,7 @@
                         <path d="M 130 90 L 305 160" fill="none" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         <path d="M 315 165 L 390 200" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce" style="animation-delay: 0.5s"/>
                         <path d="M 305 160 L 250 120" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-                        ${scaleFigure}
+                        <text x="310" y="70" fill="white" font-size="10" font-family="Inter" text-anchor="middle">Piel Ligera Textile</text>
                     `;
                 }
                 else if (t === "Espacios de transición") {
@@ -749,7 +794,7 @@
                         <path d="M 50 180 L 150 180" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         <path d="M 170 180 C 250 180, 300 200, 390 200" fill="none" stroke="#06b6d4" stroke-width="4" opacity="0.8" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
-                        ${scaleFigure}
+                        <text x="325" y="150" fill="white" font-size="12" font-weight="bold" font-family="Inter" text-anchor="middle">Galería (Amortiguador)</text>
                     `;
                 }
                 else if (t === "Fachada permeable") {
@@ -773,6 +818,8 @@
                         </g>
                         <path d="M 100 250 L 250 280" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 200 200 L 450 200" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow" style="animation-delay: 0.5s"/>
+                        <text x="250" y="360" fill="#06b6d4" font-size="10" font-family="Inter" text-anchor="middle">Muro Lateral</text>
+                        <text x="450" y="360" fill="#06b6d4" font-size="10" font-family="Inter" text-anchor="middle">Muro Frontal</text>
                     `;
                 }
                 else if (t === "Ventilación elevada") {
@@ -788,6 +835,7 @@
                         <path d="M 450 280 Q 400 180 500 150" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="10 5" class="svg-float-up" style="animation-delay: 0.5s"/>
                         <path d="M 280 150 L 200 130" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 520 150 L 600 130" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+                        <text x="400" y="100" fill="#ef4444" font-size="12" font-weight="bold" font-family="Inter" text-anchor="middle">Salida Aire Caliente</text>
                     `;
                 }
                 else if (t === "Núcleo compacto") {
@@ -801,6 +849,7 @@
                         <line x1="475" y1="275" x2="600" y2="300" stroke="#cbd5e1" stroke-width="1" opacity="0.5"/>
                         <circle cx="400" cy="200" r="50" fill="#ea580c" class="opacity-10 svg-heat-radiate"/>
                         <path d="M 475 200 L 550 200" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="5 5" opacity="0.5" marker-end="url(#arrow-yellow)"/>
+                        <text x="400" y="205" fill="#ea580c" font-size="14" font-weight="bold" font-family="Space Grotesk" text-anchor="middle">NÚCLEO</text>
                     `;
                 }
                 else if (t === "Envolvente térmica") {
@@ -818,6 +867,8 @@
                         ${sunObj}
                         <path d="M 600 150 L 555 150" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         <path d="M 535 150 L 505 150" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.3" marker-end="url(#arrow-yellow)"/>
+                        <text x="400" y="200" fill="white" font-size="12" font-weight="bold" font-family="Inter" text-anchor="middle">Interior</text>
+                        <text x="560" y="60" fill="#f59e0b" font-size="10" font-family="Inter" text-anchor="middle">Capa Aislante Continua</text>
                     `;
                 }
                 else if (t === "Carpintería hermética") {
@@ -833,6 +884,7 @@
                         <circle cx="420" cy="240" r="4" fill="#ef4444" class="animate-pulse"/>
                         <path d="M 600 210 L 430 210" fill="none" stroke="#06b6d4" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 425 210 Q 415 210 420 200 T 425 190" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7"/>
+                        <text x="400" y="160" fill="white" font-size="10" font-family="Inter" text-anchor="middle">Sello Hermético</text>
                     `;
                 }
                 else if (t === "Muro Trombe") {
@@ -846,7 +898,9 @@
                         <path d="M 130 90 L 315 180" fill="none" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         <rect x="330" y="100" width="20" height="240" fill="#ea580c" class="opacity-10 svg-heat-radiate"/>
                         <path d="M 370 220 L 450 220" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
-                        ${scaleFigure}
+                        <circle cx="340" cy="120" r="5" fill="#ef4444" opacity="0.5"/>
+                        <circle cx="340" cy="320" r="5" fill="#06b6d4" opacity="0.5"/>
+                        <text x="410" y="160" fill="#ea580c" font-size="10" font-family="Inter" text-anchor="middle">Calor Gradual</text>
                     `;
                 }
                 else if (t === "Galería solar") {
@@ -864,6 +918,7 @@
                         <circle cx="50" cy="200" r="20" fill="#f59e0b" class="svg-sun-pulse"/>
                         <path d="M 50 200 L 95 200" fill="none" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow-yellow)"/>
                         <path d="M 110 200 L 160 200 C 250 200, 300 230, 350 200" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-yellow)" class="svg-float-up"/>
+                        <text x="110" y="140" fill="white" font-size="10" font-family="Inter" text-anchor="middle">Galería Solar</text>
                     `;
                 }
                 else if (t === "Orientación solar estratégica") {
@@ -873,7 +928,6 @@
                             <line x1="0" y1="-30" x2="0" y2="30" stroke="#cbd5e1" stroke-width="2"/>
                             <line x1="-30" y1="0" x2="30" y2="0" stroke="#cbd5e1" stroke-width="1"/>
                             <text x="0" y="-35" fill="white" font-size="12" font-weight="bold" text-anchor="middle">N</text>
-                            <text x="0" y="45" fill="#cbd5e1" font-size="10" text-anchor="middle">S</text>
                         </g>
                         <path d="M 150 300 A 250 150 0 0 1 650 300" fill="none" stroke="#fcd34d" stroke-width="2" stroke-dasharray="10 5"/>
                         <circle cx="150" cy="300" r="10" fill="#fcd34d"/>
@@ -888,7 +942,7 @@
                 else if (t === "Panel solar térmico") {
                     svgContent += `
                         ${groundLine}
-                        ${sunObj}
+                        ${sunContextAxo}
                         <path d="M 250 340 L 250 180 L 550 180 L 550 340" fill="none" stroke="#cbd5e1" stroke-width="2"/>
                         <polygon points="220,180 400,100 580,180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
                         <g transform="translate(320, 136) rotate(-24)">
@@ -898,18 +952,20 @@
                         <rect x="480" y="200" width="40" height="80" rx="5" fill="#cbd5e1" stroke="#94a3b8"/>
                         <path d="M 330 145 L 330 200 L 480 230" fill="none" stroke="#06b6d4" stroke-width="3" marker-end="url(#arrow-blue)"/>
                         <path d="M 400 115 L 450 115 L 480 210" fill="none" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-blue)"/>
+                        <text x="400" y="70" fill="#ef4444" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">Calentamiento Agua</text>
                         ${scaleFigure}
                     `;
                 }
                 else if (t === "Cubierta captadora") {
                     svgContent += `
                         ${groundLine}
-                        ${sunObj}
+                        ${sunContextAxo}
                         <path d="M 250 340 L 250 150 L 550 180 L 550 340" fill="none" stroke="#cbd5e1" stroke-width="2"/>
                         <polygon points="220,150 400,60 580,180 550,180 400,80 250,150" fill="#ea580c" stroke="#c2410c" stroke-width="1.5" class="svg-heat-radiate"/>
                         <polygon points="250,160 400,90 550,185" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="5 5" opacity="0.6"/>
                         <path d="M 120 70 L 320 110" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         <path d="M 100 100 L 280 140" fill="none" stroke="#fcd34d" stroke-width="4" opacity="0.8" marker-end="url(#arrow-yellow)" class="svg-ray-bounce" style="animation-delay: 0.5s"/>
+                        <text x="400" y="50" fill="#ea580c" font-size="12" font-weight="bold" font-family="Inter" text-anchor="middle">CUBIERTA DE ALTA CAPTACIÓN</text>
                         ${scaleFigure}
                     `;
                 }
@@ -926,6 +982,7 @@
                         </g>
                         <path d="M 400 120 L 400 80 L 480 80" fill="none" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-blue)"/>
                         <path d="M 400 270 L 400 310 L 480 310" fill="none" stroke="#06b6d4" stroke-width="3" marker-end="url(#arrow-blue)"/>
+                        <text x="400" y="110" fill="#ea580c" font-size="10" font-weight="bold" font-family="Inter" text-anchor="middle">Depósito Acumulador</text>
                     `;
                 }
                 else if (t === "Patio húmedo") {
@@ -954,6 +1011,7 @@
                         <path d="M 100 250 L 320 280 Q 400 280 480 320" fill="none" stroke="#06b6d4" stroke-width="6" marker-mid="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 350 320 C 350 300, 370 280, 400 280 S 450 300, 450 320" fill="#06b6d4" opacity="0.1"/>
                         <circle cx="380" cy="310" r="10" fill="#06b6d4" opacity="0.1" class="animate-pulse"/>
+                        <circle cx="420" cy="310" r="10" fill="#06b6d4" opacity="0.1" class="animate-pulse"/>
                     `;
                 }
                 else if (t === "Material higroscópico") {
@@ -969,6 +1027,7 @@
                         <path d="M 600 180 Q 550 180 520 180" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <circle cx="515" cy="180" r="5" fill="#06b6d4" class="svg-moisture"/>
                         <path d="M 520 220 Q 550 220 600 220" fill="none" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
+                        <circle cx="525" cy="220" r="3" fill="#cbd5e1" class="svg-moisture" style="animation-delay: 0.5s"/>
                     `;
                 }
                 else if (t === "Doble envolvente térmica") {
@@ -998,6 +1057,7 @@
                         <circle cx="50" cy="200" r="20" fill="#fcd34d"/>
                         <path d="M 20 200 L 130 200" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 145 200 C 170 200, 190 180, 170 160 T 145 160 Q 155 200 145 200" fill="none" stroke="#06b6d4" stroke-width="4" opacity="0.7" class="svg-wind-flow-delayed"/>
+                        <path d="M 220 200 L 250 200" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.2" stroke-dasharray="5 5"/>
                     `;
                 }
                 else if (t === "Aislamiento continuo") {
@@ -1052,6 +1112,8 @@
                         <path d="M 230 360 L 230 330" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 230 310 Q 230 250 230 190" fill="none" stroke="#06b6d4" stroke-width="6" opacity="0.7" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
                         <path d="M 230 170 L 230 130" fill="none" stroke="#06b6d4" stroke-width="4" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
+                        <circle cx="100" cy="70" r="20" fill="#fcd34d" class="svg-sun-pulse"/>
+                        <path d="M 120 90 L 205 180" fill="none" stroke="#fcd34d" stroke-width="3" marker-end="url(#arrow-yellow)"/>
                     `;
                 }
                 else if (t === "Cubierta extendida") {
@@ -1061,7 +1123,7 @@
                         <rect x="300" y="200" width="20" height="80" fill="url(#glass-lines)" stroke="#38bdf8"/>
                         <polygon points="100,180 300,180 425,100 580,180 550,180 400,120 100,180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
                         <line x1="100" y1="180" x2="100" y2="340" stroke="#cbd5e1" stroke-width="5"/>
-                        <circle cx="100" cy="50" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+                        ${sunObj}
                         <path d="M 120 70 L 180 180" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         <path d="M 180 180 L 150 250" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="5 5" opacity="0.7"/>
                         <rect x="100" y="180" width="200" height="160" fill="#0f172a" opacity="0.2"/>
@@ -1096,7 +1158,7 @@
                         <rect x="400" y="100" width="60" height="240" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="2"/>
                         <polygon points="250,100 400,100 400,80 250,80" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
                         <line x1="250" y1="100" x2="250" y2="340" stroke="#cbd5e1" stroke-width="5"/>
-                        <circle cx="100" cy="50" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+                        ${sunObj}
                         <path d="M 130 70 L 300 90" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         <path d="M 320 110 L 380 180" fill="none" stroke="#fcd34d" stroke-width="1.5" opacity="0.2" stroke-dasharray="5 5"/>
                         <rect x="400" y="100" width="60" height="240" fill="#0f172a" opacity="0.2"/>
@@ -1119,6 +1181,7 @@
                         <line x1="150" y1="340" x2="150" y2="200" stroke="#cbd5e1" stroke-width="3"/>
                         <circle cx="150" cy="200" r="4" fill="#3b82f6"/>
                         <g fill="#3b82f6" opacity="0.2" class="animate-pulse"><circle cx="150" cy="220" r="15"/><circle cx="180" cy="240" r="25"/><circle cx="220" cy="260" r="35"/></g>
+                        <g fill="#3b82f6" opacity="0.1" class="animate-pulse" style="animation-delay: 0.5s"><circle cx="280" cy="280" r="45"/></g>
                         ${scaleFigure}
                         <path d="M 50 180 L 130 190" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-wind-flow"/>
                         <path d="M 170 210 C 250 220, 300 250, 350 220" fill="none" stroke="#06b6d4" stroke-width="7" marker-end="url(#arrow-blue)" class="svg-wind-flow-delayed"/>
@@ -1171,7 +1234,7 @@
                         <rect x="150" y="50" width="30" height="290" fill="#ea580c" stroke="#c2410c" class="svg-heat-radiate"/>
                         <path d="M 250 300 L 180 300" fill="none" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="5 5"/>
                         <path d="M 350 250 C 300 250, 250 280, 200 300 C 165 300, 165 200, 165 40" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
-                        <circle cx="80" cy="50" r="25" fill="#f59e0b" class="svg-sun-pulse"/>
+                        ${sunObj}
                         <path d="M 100 70 L 140 100" fill="none" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
                         ${scaleFigure}
                     `;
@@ -1230,24 +1293,31 @@
                         <path d="M 500 180 L 400 180" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.1" stroke-dasharray="5 5"/> 
                     `;
                 }
+                else if (t === "Cámara ventilada") {
+                    svgContent += `
+                        ${groundLine}
+                        <rect x="250" y="80" width="20" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/>
+                        <rect x="300" y="80" width="20" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/>
+                        <rect x="270" y="80" width="30" height="240" fill="#06b6d4" opacity="0.1"/>
+                        <polygon points="200,80 400,20 600,80" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/>
+                        <polygon points="180,60 400,0 620,60" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+                        <path d="M 285 340 L 285 80" fill="none" stroke="#06b6d4" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up"/>
+                        <path d="M 250 60 L 400 20 L 550 60" fill="none" stroke="#06b6d4" stroke-width="4" stroke-dasharray="10 5" marker-end="url(#arrow-blue)" class="svg-float-up" style="animation-delay:0.5s"/>
+                        ${scaleFigure}
+                    `;
+                }
                 else {
-                    svgContent += `${groundLine}${scaleFigure}<text x="400" y="200" fill="white" font-size="12" text-anchor="middle">Dibujando: ${t}</text>`;
+                    svgContent += `
+                        ${groundLine}
+                        ${scaleFigure}
+                        <rect x="250" y="200" width="300" height="40" rx="4" fill="rgba(15,23,42,0.85)"/>
+                        <text x="400" y="225" fill="white" font-size="10" font-family="Inter" text-anchor="middle">Estrategia: ${strat.t}</text>
+                    `;
                 }
 
                 document.getElementById('svg-canvas').innerHTML = `
                     <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
-                        <defs>
-                            <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.05"/><path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.1"/></pattern>
-                            <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/></pattern>
-                            <pattern id="hatch-insulation" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)"><line x1="0" y1="4" x2="8" y2="4" stroke="#f59e0b" stroke-width="2" opacity="0.6"/></pattern>
-                            <pattern id="hatch-mass" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)"><rect width="10" height="10" fill="#a16207" opacity="0.3"/><line x1="0" y1="0" x2="0" y2="10" stroke="#713f12" stroke-width="1" opacity="0.4"/><line x1="0" y1="0" x2="10" y2="0" stroke="#713f12" stroke-width="1" opacity="0.4"/></pattern>
-                            <pattern id="hatch-water" patternUnits="userSpaceOnUse" width="12" height="10"><rect width="12" height="10" fill="#3b82f6" opacity="0.4"/><path d="M 0 5 Q 3 0 6 5 T 12 5" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.6"/></pattern>
-                            <pattern id="hygroscopic-dots" patternUnits="userSpaceOnUse" width="12" height="12"><circle cx="3" cy="3" r="1.5" fill="#3b82f6" opacity="0.5"/></pattern>
-                            <pattern id="glass-lines" patternUnits="userSpaceOnUse" width="15" height="15" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="15" stroke="#38bdf8" stroke-width="2" opacity="0.3"/></pattern>
-                            <pattern id="perforated" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#cbd5e1" opacity="0.5"/></pattern>
-                            <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" /></marker>
-                            <marker id="arrow-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#fcd34d" /></marker>
-                        </defs>
+                        ${defsSVG}
                         ${svgContent}
                     </svg>
                 `;
@@ -1256,9 +1326,11 @@
             window.renderSVGForStrategy(0);
         }
 
+        // ========================================================
+        // MOTOR DE ANÁLISIS 
+        // ========================================================
         function updateAnalysis(data){
-            const tableBody = document.getElementById('table-body');
-            tableBody.innerHTML = '';
+            const tableBody = document.getElementById('table-body'); tableBody.innerHTML = '';
             let sumTMax = 0, sumTMin = 0, sumH = 0;
             
             data.forEach((d, i) => {
@@ -1266,181 +1338,88 @@
                 const zones = detectZones(d.tMin, d.tMax, d.hr);
                 sumTMax += d.tMax; sumTMin += d.tMin; sumH += d.hr;
                 const badges = zones.map(z => `<span class="text-xs font-space px-2.5 py-1.5 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
-                
-                tableBody.innerHTML += `
-                    <tr class="border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/30 dark:hover:bg-slate-800/20 transition-colors">
-                        <td class="p-5 text-center flex justify-center items-center"><div class="w-3.5 h-3.5 rounded-full" style="background:${d.color}; box-shadow: 0 0 8px ${d.color}80"></div></td>
-                        <td class="p-5 uppercase font-bold text-slate-700 dark:text-slate-200 font-space text-sm text-center">${d.label}</td>
-                        <td class="p-5 text-center text-sm font-medium text-slate-800 dark:text-white">${d.tMax.toFixed(1)}°C</td>
-                        <td class="p-5 text-center text-sm font-medium text-slate-500 dark:text-slate-400">${d.tMin.toFixed(1)}°C</td>
-                        <td class="p-5 text-center text-blue-600 dark:text-cyan-400 font-bold text-sm">${d.hr.toFixed(0)}%</td>
-                        <td class="p-5 pl-6 flex flex-wrap justify-start gap-1.5">${badges}</td>
-                    </tr>`;
+                tableBody.innerHTML += `<tr class="border-b border-slate-700/50"><td class="p-5 text-center flex justify-center items-center"><div class="w-3.5 h-3.5 rounded-full" style="background:${d.color}"></div></td><td class="p-5 uppercase font-bold text-slate-200 font-space text-sm text-center">${d.label}</td><td class="p-5 text-center text-sm font-medium text-white">${d.tMax.toFixed(1)}°C</td><td class="p-5 text-center text-sm font-medium text-slate-400">${d.tMin.toFixed(1)}°C</td><td class="p-5 text-center text-cyan-400 font-bold text-sm">${d.hr.toFixed(0)}%</td><td class="p-5 pl-6 flex flex-wrap justify-start gap-1.5">${badges}</td></tr>`;
             });
 
-            if (data.length === 0) {
-                document.getElementById('analysis-text').innerHTML = "No se encontraron datos climáticos.";
-                return;
-            }
+            if (data.length === 0) { document.getElementById('analysis-text').innerHTML = "No se encontraron datos climáticos."; return; }
 
-            const avgTMax = sumTMax / data.length;
-            const avgTMin = sumTMin / data.length;
-            const avgHR = sumH / data.length;
-
-            let text = `<p>El análisis general de la ubicación indica una temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y una mínima de <strong>${avgTMin.toFixed(1)}°C</strong>, con una humedad media del <strong>${avgHR.toFixed(0)}%</strong>.</p>`;
+            const aMax = sumTMax / data.length, aMin = sumTMin / data.length, aHR = sumH / data.length;
+            let text = `<p>Media del periodo seleccionado: TBS Máx <strong>${aMax.toFixed(1)}°C</strong> | TBS Mín <strong>${aMin.toFixed(1)}°C</strong> | HR <strong>${aHR.toFixed(0)}%</strong>.</p>`;
             let recs = [];
 
-            if (avgTMax > 26 && avgHR > 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Calor y Alta Humedad (Tropical)</strong>. El aire saturado impide el enfriamiento corporal. El diseño exige permeabilidad extrema, elevación para evitar capilaridad y exclusión solar total.</p>`;
+            if (aMax > 26 && aHR > 65) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Calor y Alta Humedad (Tropical)</strong>. Diseño exige permeabilidad extrema, elevación para evitar capilaridad y exclusión solar total.</p>`;
                 recs.push(strategyDB["Z14"][0], strategyDB["Z1"][0], strategyDB["Z12"][0], strategyDB["Z8"][2], strategyDB["Z13"][1]);
-            } else if (avgTMin <= 22 && avgHR > 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Frío y Alta Humedad</strong>. Riesgo alto de condensación y moho. La prioridad es aislar la envolvente por el exterior y emplear acabados que absorban el agua del aire.</p>`;
+            } else if (aMin <= 22 && aHR > 65) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Frío y Alta Humedad</strong>. Aislar envolvente por el exterior y emplear acabados que absorban agua del aire para evitar condensación.</p>`;
                 recs.push(strategyDB["Z7"][2], strategyDB["Z14"][1], strategyDB["Z14"][2], strategyDB["Z3"][2]);
-            } else if (avgTMax > 26 && avgHR <= 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Cálido y Seco (Árido)</strong>. Radiación solar violenta. El diseño exige inercia térmica para retardar el ingreso del calor y refrigeración por evaporación de agua.</p>`;
-                recs.push(strategyDB["Z9"][0], strategyDB["Z10"][0], strategyDB["Z11"][0], strategyDB["Z9"][1], strategyDB["Z8"][0]);
-            } else if (avgTMax <= 26 && avgHR <= 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Frío y Seco</strong>. El diseño debe enfocarse en la calefacción pasiva, maximizando la captación solar y acumulando energía en masas internas.</p>`;
+            } else if (aMax > 26 && aHR <= 65) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Cálido y Seco (Árido)</strong>. Radiación solar violenta. Exige inercia térmica, purgado nocturno y refrigeración por evaporación.</p>`;
+                recs.push(strategyDB["Z9"][0], strategyDB["Z10"][0], strategyDB["Z11"][0], strategyDB["Z8"][0]);
+            } else if (aMax <= 26 && aHR <= 65) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Frío y Seco</strong>. Calefacción pasiva como trampa térmica maximizando captación solar y acumulando energía interna.</p>`;
                 recs.push(strategyDB["Z4"][0], strategyDB["Z4"][1], strategyDB["Z3"][0], strategyDB["Z5"][1]);
             } else {
-                text += `<p class="mt-4">Entorno detectado: <strong>Zona de Confort Natural</strong>. El diseño debe adoptar un enfoque de funcionamiento libre (free-running), permitiendo integrar por completo el ambiente exterior.</p>`;
+                text += `<p class="mt-4">Entorno detectado: <strong>Zona de Confort Natural</strong>. Diseño de funcionamiento libre (free-running).</p>`;
                 recs.push(strategyDB["Z1"][0], strategyDB["Z2"][0], strategyDB["Z2"][1], strategyDB["Z1"][2]);
             }
 
             document.getElementById('analysis-text').innerHTML = text;
-
-            const sl = document.getElementById('strategy-list');
-            sl.innerHTML = '';
+            const sl = document.getElementById('strategy-list'); sl.innerHTML = '';
             recs.forEach(r => {
-                sl.innerHTML += `
-                    <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                        <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
-                        <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
-                    </div>`;
+                sl.innerHTML += `<div class="p-6 rounded-2xl glass-panel"><p class="text-cyan-400 font-bold text-sm uppercase mb-2">${r.t}</p><p class="text-slate-300 text-sm leading-relaxed">${r.d}</p></div>`;
             });
 
             buildInteractiveVisualizer(recs);
         }
 
         async function runClimateAnalysis(){
-            document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos psicrométricos históricos.</span>";
+            document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Recopilando datos...</span>";
             let results = [];
             try {
-                const year = selectedYears[0];
-                const today = new Date();
-                let endDate = `${year}-12-31`;
-                if (year === today.getFullYear()) {
-                    const pastDate = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
-                    endDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
-                }
+                const year = selectedYears[0]; const today = new Date(); let endDate = `${year}-12-31`;
+                if (year === today.getFullYear()) endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()-3).padStart(2, '0')}`;
                 
                 if(mode === 'mes'){
                     const data = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`)).json();
-                    
                     selectedMonths.forEach(m => {
-                        const dailyFilter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
-                        const hourlyFilter = (_,idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
-                        
-                        const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
-                        if (tMaxFiltered.length > 0) {
-                            results.push({
-                                label: `${months[m]} ${year}`,
-                                tMax: d3.mean(tMaxFiltered),
-                                tMin: d3.mean(data.daily.temperature_2m_min.filter(dailyFilter)),
-                                hr: d3.mean(data.hourly.relative_humidity_2m.filter(hourlyFilter))
-                            });
-                        }
+                        const tMaxF = data.daily.temperature_2m_max.filter((_,i) => parseInt(data.daily.time[i].split('-')[1])-1 === m);
+                        if(tMaxF.length > 0) results.push({ label: `${months[m]} ${year}`, tMax: d3.mean(tMaxF), tMin: d3.mean(data.daily.temperature_2m_min.filter((_,i) => parseInt(data.daily.time[i].split('-')[1])-1 === m)), hr: d3.mean(data.hourly.relative_humidity_2m.filter((_,i) => parseInt(data.hourly.time[i].split('-')[1])-1 === m)) });
                     });
                 } else {
                     for(const y of selectedYears){
-                        let yEnd = `${y}-12-31`;
-                        if (y === today.getFullYear()) yEnd = endDate;
-                        
-                        const d = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`)).json();
-                        
-                        results.push({ 
-                            label: `${y}`, 
-                            tMax: d3.mean(d.daily.temperature_2m_max), 
-                            tMin: d3.mean(d.daily.temperature_2m_min), 
-                            hr: d3.mean(d.hourly.relative_humidity_2m) 
-                        });
+                        const d = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${y}-12-31&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`)).json();
+                        results.push({ label: `${y}`, tMax: d3.mean(d.daily.temperature_2m_max), tMin: d3.mean(d.daily.temperature_2m_min), hr: d3.mean(d.hourly.relative_humidity_2m) });
                     }
                 }
-                window.currentData = results;
-                await drawChart(results);
-                updateAnalysis(results);
-            } catch(e) {
-                console.error("Error Open-Meteo.", e);
-                document.getElementById('analysis-text').innerHTML = "Error al obtener datos climáticos. Por favor verifique su conexión.";
-            }
+                window.currentData = results; await drawChart(results); updateAnalysis(results);
+            } catch(e) {}
         }
 
         async function downloadPDF() {
-            const btn = document.getElementById('pdf-btn');
-            btn.innerHTML = `PROCESANDO...`;
-
+            const btn = document.getElementById('pdf-btn'); btn.innerHTML = `PROCESANDO...`;
             try {
                 const { jsPDF } = window.jspdf;
-                
                 document.getElementById('pdf-ubicacion').innerText = `Ubicación: ${currentLocationName}`;
-                let periodoStr = mode === 'mes' ? `${selectedMonths.map(m=>months[m]).join(', ')} / ${selectedYears[0]}` : `${selectedYears.join(', ')}`;
-                document.getElementById('pdf-periodo').innerText = `Meses/Años: ${periodoStr}`;
-
+                document.getElementById('pdf-periodo').innerText = `Periodo: ${mode === 'mes' ? selectedMonths.map(m=>months[m]).join(',') + ' / ' + selectedYears[0] : selectedYears.join(',')}`;
                 document.getElementById('pdf-chart-container').innerHTML = document.getElementById('chart-canvas-inside').innerHTML;
-                const pdfSvg = document.querySelector('#pdf-chart-container svg > g > g:first-child');
-                if(pdfSvg) pdfSvg.style.filter = 'none';
-                document.querySelectorAll('#pdf-chart-container text').forEach(t => t.setAttribute('fill', '#000'));
-                
-                const tableOriginal = document.querySelector('#data-table').cloneNode(true);
-                tableOriginal.className = 'pdf-table';
-                document.getElementById('pdf-table-container').innerHTML = '';
-                document.getElementById('pdf-table-container').appendChild(tableOriginal);
-
+                document.getElementById('pdf-table-container').innerHTML = ''; document.getElementById('pdf-table-container').appendChild(document.querySelector('#data-table').cloneNode(true));
                 document.getElementById('pdf-resumen-container').innerHTML = document.getElementById('analysis-text').innerHTML;
-                const strategiesContainer = document.getElementById('pdf-estrategias-container');
-                strategiesContainer.innerHTML = '';
                 
-                const allBoxes = document.querySelectorAll('#strategy-list > div');
-                allBoxes.forEach(box => {
-                    const title = box.querySelector('p:first-child').innerText;
-                    const desc = box.querySelector('p:last-child').innerText;
-                    strategiesContainer.innerHTML += `<div class="pdf-strat-box"><div class="pdf-strat-title">${title}</div><div class="pdf-text">${desc}</div></div>`;
-                });
+                const strategiesContainer = document.getElementById('pdf-estrategias-container'); strategiesContainer.innerHTML = '';
+                document.querySelectorAll('#strategy-list > div').forEach(box => { strategiesContainer.innerHTML += `<div class="pdf-strat-box"><div class="pdf-strat-title">${box.querySelector('p:first-child').innerText}</div><div class="pdf-text">${box.querySelector('p:last-child').innerText}</div></div>`; });
 
-                const pdfContainer = document.getElementById('pdf-generator-container');
-                pdfContainer.style.display = "block";
-                pdfContainer.style.position = "fixed";
-                pdfContainer.style.left = "0px";
-                pdfContainer.style.top = "0px";
-                pdfContainer.style.opacity = "0.01";
-                pdfContainer.style.zIndex = "-9999";
+                const pdfCont = document.getElementById('pdf-generator-container');
+                pdfCont.style.display = "block"; pdfCont.style.left = "0px"; pdfCont.style.opacity = "0.01"; pdfCont.style.zIndex = "1000";
 
-                const pdf = new jsPDF('p', 'pt', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-
-                const opt = { scale: 2, useCORS: true, backgroundColor: "#ffffff" };
-                
-                const canvas1 = await html2canvas(document.getElementById('pdf-page-1'), opt);
-                pdf.addImage(canvas1.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas1.height * pdfWidth) / canvas1.width);
-                
-                pdf.addPage();
-                
-                const canvas2 = await html2canvas(document.getElementById('pdf-page-2'), opt);
-                pdf.addImage(canvas2.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas2.height * pdfWidth) / canvas2.width);
-
-                pdfContainer.style.display = "none";
-
-                pdf.save(`Reporte_CLOVINA_${currentLocationName.replace(/ /g, '_')}.pdf`);
-            } catch (error) {
-                console.error("Error PDF:", error);
-                alert("Hubo un error al generar el PDF. Verifica la consola.");
-            } finally {
-                btn.innerHTML = "EXPORTAR PDF";
-            }
+                const pdf = new jsPDF('p', 'pt', 'a4'); const opt = { scale: 2, useCORS: true, backgroundColor: "#ffffff" };
+                const c1 = await html2canvas(document.getElementById('pdf-page-1'), opt); pdf.addImage(c1.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdf.internal.pageSize.getWidth(), (c1.height * pdf.internal.pageSize.getWidth()) / c1.width); pdf.addPage();
+                const c2 = await html2canvas(document.getElementById('pdf-page-2'), opt); pdf.addImage(c2.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdf.internal.pageSize.getWidth(), (c2.height * pdf.internal.pageSize.getWidth()) / c2.width);
+                pdfCont.style.display = "none"; pdf.save(`Reporte_CLOVINA.pdf`);
+            } catch (err) {} finally { btn.innerHTML = "Exportar PDF"; }
         }
 
         window.addEventListener('resize', () => { if(window.currentData) drawChart(window.currentData); });
-        
         setMode('mes'); 
         updateLocation(lat, lon);
     </script>
