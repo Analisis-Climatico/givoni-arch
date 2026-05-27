@@ -195,6 +195,10 @@ window.renderSVGForStrategy = function(index) {
             <marker id="arrow-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="#fcd34d" />
             </marker>
+            <style type="text/css">
+                .svg-sun-pulse { animation: sun-pulse 3s ease-in-out infinite; }
+                @keyframes sun-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+            </style>
         </defs>
     `;
 
@@ -284,23 +288,28 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 520 190 L 600 170" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-blue)"/>
         `;
     }
+    // ESTRATEGIA 7: NÚCLEO COMPACTO (Cambiado - Planta con distribución)
     else if (t === "Núcleo compacto" || index === 6) {
         svgContent += `
-            <rect x="150" y="60" width="500" height="280" fill="none" stroke="#cbd5e1" stroke-width="5"/>
-            <line x1="150" y1="160" x2="330" y2="160" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="470" y1="160" x2="650" y2="160" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="150" y1="260" x2="330" y2="260" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="470" y1="260" x2="650" y2="260" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="330" y1="60" x2="330" y2="160" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="470" y1="60" x2="470" y2="160" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="330" y1="260" x2="330" y2="340" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="470" y1="260" x2="470" y2="340" stroke="#cbd5e1" stroke-width="3"/>
-            <rect x="330" y="160" width="140" height="100" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="3"/>
-            <rect x="330" y="160" width="140" height="100" fill="#ea580c" opacity="0.1"/>
-            <path d="M 400 160 L 400 110" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 400 260 L 400 310" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 330 210 L 250 210" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 470 210 L 550 210" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <rect x="150" y="60" width="500" height="280" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+            
+            <rect x="350" y="150" width="100" height="100" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="3"/>
+            <rect x="350" y="150" width="100" height="100" fill="#ea580c" opacity="0.1"/>
+            
+            <line x1="150" y1="150" x2="350" y2="150" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="450" y1="150" x2="650" y2="150" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="350" y1="250" x2="150" y2="250" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="450" y1="250" x2="650" y2="250" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="350" y1="60" x2="350" y2="150" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="450" y1="60" x2="450" y2="150" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="350" y1="250" x2="350" y2="340" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="450" y1="250" x2="450" y2="340" stroke="#cbd5e1" stroke-width="3"/>
+            
+            <circle cx="400" cy="200" r="60" fill="#ea580c" opacity="0.15"/>
+            <path d="M 400 150 L 400 100" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 400 250 L 400 300" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 350 200 L 270 200" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 450 200 L 530 200" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
         `;
     }
     else if (t === "Envolvente térmica" || index === 7) {
@@ -411,7 +420,6 @@ window.renderSVGForStrategy = function(index) {
         `;
     }
     else if (t === "Patio húmedo" || index === 15) {
-        // Mantenido como me indicaste en el último comentario exitoso de patio húmedo
         svgContent += `
             <rect x="150" y="60" width="500" height="280" fill="none" stroke="#cbd5e1" stroke-width="4"/>
             <rect x="150" y="60" width="150" height="280" fill="url(#hatch-concrete)" opacity="0.2" stroke="#cbd5e1" stroke-width="2"/>
@@ -460,18 +468,22 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 390 155 Q 405 155 400 180" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
         `;
     }
+    // ESTRATEGIA 20: ACCESO AMORTIGUADOR (Cambiado - Planta Esclusa/Pasillo)
     else if (t === "Acceso amortiguador" || index === 19) {
         svgContent += `
-            <rect x="250" y="80" width="350" height="240" fill="none" stroke="#cbd5e1" stroke-width="4"/>
-            <rect x="250" y="160" width="100" height="80" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="250" y1="180" x2="250" y2="220" stroke="#0f172a" stroke-width="4" stroke-dasharray="10 5"/>
-            <path d="M 250 180 A 40 40 0 0 1 210 220" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-            <line x1="250" y1="180" x2="210" y2="180" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="350" y1="180" x2="350" y2="220" stroke="#cbd5e1" stroke-width="4"/>
-            <path d="M 80 200 L 220 200" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)"/>
-            <path d="M 260 200 L 320 200" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.6" marker-end="url(#arrow-blue)"/>
-            <line x1="360" y1="180" x2="380" y2="220" stroke="#ef4444" stroke-width="3" opacity="0.6"/>
-            <line x1="380" y1="180" x2="360" y2="220" stroke="#ef4444" stroke-width="3" opacity="0.6"/>
+            <rect x="250" y="80" width="300" height="240" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+            
+            <rect x="150" y="160" width="100" height="80" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="3"/>
+            
+            <path d="M 150 160 A 40 40 0 0 1 110 200" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="150" y1="160" x2="110" y2="160" stroke="#cbd5e1" stroke-width="3"/>
+            
+            <line x1="150" y1="200" x2="150" y2="240" stroke="#cbd5e1" stroke-width="4"/> 
+            
+            <line x1="250" y1="160" x2="250" y2="240" stroke="#cbd5e1" stroke-width="4"/>
+            
+            <path d="M 50 180 L 130 180" fill="none" stroke="#06b6d4" stroke-width="6" marker-end="url(#arrow-blue)"/>
+            <path d="M 170 180 C 200 180, 220 200, 230 220" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.6" marker-end="url(#arrow-blue)"/>
         `;
     }
     else if (t === "Aislamiento continuo" || index === 20) {
@@ -494,17 +506,22 @@ window.renderSVGForStrategy = function(index) {
     else if (t === "Parasoles móviles" || index === 21) {
         svgContent += `
             ${groundLine}
-            ${drawHouse(250, 160, 300, 180)}
-            <rect x="350" y="180" width="100" height="120" fill="#0f172a" stroke="#cbd5e1" stroke-width="2"/>
-            <g transform="translate(340, 190)">
-                <line x1="0" y1="0" x2="20" y2="15" stroke="#71717a" stroke-width="6"/>
-                <line x1="0" y1="30" x2="20" y2="45" stroke="#71717a" stroke-width="6"/>
-                <line x1="0" y1="60" x2="20" y2="75" stroke="#71717a" stroke-width="6"/>
-                <line x1="0" y1="90" x2="20" y2="105" stroke="#71717a" stroke-width="6"/>
+            <polygon points="220,160 400,80 580,160" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <rect x="250" y="160" width="300" height="180" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+            <rect x="530" y="160" width="20" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="250" y="160" width="20" height="50" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="250" y="290" width="20" height="50" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="255" y="210" width="10" height="80" fill="url(#glass-lines)" stroke="#38bdf8"/>
+            <line x1="220" y1="160" x2="580" y2="160" stroke="#cbd5e1" stroke-width="3"/>
+            <g transform="translate(235, 215)">
+                <line x1="0" y1="0" x2="15" y2="10" stroke="#71717a" stroke-width="4"/>
+                <line x1="0" y1="20" x2="15" y2="30" stroke="#71717a" stroke-width="4"/>
+                <line x1="0" y1="40" x2="15" y2="50" stroke="#71717a" stroke-width="4"/>
+                <line x1="0" y1="60" x2="15" y2="70" stroke="#71717a" stroke-width="4"/>
             </g>
             ${sunObj}
-            <path d="M 130 90 L 330 190" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)"/>
-            <path d="M 330 190 L 290 220" fill="none" stroke="#fcd34d" stroke-width="4" stroke-dasharray="6 4" opacity="0.6"/>
+            <path d="M 120 80 L 220 180" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
+            <path d="M 230 190 L 190 220" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="6 4" opacity="0.6"/>
         `;
     }
     else if (t === "Fachada de doble piel" || index === 22) {
@@ -526,7 +543,6 @@ window.renderSVGForStrategy = function(index) {
             ${groundLine}
             <rect x="350" y="160" width="200" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <polygon points="120,160 450,60 600,160" fill="none" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="120" y1="160" x2="600" y2="160" stroke="#cbd5e1" stroke-width="3"/>
             ${sunObj}
             <path d="M 120 70 L 180 120" fill="none" stroke="#fcd34d" stroke-width="6" marker-end="url(#arrow-yellow)"/>
             <path d="M 180 120 L 140 160" fill="none" stroke="#fcd34d" stroke-width="4" opacity="0.7"/>
@@ -545,17 +561,14 @@ window.renderSVGForStrategy = function(index) {
     else if (t === "Piso de inercia térmica" || index === 25) {
         svgContent += `
             ${groundLine}
-            <rect x="250" y="160" width="300" height="150" fill="none" stroke="#cbd5e1" stroke-width="3"/>
-            <polygon points="220,160 400,80 580,160" fill="none" stroke="#cbd5e1" stroke-width="3"/>
-            <line x1="220" y1="160" x2="580" y2="160" stroke="#cbd5e1" stroke-width="3"/>
-            <rect x="250" y="310" width="300" height="30" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="250" y="340" width="300" height="15" fill="url(#hatch-insulation)"/>
-            <rect x="250" y="355" width="300" height="20" fill="url(#dots-sand)"/>
-            <rect x="250" y="310" width="300" height="30" fill="#ea580c" opacity="0.2"/>
+            <rect x="250" y="240" width="300" height="30" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="250" y="270" width="300" height="15" fill="url(#hatch-insulation)"/>
+            <rect x="250" y="285" width="300" height="20" fill="url(#dots-sand)"/>
+            <rect x="250" y="240" width="300" height="30" fill="#ea580c" opacity="0.2"/>
             ${sunObj}
-            <path d="M 120 90 L 350 310" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
-            <path d="M 380 300 L 380 220" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#arrow-red)"/>
-            <path d="M 450 300 L 450 220" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#arrow-red)" style="animation-delay: 0.5s"/>
+            <path d="M 120 90 L 350 240" fill="none" stroke="#fcd34d" stroke-width="5" marker-end="url(#arrow-yellow)"/>
+            <path d="M 350 240 Q 400 180 450 240" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#arrow-red)"/>
+            <path d="M 450 240 Q 500 180 550 240" fill="none" stroke="#ea580c" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#arrow-red)"/>
         `;
     }
     else if (t === "Protección de masa térmica" || index === 26) {
@@ -646,7 +659,6 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 450 280 C 400 280, 360 250, 340 200 L 340 30" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-red)"/>
         `;
     }
-    // ESTRATEGIA 34: ELEVACIÓN PALAFÍTICA (Índice 33)
     else if (t === "Elevación palafítica" || index === 33) {
         svgContent += `
             ${groundLine}
@@ -708,7 +720,6 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 380 100 L 330 100" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
         `;
     }
-    // ESTRATEGIA 39: DESHUMIDIFICACIÓN MATERIAL (Índice 38)
     else if (t === "Deshumidificación de material" || t === "Deshumidificación material" || index === 38) {
         svgContent += `
             ${groundLine}
@@ -718,14 +729,6 @@ window.renderSVGForStrategy = function(index) {
             <circle cx="535" cy="180" r="3" fill="#3b82f6"/>
             <circle cx="535" cy="220" r="3" fill="#3b82f6"/>
             <circle cx="535" cy="260" r="3" fill="#3b82f6"/>
-            <circle cx="535" cy="300" r="3" fill="#3b82f6"/>
-        `;
-    }
-    // Fallback 
-    else {
-        svgContent += `
-            ${groundLine}
-            <rect x="300" y="200" width="200" height="40" rx="4" fill="rgba(15,23,42,0.8)" stroke="#334155"/>
         `;
     }
 
