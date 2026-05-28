@@ -80,8 +80,9 @@
 .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: white; }
 .pdf-table th { border-bottom: 2px solid #cbd5e1; padding: 18px 12px; text-align: center; font-size: 13px; color: #64748b !important; font-weight: 700; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; letter-spacing: 1px; }
 .pdf-table td { border-bottom: 1px solid #f1f5f9; padding: 18px 12px; text-align: center; font-size: 15px; color: #1e293b !important; font-weight: 500; }
-.pdf-table td * { color: #1e293b !important; } /* Esta línea extra asegura que no haya blancos */
-.pdf-table tr:nth-child(even) { background-color: #f8fafc; }
+.pdf-table td * { color: #1e293b !important; } /* Asegúrate de borrar esta si aún está */
+.pdf-table td { border-bottom: 1px solid #f1f5f9; padding: 18px 12px; text-align: center; font-size: 15px; color: #1e293b !important; font-weight: 500; }
+.pdf-table td span { color: #ffffff !important; } /* Esta línea obliga a que el texto de las Zonas sea blanco */
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
@@ -252,10 +253,7 @@
 <div id="pdf-generator-container">
     <div id="pdf-page-1" class="pdf-page">
         <div class="pdf-header">
-            <div class="pdf-header-title">
-                <span style="color: #0ea5e9;">CLÓVINA</span>
-                <span style="font-weight: 300; font-size: 16px; margin-top: 4px; display: block; color: #64748b; letter-spacing: 2px;">ANÁLISIS CLIMÁTICO & BIOCLIMÁTICO</span>
-            </div>
+            <img src="Tipo2.png" alt="Clovina Logo" style="height: 65px;">
             <div class="pdf-meta-box">
                 <div id="pdf-ubicacion" style="margin-bottom: 5px;">Ubicación: ---</div>
                 <div id="pdf-periodo">Periodo: ---</div>
@@ -271,10 +269,7 @@
 
     <div id="pdf-page-2" class="pdf-page">
         <div class="pdf-header">
-            <div class="pdf-header-title">
-                <span style="color: #0ea5e9;">CLÓVINA</span>
-                <span style="font-weight: 300; font-size: 16px; margin-top: 4px; display: block; color: #64748b; letter-spacing: 2px;">ANÁLISIS CLIMÁTICO & BIOCLIMÁTICO</span>
-            </div>
+            <img src="Tipo2.png" alt="Clovina Logo" style="height: 65px;">
         </div>
         
         <div id="pdf-table-container-2" style="margin-bottom: 40px;"></div>
@@ -288,10 +283,7 @@
 
     <div id="pdf-page-3" class="pdf-page">
         <div class="pdf-header">
-            <div class="pdf-header-title">
-                <span style="color: #0ea5e9;">CLÓVINA</span>
-                <span style="font-weight: 300; font-size: 16px; margin-top: 4px; display: block; color: #64748b; letter-spacing: 2px;">ANÁLISIS CLIMÁTICO & BIOCLIMÁTICO</span>
-            </div>
+            <img src="Tipo2.png" alt="Clovina Logo" style="height: 65px;">
         </div>
         
         <div id="pdf-estrategias-container-2" style="display: flex; flex-direction: column; gap: 20px;"></div>
