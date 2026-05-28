@@ -1328,7 +1328,7 @@
     let results = [];
     try {
         const today = new Date();
-        // Aumentamos a 5 días de margen para la API de Open-Meteo Archive para evitar errores 400
+        // Aumentamos a 5 días de margen para la API de Open-Meteo Archive
         const pastDate = new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000);
         const currentYearNum = today.getFullYear();
         const pastDateString = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
@@ -1360,10 +1360,8 @@
                 }
             });
         } else {
-            // Evaluamos cada año de manera independiente
             for(const y of selectedYears){
                 let yEnd = `${y}-12-31`;
-                // Si el año iterado es el actual, aplicamos el límite de los 5 días de retraso
                 if (y === currentYearNum) {
                     yEnd = pastDateString;
                 }
@@ -1371,7 +1369,6 @@
                 const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`);
                 const d = await res.json();
 
-                // Si la API devuelve error para un año en particular, lo evitamos sin romper toda la aplicación
                 if (d.error) {
                     console.warn(`Omitiendo el año ${y} por error en Open-Meteo:`, d.reason);
                     continue; 
@@ -1386,7 +1383,6 @@
                     });
                 }
             }
-            // Ordenamos el arreglo de resultados para que los años se rendericen lógicamente de mayor a menor
             results.sort((a,b) => parseInt(b.label) - parseInt(a.label));
         }
 
@@ -1403,30 +1399,6 @@
         document.getElementById('analysis-text').innerHTML = "Error al obtener datos climáticos. Por favor verifique su conexión o intente con un rango diferente.";
     }
 }
-                } else {
-                    for(const y of selectedYears){
-                        let yEnd = `${y}-12-31`;
-                        if (y === today.getFullYear()) yEnd = endDate;
-                        
-                        const d = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`)).json();
-                        
-                        results.push({ 
-                            label: `${y}`, 
-                            tMax: d3.mean(d.daily.temperature_2m_max), 
-                            tMin: d3.mean(d.daily.temperature_2m_min), 
-                            hr: d3.mean(d.hourly.relative_humidity_2m) 
-                        });
-                    }
-                }
-                window.currentData = results;
-                await drawChart(results);
-                updateAnalysis(results);
-            } catch(e) {
-                console.error("Error Open-Meteo.", e);
-                document.getElementById('analysis-text').innerHTML = "Error al obtener datos climáticos. Por favor verifique su conexión.";
-            }
-        }
-
         async function downloadPDF() {
             const btn = document.getElementById('pdf-btn');
             btn.innerHTML = `PROCESANDO...`;
