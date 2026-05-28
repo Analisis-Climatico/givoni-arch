@@ -138,27 +138,25 @@ window.renderSVGForStrategy = function(index) {
     });
     
     const t = strat.t; 
-    let svgContent = `<rect width="100%" height="100%" fill="url(#blueprint-grid)" />`;
+    
+    // Se elimina el rect del fondo cuadriculado para un look más limpio
+    let svgContent = ``; 
     let labelsContent = ``; 
 
-    // Función de Etiquetado Técnico Inteligente (Callouts) mejorada
+    // Función de Etiquetado Técnico Inteligente (Callouts) con Text-Shadow
     const callout = (startX, startY, endX, endY, texto) => {
         const textAnchor = endX > startX ? "start" : "end";
         const offsetX = endX > startX ? 8 : -8;
         return `
-            <line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="2 2"/>
+            <line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3"/>
             <circle cx="${startX}" cy="${startY}" r="3" fill="#94a3b8"/>
-            <text x="${endX + offsetX}" y="${endY + 4}" fill="#f8fafc" font-family="'Inter', sans-serif" font-size="11" font-weight="600" text-anchor="${textAnchor}">${texto}</text>
+            <text x="${endX + offsetX}" y="${endY + 4}" fill="#f8fafc" font-family="'Inter', sans-serif" font-size="12" font-weight="600" text-anchor="${textAnchor}" style="text-shadow: 0px 0px 5px #0f172a, 0px 0px 5px #0f172a, 0px 0px 5px #0f172a;">${texto}</text>
         `;
     };
 
     // 1. DEFINICIÓN DE PATRONES Y ANIMACIONES CSS
     const defsSVG = `
         <defs>
-            <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40 M 0 40 L 40 40" fill="none" stroke="#ffffff" stroke-width="0.75" opacity="0.08"/>
-                <path d="M 200 0 L 0 0 0 200 M 0 200 L 200 200" fill="none" stroke="#ffffff" stroke-width="1.25" opacity="0.12"/>
-            </pattern>
             <pattern id="hatch-concrete" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
                 <line x1="0" y1="0" x2="0" y2="10" stroke="#cbd5e1" stroke-width="2" opacity="0.4"/>
             </pattern>
@@ -198,20 +196,27 @@ window.renderSVGForStrategy = function(index) {
                 <circle cx="4" cy="4" r="1.5" fill="#94a3b8" opacity="0.4"/>
                 <circle cx="10" cy="10" r="1" fill="#94a3b8" opacity="0.2"/>
             </pattern>
+            
             <style type="text/css">
                 .svg-sun-pulse { transform-origin: center; transform-box: fill-box; animation: sun-pulse 4s ease-in-out infinite; }
                 @keyframes sun-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+
                 .svg-wind-flow { stroke-dasharray: 12 8; animation: flow-wind 2.5s linear infinite; }
                 .svg-wind-flow-delayed { stroke-dasharray: 12 8; animation: flow-wind 2.5s linear infinite; animation-delay: 1.2s; }
                 @keyframes flow-wind { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+
                 .svg-float-up { stroke-dasharray: 10 10; animation: flow-heat 3s linear infinite; }
                 @keyframes flow-heat { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+
                 .svg-ray-bounce { stroke-dasharray: 15 10; animation: flow-ray 3.5s linear infinite; }
                 @keyframes flow-ray { from { stroke-dashoffset: 25; } to { stroke-dashoffset: 0; } }
+
                 .svg-heat-radiate { animation: heat-pulse 3s ease-in-out infinite alternate; }
                 @keyframes heat-pulse { 0% { opacity: 0.05; } 100% { opacity: 0.3; } }
+                
                 .animate-spin { transform-origin: center; transform-box: fill-box; animation: spin 4s linear infinite; }
                 @keyframes spin { 100% { transform: rotate(360deg); } }
+                
                 .animate-pulse { animation: simple-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
                 @keyframes simple-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
             </style>
@@ -241,8 +246,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 410 250 Q 470 250 520 250" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
             <path d="M 550 250 L 680 250" fill="none" stroke="#06b6d4" stroke-width="5" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(260, 220, 260, 140, "Ingreso Controlado");
-        labelsContent += callout(540, 220, 540, 140, "Salida de Aire");
+        labelsContent += callout(260, 220, 180, 140, "Ingreso Controlado");
+        labelsContent += callout(540, 220, 620, 140, "Salida de Aire");
     }
     else if (t === "Cubierta ventilada" || index === 1) {
         svgContent += `
@@ -257,8 +262,9 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 150 160 L 650 160" fill="none" stroke="#06b6d4" stroke-width="5" class="svg-wind-flow"/>
             <path d="M 400 60 L 480 30" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
         `;
-        labelsContent += callout(400, 130, 480, 110, "Cámara de Aire Ventilada");
-        labelsContent += callout(400, 55, 320, 20, "Cubierta Ligera Superior");
+        // Coordenadas extendidas para evitar el techo
+        labelsContent += callout(400, 120, 650, 80, "Cámara de Aire Ventilada");
+        labelsContent += callout(400, 55, 180, 40, "Cubierta Ligera Superior");
     }
     else if (t === "Protección solar ligera" || index === 2) {
         svgContent += `
@@ -271,9 +277,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 225 180 L 300 220" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.3" class="svg-ray-bounce"/>
             <path d="M 215 170 L 160 130" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.8" class="svg-ray-bounce"/>
         `;
-        // Ajuste para evitar salir del margen izquierdo
-        labelsContent += callout(220, 180, 250, 120, "Pantalla Ligera (Celosía)");
-        labelsContent += callout(300, 220, 380, 260, "Radiación Atenuada");
+        labelsContent += callout(220, 180, 120, 240, "Pantalla Ligera (Celosía)");
+        labelsContent += callout(300, 220, 500, 260, "Radiación Atenuada");
     }
     else if (t === "Espacios de transición" || index === 3) {
         svgContent += `
@@ -288,8 +293,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
             <path d="M 170 180 C 250 180, 300 200, 390 200" fill="none" stroke="#06b6d4" stroke-width="4" opacity="0.8" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(325, 180, 280, 80, "Espacio Semi-abierto (Galería)");
-        labelsContent += callout(400, 200, 480, 260, "Zona Interior Protegida");
+        labelsContent += callout(325, 180, 250, 80, "Espacio Semi-abierto (Galería)");
+        labelsContent += callout(400, 200, 600, 180, "Zona Interior Protegida");
     }
     else if (t === "Fachada permeable" || index === 4) {
         svgContent += `
@@ -300,8 +305,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 230 220 L 290 220" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7" class="svg-wind-flow"/>
             <path d="M 230 260 L 290 260" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(207, 180, 207, 80, "Muro Permeable / Celosía");
-        labelsContent += callout(260, 220, 260, 280, "Viento Filtrado");
+        labelsContent += callout(207, 180, 120, 80, "Muro Permeable / Celosía");
+        labelsContent += callout(260, 220, 260, 300, "Viento Filtrado");
     }
     else if (t === "Ventilación elevada" || index === 5) {
         svgContent += `
@@ -314,8 +319,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 280 190 L 200 170" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
             <path d="M 520 190 L 600 170" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
         `;
-        labelsContent += callout(260, 190, 180, 150, "Salida de Aire Caliente");
-        labelsContent += callout(400, 260, 500, 280, "Estrato Caliente");
+        labelsContent += callout(260, 190, 150, 130, "Salida de Aire Caliente");
+        labelsContent += callout(400, 260, 600, 280, "Estrato Caliente (Estratificación)");
     }
     else if (t === "Núcleo compacto" || index === 6) {
         svgContent += `
@@ -336,8 +341,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 330 210 L 250 210" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 470 210 L 550 210" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
         `;
-        labelsContent += callout(400, 210, 520, 280, "Núcleo Central Generador");
-        labelsContent += callout(250, 110, 250, 50, "Zonas Perimetrales Servidas");
+        labelsContent += callout(400, 210, 600, 120, "Núcleo Central Generador");
+        labelsContent += callout(250, 110, 150, 40, "Zonas Perimetrales Servidas");
     }
     else if (t === "Envolvente térmica" || index === 7) {
         svgContent += `
@@ -348,8 +353,8 @@ window.renderSVGForStrategy = function(index) {
             ${sunObj}
             <path d="M 120 90 L 275 160" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(295, 250, 200, 250, "Aislamiento Exterior");
-        labelsContent += callout(300, 280, 400, 300, "Muro Estructural");
+        labelsContent += callout(295, 250, 150, 280, "Capa de Aislamiento Exterior");
+        labelsContent += callout(300, 280, 500, 300, "Muro Estructural");
     }
     else if (t === "Carpintería hermética" || index === 8) {
         svgContent += `
@@ -365,8 +370,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 600 200 L 440 200" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 430 200 Q 415 200 420 170" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
         `;
-        labelsContent += callout(400, 200, 480, 170, "Vidrio de Alta Eficiencia");
-        labelsContent += callout(380, 130, 280, 100, "Juntas Herméticas");
+        labelsContent += callout(400, 200, 580, 150, "Vidrio de Alta Eficiencia");
+        labelsContent += callout(380, 130, 220, 100, "Juntas Herméticas (Sellado)");
     }
     else if (t === "Muro Trombe" || index === 9) {
         svgContent += `
@@ -383,9 +388,9 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 450 150 L 550 150" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
             <path d="M 450 250 L 550 250" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
         `;
-        labelsContent += callout(340, 150, 220, 80, "Lámina de Vidrio");
-        labelsContent += callout(365, 200, 220, 280, "Cámara de Aire Caliente");
-        labelsContent += callout(400, 180, 500, 80, "Muro de Masa (Acumulador)");
+        labelsContent += callout(340, 150, 180, 60, "Lámina de Vidrio");
+        labelsContent += callout(365, 200, 220, 300, "Cámara de Aire Caliente");
+        labelsContent += callout(400, 180, 550, 80, "Muro de Masa (Acumulador)");
     }
     else if (t === "Galería solar" || index === 10) {
         svgContent += `
@@ -398,8 +403,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 180 200 L 230 200" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
             <path d="M 280 200 L 350 200" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
         `;
-        labelsContent += callout(160, 150, 160, 50, "Envolvente Vidriada");
-        labelsContent += callout(210, 200, 280, 50, "Galería Invernadero");
+        labelsContent += callout(160, 150, 120, 50, "Envolvente Vidriada");
+        labelsContent += callout(210, 200, 350, 50, "Galería (Efecto Invernadero)");
         labelsContent += callout(257, 280, 350, 320, "Muro Divisorio Interior");
     }
     else if (t === "Orientación solar estratégica" || index === 11) {
@@ -414,8 +419,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 220 110 L 330 140" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 335 150 L 300 180" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.6" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(400, 120, 520, 80, "Eje Rotado Óptimo");
-        labelsContent += callout(150, 280, 180, 330, "Trayectoria Solar Crítica");
+        labelsContent += callout(400, 120, 580, 80, "Eje Rotado Óptimo");
+        labelsContent += callout(150, 280, 180, 320, "Trayectoria Solar Crítica");
     }
     else if (t === "Panel solar térmico" || index === 12) {
         svgContent += `
@@ -431,8 +436,8 @@ window.renderSVGForStrategy = function(index) {
             ${sunObj}
             <path d="M 120 90 L 280 130" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(360, 100, 420, 80, "Panel Colector Solar");
-        labelsContent += callout(440, 240, 550, 280, "Depósito Acumulador");
+        labelsContent += callout(360, 100, 200, 50, "Panel Colector Solar");
+        labelsContent += callout(440, 240, 600, 280, "Depósito Acumulador");
     }
     else if (t === "Cubierta captadora" || index === 13) {
         svgContent += `
@@ -445,8 +450,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 70 L 290 110" fill="none" stroke="#fcd34d" stroke-width="6" class="svg-ray-bounce"/>
             <rect x="250" y="160" width="300" height="180" fill="#ea580c" opacity="0.1" class="svg-heat-radiate"/>
         `;
-        labelsContent += callout(400, 90, 520, 50, "Material de Alta Captación");
-        labelsContent += callout(400, 250, 520, 280, "Irradiación Térmica Interior");
+        labelsContent += callout(400, 90, 600, 60, "Material de Alta Captación");
+        labelsContent += callout(400, 250, 600, 280, "Irradiación Térmica Interior");
     }
     else if (t === "Acumulación térmica hidráulica" || index === 14) {
         svgContent += `
@@ -461,8 +466,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 380 190 L 300 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 420 290 L 500 290" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(400, 200, 520, 150, "Volumen de Agua (Inercia)");
-        labelsContent += callout(380, 290, 280, 280, "Calor Radiante");
+        labelsContent += callout(400, 200, 580, 160, "Volumen de Agua (Inercia)");
+        labelsContent += callout(380, 290, 220, 280, "Calor Radiante");
     }
     else if (t === "Patio húmedo" || index === 15) {
         svgContent += `
@@ -488,9 +493,9 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 80 250 C 200 250, 250 280, 320 250 C 370 230, 380 140, 450 120 C 520 100, 580 150, 700 150" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
             <path d="M 80 150 C 200 150, 250 120, 320 150 C 370 170, 380 260, 450 280 C 520 300, 580 250, 700 250" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(400, 200, 550, 200, "Espejo de Agua");
+        labelsContent += callout(400, 200, 650, 200, "Espejo de Agua");
         labelsContent += callout(340, 140, 200, 80, "Vegetación Local");
-        labelsContent += callout(300, 100, 300, 30, "Patio Central Abierto");
+        labelsContent += callout(350, 100, 350, 30, "Patio Central Abierto");
     }
     else if (t === "Fuente evaporativa" || index === 16) {
         svgContent += `
@@ -503,8 +508,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 50 300 Q 150 250 240 250" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 260 250 C 350 250, 400 280, 500 280" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.7" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(160, 320, 120, 370, "Fuente de Agua");
-        labelsContent += callout(160, 280, 150, 220, "Enfriamiento Evaporativo");
+        labelsContent += callout(160, 320, 100, 360, "Fuente de Agua");
+        labelsContent += callout(160, 280, 100, 200, "Enfriamiento Evaporativo");
     }
     else if (t === "Material higroscópico" || index === 17) {
         svgContent += `
@@ -516,8 +521,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 310 250 L 200 250" fill="none" stroke="#cbd5e1" stroke-width="4" class="svg-wind-flow"/>
             <circle cx="315" cy="250" r="2" fill="#cbd5e1"/>
         `;
-        labelsContent += callout(335, 180, 280, 60, "Revestimiento Higroscópico");
-        labelsContent += callout(370, 240, 480, 280, "Muro Base");
+        labelsContent += callout(335, 180, 200, 100, "Revestimiento Higroscópico");
+        labelsContent += callout(370, 240, 550, 280, "Muro Base");
     }
     else if (t === "Doble envolvente térmica" || index === 18) {
         svgContent += `
@@ -530,9 +535,9 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 90 L 360 150" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 390 155 Q 405 155 400 180" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
         `;
-        labelsContent += callout(380, 240, 250, 280, "Piel Exterior (Fachada Ligera)");
-        labelsContent += callout(435, 250, 520, 280, "Cámara y Aislamiento");
-        labelsContent += callout(470, 150, 550, 120, "Muro Portante Interior");
+        labelsContent += callout(380, 240, 200, 280, "Piel Exterior (Fachada Ligera)");
+        labelsContent += callout(435, 250, 600, 280, "Cámara y Aislamiento");
+        labelsContent += callout(470, 150, 650, 120, "Muro Portante Interior");
     }
     else if (t === "Acceso amortiguador" || index === 19) {
         svgContent += `
@@ -547,8 +552,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 50 180 L 130 180" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 170 180 C 200 180, 220 200, 230 220" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.6" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(200, 160, 180, 100, "Pasillo de Amortiguamiento");
-        labelsContent += callout(250, 200, 350, 260, "Puerta Interior Cerrada");
+        labelsContent += callout(200, 160, 160, 100, "Pasillo de Amortiguamiento");
+        labelsContent += callout(250, 200, 400, 280, "Puerta Interior Cerrada");
     }
     else if (t === "Aislamiento continuo" || index === 20) {
         svgContent += `
@@ -573,9 +578,9 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 90 L 210 135" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 220 140 L 235 147" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.3" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(400, 68, 480, 40, "Aislamiento en Cubierta");
-        labelsContent += callout(235, 200, 160, 200, "Aislamiento en Muros");
-        labelsContent += callout(400, 325, 480, 350, "Aislamiento en Losa");
+        labelsContent += callout(400, 68, 600, 40, "Aislamiento en Cubierta");
+        labelsContent += callout(235, 200, 100, 200, "Aislamiento en Muros");
+        labelsContent += callout(400, 325, 600, 360, "Aislamiento en Losa");
     }
     else if (t === "Parasoles móviles" || index === 21) {
         svgContent += `
@@ -597,8 +602,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 80 L 220 180" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 230 190 L 190 220" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.6" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(235, 250, 160, 280, "Lamas Orientables");
-        labelsContent += callout(260, 250, 280, 300, "Ventana");
+        labelsContent += callout(235, 250, 120, 280, "Lamas Orientables");
+        labelsContent += callout(260, 250, 300, 320, "Ventana");
     }
     else if (t === "Fachada de doble piel" || index === 22) {
         svgContent += `
@@ -613,9 +618,9 @@ window.renderSVGForStrategy = function(index) {
             ${sunObj}
             <path d="M 120 90 L 310 160" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(320, 260, 200, 280, "Piel de Vidrio Exterior");
-        labelsContent += callout(365, 120, 450, 60, "Cámara Intermedia");
-        labelsContent += callout(450, 200, 520, 200, "Muro Principal");
+        labelsContent += callout(320, 260, 150, 280, "Piel de Vidrio Exterior");
+        labelsContent += callout(365, 120, 500, 60, "Cámara Intermedia");
+        labelsContent += callout(450, 200, 600, 200, "Muro Principal");
     }
     else if (t === "Cubierta extendida" || index === 23) {
         svgContent += `
@@ -627,8 +632,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 120 70 L 180 120" fill="none" stroke="#fcd34d" stroke-width="6" class="svg-ray-bounce"/>
             <path d="M 180 120 L 140 160" fill="none" stroke="#fcd34d" stroke-width="4" opacity="0.7" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(250, 128, 200, 100, "Proyección de Sombra");
-        labelsContent += callout(150, 160, 170, 100, "Alero Extendido");
+        labelsContent += callout(250, 128, 150, 100, "Proyección de Sombra");
+        labelsContent += callout(120, 160, 80, 120, "Alero Extendido");
     }
     else if (t === "Muro acumulador" || index === 24) {
         svgContent += `
@@ -639,7 +644,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 130 90 L 340 160" fill="none" stroke="#fcd34d" stroke-width="6" class="svg-ray-bounce"/>
             <path d="M 440 210 L 550 210" fill="none" stroke="#ea580c" stroke-width="5" class="svg-float-up"/>
         `;
-        labelsContent += callout(430, 180, 520, 120, "Muro de Alta Inercia Térmica");
+        labelsContent += callout(430, 180, 600, 120, "Muro de Alta Inercia Térmica");
     }
     else if (t === "Piso de inercia térmica" || index === 25) {
         svgContent += `
@@ -653,7 +658,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 370 290 L 370 200" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 430 290 L 430 200" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up" style="animation-delay: 0.5s"/>
         `;
-        labelsContent += callout(450, 325, 550, 360, "Losa de Inercia Térmica");
+        labelsContent += callout(400, 325, 650, 360, "Losa de Inercia Térmica");
     }
     else if (t === "Protección de masa térmica" || index === 26) {
         svgContent += `
@@ -666,8 +671,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 250 140 L 280 180" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.4" class="svg-ray-bounce"/>
             <rect x="280" y="160" width="40" height="180" fill="#0f172a" opacity="0.15"/>
         `;
-        labelsContent += callout(320, 250, 420, 280, "Masa Térmica Protegida");
-        labelsContent += callout(250, 200, 180, 200, "Pantalla de Sombra");
+        labelsContent += callout(320, 250, 500, 280, "Masa Térmica Protegida");
+        labelsContent += callout(250, 200, 120, 200, "Pantalla de Sombra");
     }
     else if (t === "Espejo de agua climático" || index === 27) {
         svgContent += `
@@ -678,7 +683,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 160 250 C 200 250, 250 280, 300 250" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow-delayed"/>
             <path d="M 310 250 L 450 250" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.7" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(200, 330, 300, 360, "Espejo de Agua");
+        labelsContent += callout(200, 330, 350, 360, "Espejo de Agua");
     }
     else if (t === "Nebulización pasiva" || index === 28) {
         svgContent += `
@@ -694,7 +699,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 50 290 L 130 290" fill="none" stroke="#ef4444" stroke-width="5" class="svg-wind-flow"/>
             <path d="M 160 290 C 200 290, 250 280, 330 260" fill="none" stroke="#06b6d4" stroke-width="5" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(150, 280, 160, 200, "Sistema Nebulizador");
+        labelsContent += callout(150, 280, 100, 200, "Sistema Nebulizador");
     }
     else if (t === "Vegetación refrescante" || index === 29) {
         svgContent += `
@@ -709,7 +714,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 50 280 C 100 280, 150 260, 240 260" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 260 260 L 350 260" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(147, 150, 200, 120, "Vegetación Refrescante");
+        labelsContent += callout(147, 150, 100, 100, "Vegetación Refrescante");
     }
     else if (t === "Purgado nocturno" || index === 30) {
         svgContent += `
@@ -724,7 +729,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 320 220 Q 400 180 500 200" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up"/>
             <path d="M 540 200 L 620 180" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up"/>
         `;
-        labelsContent += callout(400, 120, 500, 80, "Liberación de Calor Acumulado");
+        labelsContent += callout(400, 120, 550, 80, "Liberación de Calor Acumulado");
     }
     else if (t === "Lucernario térmico" || index === 31) {
         svgContent += `
@@ -736,7 +741,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 350 250 Q 400 150 395 70" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
             <path d="M 450 250 Q 400 150 405 70" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up" style="animation-delay: 0.5s"/>
         `;
-        labelsContent += callout(420, 60, 520, 40, "Lucernario Extractor");
+        labelsContent += callout(420, 60, 600, 40, "Lucernario Extractor");
     }
     else if (t === "Chimenea solar invertida" || index === 32) {
         svgContent += `
@@ -746,10 +751,10 @@ window.renderSVGForStrategy = function(index) {
             <rect x="300" y="40" width="40" height="200" fill="url(#glass-lines)"/>
             ${sunObj}
             <path d="M 120 80 L 290 100" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 280 280 L 320 280" fill="none" stroke="#cbd5e1" stroke-width="3" class="svg-wind-flow"/>
+            <path d="M 280 280 L 320 280" fill="none" stroke="#cbd5e1" stroke-width="3"/>
             <path d="M 450 280 C 400 280, 360 250, 340 200 L 340 30" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
         `;
-        labelsContent += callout(340, 100, 450, 60, "Conducto Solar");
+        labelsContent += callout(340, 100, 500, 60, "Conducto Solar");
     }
     else if (t === "Elevación palafítica" || index === 33) {
         svgContent += `
@@ -764,8 +769,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 280 290 L 520 290" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
             <path d="M 550 290 L 700 290" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(300, 300, 180, 320, "Palafito (Pilar)");
-        labelsContent += callout(400, 290, 400, 220, "Flujo de Aire Inferior");
+        labelsContent += callout(300, 300, 150, 320, "Palafito (Pilar)");
+        labelsContent += callout(400, 290, 600, 290, "Flujo de Aire Inferior");
     }
     else if (t === "Ventilación mecánica asistida" || index === 34) {
         svgContent += `
@@ -779,7 +784,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 280 230 C 350 230, 450 210, 490 210" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow-delayed"/>
             <path d="M 530 210 L 600 210" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
         `;
-        labelsContent += callout(525, 210, 600, 120, "Extractor Mecánico");
+        labelsContent += callout(525, 210, 650, 120, "Extractor Mecánico");
     }
     else if (t === "Sectorización térmica" || index === 35) {
         svgContent += `
@@ -792,8 +797,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 275 130 C 275 110, 250 110, 250 130 C 250 150, 275 150, 275 130" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
             <path d="M 525 190 C 525 150, 450 150, 450 190 C 450 230, 525 230, 525 190" fill="none" stroke="#f59e0b" stroke-width="3" class="svg-float-up"/>
         `;
-        labelsContent += callout(275, 100, 180, 50, "Zona Controlada");
-        labelsContent += callout(525, 150, 620, 100, "Zona de Amortiguamiento");
+        labelsContent += callout(275, 100, 150, 50, "Zona Controlada");
+        labelsContent += callout(525, 150, 650, 100, "Zona de Amortiguamiento");
     }
     else if (t === "Fachada aislada" || index === 36) {
         svgContent += `
@@ -805,8 +810,8 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 600 150 L 470 150" fill="none" stroke="#ef4444" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 450 150 L 420 150" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(425, 200, 520, 260, "Material Aislante");
-        labelsContent += callout(380, 240, 280, 280, "Muro Estructural");
+        labelsContent += callout(425, 200, 600, 260, "Material Aislante");
+        labelsContent += callout(380, 240, 250, 280, "Muro Estructural");
     }
     else if (t === "Cámara ventilada" || index === 37) {
         svgContent += `
@@ -818,7 +823,7 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 330 320 L 380 320" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
             <path d="M 380 100 L 330 100" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
         `;
-        labelsContent += callout(400, 200, 500, 140, "Cámara de Aire Ventilada");
+        labelsContent += callout(400, 200, 550, 140, "Cámara de Aire Ventilada");
     }
     else if (t === "Deshumidificación de material" || t === "Deshumidificación material" || index === 38) {
         svgContent += `
@@ -830,7 +835,7 @@ window.renderSVGForStrategy = function(index) {
             <circle cx="535" cy="220" r="3" fill="#3b82f6"/>
             <circle cx="535" cy="260" r="3" fill="#3b82f6"/>
         `;
-        labelsContent += callout(535, 200, 450, 120, "Muro Higroscópico");
+        labelsContent += callout(535, 200, 650, 140, "Muro Higroscópico (Absorbe Humedad)");
     }
     else {
         svgContent += `
@@ -879,7 +884,7 @@ window.renderSVGForStrategy = function(index) {
         <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
             ${defsSVG}
             ${svgContent}
-            <!-- Capa superior para etiquetas para que no sean tapadas -->
+            <!-- Capa superior para etiquetas para que nunca sean tapadas por las líneas -->
             <g class="labels-layer">
                 ${labelsContent}
             </g>
