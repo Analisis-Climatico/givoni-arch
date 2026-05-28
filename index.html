@@ -140,7 +140,7 @@ window.renderSVGForStrategy = function(index) {
     const t = strat.t; 
     let svgContent = `<rect width="100%" height="100%" fill="url(#blueprint-grid)" />`;
 
-    // 1. DEFINICIÓN DE PATRONES, MARCADORES Y ANIMACIONES CSS
+    // 1. DEFINICIÓN DE PATRONES Y ANIMACIONES CSS
     const defsSVG = `
         <defs>
             <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -186,43 +186,30 @@ window.renderSVGForStrategy = function(index) {
                 <circle cx="4" cy="4" r="1.5" fill="#94a3b8" opacity="0.4"/>
                 <circle cx="10" cy="10" r="1" fill="#94a3b8" opacity="0.2"/>
             </pattern>
-            <marker id="arrow-blue" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4" />
-            </marker>
-            <marker id="arrow-red" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
-            </marker>
-            <marker id="arrow-yellow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#fcd34d" />
-            </marker>
             
             <style type="text/css">
                 /* Animación del sol */
                 .svg-sun-pulse { transform-origin: center; transform-box: fill-box; animation: sun-pulse 3s ease-in-out infinite; }
                 @keyframes sun-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
-                /* Animación de viento (celeste) */
+                /* Animación de líneas intermitentes para sincronizar con los triángulos */
                 .svg-wind-flow { stroke-dasharray: 12 8; animation: flow-wind 1s linear infinite; }
                 .svg-wind-flow-delayed { stroke-dasharray: 12 8; animation: flow-wind 1s linear infinite; animation-delay: 0.5s; }
                 @keyframes flow-wind { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
 
-                /* Animación de calor subiendo / irradiando (rojo/naranja) */
                 .svg-float-up { stroke-dasharray: 10 10; animation: flow-heat 1.2s linear infinite; }
                 @keyframes flow-heat { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
 
-                /* Animación de rayos solares (amarillo) */
                 .svg-ray-bounce { stroke-dasharray: 15 10; animation: flow-ray 1.5s linear infinite; }
                 @keyframes flow-ray { from { stroke-dashoffset: 25; } to { stroke-dashoffset: 0; } }
 
-                /* Irradiación de calor (masas térmicas) */
+                /* Animación de aspersores y calor residual */
                 .svg-heat-radiate { animation: heat-pulse 2s ease-in-out infinite alternate; }
                 @keyframes heat-pulse { 0% { opacity: 0.05; } 100% { opacity: 0.3; } }
                 
-                /* Rotación mecánica */
                 .animate-spin { transform-origin: center; transform-box: fill-box; animation: spin 2s linear infinite; }
                 @keyframes spin { 100% { transform: rotate(360deg); } }
                 
-                /* Nebulizador */
                 .animate-pulse { animation: simple-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
                 @keyframes simple-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
             </style>
@@ -744,7 +731,7 @@ window.renderSVGForStrategy = function(index) {
             <rect x="440" y="80" width="15" height="260" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/>
             ${sunObj}
             <path d="M 600 150 L 470 150" fill="none" stroke="#ef4444" stroke-width="5" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
-            <path d="M 450 150 L 420 150" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" marker-end="url(#arrow-yellow)"/>
+            <path d="M 450 150 L 420 150" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" marker-end="url(#arrow-yellow)" class="svg-ray-bounce"/>
         `;
     }
     else if (t === "Cámara ventilada" || index === 37) {
@@ -775,6 +762,50 @@ window.renderSVGForStrategy = function(index) {
             <rect x="300" y="200" width="200" height="40" rx="4" fill="rgba(15,23,42,0.8)" stroke="#334155"/>
         `;
     }
+
+    // === SISTEMA INTELIGENTE DE ANIMACIÓN DE FLECHAS ===
+    // Este bloque intercepta todos los SVG con marcadores antes de renderizarlos
+    // y los transforma en triángulos ("flechas") que recorren todo el path dinámicamente.
+    svgContent = svgContent.replace(/<path([^>]+)\/?>/g, function(match, attributes) {
+        if (!attributes.includes('marker-end') && !attributes.includes('marker-mid')) {
+            return match; 
+        }
+        
+        const dMatch = attributes.match(/d="([^"]+)"/);
+        const strokeMatch = attributes.match(/stroke="([^"]+)"/);
+        const classMatch = attributes.match(/class="([^"]+)"/);
+        const styleMatch = attributes.match(/style="([^"]+)"/);
+        
+        if (!dMatch || !strokeMatch) return match;
+        
+        const d = dMatch[1];
+        const stroke = strokeMatch[1];
+        const cls = classMatch ? classMatch[1] : '';
+        const style = styleMatch ? styleMatch[1] : '';
+        
+        let dur = '1s';
+        if (cls.includes('ray-bounce')) dur = '1.5s';
+        if (cls.includes('float-up')) dur = '1.2s';
+        
+        let delay = '0s';
+        if (cls.includes('delayed')) delay = '0.5s';
+        const delayMatch = style ? style.match(/animation-delay:\s*([\d\.]+)s/) : null;
+        if (delayMatch) delay = delayMatch[1] + 's';
+        
+        // Quitar la punta estática
+        const cleanAttributes = attributes.replace(/\s*marker-(?:end|mid)="url\([^)]+\)"/, '');
+        const cleanPath = \`<path\${cleanAttributes}/>\`;
+        
+        // Agregar el triángulo que viaja por la línea
+        const animatedArrow = \`
+            <g fill="\${stroke}">
+                <polygon points="-8,-5 6,0 -8,5" />
+                <animateMotion dur="\${dur}" repeatCount="indefinite" rotate="auto" path="\${d}" begin="\${delay}" />
+            </g>
+        \`;
+        
+        return cleanPath + animatedArrow;
+    });
 
     document.getElementById('svg-canvas').innerHTML = `
         <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
