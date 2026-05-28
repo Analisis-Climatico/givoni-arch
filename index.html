@@ -1323,34 +1323,86 @@
         }
 
         async function runClimateAnalysis(){
-            document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos psicrométricos históricos.</span>";
-            let results = [];
-            try {
-                const year = selectedYears[0];
-                const today = new Date();
-                let endDate = `${year}-12-31`;
-                if (year === today.getFullYear()) {
-                    const pastDate = new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000);
-                    endDate = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
-                }
+    document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos psicrométricos históricos.</span>";
+
+    let results = [];
+    try {
+        const today = new Date();
+        // Aumentamos a 5 días de margen para la API de Open-Meteo Archive para evitar errores 400
+        const pastDate = new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000);
+        const currentYearNum = today.getFullYear();
+        const pastDateString = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
+
+        if(mode === 'mes'){
+            const year = selectedYears[0];
+            let endDate = `${year}-12-31`;
+            if (year === currentYearNum) {
+                endDate = pastDateString;
+            }
+
+            const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`);
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.reason);
+
+            selectedMonths.forEach(m => {
+                const dailyFilter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
+                const hourlyFilter = (_,idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
+                const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
                 
-                if(mode === 'mes'){
-                    const data = await (await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`)).json();
-                    
-                    selectedMonths.forEach(m => {
-                        const dailyFilter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
-                        const hourlyFilter = (_,idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
-                        
-                        const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
-                        if (tMaxFiltered.length > 0) {
-                            results.push({
-                                label: `${months[m]} ${year}`,
-                                tMax: d3.mean(tMaxFiltered),
-                                tMin: d3.mean(data.daily.temperature_2m_min.filter(dailyFilter)),
-                                hr: d3.mean(data.hourly.relative_humidity_2m.filter(hourlyFilter))
-                            });
-                        }
+                if (tMaxFiltered.length > 0) {
+                    results.push({
+                        label: `${months[m]} ${year}`,
+                        tMax: d3.mean(tMaxFiltered),
+                        tMin: d3.mean(data.daily.temperature_2m_min.filter(dailyFilter)),
+                        hr: d3.mean(data.hourly.relative_humidity_2m.filter(hourlyFilter))
                     });
+                }
+            });
+        } else {
+            // Evaluamos cada año de manera independiente
+            for(const y of selectedYears){
+                let yEnd = `${y}-12-31`;
+                // Si el año iterado es el actual, aplicamos el límite de los 5 días de retraso
+                if (y === currentYearNum) {
+                    yEnd = pastDateString;
+                }
+
+                const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`);
+                const d = await res.json();
+
+                // Si la API devuelve error para un año en particular, lo evitamos sin romper toda la aplicación
+                if (d.error) {
+                    console.warn(`Omitiendo el año ${y} por error en Open-Meteo:`, d.reason);
+                    continue; 
+                }
+
+                if (d.daily && d.daily.temperature_2m_max) {
+                    results.push({
+                        label: `${y}`,
+                        tMax: d3.mean(d.daily.temperature_2m_max),
+                        tMin: d3.mean(d.daily.temperature_2m_min),
+                        hr: d3.mean(d.hourly.relative_humidity_2m)
+                    });
+                }
+            }
+            // Ordenamos el arreglo de resultados para que los años se rendericen lógicamente de mayor a menor
+            results.sort((a,b) => parseInt(b.label) - parseInt(a.label));
+        }
+
+        if(results.length === 0) {
+            throw new Error("No se pudo obtener datos válidos para la selección.");
+        }
+
+        window.currentData = results;
+        await drawChart(results);
+        updateAnalysis(results);
+
+    } catch(e) {
+        console.error("Error al procesar datos climáticos:", e);
+        document.getElementById('analysis-text').innerHTML = "Error al obtener datos climáticos. Por favor verifique su conexión o intente con un rango diferente.";
+    }
+}
                 } else {
                     for(const y of selectedYears){
                         let yEnd = `${y}-12-31`;
