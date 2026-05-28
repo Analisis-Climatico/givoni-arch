@@ -138,12 +138,10 @@ window.renderSVGForStrategy = function(index) {
     });
     
     const t = strat.t; 
-    
-    // Se elimina el rect del fondo cuadriculado para un look más limpio
     let svgContent = ``; 
     let labelsContent = ``; 
 
-    // Función de Etiquetado Técnico Inteligente con alineación forzada
+    // Función de Etiquetado Técnico Inteligente
     const callout = (startX, startY, endX, endY, texto, align="auto") => {
         let anchor = align;
         if (align === "auto") anchor = endX > startX ? "start" : "end";
@@ -168,9 +166,12 @@ window.renderSVGForStrategy = function(index) {
                 <rect width="10" height="10" fill="#a16207" opacity="0.3"/>
                 <line x1="0" y1="0" x2="0" y2="10" stroke="#713f12" stroke-width="1.25" opacity="0.4"/>
             </pattern>
+            <!-- PATRÓN DE AGUA CON MOVIMIENTO CONTINUO -->
             <pattern id="hatch-water" patternUnits="userSpaceOnUse" width="12" height="10">
                 <rect width="12" height="10" fill="#3b82f6" opacity="0.4"/>
-                <path d="M 0 5 Q 3 0 6 5 T 12 5" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.6"/>
+                <g class="svg-water-animate">
+                    <path d="M -12 5 Q -9 0 -6 5 T 0 5 Q 3 0 6 5 T 12 5 Q 15 0 18 5 T 24 5" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.8"/>
+                </g>
             </pattern>
             <pattern id="hygroscopic-dots" patternUnits="userSpaceOnUse" width="10" height="10">
                 <circle cx="3" cy="3" r="1.5" fill="#3b82f6" opacity="0.6"/>
@@ -187,8 +188,10 @@ window.renderSVGForStrategy = function(index) {
                 <circle cx="4" cy="4" r="2" fill="#cbd5e1" opacity="0.5"/>
             </pattern>
             <pattern id="pattern-trees" patternUnits="userSpaceOnUse" width="40" height="40">
-                <circle cx="20" cy="20" r="18" fill="#16a34a" opacity="0.1"/>
-                <path d="M 20 5 L 25 15 L 15 15 Z" fill="#15803d" opacity="0.3"/>
+                <g class="svg-tree-sway">
+                    <circle cx="20" cy="20" r="18" fill="#16a34a" opacity="0.1"/>
+                    <path d="M 20 5 L 25 15 L 15 15 Z" fill="#15803d" opacity="0.3"/>
+                </g>
             </pattern>
             <pattern id="dots-sand" patternUnits="userSpaceOnUse" width="6" height="6">
                 <circle cx="3" cy="3" r="1" fill="#cbd5e1" opacity="0.3"/>
@@ -199,9 +202,11 @@ window.renderSVGForStrategy = function(index) {
             </pattern>
             
             <style type="text/css">
+                /* Animación del sol */
                 .svg-sun-pulse { transform-origin: center; transform-box: fill-box; animation: sun-pulse 4s ease-in-out infinite; }
                 @keyframes sun-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
 
+                /* Flechas vectoriales */
                 .svg-wind-flow { stroke-dasharray: 12 8; animation: flow-wind 2.5s linear infinite; }
                 .svg-wind-flow-delayed { stroke-dasharray: 12 8; animation: flow-wind 2.5s linear infinite; animation-delay: 1.2s; }
                 @keyframes flow-wind { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
@@ -212,6 +217,7 @@ window.renderSVGForStrategy = function(index) {
                 .svg-ray-bounce { stroke-dasharray: 15 10; animation: flow-ray 3.5s linear infinite; }
                 @keyframes flow-ray { from { stroke-dashoffset: 25; } to { stroke-dashoffset: 0; } }
 
+                /* Termodinámica y Mecánica */
                 .svg-heat-radiate { animation: heat-pulse 3s ease-in-out infinite alternate; }
                 @keyframes heat-pulse { 0% { opacity: 0.05; } 100% { opacity: 0.3; } }
                 
@@ -220,6 +226,15 @@ window.renderSVGForStrategy = function(index) {
                 
                 .animate-pulse { animation: simple-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
                 @keyframes simple-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+                /* === NUEVAS ANIMACIONES ORGÁNICAS === */
+                /* Flujo de Agua Constante */
+                .svg-water-animate { animation: wave-slide 3s linear infinite; }
+                @keyframes wave-slide { 0% { transform: translateX(0); } 100% { transform: translateX(12px); } }
+
+                /* Balanceo de Vegetación con la brisa */
+                .svg-tree-sway { transform-origin: center; transform-box: fill-box; animation: tree-sway 4s ease-in-out infinite; }
+                @keyframes tree-sway { 0%, 100% { transform: rotate(-4deg) scale(0.98); } 50% { transform: rotate(4deg) scale(1.02); } }
             </style>
         </defs>
     `;
@@ -469,6 +484,7 @@ window.renderSVGForStrategy = function(index) {
         labelsContent += callout(400, 200, 560, 150, "Volumen de Agua (Inercia)", "start");
         labelsContent += callout(380, 290, 240, 280, "Calor Radiante", "end");
     }
+    // ESTRATEGIA 15 (Índice 15): PATIO HÚMEDO
     else if (t === "Patio húmedo" || index === 15) {
         svgContent += `
             <rect x="150" y="40" width="500" height="320" fill="none" stroke="#cbd5e1" stroke-width="4"/>
@@ -485,17 +501,20 @@ window.renderSVGForStrategy = function(index) {
             <path d="M 500 230 A 30 30 0 0 0 530 200" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>
             <line x1="500" y1="230" x2="530" y2="230" stroke="#cbd5e1" stroke-width="3"/>
             <rect x="300" y="100" width="200" height="200" fill="#0f172a" opacity="0.3" stroke="#cbd5e1" stroke-width="2"/>
-            <circle cx="340" cy="140" r="25" fill="#16a34a" opacity="0.85"/>
-            <circle cx="450" cy="145" r="35" fill="#15803d" opacity="0.9"/>
-            <circle cx="350" cy="255" r="40" fill="#16a34a" opacity="0.75"/>
-            <circle cx="460" cy="260" r="20" fill="#15803d" opacity="0.8"/>
-            <circle cx="400" cy="200" r="15" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+            
+            <!-- Vegetación con animación orgánica -->
+            <circle cx="340" cy="140" r="25" fill="#16a34a" opacity="0.85" class="svg-tree-sway"/>
+            <circle cx="450" cy="145" r="35" fill="#15803d" opacity="0.9" class="svg-tree-sway" style="animation-delay: -1s"/>
+            <circle cx="350" cy="255" r="40" fill="#16a34a" opacity="0.75" class="svg-tree-sway" style="animation-delay: -2s"/>
+            <circle cx="460" cy="260" r="20" fill="#15803d" opacity="0.8" class="svg-tree-sway" style="animation-delay: -3s"/>
+            
+            <circle cx="400" cy="200" r="15" fill="#3b82f6" stroke="#60a5fa" stroke-width="2" class="animate-pulse"/>
             <path d="M 80 250 C 200 250, 250 280, 320 250 C 370 230, 380 140, 450 120 C 520 100, 580 150, 700 150" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
             <path d="M 80 150 C 200 150, 250 120, 320 150 C 370 170, 380 260, 450 280 C 520 300, 580 250, 700 250" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(400, 200, 660, 200, "Espejo de Agua", "start");
-        labelsContent += callout(340, 140, 140, 80, "Vegetación Local", "end");
-        labelsContent += callout(350, 100, 140, 30, "Patio Central Abierto", "end");
+        labelsContent += callout(400, 200, 560, 200, "Espejo de Agua", "start");
+        labelsContent += callout(340, 140, 240, 80, "Vegetación Local", "end");
+        labelsContent += callout(350, 100, 240, 30, "Patio Central Abierto", "end");
     }
     else if (t === "Fuente evaporativa" || index === 16) {
         svgContent += `
@@ -706,9 +725,15 @@ window.renderSVGForStrategy = function(index) {
             ${groundLine}
             ${drawHouse(250, 160, 300, 180)}
             <rect x="140" y="240" width="15" height="100" fill="#713f12"/>
-            <circle cx="147" cy="200" r="50" fill="#16a34a" opacity="0.8"/>
+            <!-- Árbol a la izquierda animado -->
+            <g class="svg-tree-sway" style="transform-origin: 147px 200px;">
+                <circle cx="147" cy="200" r="50" fill="#16a34a" opacity="0.8"/>
+            </g>
             <rect x="620" y="260" width="12" height="80" fill="#713f12"/>
-            <circle cx="626" cy="230" r="40" fill="#15803d" opacity="0.7"/>
+            <!-- Árbol a la derecha animado -->
+            <g class="svg-tree-sway" style="transform-origin: 626px 230px; animation-delay: -1s;">
+                <circle cx="626" cy="230" r="40" fill="#15803d" opacity="0.7"/>
+            </g>
             ${sunObj}
             <path d="M 120 90 L 140 140" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 50 280 C 100 280, 150 260, 240 260" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
@@ -751,7 +776,7 @@ window.renderSVGForStrategy = function(index) {
             <rect x="300" y="40" width="40" height="200" fill="url(#glass-lines)"/>
             ${sunObj}
             <path d="M 120 80 L 290 100" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 280 280 L 320 280" fill="none" stroke="#cbd5e1" stroke-width="3" class="svg-wind-flow"/>
+            <path d="M 280 280 L 320 280" fill="none" stroke="#cbd5e1" stroke-width="3"/>
             <path d="M 450 280 C 400 280, 360 250, 340 200 L 340 30" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
         `;
         labelsContent += callout(340, 100, 560, 60, "Conducto Solar", "start");
@@ -884,6 +909,7 @@ window.renderSVGForStrategy = function(index) {
         <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
             ${defsSVG}
             ${svgContent}
+            <!-- Capa superior para que las etiquetas floten de manera limpia y segura -->
             <g class="labels-layer">
                 ${labelsContent}
             </g>
