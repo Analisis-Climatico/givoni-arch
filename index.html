@@ -66,6 +66,21 @@
         .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
         .pdf-table th, .pdf-table td { border: 1px solid #cbd5e1; padding: 16px; text-align: center; font-size: 16px; color: #1e293b; }
         .pdf-table th { background: #f1f5f9; font-weight: bold; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; }
+
+        /* --- ESTILOS PDF ACTUALIZADOS --- */
+#pdf-generator-container { display: none; width: 1200px; background: #f8fafc; color: #0f172a; font-family: 'Inter', sans-serif; }
+.pdf-page { width: 1200px; height: 1697px; padding: 70px; background: #ffffff; box-sizing: border-box; position: relative; }
+.pdf-header { display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 35px; }
+.pdf-header-title { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 4px; }
+.pdf-meta-box { text-align: right; color: #475569; font-size: 15px; font-weight: 500; line-height: 1.6; }
+.pdf-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: #1e293b; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; }
+.pdf-text { font-size: 17px; color: #334155; line-height: 1.8; text-align: justify; }
+.pdf-strat-box { border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; page-break-inside: avoid; }
+.pdf-strat-title { font-weight: 800; color: #0f172a; font-size: 18px; text-transform: uppercase; margin-bottom: 8px; font-family: 'Space Grotesk', sans-serif; letter-spacing: 1px;}
+.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; background: white; }
+.pdf-table th { border-bottom: 2px solid #cbd5e1; padding: 18px 12px; text-align: center; font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif; letter-spacing: 1px; }
+.pdf-table td { border-bottom: 1px solid #f1f5f9; padding: 18px 12px; text-align: center; font-size: 15px; color: #1e293b; font-weight: 500; }
+.pdf-table tr:nth-child(even) { background-color: #f8fafc; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
@@ -233,42 +248,54 @@
         </main>
     </div>
 
-    <div id="pdf-generator-container">
-        <div id="pdf-page-1" class="pdf-page">
-            <div class="pdf-header">
-                <img src="Tipo2.png" alt="Clovina Logo">
-                <div class="pdf-meta-box">
-                    <div id="pdf-ubicacion" style="margin-bottom: 5px;">Ubicación: ---</div>
-                    <div id="pdf-periodo">Meses/Años: ---</div>
-                </div>
+<div id="pdf-generator-container">
+    <div id="pdf-page-1" class="pdf-page">
+        <div class="pdf-header">
+            <div class="pdf-header-title">
+                <span style="color: #0ea5e9;">CLÓVINA</span>
+                <span style="font-weight: 300; font-size: 16px; margin-top: 4px; display: block; color: #64748b; letter-spacing: 2px;">ANÁLISIS CLIMÁTICO & BIOCLIMÁTICO</span>
             </div>
-            <div class="pdf-title">01 / Climograma de Givoni</div>
-            <div id="pdf-chart-container" style="width: 100%; height: 650px; border: 1px solid #cbd5e1; border-radius: 12px; margin-bottom: 50px; position: relative; background: #fff;"></div>
-            
-            <div class="pdf-title">02 / Cuadro de Datos Climáticos</div>
-            <div id="pdf-table-container"></div>
-        </div>
-
-        <div id="pdf-page-2" class="pdf-page">
-            <div class="pdf-header">
-                <img src="Tipo2.png" alt="Clovina Logo">
-                <div class="pdf-meta-box"><div style="margin-bottom: 5px;">Reporte Bioclimático</div></div>
+            <div class="pdf-meta-box">
+                <div id="pdf-ubicacion" style="margin-bottom: 5px;">Ubicación: ---</div>
+                <div id="pdf-periodo">Periodo: ---</div>
             </div>
-            <div class="pdf-title">03 / Resumen General Arquitectónico</div>
-            <div class="pdf-text" id="pdf-resumen-container" style="margin-bottom: 50px;"></div>
-
-            <div class="pdf-title">04 / Estrategias Arquitectónicas Recomendadas</div>
-            <div id="pdf-estrategias-container" style="display: flex; flex-direction: column; gap: 20px;"></div>
         </div>
         
-        <div id="pdf-page-3" class="pdf-page">
-            <div class="pdf-header">
-                <img src="Tipo2.png" alt="Clovina Logo">
-                <div class="pdf-meta-box"><div style="margin-bottom: 5px;">Reporte Bioclimático</div></div>
-            </div>
-            <div id="pdf-estrategias-container-2" style="display: flex; flex-direction: column; gap: 20px;"></div>
-        </div>
+        <div class="pdf-title">01 / CLIMOGRAMA DE GIVONI</div>
+        <div id="pdf-chart-container" style="width: 100%; height: 600px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 30px; position: relative; background: #fff;"></div>
+        
+        <div class="pdf-title">02 / CUADRO DE DATOS</div>
+        <div id="pdf-table-container-1"></div>
     </div>
+
+    <div id="pdf-page-2" class="pdf-page">
+        <div class="pdf-header">
+            <div class="pdf-header-title">
+                <span style="color: #0ea5e9;">CLÓVINA</span>
+                <span style="font-weight: 300; font-size: 16px; margin-top: 4px; display: block; color: #64748b; letter-spacing: 2px;">ANÁLISIS CLIMÁTICO & BIOCLIMÁTICO</span>
+            </div>
+        </div>
+        
+        <div id="pdf-table-container-2" style="margin-bottom: 40px;"></div>
+        
+        <div class="pdf-title">03 / RESUMEN GENERAL</div>
+        <div class="pdf-text" id="pdf-resumen-container" style="margin-bottom: 40px; background: #f8fafc; padding: 20px; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0;"></div>
+        
+        <div class="pdf-title">04 / ESTRATEGIAS ARQUITECTÓNICAS</div>
+        <div id="pdf-estrategias-container-1" style="display: flex; flex-direction: column; gap: 20px;"></div>
+    </div>
+
+    <div id="pdf-page-3" class="pdf-page">
+        <div class="pdf-header">
+            <div class="pdf-header-title">
+                <span style="color: #0ea5e9;">CLÓVINA</span>
+                <span style="font-weight: 300; font-size: 16px; margin-top: 4px; display: block; color: #64748b; letter-spacing: 2px;">ANÁLISIS CLIMÁTICO & BIOCLIMÁTICO</span>
+            </div>
+        </div>
+        
+        <div id="pdf-estrategias-container-2" style="display: flex; flex-direction: column; gap: 20px;"></div>
+    </div>
+</div>
 
     <div id="chart-tooltip" class="absolute opacity-0 glass-panel px-6 py-5 rounded-2xl pointer-events-none z-[100] shadow-2xl flex flex-col gap-2 text-sm border-white/40 dark:border-white/10 backdrop-blur-3xl" data-html2canvas-ignore></div>
 
@@ -1400,68 +1427,119 @@
     }
 }
         async function downloadPDF() {
-            const btn = document.getElementById('pdf-btn');
-            btn.innerHTML = `PROCESANDO...`;
+    const btn = document.getElementById('pdf-btn');
+    btn.innerHTML = `PROCESANDO...`;
 
-            try {
-                const { jsPDF } = window.jspdf;
-                
-                document.getElementById('pdf-ubicacion').innerText = `Ubicación: ${currentLocationName}`;
-                let periodoStr = mode === 'mes' ? `${selectedMonths.map(m=>months[m]).join(', ')} / ${selectedYears[0]}` : `${selectedYears.join(', ')}`;
-                document.getElementById('pdf-periodo').innerText = `Meses/Años: ${periodoStr}`;
+    try {
+        const { jsPDF } = window.jspdf;
+        
+        // 1. Llenar Metadatos
+        document.getElementById('pdf-ubicacion').innerText = `Ubicación: ${currentLocationName}`;
+        let periodoStr = mode === 'mes' ? 
+            `${selectedMonths.map(m=>months[m]).join(', ')} / ${selectedYears[0]}` : 
+            `${selectedYears.join(', ')}`;
+        document.getElementById('pdf-periodo').innerText = `Periodo: ${periodoStr}`;
+        
+        // 2. Clonar Gráfico
+        document.getElementById('pdf-chart-container').innerHTML = document.getElementById('chart-canvas-inside').innerHTML;
+        const pdfSvg = document.querySelector('#pdf-chart-container svg > g > g:first-child');
+        if(pdfSvg) pdfSvg.style.filter = 'none';
+        document.querySelectorAll('#pdf-chart-container text').forEach(t => t.setAttribute('fill', '#000'));
 
-                document.getElementById('pdf-chart-container').innerHTML = document.getElementById('chart-canvas-inside').innerHTML;
-                const pdfSvg = document.querySelector('#pdf-chart-container svg > g > g:first-child');
-                if(pdfSvg) pdfSvg.style.filter = 'none';
-                document.querySelectorAll('#pdf-chart-container text').forEach(t => t.setAttribute('fill', '#000'));
-                
-                const tableOriginal = document.querySelector('#data-table').cloneNode(true);
-                tableOriginal.className = 'pdf-table';
-                document.getElementById('pdf-table-container').innerHTML = '';
-                document.getElementById('pdf-table-container').appendChild(tableOriginal);
+        // 3. Dividir Tabla (Mitad en Pag 1, Mitad en Pag 2)
+        const tableRows = Array.from(document.querySelectorAll('#table-body tr'));
+        const table1 = document.createElement('table'); table1.className = 'pdf-table';
+        const table2 = document.createElement('table'); table2.className = 'pdf-table';
+        
+        const theadOriginal = document.querySelector('#data-table thead');
+        table1.appendChild(theadOriginal.cloneNode(true));
+        table2.appendChild(theadOriginal.cloneNode(true));
 
-                document.getElementById('pdf-resumen-container').innerHTML = document.getElementById('analysis-text').innerHTML;
-                const strategiesContainer = document.getElementById('pdf-estrategias-container');
-                strategiesContainer.innerHTML = '';
-                
-                const allBoxes = document.querySelectorAll('#strategy-list > div');
-                allBoxes.forEach(box => {
-                    const title = box.querySelector('p:first-child').innerText;
-                    const desc = box.querySelector('p:last-child').innerText;
-                    strategiesContainer.innerHTML += `<div class="pdf-strat-box"><div class="pdf-strat-title">${title}</div><div class="pdf-text">${desc}</div></div>`;
-                });
+        const tbody1 = document.createElement('tbody');
+        const tbody2 = document.createElement('tbody');
+        
+        // Calcular el punto medio para dividir equitativamente (usualmente el mes 6)
+        const midpoint = Math.ceil(tableRows.length / 2);
 
-                const pdfContainer = document.getElementById('pdf-generator-container');
-                pdfContainer.style.display = "block";
-                pdfContainer.style.position = "fixed";
-                pdfContainer.style.left = "0px";
-                pdfContainer.style.top = "0px";
-                pdfContainer.style.opacity = "0.01";
-                pdfContainer.style.zIndex = "-9999";
-
-                const pdf = new jsPDF('p', 'pt', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-
-                const opt = { scale: 2, useCORS: true, backgroundColor: "#ffffff" };
-                
-                const canvas1 = await html2canvas(document.getElementById('pdf-page-1'), opt);
-                pdf.addImage(canvas1.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas1.height * pdfWidth) / canvas1.width);
-                
-                pdf.addPage();
-                
-                const canvas2 = await html2canvas(document.getElementById('pdf-page-2'), opt);
-                pdf.addImage(canvas2.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas2.height * pdfWidth) / canvas2.width);
-
-                pdfContainer.style.display = "none";
-
-                pdf.save(`Reporte_CLOVINA_${currentLocationName.replace(/ /g, '_')}.pdf`);
-            } catch (error) {
-                console.error("Error PDF:", error);
-                alert("Hubo un error al generar el PDF. Verifica la consola.");
-            } finally {
-                btn.innerHTML = "EXPORTAR PDF";
+        tableRows.forEach((row, index) => {
+            const cleanRow = row.cloneNode(true);
+            cleanRow.className = ''; // Quitar clases de hover dark mode
+            if(index < midpoint) {
+                tbody1.appendChild(cleanRow);
+            } else {
+                tbody2.appendChild(cleanRow);
             }
+        });
+
+        table1.appendChild(tbody1);
+        table2.appendChild(tbody2);
+        
+        document.getElementById('pdf-table-container-1').innerHTML = '';
+        document.getElementById('pdf-table-container-1').appendChild(table1);
+        document.getElementById('pdf-table-container-2').innerHTML = '';
+        document.getElementById('pdf-table-container-2').appendChild(table2);
+
+        // 4. Copiar Resumen
+        document.getElementById('pdf-resumen-container').innerHTML = document.getElementById('analysis-text').innerHTML;
+
+        // 5. Dividir Estrategias (Primeras 2 en Pag 2, Resto en Pag 3)
+        const strategiesContainer1 = document.getElementById('pdf-estrategias-container-1');
+        const strategiesContainer2 = document.getElementById('pdf-estrategias-container-2');
+        strategiesContainer1.innerHTML = '';
+        strategiesContainer2.innerHTML = '';
+        
+        const allBoxes = document.querySelectorAll('#strategy-list > div');
+        allBoxes.forEach((box, index) => {
+            const title = box.querySelector('p:first-child').innerText;
+            const desc = box.querySelector('p:last-child').innerText;
+            const stratHtml = `<div class="pdf-strat-box"><div class="pdf-strat-title">${title}</div><div class="pdf-text">${desc}</div></div>`;
+            
+            if (index < 2) {
+                strategiesContainer1.innerHTML += stratHtml;
+            } else {
+                strategiesContainer2.innerHTML += stratHtml;
+            }
+        });
+
+        // 6. Configuración jsPDF
+        const pdfContainer = document.getElementById('pdf-generator-container');
+        pdfContainer.style.display = "block";
+        pdfContainer.style.position = "fixed";
+        pdfContainer.style.left = "0px";
+        pdfContainer.style.top = "0px";
+        pdfContainer.style.opacity = "0.01";
+        pdfContainer.style.zIndex = "-9999";
+
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const opt = { scale: 2, useCORS: true, backgroundColor: "#ffffff" };
+
+        // Renderizar Página 1
+        const canvas1 = await html2canvas(document.getElementById('pdf-page-1'), opt);
+        pdf.addImage(canvas1.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas1.height * pdfWidth) / canvas1.width);
+        
+        // Renderizar Página 2
+        pdf.addPage();
+        const canvas2 = await html2canvas(document.getElementById('pdf-page-2'), opt);
+        pdf.addImage(canvas2.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas2.height * pdfWidth) / canvas2.width);
+
+        // Renderizar Página 3 (Solo si hay contenido)
+        if (allBoxes.length > 2) {
+            pdf.addPage();
+            const canvas3 = await html2canvas(document.getElementById('pdf-page-3'), opt);
+            pdf.addImage(canvas3.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, pdfWidth, (canvas3.height * pdfWidth) / canvas3.width);
         }
+
+        pdfContainer.style.display = "none";
+        pdf.save(`Reporte_CLOVINA_${currentLocationName.replace(/ /g, '_')}.pdf`);
+
+    } catch (error) {
+        console.error("Error PDF:", error);
+        alert("Hubo un error al generar el PDF. Verifica la consola.");
+    } finally {
+        btn.innerHTML = "EXPORTAR PDF";
+    }
+}
 
         window.addEventListener('resize', () => { if(window.currentData) drawChart(window.currentData); });
         
