@@ -688,7 +688,8 @@
     // Construcción del menú izquierdo con los íconos de cada tipo
     let menuHTML = `<div class="w-full lg:w-[35%] xl:w-[30%] border-b lg:border-b-0 lg:border-r border-slate-200/40 dark:border-slate-700/50 p-4 space-y-2 overflow-y-auto max-h-[550px]" id="strategy-menu">`;
 
-    strategies.forEach((strat, i) => {
+    // 👇 AQUÍ ESTÁ EL ARREGLO: Cambiamos 'strategies' por 'recs'
+    recs.forEach((strat, i) => {
         let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
         
         if(strat.t.includes('regulable') || strat.t.includes('transición') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>`;
@@ -709,19 +710,24 @@
     });
 
     menuHTML += `</div><div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-transparent overflow-hidden min-h-[450px]"><div id="svg-canvas" class="flex-1 w-full h-full relative"></div></div>`;
+    
+    // Inyectamos el menú
     container.innerHTML = menuHTML;
 
     window.renderSVGForStrategy = function(index) {
-        const strat = strategies[index];
+        // 👇 AQUÍ TAMBIÉN: Cambiamos 'strategies' por 'recs'
+        const strat = recs[index];
         document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
             if (idx === index) btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'active');
             else btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'active');
         });
         
+        // Ejecutamos el motor de dibujo gigante
         renderDiagramaArquitectonico(strat.t, index);
     };
 
-    if (strategies.length > 0) {
+    // 👇 AQUÍ TAMBIÉN: Cambiamos 'strategies' por 'recs'
+    if (recs.length > 0) {
         renderSVGForStrategy(0);
     }
 } // <---- AQUÍ SE CIERRA CORRECTAMENTE LA FUNCIÓN UPDATEANALYSIS
