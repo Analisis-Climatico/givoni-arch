@@ -1439,6 +1439,57 @@ if (strategies.length > 0) {
             });
 
             buildInteractiveVisualizer(recs);
+       const contenedorPunto5 = document.getElementById('interactive-visualizer');
+
+    if (contenedorPunto5 && recs.length > 0) {
+        // Construimos el contenedor del menú y del lienzo
+        let menuHTML = `<div class="w-full flex-col lg:flex-row flex bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden shadow-sm">
+            <div class="w-full lg:w-[35%] xl:w-[30%] border-b lg:border-b-0 lg:border-r border-slate-200/40 dark:border-slate-700/50 p-4 space-y-2 overflow-y-auto max-h-[550px]" id="strategy-menu">`;
+
+        // Generamos los botones con la variable 'recs'
+        recs.forEach((strat, i) => {
+            let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
+            
+            if(strat.t.includes('regulable') || strat.t.includes('transición') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>`;
+            if(strat.t.includes('Ventilación') || strat.t.includes('cruzada') || strat.t.includes('elevada')) icon = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+            if(strat.t.includes('Pieles') || strat.t.includes('Protección solar') || strat.t.includes('Parasoles') || strat.t.includes('extendida') || strat.t.includes('doble piel')) icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
+            if(strat.t.includes('Trombe') || strat.t.includes('acumulador') || strat.t.includes('inercia') || strat.t.includes('compacto')) icon = `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`;
+            if(strat.t.includes('Cubierta ventilada') || strat.t.includes('Chimenea') || strat.t.includes('extractora') || strat.t.includes('Lucernario')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
+            if(strat.t.includes('Deshumidificación') || strat.t.includes('agua') || strat.t.includes('húmedo') || strat.t.includes('evaporativa') || strat.t.includes('Nebulización') || strat.t.includes('Vegetación')) icon = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`;
+            if(strat.t.includes('Envolvente térmica') || strat.t.includes('Aislamiento') || strat.t.includes('aislada') || strat.t.includes('hermética') || strat.t.includes('Sectorización')) icon = `<svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
+            if(strat.t.includes('Galería solar') || strat.t.includes('Panel') || strat.t.includes('Orientación solar') || strat.t.includes('Cubierta captadora')) icon = `<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
+            if(strat.t.includes('Purgado nocturno')) icon = `<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>`;
+            if(strat.t.includes('Elevación palafítica')) icon = `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>`;
+
+            menuHTML += `<button class="w-full text-left p-4 rounded-xl transition-all duration-300 strat-btn flex items-center gap-4 active:scale-95" onclick="renderSVGForStrategy(${i})">
+                <div class="mt-0.5">${icon}</div>
+                <div><p class="font-bold text-sm text-slate-800 dark:text-slate-200 font-space tracking-wide leading-tight">${strat.t}</p></div>
+            </button>`;
+        });
+
+        menuHTML += `</div><div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-transparent overflow-hidden min-h-[450px]"><div id="svg-canvas" class="flex-1 w-full h-full relative"></div></div></div>`;
+        
+        // Lo mandamos al Punto 5
+        contenedorPunto5.innerHTML = menuHTML;
+
+        // Conectamos el botón con tu motor renderDiagramaArquitectonico
+        window.renderSVGForStrategy = function(index) {
+            const strat = recs[index];
+            document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
+                if (idx === index) btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'active');
+                else btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'active');
+            });
+            
+            // Llamamos a la función que ya tienes instalada arriba
+            if (typeof renderDiagramaArquitectonico === "function") {
+                renderDiagramaArquitectonico(strat.t, index);
+            }
+        };
+
+        // Dibujamos el primer diagrama automáticamente
+        renderSVGForStrategy(0);
+    }
+    // ========================================================
         }
 
         async function runClimateAnalysis(){
