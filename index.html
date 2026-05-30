@@ -2102,7 +2102,8 @@ function buildInteractiveVisualizer(strategies) {
             
             // LA CLAVE MATEMÁTICA: Extraer el mes más caluroso y el más frío para detectar veranos e inviernos reales
             const maxMonthlyTMax = data.length > 0 ? Math.max(...data.map(d => d.tMax)) : avgTMax;
-            const minMonthlyTMax = data.length > 0 ? Math.min(...data.map(d => d.tMax)) : avgTMax;
+            const minMonthlyTMin = data.length > 0 ? Math.min(...data.map(d => d.tMin)) : avgTMin;
+            const amplitudAnual = maxMonthlyTMax - minMonthlyTMin; // Diferencia para ubicar la continentalidad
             const absLat = Math.abs(lat); 
 
             let entorno = "";
@@ -2121,11 +2122,11 @@ function buildInteractiveVisualizer(strategies) {
                     entorno = "Cálido Subhúmedo (Sabana / Trópico Seco)";
                     descripcion = "Temperaturas cálidas con humedad moderada. Requiere un diseño adaptable: protección solar, inercia térmica moderada interior y sistemas de ventilación que alternen eficientemente según la temporada de lluvia o sequía.";
                     recs.push(strategyDB["Z1"][0], strategyDB["Z8"][0], strategyDB["Z9"][2], strategyDB["Z2"][0]);
-                } else if (maxMonthlyTMax < 26 && minMonthlyTMax >= 13 && avgHR >= 65) {
+                } else if (maxMonthlyTMax < 26 && minMonthlyTMin >= 13 && avgHR >= 65) {
                     entorno = "Templado Andino Húmedo (Valle Montano / Bosque Nuboso)";
                     descripcion = "Días templados con radiación importante y noches frescas. El diseño debe favorecer la captación solar pasiva diurna en materiales masivos interiores. Para retener esa energía térmica de noche, es indispensable el aislamiento continuo dispuesto como CAPA INTERMEDIA. Debe garantizarse la ventilación cruzada diurna para renovar el aire y evitar condensaciones interiores sin recurrir a sobre-sellados.";
                     recs.push(strategyDB["Z4"][2], strategyDB["Z9"][0], strategyDB["Z7"][2], strategyDB["Z1"][0]);
-                } else if (maxMonthlyTMax < 26 && minMonthlyTMax >= 13 && avgHR < 65) {
+                } else if (maxMonthlyTMax < 26 && minMonthlyTMin >= 13 && avgHR < 65) {
                     entorno = "Templado Andino Seco (Valle Interandino de Altura)";
                     descripcion = "Fuerte radiación solar diurna y noches frías. Es fundamental maximizar la captación solar pasiva matutina en elementos de inercia térmica. Para conservar la energía eficientemente, la envolvente debe contar con aislamiento continuo dispuesto siempre como CAPA INTERMEDIA, controlando las infiltraciones nocturnas.";
                     recs.push(strategyDB["Z4"][2], strategyDB["Z9"][0], strategyDB["Z9"][1], strategyDB["Z7"][2], strategyDB["Z4"][1]);
@@ -2137,26 +2138,29 @@ function buildInteractiveVisualizer(strategies) {
 
             // ---------------------------------------------------------
             // 2. LATITUDES MEDIAS Y ESTACIONALES (Europa, USA, Cono Sur, etc.)
-            // (absLat > 24° y <= 60°) El clima lo dictan las ESTACIONES.
+            // (absLat > 24° y <= 60°) El clima lo dictan las ESTACIONES y la CONTINENTALIDAD.
             // ---------------------------------------------------------
             } else if (absLat > 24 && absLat <= 60) {
-                if (maxMonthlyTMax >= 32 && avgHR < 40) {
-                    entorno = "Árido Extremo (Desierto Estacional)";
-                    descripcion = "Calor intenso y radiación extrema. Dependencia de la inercia térmica masiva para lograr el desfase de la onda de calor. Uso mandatorio de patios profundos sombreados, enfriamiento evaporativo y purgado nocturno convectivo.";
-                    recs.push(strategyDB["Z9"][0], strategyDB["Z10"][0], strategyDB["Z11"][0], strategyDB["Z8"][0]);
-                } else if (minMonthlyTMax < 5) {
-                    entorno = "Continental Frío / Estacional Extremo";
-                    descripcion = "Inviernos rigurosos y prolongados con veranos variables. La arquitectura debe operar priorizando la conservación térmica: factor de forma compacto, sistemas de calefacción pasiva (Muros Trombe), carpinterías eficientes y aislamiento perimetral profundo siempre dispuesto como CAPA INTERMEDIA.";
-                    recs.push(strategyDB["Z4"][0], strategyDB["Z3"][0], strategyDB["Z7"][2], strategyDB["Z3"][2]);
-                } else if (maxMonthlyTMax >= 26 && avgHR < 65) {
-                    entorno = "Mediterráneo / Seco Estacional (Ej: Madrid, Los Ángeles)";
-                    descripcion = "Veranos muy calurosos e inviernos de frescos a fríos. Requiere una envolvente bien sellada y energéticamente eficiente. El diseño debe ser dual: en verano es vital limitar las ganancias solares mediante protección solar estricta y purgado nocturno; en invierno, se requiere captación solar pasiva almacenada en inercia térmica, respaldada por aislamiento continuo en CAPA INTERMEDIA.";
-                    recs.push(strategyDB["Z8"][0], strategyDB["Z11"][0], strategyDB["Z4"][2], strategyDB["Z7"][2], strategyDB["Z9"][1]);
+                // Evaluamos amplitud térmica para diferenciar costa de interior (ej. LA vs Madrid)
+                if (maxMonthlyTMax >= 32 && avgHR < 40 && amplitudAnual > 20) {
+                    entorno = "Árido Extremo / Continental Seco (Desierto o Interior Estacional)";
+                    descripcion = "Calor intenso en verano y fluctuación extrema de temperatura. Dependencia de la inercia térmica masiva para el desfase de la onda de calor. Uso mandatorio de patios profundos sombreados, enfriamiento evaporativo y purgado nocturno convectivo. En invierno requiere conservación con CAPA INTERMEDIA aislante.";
+                    recs.push(strategyDB["Z9"][0], strategyDB["Z10"][0], strategyDB["Z11"][0], strategyDB["Z7"][2]);
+                } else if (minMonthlyTMin < 5 && amplitudAnual >= 18) {
+                    // Alta amplitud térmica y fríos intensos = Continental (Ej. Madrid, Berlín)
+                    entorno = "Continental / Mediterráneo de Interior";
+                    descripcion = "Inviernos rigurosos y veranos marcadamente calurosos debido a la lejanía del océano. Requiere diseño dual: masa térmica y purgado nocturno para el verano, combinado con captación solar pasiva y aislamiento estricto en CAPA INTERMEDIA para evitar pérdidas de calor en invierno.";
+                    recs.push(strategyDB["Z4"][0], strategyDB["Z9"][1], strategyDB["Z11"][0], strategyDB["Z7"][2]);
+                } else if (maxMonthlyTMax >= 26 && avgHR < 65 && amplitudAnual < 18) {
+                    // Baja/Media amplitud y veranos secos/cálidos = Mediterráneo Costero (Ej. Los Ángeles, Atenas)
+                    entorno = "Mediterráneo Costero / Suave";
+                    descripcion = "Veranos cálidos/secos e inviernos muy suaves gracias a la influencia oceánica. La prioridad es la protección solar estacional, ventilación cruzada y purgado nocturno suave. En invierno bastan ganancias térmicas pasivas ligeras sin excesivo aislamiento masivo.";
+                    recs.push(strategyDB["Z8"][0], strategyDB["Z11"][0], strategyDB["Z4"][2], strategyDB["Z1"][0]);
                 } else if (maxMonthlyTMax >= 26 && avgHR >= 65) {
                     entorno = "Subtropical Húmedo (Influencia Oceánica Cálida)";
                     descripcion = "Veranos cálidos y húmedos con inviernos moderados. El control higrométrico es fundamental. Se recomienda aislamiento térmico en CAPA INTERMEDIA, asegurando transpirabilidad, control solar estacional y deshumidificación cruzada regulable.";
                     recs.push(strategyDB["Z14"][0], strategyDB["Z2"][1], strategyDB["Z7"][2], strategyDB["Z1"][0]);
-                } else if (maxMonthlyTMax < 26 && minMonthlyTMax >= 5 && avgHR >= 65) {
+                } else if (maxMonthlyTMax < 26 && minMonthlyTMin >= 5 && avgHR >= 65) {
                     entorno = "Templado Oceánico (Fuerte Influencia Marítima)";
                     descripcion = "Inviernos fríos y veranos suaves con alta humedad ambiental (Ej: costas atlánticas o pacíficas). Se prioriza la prevención de condensación. Exige envolventes transpirables, aislamiento continuo en CAPA INTERMEDIA y ventilación para evitar ambientes viciados, apoyado en ganancia térmica pasiva moderada.";
                     recs.push(strategyDB["Z7"][0], strategyDB["Z14"][1], strategyDB["Z4"][1], strategyDB["Z1"][0]);
@@ -2174,7 +2178,6 @@ function buildInteractiveVisualizer(strategies) {
                 descripcion = "Déficit térmico prolongado. Máxima exigencia de protección pasiva. Se sugiere alta estanqueidad al aire, aislamiento continuo de gran espesor como CAPA INTERMEDIA y acristalamientos de alta eficiencia térmica.";
                 recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z7"][1], strategyDB["Z12"][2]);
             }
-
             text += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. ${descripcion}</p>`;
 
             document.getElementById('analysis-text').innerHTML = text;
