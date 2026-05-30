@@ -2126,7 +2126,14 @@ function buildInteractiveVisualizer(strategies) {
                 "Cubierta extractora", 
                 "Vidrio de control solar"
             ];
-
+            
+            // 1. Quitamos del arreglo las estrategias que no tienen imagen SVG
+            recs = recs.filter(r => !sinSVG.includes(r.t));
+            
+            // 2. Eliminamos cualquier estrategia repetida para que no se dupliquen en los cuadros
+            recs = recs.filter((obj, index, arr) => index === arr.findIndex((el) => el.t === obj.t));
+            // ==============================================================
+        
             const sl = document.getElementById('strategy-list');
             sl.innerHTML = '';
             recs.forEach(r => {
