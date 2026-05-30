@@ -2100,84 +2100,93 @@ function buildInteractiveVisualizer(strategies) {
             
             let recs = [];
             
-            // LA CLAVE MATEMÁTICA: Extraer el mes más caluroso y el más frío para detectar veranos e inviernos reales
-            const maxMonthlyTMax = data.length > 0 ? Math.max(...data.map(d => d.tMax)) : avgTMax;
-            const minMonthlyTMin = data.length > 0 ? Math.min(...data.map(d => d.tMin)) : avgTMin;
-            const amplitudAnual = maxMonthlyTMax - minMonthlyTMin; // Diferencia para ubicar la continentalidad
+            const profile = window.globalClimateProfile || [];
+            const tMeans = profile.map(p => p.tMean);
+            const precs = profile.map(p => p.prec);
+
+            const totalAnnualPrec = precs.reduce((a,b) => a+b, 0);
+            const avgAnnualTemp = tMeans.reduce((a,b) => a+b, 0) / 12;
+            const coldestMonthTemp = Math.min(...tMeans);
+            const warmestMonthTemp = Math.max(...tMeans);
+            const amplitudAnual = warmestMonthTemp - coldestMonthTemp;
             const absLat = Math.abs(lat); 
+
+            // Determinar estaciones reales según el hemisferio
+            const isNorthernHemisphere = lat >= 0;
+            const summerMonths = isNorthernHemisphere ? [5, 6, 7] : [11, 0, 1]; // Jun-Jul-Ago vs Dic-Ene-Feb
+            const winterMonths = isNorthernHemisphere ? [11, 0, 1] : [5, 6, 7];
+
+            const totalSummerPrec = summerMonths.reduce((sum, m) => sum + precs[m], 0);
+            const totalWinterPrec = winterMonths.reduce((sum, m) => sum + precs[m], 0);
+            
+            const minSummerPrec = Math.min(...summerMonths.map(m => precs[m]));
+            const maxWinterPrec = Math.max(...winterMonths.map(m => precs[m]));
 
             let entorno = "";
             let descripcion = "";
 
-            // ---------------------------------------------------------
-            // 1. ZONA INTERTROPICAL (Ecuador, Colombia, Centroamérica, etc.)
-            // (absLat <= 24°) El clima lo dicta la ALTITUD y la lluvia, no las estaciones térmicas.
-            // ---------------------------------------------------------
-            if (absLat <= 24) {
-                if (maxMonthlyTMax >= 26 && avgHR >= 65) {
-                    entorno = "Cálido Húmedo (Clima Tropical / Ecuatorial)";
-                    descripcion = "Alta humedad y temperaturas cálidas. La arquitectura debe favorecer la ventilación cruzada continua, manteniendo control sobre lluvia e insectos. Se sugiere baja inercia térmica en la envolvente expuesta al sol, cubiertas ventiladas con amplios aleros y evaluar la elevación estructural para aislar la humedad capilar.";
-                    recs.push(strategyDB["Z14"][0], strategyDB["Z8"][2], strategyDB["Z2"][1], strategyDB["Z1"][0]);
-                } else if (maxMonthlyTMax >= 26 && avgHR < 65) {
-                    entorno = "Cálido Subhúmedo (Sabana / Trópico Seco)";
-                    descripcion = "Temperaturas cálidas con humedad moderada. Requiere un diseño adaptable: protección solar, inercia térmica moderada interior y sistemas de ventilación que alternen eficientemente según la temporada de lluvia o sequía.";
-                    recs.push(strategyDB["Z1"][0], strategyDB["Z8"][0], strategyDB["Z9"][2], strategyDB["Z2"][0]);
-                } else if (maxMonthlyTMax < 26 && minMonthlyTMin >= 13 && avgHR >= 65) {
-                    entorno = "Templado Andino Húmedo (Valle Montano / Bosque Nuboso)";
-                    descripcion = "Días templados con radiación importante y noches frescas. El diseño debe favorecer la captación solar pasiva diurna en materiales masivos interiores. Para retener esa energía térmica de noche, es indispensable el aislamiento continuo dispuesto como CAPA INTERMEDIA. Debe garantizarse la ventilación cruzada diurna para renovar el aire y evitar condensaciones interiores sin recurrir a sobre-sellados.";
-                    recs.push(strategyDB["Z4"][2], strategyDB["Z9"][0], strategyDB["Z7"][2], strategyDB["Z1"][0]);
-                } else if (maxMonthlyTMax < 26 && minMonthlyTMin >= 13 && avgHR < 65) {
-                    entorno = "Templado Andino Seco (Valle Interandino de Altura)";
-                    descripcion = "Fuerte radiación solar diurna y noches frías. Es fundamental maximizar la captación solar pasiva matutina en elementos de inercia térmica. Para conservar la energía eficientemente, la envolvente debe contar con aislamiento continuo dispuesto siempre como CAPA INTERMEDIA, controlando las infiltraciones nocturnas.";
-                    recs.push(strategyDB["Z4"][2], strategyDB["Z9"][0], strategyDB["Z9"][1], strategyDB["Z7"][2], strategyDB["Z4"][1]);
+            // 1. FILTRO DE CLIMAS SECOS O DESÉRTICOS (B)
+            if (totalAnnualPrec < 380) {
+                if (avgAnnualTemp >= 18) {
+                    entorno = "Árido / semiárido Cálido (Entorno Desértico o Estepario)";
+                    descripcion = "Déficit severo de precipitaciones y alta radiación. Se requiere alta inercia térmica masiva exterior para retrasar la onda de calor diurna, patios profundos sombreados, vegetación protectora y enfriamiento evaporativo.";
+                    recs.push(strategyDB["Z9"][0], strategyDB["Z10"][0], strategyDB["Z11"][0], strategyDB["Z8"][0]);
                 } else {
-                    entorno = "Frío de Altura (Páramo / Alta Montaña Ecuatorial)";
-                    descripcion = "Temperaturas frescas a frías predominantes por altitud. Se requiere priorizar la conservación del calor con aislamiento continuo en CAPA INTERMEDIA, control riguroso de infiltraciones e impulsar la ganancia térmica mediante galerías acristaladas orientadas al asoleamiento.";
-                    recs.push(strategyDB["Z7"][2], strategyDB["Z7"][1], strategyDB["Z4"][1], strategyDB["Z14"][2]);
+                    entorno = "Árido / semiárido Frío (Continental Seco)";
+                    descripcion = "Bajas precipitaciones con inviernos fríos. Exige protección dual extrema: aislamiento continuo perimetral en CAPA INTERMEDIA para el invierno riguroso y control estricto de ganancias solares estivales.";
+                    recs.push(strategyDB["Z7"][2], strategyDB["Z9"][0], strategyDB["Z3"][2], strategyDB["Z11"][0]);
                 }
-
-            // ---------------------------------------------------------
-            // 2. LATITUDES MEDIAS Y ESTACIONALES (Europa, USA, Cono Sur, etc.)
-            // (absLat > 24° y <= 60°) El clima lo dictan las ESTACIONES y la CONTINENTALIDAD.
-            // ---------------------------------------------------------
-            } else if (absLat > 24 && absLat <= 60) {
-                // Evaluamos amplitud térmica para diferenciar costa de interior (ej. LA vs Madrid)
-                if (maxMonthlyTMax >= 32 && avgHR < 40 && amplitudAnual > 20) {
-                    entorno = "Árido Extremo / Continental Seco (Desierto o Interior Estacional)";
-                    descripcion = "Calor intenso en verano y fluctuación extrema de temperatura. Dependencia de la inercia térmica masiva para el desfase de la onda de calor. Uso mandatorio de patios profundos sombreados, enfriamiento evaporativo y purgado nocturno convectivo. En invierno requiere conservación con CAPA INTERMEDIA aislante.";
-                    recs.push(strategyDB["Z9"][0], strategyDB["Z10"][0], strategyDB["Z11"][0], strategyDB["Z7"][2]);
-                } else if (minMonthlyTMin < 5 && amplitudAnual >= 18) {
-                    // Alta amplitud térmica y fríos intensos = Continental (Ej. Madrid, Berlín)
-                    entorno = "Continental / Mediterráneo de Interior";
-                    descripcion = "Inviernos rigurosos y veranos marcadamente calurosos debido a la lejanía del océano. Requiere diseño dual: masa térmica y purgado nocturno para el verano, combinado con captación solar pasiva y aislamiento estricto en CAPA INTERMEDIA para evitar pérdidas de calor en invierno.";
-                    recs.push(strategyDB["Z4"][0], strategyDB["Z9"][1], strategyDB["Z11"][0], strategyDB["Z7"][2]);
-                } else if (maxMonthlyTMax >= 26 && avgHR < 65 && amplitudAnual < 18) {
-                    // Baja/Media amplitud y veranos secos/cálidos = Mediterráneo Costero (Ej. Los Ángeles, Atenas)
-                    entorno = "Mediterráneo Costero / Suave";
-                    descripcion = "Veranos cálidos/secos e inviernos muy suaves gracias a la influencia oceánica. La prioridad es la protección solar estacional, ventilación cruzada y purgado nocturno suave. En invierno bastan ganancias térmicas pasivas ligeras sin excesivo aislamiento masivo.";
-                    recs.push(strategyDB["Z8"][0], strategyDB["Z11"][0], strategyDB["Z4"][2], strategyDB["Z1"][0]);
-                } else if (maxMonthlyTMax >= 26 && avgHR >= 65) {
-                    entorno = "Subtropical Húmedo (Influencia Oceánica Cálida)";
-                    descripcion = "Veranos cálidos y húmedos con inviernos moderados. El control higrométrico es fundamental. Se recomienda aislamiento térmico en CAPA INTERMEDIA, asegurando transpirabilidad, control solar estacional y deshumidificación cruzada regulable.";
-                    recs.push(strategyDB["Z14"][0], strategyDB["Z2"][1], strategyDB["Z7"][2], strategyDB["Z1"][0]);
-                } else if (maxMonthlyTMax < 26 && minMonthlyTMin >= 5 && avgHR >= 65) {
-                    entorno = "Templado Oceánico (Fuerte Influencia Marítima)";
-                    descripcion = "Inviernos fríos y veranos suaves con alta humedad ambiental (Ej: costas atlánticas o pacíficas). Se prioriza la prevención de condensación. Exige envolventes transpirables, aislamiento continuo en CAPA INTERMEDIA y ventilación para evitar ambientes viciados, apoyado en ganancia térmica pasiva moderada.";
-                    recs.push(strategyDB["Z7"][0], strategyDB["Z14"][1], strategyDB["Z4"][1], strategyDB["Z1"][0]);
-                } else {
-                    entorno = "Confort / Transición Estacional Moderada";
-                    descripcion = "Clima estacional altamente benigno sin extremos críticos. Funciona idealmente promoviendo la integración interior-exterior con espacios de transición, protecciones solares ajustables y ventilación natural cruzada.";
-                    recs.push(strategyDB["Z2"][0], strategyDB["Z1"][2], strategyDB["Z7"][2], strategyDB["Z1"][0]);
-                }
-
-            // ---------------------------------------------------------
-            // 3. ZONAS POLARES Y EXTREMAS (Latitudes mayores a 60°)
-            // ---------------------------------------------------------
-            } else {
-                entorno = "Frío Extremo (Subpolar / Polar)";
-                descripcion = "Déficit térmico prolongado. Máxima exigencia de protección pasiva. Se sugiere alta estanqueidad al aire, aislamiento continuo de gran espesor como CAPA INTERMEDIA y acristalamientos de alta eficiencia térmica.";
-                recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z7"][1], strategyDB["Z12"][2]);
             }
+            // 2. FILTRO DE CLIMAS TROPICALES / INTERTROPICALES (A)
+            else if (absLat <= 24 && coldestMonthTemp >= 18) {
+                if (avgHR >= 68) {
+                    entorno = "Cálido Húmedo (Clima Tropical / Ecuatorial Permanente)";
+                    descripcion = "Alta humedad constante y temperaturas elevadas todo el año sin estaciones térmicas. La arquitectura debe priorizar la ventilación cruzada continua profunda, cubiertas ventiladas, aleros muy amplios y sistemas de elevación palafítica para mitigar la humedad capilar.";
+                    recs.push(strategyDB["Z14"][0], strategyDB["Z8"][2], strategyDB["Z12"][0], strategyDB["Z1"][0]);
+                } else {
+                    entorno = "Cálido Subhúmedo (Tropical Estacional / Sabana)";
+                    descripcion = "Alternancia marcada entre periodos húmedos y secos. Requiere adaptabilidad: ventilación cruzada masiva en temporadas de lluvia y protección de masa térmica en periodos secos.";
+                    recs.push(strategyDB["Z1"][0], strategyDB["Z8"][0], strategyDB["Z9"][2], strategyDB["Z2"][0]);
+                }
+            }
+            // 3. FILTRO DE LATITUDES MEDIAS Y CLIMAS ESTACIONALES (C y D)
+            else {
+                // Verificar si el verano es seco (Criterio Mediterráneo exacto: mes húmedo invernal > 3 veces el seco estival)
+                const isSummerDry = (minSummerPrec < 40) && (maxWinterPrec > (minSummerPrec * 3));
+
+                if (isSummerDry) {
+                    // --- ENTORNO MEDITERRÁNEO REAL (Ej: Madrid, Los Ángeles) ---
+                    if (amplitudAnual > 17 || coldestMonthTemp < 7) {
+                        entorno = "Mediterráneo Continentalizado / Interior Seco (Ej: Madrid)";
+                        descripcion = "Veranos secos e intensamente calurosos combinados con inviernos marcadamente fríos debido al aislamiento continental. Exige una respuesta dual: masa térmica profunda con purgado nocturno en verano, y captación pasiva eficiente reforzada con aislamiento continuo en CAPA INTERMEDIA en invierno.";
+                        recs.push(strategyDB["Z8"][0], strategyDB["Z11"][0], strategyDB["Z4"][2], strategyDB["Z7"][2]);
+                    } else {
+                        entorno = "Mediterráneo Costero de Fachada Occidental (Ej: Los Ángeles)";
+                        descripcion = "Veranos secos pero moderados por la brisa marina marina e inviernos muy suaves. La prioridad arquitectónica es el control de la radiación solar estival mediante parasoles y cubiertas extendidas, favoreciendo la ventilación natural regulable.";
+                        recs.push(strategyDB["Z8"][0], strategyDB["Z11"][0], strategyDB["Z1"][2], strategyDB["Z1"][0]);
+                    }
+                } else {
+                    // --- ENTORNO HÚMEDO / MONZÓNICO / OCÉANICO (Ej: Tokio, Seúl, Londres) ---
+                    if (warmestMonthTemp >= 22) {
+                        // Veranos calurosos y monzónicos/húmedos
+                        if (coldestMonthTemp < 0) {
+                            entorno = "Continental Monzónico / Estacional de Fachada Oriental (Ej: Seúl / Corea)";
+                            descripcion = "Clima extremo determinado por el monzón de Asia oriental. Veranos sofocantes con lluvias torrenciales y altísima humedad ambiental, e inviernos helados secos de origen siberiano. Exige cubiertas con alta gestión de drenaje, fachadas transpirables para deshumidificación pasiva en verano, y hermeticidad absoluta con aislamiento continuo en CAPA INTERMEDIA para el invierno.";
+                            recs.push(strategyDB["Z14"][1], strategyDB["Z12"][0], strategyDB["Z7"][2], strategyDB["Z3"][2]);
+                        } else {
+                            entorno = "Subtropical Húmedo / Monzónico Costero (Ej: Tokio)";
+                            descripcion = "Clima marítimo templado cálido. Veranos intensamente húmedos y lluviosos debido a la influencia monzónica estival y ciclónica, combinados con inviernos frescos pero secos. El diseño arquitectónico debe mitigar la alta carga térmica húmeda del verano mediante aleros extendidos y ventilación profunda, y evitar condensaciones en invierno mediante envolventes transpirables apoyadas en aislamiento continuo en CAPA INTERMEDIA.";
+                            recs.push(strategyDB["Z12"][0], strategyDB["Z8"][2], strategyDB["Z7"][2], strategyDB["Z14"][1]);
+                        }
+                    } else {
+                        // Veranos suaves y lluvias constantes (Influencia marítima pura de altas latitudes)
+                        entorno = "Templado Oceánico (Fuerte Influencia Marítima - Ej: Londres)";
+                        descripcion = "Inviernos fríos y veranos suaves con precipitaciones regulares y alta humedad ambiental. La prioridad constructiva radica en el control de la humedad y la prevención de condensación superficial. Exige envolventes transpirables, ventilación regulada constante para evitar ambientes viciados y aislamiento continuo en CAPA INTERMEDIA.";
+                        recs.push(strategyDB["Z7"][0], strategyDB["Z14"][1], strategyDB["Z4"][1], strategyDB["Z1"][0]);
+                    }
+                }
+            }
+            
             text += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. ${descripcion}</p>`;
 
             document.getElementById('analysis-text').innerHTML = text;
@@ -2266,9 +2275,11 @@ function buildInteractiveVisualizer(strategies) {
     document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos psicrométricos históricos.</span>";
 
     let results = [];
+    let rawDaily = null;
+    let rawHourly = null;
+
     try {
         const today = new Date();
-        // Aumentamos a 5 días de margen para la API de Open-Meteo Archive
         const pastDate = new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000);
         const currentYearNum = today.getFullYear();
         const pastDateString = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
@@ -2280,10 +2291,12 @@ function buildInteractiveVisualizer(strategies) {
                 endDate = pastDateString;
             }
 
-            const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`);
+            const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&hourly=relative_humidity_2m&timezone=auto`);
             const data = await res.json();
 
             if (data.error) throw new Error(data.reason);
+            rawDaily = data.daily;
+            rawHourly = data.hourly;
 
             selectedMonths.forEach(m => {
                 const dailyFilter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
@@ -2306,7 +2319,7 @@ function buildInteractiveVisualizer(strategies) {
                     yEnd = pastDateString;
                 }
 
-                const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min&hourly=relative_humidity_2m&timezone=auto`);
+                const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&hourly=relative_humidity_2m&timezone=auto`);
                 const d = await res.json();
 
                 if (d.error) {
@@ -2315,6 +2328,8 @@ function buildInteractiveVisualizer(strategies) {
                 }
 
                 if (d.daily && d.daily.temperature_2m_max) {
+                    rawDaily = d.daily;
+                    rawHourly = d.hourly;
                     results.push({
                         label: `${y}`,
                         tMax: d3.mean(d.daily.temperature_2m_max),
@@ -2329,6 +2344,32 @@ function buildInteractiveVisualizer(strategies) {
         if(results.length === 0) {
             throw new Error("No se pudo obtener datos válidos para la selección.");
         }
+
+        // --- EXTRACTOR AUTOMÁTICO DE PERFIL DE 12 MESES GLOBALES ---
+        let monthlyT = Array(12).fill(0).map(() => []);
+        let monthlyP = Array(12).fill(0);
+        let monthlyH = Array(12).fill(0).map(() => []);
+
+        rawDaily.time.forEach((tStr, idx) => {
+            let m = parseInt(tStr.split('-')[1], 10) - 1;
+            let mx = rawDaily.temperature_2m_max[idx];
+            let mn = rawDaily.temperature_2m_min[idx];
+            let prec = rawDaily.precipitation_sum[idx];
+            if(mx != null && mn != null) monthlyT[m].push((mx + mn) / 2);
+            if(prec != null) monthlyP[m] += prec;
+        });
+
+        rawHourly.time.forEach((tStr, idx) => {
+            let m = parseInt(tStr.split('-')[1], 10) - 1;
+            let hr = rawHourly.relative_humidity_2m[idx];
+            if(hr != null) monthlyH[m].push(hr);
+        });
+
+        window.globalClimateProfile = Array.from({length: 12}, (_, m) => ({
+            tMean: d3.mean(monthlyT[m]) || 0,
+            prec: monthlyP[m] || 0,
+            hr: d3.mean(monthlyH[m]) || 0
+        }));
 
         window.currentData = results;
         await drawChart(results);
