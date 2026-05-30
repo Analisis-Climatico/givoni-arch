@@ -2096,24 +2096,53 @@ function buildInteractiveVisualizer(strategies) {
             const avgTMin = sumTMin / data.length;
             const avgHR = sumH / data.length;
 
-            let text = `<p>El análisis general de la ubicación indica una temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y una mínima de <strong>${avgTMin.toFixed(1)}°C</strong>, con una humedad media del <strong>${avgHR.toFixed(0)}%</strong>.</p>`;
+          let text = `<p>El análisis termohigrométrico de la ubicación indica una temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y una mínima de <strong>${avgTMin.toFixed(1)}°C</strong>, con una humedad relativa media del <strong>${avgHR.toFixed(0)}%</strong>.</p>`;
             let recs = [];
 
-            if (avgTMax > 26 && avgHR > 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Calor y Alta Humedad (Tropical)</strong>. El aire saturado impide el enfriamiento corporal. El diseño exige permeabilidad extrema, elevación para evitar capilaridad y exclusión solar total.</p>`;
-                recs.push(strategyDB["Z14"][0], strategyDB["Z1"][0], strategyDB["Z12"][0], strategyDB["Z8"][2], strategyDB["Z13"][1]);
-            } else if (avgTMin <= 22 && avgHR > 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Frío y Alta Humedad</strong>. Riesgo alto de condensación y moho. La prioridad es aislar la envolvente por el exterior y emplear acabados que absorban el agua del aire.</p>`;
-                recs.push(strategyDB["Z7"][2], strategyDB["Z14"][1], strategyDB["Z14"][2], strategyDB["Z3"][2]);
-            } else if (avgTMax > 26 && avgHR <= 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Cálido y Seco (Árido)</strong>. Radiación solar violenta. El diseño exige inercia térmica para retardar el ingreso del calor y refrigeración por evaporación de agua.</p>`;
-                recs.push(strategyDB["Z9"][0], strategyDB["Z10"][0], strategyDB["Z11"][0], strategyDB["Z9"][1], strategyDB["Z8"][0]);
-            } else if (avgTMax <= 26 && avgHR <= 65) {
-                text += `<p class="mt-4">Entorno detectado: <strong>Frío y Seco</strong>. El diseño debe enfocarse en la calefacción pasiva, maximizando la captación solar y acumulando energía en masas internas.</p>`;
-                recs.push(strategyDB["Z4"][0], strategyDB["Z4"][1], strategyDB["Z3"][0], strategyDB["Z5"][1]);
-           } else {
-                text += `<p class="mt-4">Entorno detectado: <strong>Zona de Confort Natural</strong>. El diseño debe adoptar un enfoque de funcionamiento libre (free-running), permitiendo integrar por completo el ambiente exterior.</p>`;
-                recs.push(strategyDB["Z1"][0], strategyDB["Z2"][0], strategyDB["Z2"][1], strategyDB["Z1"][2]);
+            // 1. ZONA DE CONFORT IDEAL (Primaveral / Ecuatorial de Altura)
+            if (avgTMax >= 20 && avgTMax <= 26 && avgTMin >= 15 && avgHR >= 40 && avgHR <= 65) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Zona de Confort Térmico Natural</strong>. Los promedios climáticos se sitúan exactamente dentro del polígono de bienestar de Givoni. La estrategia principal es el <strong>funcionamiento libre (free-running)</strong>. La arquitectura debe difuminar los límites entre el interior y el exterior mediante espacios de transición, requiriendo únicamente sombra ligera y ventilación natural para evitar sobrecalentamientos estacionales.</p>`;
+                recs.push(strategyDB["Z2"][0], strategyDB["Z1"][2], strategyDB["Z1"][0], strategyDB["Z2"][2]);
+
+            // 2. CÁLIDO Y HÚMEDO (Tropical / Selva Lluviosa)
+            } else if (avgTMax >= 27 && avgHR >= 65) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Cálido Húmedo (Clima Tropical)</strong>. Alta saturación de vapor de agua y temperaturas elevadas que limitan la disipación térmica del cuerpo. El diseño exige una <strong>permeabilidad arquitectónica máxima</strong>. Se requieren cubiertas sobre-elevadas y ventiladas, grandes aleros para excluir la radiación directa, fachadas permeables (celosías) para maximizar la velocidad del viento interior, y elevación estructural (palafitos) para evitar la humedad del suelo.</p>`;
+                recs.push(strategyDB["Z14"][0], strategyDB["Z8"][2], strategyDB["Z2"][1], strategyDB["Z12"][0], strategyDB["Z1"][1]);
+
+            // 3. CÁLIDO Y SECO (Árido / Desértico)
+            } else if (avgTMax >= 27 && avgHR < 45) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Cálido Seco (Clima Árido / Desértico)</strong>. Violenta radiación solar, cielos despejados y fuerte oscilación térmica diurna/nocturna. El partido arquitectónico se basa en la <strong>alta inercia térmica y el desfase de la onda de calor</strong>. Se requieren muros masivos (adobe, tapial, concreto), patios interiores sombreados tipo oasis, refrigeración pasiva evaporativa mediante agua, y estrategias de purgado nocturno para enfriar la masa del edificio.</p>`;
+                recs.push(strategyDB["Z9"][0], strategyDB["Z11"][0], strategyDB["Z6"][1], strategyDB["Z10"][0], strategyDB["Z8"][0], strategyDB["Z6"][0]);
+
+            // 4. CÁLIDO SUBHÚMEDO (Sabana / Transición)
+            } else if (avgTMax >= 27 && avgHR >= 45 && avgHR < 65) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Cálido Subhúmedo (Clima de Sabana / Transición)</strong>. Temperaturas altas con humedad moderada, a menudo marcadas por estacionalidad. Requiere un enfoque híbrido: una combinación de <strong>inercia térmica moderada y ventilación selectiva</strong>. Es vital proteger las fachadas de la radiación directa mediante lamas o parasoles, y permitir una ventilación cruzada que pueda regularse según la temporada húmeda o seca.</p>`;
+                recs.push(strategyDB["Z1"][0], strategyDB["Z8"][0], strategyDB["Z9"][2], strategyDB["Z2"][0], strategyDB["Z1"][1]);
+
+            // 5. TEMPLADO SECO (Mediterráneo / Continental Suave)
+            } else if (avgTMax >= 18 && avgTMax < 27 && avgHR < 60) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Templado Seco (Clima Mediterráneo)</strong>. Clima altamente estacional (veranos calurosos y secos, inviernos frescos). El diseño debe ser dinámico: en invierno exige <strong>captación solar pasiva</strong> a través de acristalamientos orientados, mientras que en verano requiere protección solar estricta y purgado térmico nocturno apoyado por masa térmica interior (losas de inercia).</p>`;
+                recs.push(strategyDB["Z4"][2], strategyDB["Z9"][1], strategyDB["Z8"][0], strategyDB["Z1"][0], strategyDB["Z11"][0]);
+
+            // 6. TEMPLADO HÚMEDO (Oceánico / Bosque Nuboso)
+            } else if (avgTMax >= 18 && avgTMax < 27 && avgHR >= 60) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Templado Húmedo (Clima Oceánico)</strong>. Temperaturas moderadas y precipitaciones/humedad constantes. El desafío radica en equilibrar la protección contra el frío sin generar condensaciones. Se prioriza una <strong>envolvente térmica aislada pero transpirable</strong> (doble piel), materiales interiores higroscópicos para regular la humedad y ventilación natural controlada para evitar ambientes viciados.</p>`;
+                recs.push(strategyDB["Z7"][0], strategyDB["Z14"][1], strategyDB["Z1"][0], strategyDB["Z3"][1], strategyDB["Z13"][2]);
+
+            // 7. FRÍO Y SECO (Continental Riguroso / Estepa)
+            } else if (avgTMax < 18 && avgHR < 60) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Frío Seco (Continental Extremo / Estepario de Altura)</strong>. Bajas temperaturas, vientos helados y cielos mayormente despejados. La arquitectura debe operar como una máquina de conservación térmica. Se exige una <strong>estrategia intensiva de calefacción solar pasiva</strong> (Muros Trombe, galerías acristaladas efecto invernadero), geometría de núcleo compacto para reducir la superficie expuesta, y cerramientos de alta capacidad aislante.</p>`;
+                recs.push(strategyDB["Z4"][0], strategyDB["Z4"][1], strategyDB["Z5"][1], strategyDB["Z3"][1],  strategyDB["Z3"][0]);
+
+            // 8. FRÍO Y HÚMEDO (Subpolar / Tundra / Alta Montaña)
+            } else if (avgTMax < 18 && avgHR >= 60) {
+                text += `<p class="mt-4">Entorno detectado: <strong>Frío y Alta Humedad (Subpolar / Montaña Nublada)</strong>. Déficit térmico crítico combinado con saturación de humedad, lo que genera riesgo permanente de patologías constructivas por condensación intersticial y moho. Requiere una <strong>hermeticidad absoluta en la envolvente</strong>. Es mandatario el uso de aislamiento continuo térmico, carpinterías de ruptura de puente térmico, esclusas de acceso (vestíbulos amortiguadores) y cámaras ventiladas en techos para mantener secos los aislantes.</p>`;
+                recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z7"][1], strategyDB["Z14"][2], strategyDB["Z3"][0]);
+
+            // 9. FALLBACK GENÉRICO
+            } else {
+                text += `<p class="mt-4">Entorno detectado: <strong>Clima Variable de Transición</strong>. Las métricas indican fluctuaciones complejas. El diseño debe incorporar sistemas altamente adaptables, como fachadas dinámicas, sectorización térmica de los espacios internos y sistemas de ventilación mixta que respondan a las oscilaciones de temperatura y humedad.</p>`;
+                recs.push(strategyDB["Z13"][0], strategyDB["Z1"][0], strategyDB["Z2"][0], strategyDB["Z7"][0]);
             }
 
             document.getElementById('analysis-text').innerHTML = text;
