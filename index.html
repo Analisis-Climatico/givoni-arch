@@ -2111,12 +2111,21 @@ function buildInteractiveVisualizer(strategies) {
             } else if (avgTMax <= 26 && avgHR <= 65) {
                 text += `<p class="mt-4">Entorno detectado: <strong>Frío y Seco</strong>. El diseño debe enfocarse en la calefacción pasiva, maximizando la captación solar y acumulando energía en masas internas.</p>`;
                 recs.push(strategyDB["Z4"][0], strategyDB["Z4"][1], strategyDB["Z3"][0], strategyDB["Z5"][1]);
-            } else {
+           } else {
                 text += `<p class="mt-4">Entorno detectado: <strong>Zona de Confort Natural</strong>. El diseño debe adoptar un enfoque de funcionamiento libre (free-running), permitiendo integrar por completo el ambiente exterior.</p>`;
                 recs.push(strategyDB["Z1"][0], strategyDB["Z2"][0], strategyDB["Z2"][1], strategyDB["Z1"][2]);
             }
 
             document.getElementById('analysis-text').innerHTML = text;
+
+            // ==============================================================
+            // CORRECCIÓN: FILTRAR LAS QUE NO TIENEN SVG Y EVITAR REPETIDAS
+            // ==============================================================
+            const sinSVG = [
+                "Ventilación cruzada profunda", 
+                "Cubierta extractora", 
+                "Vidrio de control solar"
+            ];
 
             const sl = document.getElementById('strategy-list');
             sl.innerHTML = '';
