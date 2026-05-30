@@ -2101,16 +2101,13 @@ function buildInteractiveVisualizer(strategies) {
             let recs = [];
             
             // =========================================================================
-            // MOTOR SINTETIZADOR BIOCLIMÁTICO POR LÓGICA DIFUSA (Síntesis Orgánica)
+            // MOTOR SINTETIZADOR BIOCLIMÁTICO DINÁMICO (Lógica Geoclimática Precisa)
             // =========================================================================
             const selectedTMaxes = data.map(d => d.tMax);
             const selectedTMines = data.map(d => d.tMin);
             
             const maxT = Math.max(...selectedTMaxes); 
             const minT = Math.min(...selectedTMines); 
-            const avgTMax = d3.mean(selectedTMaxes);
-            const avgTMin = d3.mean(selectedTMines);
-            const avgHR = d3.mean(data.map(d => d.hr));
             
             const absLat = Math.abs(lat);
             const oscilacionMuestra = maxT - minT; // Oscilación absoluta en los datos seleccionados
@@ -2120,22 +2117,27 @@ function buildInteractiveVisualizer(strategies) {
             let entorno = "";
 
             if (absLat <= 24) {
-                // Zona Intertropical (Ecuador, Colombia, etc.)
+                // Zona Intertropical
                 if (avgTMax >= 26) {
                     entorno = "Cálido Tropical / Subtropical";
-                    fragmentoTermico = "una baja oscilación térmica anual, donde la estacionalidad está dictada principalmente por los regímenes de humedad y precipitaciones. ";
+                    fragmentoTermico = "una estacionalidad dictada principalmente por los regímenes de humedad y precipitaciones, manteniendo temperaturas cálidas estables. ";
                 } else {
                     entorno = "Templado de Altura (Clima de Montaña)";
                     fragmentoTermico = "condiciones atemperadas por la altitud, caracterizadas por una radiación diurna importante y descensos térmicos nocturnos que exigen controlar las pérdidas de calor. ";
                 }
             } else {
-                // Latitudes Medias y Altas (Madrid, Tokio, etc.)
+                // Latitudes Medias y Altas
                 if (oscilacionMuestra >= 18 || (maxT > 28 && minT < 8)) {
-                    entorno = "Clima Continentalizado / Estacional Extremo";
-                    fragmentoTermico = "un marcado contraste térmico estacional, enfrentando periodos de frío riguroso y fases estivales de alta acumulación de calor. ";
+                    if(avgHR < 60) {
+                        entorno = "Continentalizado / Estacional Seco";
+                        fragmentoTermico = "un marcado contraste térmico estacional, enfrentando periodos de frío riguroso y fases estivales de alta acumulación de calor con baja humedad relativa. ";
+                    } else {
+                        entorno = "Subtropical Húmedo / Monzónico";
+                        fragmentoTermico = "un fuerte contraste estacional, transitando entre periodos fríos y fases estivales fuertemente condicionadas por altas temperaturas y precipitaciones. ";
+                    }
                 } else if (maxT >= 26 && minT >= 8) {
                     entorno = "Mediterráneo / Subtropical Moderado";
-                    fragmentoTermico = "veranos cálidos y periodos fríos suaves, con un comportamiento térmico estabilizado por la influencia geográfica. ";
+                    fragmentoTermico = "veranos cálidos y periodos fríos suaves, con un comportamiento térmico estabilizado geográficamente. ";
                 } else {
                     entorno = "Templado Frío / Oceánico";
                     fragmentoTermico = "un predominio de temperaturas frescas a frías, donde el desafío principal recae en la conservación pasiva de la energía interior. ";
@@ -2146,42 +2148,36 @@ function buildInteractiveVisualizer(strategies) {
             let fragmentoHigrico = "";
             if (avgHR >= 65) {
                 if (avgTMax >= 26) {
-                    // Humedad con calor = Bochorno (Guayaquil, Tokio en verano)
-                    fragmentoHigrico = "La alta humedad relativa registrada se combina con temperaturas cálidas, lo que dificulta la disipación del calor por evaporación pasiva y exige estrategias de ventilación constante. ";
+                    fragmentoHigrico = "La alta humedad relativa dificulta la disipación del calor por evaporación pasiva durante los periodos cálidos, requiriendo estrategias de ventilación constante. ";
                 } else {
-                    // Humedad con frío = Riesgo de condensación (Cuenca, Londres)
-                    fragmentoHigrico = "Se registran niveles de humedad moderados a altos. Al combinarse con temperaturas frescas, aumenta el riesgo de condensación intersticial, requiriendo envolventes transpirables y ventilación regulada. ";
+                    fragmentoHigrico = "Se registran niveles de humedad moderados a altos que, al combinarse con temperaturas frescas, elevan el riesgo de condensación intersticial, exigiendo envolventes transpirables y ventilación regulada. ";
                 }
             } else if (avgHR >= 40 && avgHR < 65) {
-                fragmentoHigrico = "El rango de humedad se mantiene en umbrales de confort estándar, lo que facilita una respuesta climática mixta y un ambiente interior equilibrado. ";
+                fragmentoHigrico = "El rango de humedad se mantiene en umbrales estándar, facilitando una respuesta climática mixta y un ambiente interior equilibrado. ";
             } else {
-                fragmentoHigrico = "La sequedad del aire y la aridez del entorno favorecen el enfriamiento evaporativo pasivo, aunque demandan estrategias para evitar la deshidratación del confort interior. ";
+                fragmentoHigrico = "La aridez del entorno favorece el enfriamiento evaporativo pasivo, aunque demanda estrategias para evitar la pérdida de confort por desecación del aire. ";
             }
 
             // --- 3. ESTRATEGIA DE ENVOLVENTE Y PROTECCIÓN SOLAR ---
             let fragmentoProteccion = "";
             
-            // Protección contra el calor
             if (maxT >= 25) {
-                fragmentoProteccion += "Para el periodo cálido, es vital implementar protecciones solares que filtren y minimicen las ganancias térmicas indeseadas, apoyadas por sistemas de ventilación cruzada. ";
+                fragmentoProteccion += "Para las fases de carga térmica, es vital implementar protecciones solares diseñadas para bloquear la radiación crítica (garantizando mínima o cero ganancia térmica), apoyadas por ventilación cruzada. ";
                 if (avgTMax - avgTMin >= 10) {
-                    fragmentoProteccion += "La oscilación diurna permite además aprovechar la inercia térmica de los cerramientos para desfasar la onda de calor diurna hacia la noche. ";
+                    fragmentoProteccion += "La oscilación diurna permite además aprovechar la inercia térmica de los cerramientos para desfasar la onda de calor hacia la noche. ";
                 }
             }
             
-            // Retención del frío (Regla estricta de la Capa Intermedia)
             if (minT < 15) {
-                fragmentoProteccion += "Ante los descensos térmicos registrados, es un requerimiento técnico incorporar aislamiento térmico continuo dispuesto estructuralmente como CAPA INTERMEDIA en la envolvente, garantizando así la retención del calor y minimizando los puentes térmicos. ";
+                fragmentoProteccion += "Ante los descensos térmicos, es un requerimiento técnico incorporar aislamiento térmico continuo dispuesto estructuralmente como CAPA INTERMEDIA en la envolvente, garantizando la retención del calor y minimizando los puentes térmicos. ";
             }
 
-            // --- 4. COMPOSICIÓN FINAL DEL PÁRRAFO ---
             let descripcion = `El análisis de los datos seleccionados revela ${fragmentoTermico}${fragmentoHigrico}${fragmentoProteccion}`;
-
             text += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. <br>${descripcion}</p>`;
 
             document.getElementById('analysis-text').innerHTML = text;
 
-            // --- 5. ASIGNACIÓN MATEMÁTICA DE LAS ESTRATEGIAS INFERIORES ---
+            // --- 4. ASIGNACIÓN MATEMÁTICA DE LAS ESTRATEGIAS INFERIORES ---
             if (minT < 12) recs.push(strategyDB["Z7"][2], strategyDB["Z3"][1]); 
             if (maxT >= 26 && (avgTMax - avgTMin) >= 11) recs.push(strategyDB["Z9"][0], strategyDB["Z11"][0]); 
             if (maxT >= 25 && avgHR >= 65) recs.push(strategyDB["Z12"][0], strategyDB["Z8"][2]); 
@@ -2204,7 +2200,6 @@ function buildInteractiveVisualizer(strategies) {
                         <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
                     </div>`;
             });
-
             // Llamada limpia al generador visual y CIERRE DE LA FUNCIÓN UPDATEANALYSIS
             buildInteractiveVisualizer(recs);
             
