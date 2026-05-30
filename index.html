@@ -729,7 +729,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
     `;
 
     // 3. LÓGICAS CONDICIONALES DE DIBUJO ESTRATÉGICO
-    if (t === "Ventilación regulable" || index === 0) {
+    if (t === "Ventilación regulable") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <rect x="250" y="220" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
@@ -742,7 +742,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(260, 220, 240, 120, "Ingreso Controlado", "end");
         labelsContent += callout(540, 220, 560, 120, "Salida de Aire", "start");
-    } else if (t === "Cubierta ventilada" || index === 1) {
+    } else if (t === "Cubierta ventilada") {
         svgContent += `
             ${groundLine}
             <rect x="250" y="180" width="300" height="160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -757,7 +757,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(400, 130, 560, 100, "Cámara de Aire Ventilada", "start");
         labelsContent += callout(400, 55, 240, 30, "Cubierta Ligera Superior", "end");
-    } else if (t === "Protección solar ligera" || index === 2) {
+    } else if (t === "Protección solar ligera") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <line x1="220" y1="340" x2="220" y2="120" stroke="#a1a1aa" stroke-width="2" stroke-dasharray="4 4"/>
@@ -769,7 +769,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(220, 180, 240, 100, "Pantalla Ligera (Celosía)", "end");
         labelsContent += callout(300, 220, 560, 260, "Radiación Atenuada", "start");
-    } else if (t === "Espacios de transición" || index === 3) {
+    } else if (t === "Espacios de transición") {
         svgContent += `
             ${groundLine}
             <rect x="400" y="120" width="200" height="220" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -784,7 +784,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(325, 180, 240, 80, "Espacio Semi-abierto (Galería)", "end");
         labelsContent += callout(400, 200, 560, 180, "Zona Interior Protegida", "start");
-    } else if (t === "Fachada permeable" || index === 4) {
+    } else if (t === "Fachada permeable") {
         svgContent += `
             ${groundLine}
             <rect x="200" y="120" width="15" height="220" fill="url(#perforated)" stroke="#94a3b8" stroke-width="2"/>
@@ -795,7 +795,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(207, 180, 240, 80, "Muro Permeable / Celosía", "end");
         labelsContent += callout(260, 220, 560, 280, "Viento Filtrado", "start");
-    } else if (t === "Ventilación elevada" || index === 5) {
+    } else if (t === "Ventilación elevada") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <rect x="250" y="180" width="20" height="40" fill="url(#glass-lines)" stroke="#38bdf8"/>
@@ -807,7 +807,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(260, 190, 240, 120, "Salida de Aire Caliente", "end");
         labelsContent += callout(400, 260, 560, 280, "Estrato Caliente (Estratificación)", "start");
-    } else if (t === "Núcleo compacto" || index === 6) {
+    } else if (t === "Núcleo compacto") {
         svgContent += `
             <rect x="150" y="60" width="500" height="280" fill="none" stroke="#cbd5e1" stroke-width="5"/>
             <line x1="150" y1="160" x2="330" y2="160" stroke="#cbd5e1" stroke-width="3"/>
@@ -828,7 +828,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(400, 210, 560, 280, "Núcleo Central Generador", "start");
         labelsContent += callout(250, 110, 240, 40, "Zonas Perimetrales Servidas", "end");
-    } else if (t === "Envolvente térmica" || index === 7) {
+    } else if (t === "Envolvente térmica") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <rect x="290" y="160" width="10" height="180" fill="url(#hatch-insulation)"/>
@@ -838,7 +838,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(295, 250, 240, 280, "Aislamiento Exterior", "end");
         labelsContent += callout(300, 280, 560, 300, "Muro Estructural", "start");
-    } else if (t === "Carpintería hermética" || index === 8) {
+    } else if (t === "Carpintería hermética") {
         svgContent += `
             ${groundLine}
             <rect x="350" y="50" width="100" height="80" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -854,7 +854,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(400, 200, 560, 150, "Vidrio de Alta Eficiencia", "start");
         labelsContent += callout(380, 130, 240, 100, "Juntas Herméticas", "end");
-    } else if (t === "Muro Trombe" || index === 9) {
+    } else if (t === "Muro Trombe") {
         svgContent += `
             ${groundLine}
             <rect x="340" y="90" width="10" height="250" fill="url(#glass-lines)" stroke="#38bdf8"/>
@@ -872,7 +872,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(340, 150, 240, 60, "Lámina de Vidrio", "end");
         labelsContent += callout(365, 200, 240, 280, "Cámara de Aire Caliente", "end");
         labelsContent += callout(400, 180, 560, 80, "Muro de Masa (Acumulador)", "start");
-    } else if (t === "Galería solar" || index === 10) {
+    } else if (t === "Galería solar") {
         svgContent += `
             <rect x="150" y="80" width="500" height="240" fill="none" stroke="#cbd5e1" stroke-width="4"/>
             <rect x="150" y="80" width="20" height="240" fill="url(#glass-block)"/>
@@ -886,7 +886,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(160, 150, 140, 50, "Envolvente Vidriada", "end");
         labelsContent += callout(210, 200, 560, 50, "Galería (Efecto Invernadero)", "start");
         labelsContent += callout(257, 280, 560, 320, "Muro Divisorio Interior", "start");
-    } else if (t === "Orientación solar estratégica" || index === 11) {
+    } else if (t === "Orientación solar estratégica") {
         svgContent += `
             <rect x="100" y="50" width="600" height="300" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/>
             <path d="M 150 280 A 250 150 0 0 1 650 280" fill="none" stroke="#fcd34d" stroke-width="3" class="svg-ray-bounce"/>
@@ -900,7 +900,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(400, 120, 560, 80, "Eje Rotado Óptimo", "start");
         labelsContent += callout(150, 280, 240, 330, "Trayectoria Solar Crítica", "end");
-    } else if (t === "Panel solar térmico" || index === 12) {
+    } else if (t === "Panel solar térmico") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <g transform="translate(320, 115) rotate(-24)">
@@ -915,7 +915,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(360, 100, 240, 50, "Panel Colector Solar", "end");
         labelsContent += callout(440, 240, 560, 280, "Depósito Acumulador", "start");
-    } else if (t === "Cubierta captadora" || index === 13) {
+    } else if (t === "Cubierta captadora") {
         svgContent += `
             ${groundLine}
             <rect x="250" y="160" width="300" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -928,7 +928,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(400, 90, 560, 50, "Material de Alta Captación", "start");
         labelsContent += callout(400, 250, 560, 280, "Irradiación Térmica Interior", "start");
-    } else if (t === "Acumulación térmica hidráulica" || index === 14) {
+    } else if (t === "Acumulación térmica hidráulica") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <g transform="translate(380, 180)">
@@ -942,7 +942,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(400, 200, 560, 150, "Volumen de Agua (Inercia)", "start");
         labelsContent += callout(380, 290, 240, 280, "Calor Radiante", "end");
-    } else if (t === "Patio húmedo" || index === 15) {
+    } else if (t === "Patio húmedo") {
         svgContent += `
             <rect x="150" y="40" width="500" height="320" fill="none" stroke="#cbd5e1" stroke-width="4"/>
             <line x1="150" y1="140" x2="300" y2="140" stroke="#cbd5e1" stroke-width="2"/>
@@ -969,7 +969,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(400, 200, 560, 200, "Espejo de Agua", "start");
         labelsContent += callout(340, 140, 240, 80, "Vegetación Local", "end");
         labelsContent += callout(350, 100, 240, 30, "Patio Central Abierto", "end");
-    } else if (t === "Fuente evaporativa" || index === 16) {
+    } else if (t === "Fuente evaporativa") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <rect x="100" y="320" width="120" height="20" rx="2" fill="#3b82f6" stroke="#94a3b8" stroke-width="2"/>
@@ -981,7 +981,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(160, 320, 240, 370, "Fuente de Agua", "end");
         labelsContent += callout(160, 280, 240, 200, "Enfriamiento Evaporativo", "end");
-    } else if (t === "Material higroscópico" || index === 17) {
+    } else if (t === "Material higroscópico") {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="40" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -993,7 +993,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(335, 180, 240, 100, "Revestimiento Higroscópico", "end");
         labelsContent += callout(370, 240, 560, 280, "Muro Base", "start");
-    } else if (t === "Doble envolvente térmica" || index === 18) {
+    } else if (t === "Doble envolvente térmica") {
         svgContent += `
             ${groundLine}
             <rect x="450" y="80" width="40" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -1007,7 +1007,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(380, 240, 240, 280, "Piel Exterior (Fachada Ligera)", "end");
         labelsContent += callout(435, 250, 560, 280, "Cámara y Aislamiento", "start");
         labelsContent += callout(470, 150, 560, 120, "Muro Portante Interior", "start");
-    } else if (t === "Acceso amortiguador" || index === 19) {
+    } else if (t === "Acceso amortiguador") {
         svgContent += `
             <rect x="250" y="80" width="350" height="240" fill="none" stroke="#cbd5e1" stroke-width="4"/>
             <rect x="150" y="160" width="100" height="80" fill="#e2e8f0" opacity="0.2" stroke="none"/>
@@ -1022,7 +1022,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(200, 160, 240, 100, "Pasillo de Amortiguamiento", "end");
         labelsContent += callout(250, 200, 560, 260, "Puerta Interior Cerrada", "start");
-    } else if (t === "Aislamiento continuo" || index === 20) {
+    } else if (t === "Aislamiento continuo") {
         svgContent += `
             ${groundLine}
             <path fill="#0f172a" fill-rule="evenodd" d=" M 220 340 L 580 340 L 580 140 L 400 50 L 220 140 Z M 250 310 L 550 310 L 550 164 L 400 86 L 250 164 Z "/>
@@ -1036,7 +1036,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(400, 68, 560, 40, "Aislamiento en Cubierta", "start");
         labelsContent += callout(235, 200, 240, 200, "Aislamiento en Muros", "end");
         labelsContent += callout(400, 325, 560, 360, "Aislamiento en Losa", "start");
-    } else if (t === "Parasoles móviles" || index === 21) {
+    } else if (t === "Parasoles móviles") {
         svgContent += `
             ${groundLine}
             <polygon points="220,160 400,80 580,160" fill="none" stroke="#cbd5e1" stroke-width="3"/>
@@ -1058,7 +1058,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(235, 250, 240, 280, "Lamas Orientables", "end");
         labelsContent += callout(260, 250, 560, 300, "Ventana", "start");
-    } else if (t === "Fachada de doble piel" || index === 22) {
+    } else if (t === "Fachada de doble piel") {
         svgContent += `
             ${groundLine}
             <rect x="400" y="80" width="60" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -1074,7 +1074,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(320, 260, 240, 280, "Piel de Vidrio Exterior", "end");
         labelsContent += callout(365, 120, 560, 60, "Cámara Intermedia", "start");
         labelsContent += callout(450, 200, 560, 200, "Muro Principal", "start");
-    } else if (t === "Cubierta extendida" || index === 23) {
+    } else if (t === "Cubierta extendida") {
         svgContent += `
             ${groundLine}
             <rect x="350" y="160" width="200" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -1086,7 +1086,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(250, 128, 240, 100, "Proyección de Sombra", "end");
         labelsContent += callout(120, 160, 240, 140, "Alero Extendido", "end");
-    } else if (t === "Muro acumulador" || index === 24) {
+    } else if (t === "Muro acumulador") {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="80" height="260" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="3"/>
@@ -1096,7 +1096,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 440 210 L 550 210" fill="none" stroke="#ea580c" stroke-width="5" class="svg-float-up"/>
         `;
         labelsContent += callout(430, 180, 560, 120, "Muro de Alta Inercia Térmica", "start");
-    } else if (t === "Piso de inercia térmica" || index === 25) {
+    } else if (t === "Piso de inercia térmica") {
         svgContent += `
             ${groundLine}
             <polygon points="250,340 250,160 400,80 550,160 550,340" fill="none" stroke="#cbd5e1" stroke-width="3"/>
@@ -1109,7 +1109,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 430 290 L 430 200" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up" style="animation-delay: 0.5s"/>
         `;
         labelsContent += callout(400, 325, 560, 360, "Losa de Inercia Térmica", "start");
-    } else if (t === "Protección de masa térmica" || index === 26) {
+    } else if (t === "Protección de masa térmica") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <rect x="280" y="160" width="40" height="180" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="2"/>
@@ -1121,7 +1121,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(320, 250, 560, 280, "Masa Térmica Protegida", "start");
         labelsContent += callout(250, 200, 240, 200, "Pantalla de Sombra", "end");
-    } else if (t === "Espejo de agua climático" || index === 27) {
+    } else if (t === "Espejo de agua climático") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <rect x="50" y="320" width="200" height="20" rx="3" fill="url(#hatch-water)" stroke="#94a3b8" stroke-width="2"/>
@@ -1130,7 +1130,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 310 250 L 450 250" fill="none" stroke="#06b6d4" stroke-width="5" opacity="0.7" class="svg-wind-flow"/>
         `;
         labelsContent += callout(200, 330, 560, 360, "Espejo de Agua", "start");
-    } else if (t === "Nebulización pasiva" || index === 28) {
+    } else if (t === "Nebulización pasiva") {
         svgContent += `
             ${groundLine} ${drawHouse(350, 160, 250, 180)}
             <line x1="150" y1="340" x2="150" y2="280" stroke="#cbd5e1" stroke-width="3"/>
@@ -1144,7 +1144,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 160 290 C 200 290, 250 280, 330 260" fill="none" stroke="#06b6d4" stroke-width="5" class="svg-wind-flow-delayed"/>
         `;
         labelsContent += callout(150, 280, 240, 200, "Sistema Nebulizador", "end");
-    } else if (t === "Vegetación refrescante" || index === 29) {
+    } else if (t === "Vegetación refrescante") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <rect x="140" y="240" width="15" height="100" fill="#713f12"/>
@@ -1161,7 +1161,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 260 260 L 350 260" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
         `;
         labelsContent += callout(147, 150, 240, 100, "Vegetación Refrescante", "end");
-    } else if (t === "Purgado nocturno" || index === 30) {
+    } else if (t === "Purgado nocturno") {
         svgContent += `
             <rect width="100%" height="100%" fill="#0f172a" opacity="0.9"/>
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
@@ -1174,7 +1174,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 540 200 L 620 180" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up"/>
         `;
         labelsContent += callout(400, 120, 560, 80, "Liberación de Calor Acumulado", "start");
-    } else if (t === "Lucernario térmico" || index === 31) {
+    } else if (t === "Lucernario térmico") {
         svgContent += `
             ${groundLine}
             <rect x="250" y="160" width="300" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -1185,7 +1185,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 450 250 Q 400 150 405 70" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up" style="animation-delay: 0.5s"/>
         `;
         labelsContent += callout(420, 60, 560, 40, "Lucernario Extractor", "start");
-    } else if (t === "Chimenea solar invertida" || index === 32) {
+    } else if (t === "Chimenea solar invertida") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <rect x="300" y="40" width="40" height="200" fill="#ea580c" opacity="0.2" stroke="#c2410c" stroke-width="2"/>
@@ -1196,7 +1196,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 450 280 C 400 280, 360 250, 340 200 L 340 30" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
         `;
         labelsContent += callout(340, 100, 560, 60, "Conducto Solar", "start");
-    } else if (t === "Elevación palafítica" || index === 33) {
+    } else if (t === "Elevación palafítica") {
         svgContent += `
             ${groundLine}
             <rect x="250" y="100" width="300" height="140" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -1211,7 +1211,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(300, 300, 240, 320, "Palafito (Pilar)", "end");
         labelsContent += callout(400, 290, 560, 290, "Flujo de Aire Inferior", "start");
-    } else if (t === "Ventilación mecánica asistida" || index === 34) {
+    } else if (t === "Ventilación mecánica asistida") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <rect x="250" y="200" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
@@ -1223,7 +1223,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 530 210 L 600 210" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
         `;
         labelsContent += callout(525, 210, 560, 120, "Extractor Mecánico", "start");
-    } else if (t === "Sectorización térmica" || index === 35) {
+    } else if (t === "Sectorización térmica") {
         svgContent += `
             <rect x="150" y="80" width="500" height="220" fill="none" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="400" y1="80" x2="400" y2="300" stroke="#cbd5e1" stroke-width="3"/>
@@ -1236,7 +1236,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(275, 100, 240, 50, "Zona Controlada", "end");
         labelsContent += callout(525, 150, 560, 100, "Zona de Amortiguamiento", "start");
-    } else if (t === "Fachada aislada" || index === 36) {
+    } else if (t === "Fachada aislada") {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="60" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -1248,7 +1248,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         `;
         labelsContent += callout(425, 200, 560, 260, "Material Aislante", "start");
         labelsContent += callout(380, 240, 240, 280, "Muro Estructural", "end");
-    } else if (t === "Cámara ventilada" || index === 37) {
+    } else if (t === "Cámara ventilada") {
         svgContent += `
             ${groundLine}
             <rect x="350" y="80" width="30" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
@@ -1259,7 +1259,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 380 100 L 330 100" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
         `;
         labelsContent += callout(400, 200, 560, 140, "Cámara de Aire Ventilada", "start");
-    } else if (t === "Deshumidificación de material" || t === "Deshumidificación material" || index === 38) {
+    } else if (t === "Deshumidificación de material" || t === "Deshumidificación material") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <rect x="520" y="160" width="30" height="180" fill="url(#hygroscopic-dots)" stroke="#3b82f6" stroke-width="1.5"/>
