@@ -2316,8 +2316,8 @@ function buildInteractiveVisualizer(strategies) {
     }
 }
         
-        async function runClimateAnalysis(){
-    document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos psicrométricos históricos.</span>";
+        async function runClimateAnalysis() {
+    document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos de alta resolución.</span>";
 
     let results = [];
     let rawDaily = null;
@@ -2329,42 +2329,56 @@ function buildInteractiveVisualizer(strategies) {
         const currentYearNum = today.getFullYear();
         const pastDateString = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
 
-        if(mode === 'mes'){
+        // URL mejorada: Añadida Radiación, Precipitación y forzado el modelo ERA5-Land (9km de resolución)
+        const apiBase = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,shortwave_radiation_sum&hourly=relative_humidity_2m&timezone=auto&models=era5_land`;
+
+        if (mode === 'mes') {
             const year = selectedYears[0];
             let endDate = `${year}-12-31`;
             if (year === currentYearNum) {
                 endDate = pastDateString;
             }
 
-            const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${year}-01-01&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&hourly=relative_humidity_2m&timezone=auto`);
+            const res = await fetch(`${apiBase}&start_date=${year}-01-01&end_date=${endDate}`);
             const data = await res.json();
 
             if (data.error) throw new Error(data.reason);
+            
+            // Guardamos la altitud real detectada por el modelo de 9km
+            if (data.elevation) window.alt = data.elevation; 
+            
             rawDaily = data.daily;
             rawHourly = data.hourly;
 
             selectedMonths.forEach(m => {
-                const dailyFilter = (_,idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
-                const hourlyFilter = (_,idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
-                const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
+                const dailyFilter = (_, idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
+                const hourlyFilter = (_, idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
                 
+                const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
+                const tMinFiltered = data.daily.temperature_2m_min.filter(dailyFilter);
+                const rainFiltered = data.daily.precipitation_sum.filter(dailyFilter);
+                const hrFiltered = data.hourly.relative_humidity_2m.filter(hourlyFilter);
+                const radFiltered = data.daily.shortwave_radiation_sum.filter(dailyFilter);
+
                 if (tMaxFiltered.length > 0) {
                     results.push({
                         label: `${months[m]} ${year}`,
                         tMax: d3.mean(tMaxFiltered),
-                        tMin: d3.mean(data.daily.temperature_2m_min.filter(dailyFilter)),
-                        hr: d3.mean(data.hourly.relative_humidity_2m.filter(hourlyFilter))
+                        tMin: d3.mean(tMinFiltered),
+                        hr: d3.mean(hrFiltered),
+                        rain: d3.sum(rainFiltered), // CORRECCIÓN CRÍTICA: Suma de la lluvia mensual
+                        rad: d3.mean(radFiltered)   // Promedio de radiación diaria
                     });
                 }
             });
         } else {
-            for(const y of selectedYears){
+            for (const y of selectedYears) {
                 let yEnd = `${y}-12-31`;
                 if (y === currentYearNum) {
                     yEnd = pastDateString;
                 }
 
-                const res = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${y}-01-01&end_date=${yEnd}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&hourly=relative_humidity_2m&timezone=auto`);
+                const res = await fetch(`${apiBase}&start_date=${y}-01-01&end_date=${yEnd}`);
                 const d = await res.json();
 
                 if (d.error) {
@@ -2373,20 +2387,24 @@ function buildInteractiveVisualizer(strategies) {
                 }
 
                 if (d.daily && d.daily.temperature_2m_max) {
+                    if (d.elevation) window.alt = d.elevation;
+                    
                     rawDaily = d.daily;
                     rawHourly = d.hourly;
                     results.push({
                         label: `${y}`,
                         tMax: d3.mean(d.daily.temperature_2m_max),
                         tMin: d3.mean(d.daily.temperature_2m_min),
-                        hr: d3.mean(d.hourly.relative_humidity_2m)
+                        hr: d3.mean(d.hourly.relative_humidity_2m),
+                        rain: d3.sum(d.daily.precipitation_sum), // CORRECCIÓN CRÍTICA: Suma de la lluvia anual
+                        rad: d3.mean(d.daily.shortwave_radiation_sum)
                     });
                 }
             }
-            results.sort((a,b) => parseInt(b.label) - parseInt(a.label));
+            results.sort((a, b) => parseInt(b.label) - parseInt(a.label));
         }
 
-        if(results.length === 0) {
+        if (results.length === 0) {
             throw new Error("No se pudo obtener datos válidos para la selección.");
         }
 
@@ -2418,6 +2436,8 @@ function buildInteractiveVisualizer(strategies) {
 
         window.currentData = results;
         await drawChart(results);
+        
+        // El arreglo results ahora SÍ tiene .rain y .rad
         updateAnalysis(results);
 
     } catch(e) {
