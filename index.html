@@ -2103,20 +2103,15 @@ function buildInteractiveVisualizer(strategies) {
     // =========================================================================
     // 2. EXTRACCIÓN DE DATOS SATELITALES EN SEGUNDO PLANO (NASA + Nominatim)
     // =========================================================================
-    // Mostramos un mensaje de carga mientras se conectan las APIs
-    document.getElementById('analysis-text').innerHTML = `<p class="text-slate-500 animate-pulse">Conectando con satélites para descargar climatología histórica (Precipitación y Altitud)...</p>`;
+    document.getElementById('analysis-text').innerHTML = `<p class="text-slate-500 animate-pulse font-space text-sm">Conectando con satélites para descargar climatología histórica (Precipitación y Altitud)...</p>`;
 
     let pais = "Ubicación internacional";
     let ciudad = "Región";
-    let altitud = 0;
-    // Lluvia mensual por defecto (en caso de que falle el satélite)
-    let rainMensual = [0,0,0,0,0,0,0,0,0,0,0,0]; 
+    let altitud = window.alt || 0; // Toma la altitud de Open-Meteo como base
+    let rainMensual = data.map(d => d.rain || 0); // Toma la lluvia de Open-Meteo como base
 
     try {
-        // A. Petición a OpenStreetMap (Nombre del Lugar)
         const geocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=es`;
-        // B. Petición a NASA POWER (Precipitación histórica y Elevación)
-        // PRECTOTCORR = Precipitación. ALLSKY_SFC_SW_DWN = Radiación Solar
         const nasaUrl = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=PRECTOTCORR,ALLSKY_SFC_SW_DWN&community=RE&longitude=${lon}&latitude=${lat}&format=JSON`;
 
         const [geoRes, nasaRes] = await Promise.all([
@@ -2132,124 +2127,138 @@ function buildInteractiveVisualizer(strategies) {
 
         if (nasaRes && nasaRes.ok) {
             const nasaData = await nasaRes.json();
-            altitud = nasaData.geometry?.coordinates[2] || 0; // NASA devuelve [lon, lat, elevación]
+            // NASA es más preciso con la elevación geográfica
+            if (nasaData.geometry && nasaData.geometry.coordinates[2]) {
+                altitud = nasaData.geometry.coordinates[2]; 
+            }
             
             const precipData = nasaData.properties?.parameter?.PRECTOTCORR;
             if (precipData) {
-                // NASA devuelve lluvia en mm/día. Lo multiplicamos por los días de cada mes.
                 const daysInMonth = [31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
                 const keys = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
                 rainMensual = keys.map((k, i) => (precipData[k] > 0 ? precipData[k] : 0) * daysInMonth[i]);
             }
         }
     } catch (error) {
-        console.warn("Se usarán datos aproximados. Error de API:", error);
+        console.warn("Se usarán los datos de base. Error de conexión:", error);
     }
 
     // =========================================================================
-    // 3. MOTOR BIOCLIMÁTICO KÖPPEN-GEIGER (30+ Subclimas Matemáticos)
+    // 3. PREPARACIÓN DE VARIABLES PARA TU MOTOR LÓGICO
     // =========================================================================
+    const absLat = Math.abs(lat);
     const isNorte = lat >= 0;
-    const tAvgMensual = data.map(d => (d.tMax + d.tMin) / 2);
 
-    const tAnn = tAvgMensual.reduce((a, b) => a + b, 0) / 12;
-    const pAnn = rainMensual.reduce((a, b) => a + b, 0);
-    const tHot = Math.max(...tAvgMensual);
-    const tCold = Math.min(...tAvgMensual);
-    const mesesSobre10 = tAvgMensual.filter(t => t >= 10).length;
-
-    const indicesVerano = isNorte ? [3, 4, 5, 6, 7, 8] : [9, 10, 11, 0, 1, 2];
-    const indicesInvierno = isNorte ? [9, 10, 11, 0, 1, 2] : [3, 4, 5, 6, 7, 8];
-
-    let pSummerHalf = 0, pWinterHalf = 0;
-    let pSmin = Infinity, pSmax = 0, pWmin = Infinity, pWmax = 0;
-
-    indicesVerano.forEach(i => {
-        const p = rainMensual[i] || 0;
-        pSummerHalf += p;
-        if (p < pSmin) pSmin = p;
-        if (p > pSmax) pSmax = p;
-    });
-
-    indicesInvierno.forEach(i => {
-        const p = rainMensual[i] || 0;
-        pWinterHalf += p;
-        if (p < pWmin) pWmin = p;
-        if (p > pWmax) pWmax = p;
-    });
-
-    const pMin = Math.min(pSmin, pWmin);
-
-    // Algoritmo de Aridez de Köppen
-    let pctVerano = pAnn > 0 ? (pSummerHalf / pAnn) : 0;
-    let pThresh = 2 * tAnn;
-    if (pctVerano >= 0.7) pThresh += 28;
-    else if (pctVerano >= 0.3) pThresh += 14;
-    pThresh *= 10;
-
-    let koppen = "";
-
-    // Clasificación Exacta
-    if (tHot < 10) {
-        koppen = tHot >= 0 ? "ET" : "EF"; // Polares y alta montaña
-    } else if (pAnn < pThresh) {
-        koppen = pAnn < (pThresh / 2) ? (tAnn >= 18 ? "BWh" : "BWk") : (tAnn >= 18 ? "BSh" : "BSk"); // Desiertos
-    } else if (tCold >= 18) {
-        if (pMin >= 60) koppen = "Af"; // Ecuatorial lluvioso
-        else koppen = pMin >= (100 - (pAnn / 25)) ? "Am" : (pWmin < pSmin ? "Aw" : "As"); // Sabanas y Monzones
-    } else {
-        const mainClass = tCold <= 0 ? "D" : "C"; // Continental vs Templado
-        let secondLetter = "f"; // Húmedo por defecto
-        if (pSmin < 40 && pSmin < (pWmax / 3)) secondLetter = "s"; // Verano seco (Mediterráneo)
-        else if (pWmin < (pSmax / 10)) secondLetter = "w"; // Invierno seco
-        
-        let thirdLetter = tHot >= 22 ? "a" : (mesesSobre10 >= 4 ? "b" : "c");
-        if (tCold <= 0 && tCold < -38) thirdLetter = "d";
-        
-        koppen = mainClass + secondLetter + thirdLetter;
-    }
-
-    // Sobrescritura de Alta Montaña Extrema (por Altitud)
-    if (altitud >= 2500 && lat >= -24 && lat <= 24) koppen = "Cwc"; // Páramo
-
-    // Base de Datos de Diagnósticos Bioclimáticos
-    const koppenDB = {
-        "Af": { n: "Ecuatorial Lluvioso (Af)", d: "Lluvias torrenciales y calor constante. La altitud detectada es de " + Math.round(altitud) + "m. Requiere envolventes transpirables y ventilación cruzada continua.", r: ["Z14", "Z8", "Z12"] },
-        "Am": { n: "Monzónico (Am)", d: "Alta humedad y época de lluvias extremas. Altitud: " + Math.round(altitud) + "m. Requiere aleros extendidos y disipación térmica.", r: ["Z14", "Z12", "Z1"] },
-        "Aw": { n: "Sabana Invierno Seco (Aw)", d: "Caluroso con marcado invierno seco. Ventilación estival cruzada e inercia térmica.", r: ["Z14", "Z8", "Z9"] },
-        "As": { n: "Sabana Verano Seco (As)", d: "Caluroso con lluvias en invierno. Protección solar y masa térmica contra el estío.", r: ["Z8", "Z9", "Z1"] },
-        "BWh": { n: "Desierto Cálido (BWh)", d: "Aridez extrema (" + Math.round(pAnn) + "mm anuales). Requiere altísima inercia térmica, purgado nocturno y protección solar severa.", r: ["Z8", "Z9", "Z11"] },
-        "BWk": { n: "Desierto Frío (BWk)", d: "Aridez extrema e inviernos fríos. Factor de forma compacto y masa térmica perimetral.", r: ["Z9", "Z7", "Z4"] },
-        "BSh": { n: "Estepa Cálida (BSh)", d: "Semiárido caluroso. Protección solar, ventilación nocturna y cerramientos masivos.", r: ["Z8", "Z9", "Z11"] },
-        "BSk": { n: "Estepa Fría (BSk)", d: "Semiárido con inviernos duros. Aislamiento perimetral y vidrios para ganancia solar.", r: ["Z7", "Z9", "Z4"] },
-        "Csa": { n: "Mediterráneo Típico (Csa)", d: "Verano seco/caluroso, inviernos lluviosos ("+ Math.round(pAnn) +"mm anuales). Evitar sobrecalentamiento estival con inercia y sombra.", r: ["Z8", "Z9", "Z11"] },
-        "Csb": { n: "Mediterráneo Suave (Csb)", d: "Verano seco y suave influenciado por corrientes frías. Control higrométrico y ganancia solar equilibrada.", r: ["Z7", "Z8", "Z4"] },
-        "Cwa": { n: "Subtropical Invierno Seco (Cwa)", d: "Veranos cálidos con fuertes precipitaciones. Enfoque mixto: disipar en verano, retener en invierno.", r: ["Z14", "Z12", "Z7"] },
-        "Cwb": { n: "Templado Subtropical de Altura (Cwb)", d: "Suave gracias a sus " + Math.round(altitud) + "m de elevación. Masa térmica iluminada al interior y aislamiento intermedio.", r: ["Z4", "Z9", "Z7"] },
-        "Cwc": { n: "Páramo / Alta Montaña Andina", d: "A " + Math.round(altitud) + "m de altura. Radiación UV extrema de día, frío riguroso nocturno. Aislamiento total obligatorio.", r: ["Z7", "Z4", "Z9"] },
-        "Cfa": { n: "Subtropical Húmedo (Cfa)", d: "Altas temperaturas y humedad, lluvias todo el año. Gestión rigurosa del vapor e insolación.", r: ["Z14", "Z7", "Z8"] },
-        "Cfb": { n: "Oceánico (Cfb)", d: "Inviernos/veranos suaves y lluvias regulares constantes. Maximizar luz natural y aislar contra humedad.", r: ["Z7", "Z4", "Z14"] },
-        "Dfa": { n: "Continental Húmedo Cálido (Dfa)", d: "Veranos cálidos e inviernos fríos. Barreras de vapor, aislamiento estricto y ventilación veraniega.", r: ["Z7", "Z14", "Z3"] },
-        "Dfb": { n: "Continental Húmedo (Dfb)", d: "Inviernos fríos prolongados con nevadas. La prioridad total es la compacidad y el SATE/Aislamiento.", r: ["Z7", "Z4", "Z3"] },
-        "Dwa": { n: "Continental Monzónico (Dwa)", d: "Inviernos gélidos secos y veranos muy lluviosos. Sistema dual de envolventes operables.", r: ["Z14", "Z7", "Z3"] },
-        "Dwc": { n: "Subártico (Dwc)", d: "Clima extremo polar. Diseño hipercompacto, captación sur (o norte) y mínimo acristalamiento frío.", r: ["Z7", "Z9", "Z3"] },
-        "ET": { n: "Tundra o Alpino (ET)", d: "Temperaturas que nunca superan los 10°C. Construcción aerodinámica y protección térmica límite.", r: ["Z7", "Z3", "Z4"] }
-    };
-
-    const diagnosis = koppenDB[koppen] || koppenDB["Cfb"];
-    const entorno = diagnosis.n;
-    const descripcion = diagnosis.d;
+    const tMaxes = data.map(d => d.tMax);
+    const tMines = data.map(d => d.tMin);
     
-    // Inyectamos las estrategias al array
-    if (diagnosis.r) {
-        recs.push(strategyDB[diagnosis.r[0]][0], strategyDB[diagnosis.r[1]][1] || strategyDB[diagnosis.r[1]][0], strategyDB[diagnosis.r[2]][2] || strategyDB[diagnosis.r[2]][0]);
+    const maxT = Math.max(...tMaxes); 
+    const minT = Math.min(...tMines);
+    const oscilacionAnual = maxT - minT;
+    const totalLluvia = rainMensual.reduce((a, b) => a + b, 0);
+
+    const lluviaVerano = isNorte ? (rainMensual[5] + rainMensual[6] + rainMensual[7]) : (rainMensual[11] + rainMensual[0] + rainMensual[1]);
+    const lluviaInvierno = isNorte ? (rainMensual[11] + rainMensual[0] + rainMensual[1]) : (rainMensual[5] + rainMensual[6] + rainMensual[7]);
+
+    let entorno = "";
+    let descripcion = "";
+
+    // =========================================================================
+    // 4. TU MOTOR SINTETIZADOR BIOCLIMÁTICO DE ALTA RESOLUCIÓN
+    // =========================================================================
+
+    // --- GRUPO A: ALTITUD EXTREMA ---
+    if (altitud >= 2500 && absLat <= 24) {
+        entorno = "Alta Montaña Ecuatorial / Páramo Andino";
+        descripcion = "Altitud extrema intertropical. Radiación ultravioleta muy agresiva de día y frío glacial de noche. Exige masa térmica pesada al interior, ventanas orientadas al ecuador y aislamiento hermético perimetral.";
+        recs.push(strategyDB["Z4"][2], strategyDB["Z7"][2], strategyDB["Z9"][1]);
+    }
+    else if (altitud >= 1500) {
+        entorno = "Templado de Montaña / Highland";
+        descripcion = "Microclima dominado por la elevación. Presenta alta radiación solar diurna y descensos térmicos marcados nocturnos. Requiere captación solar pasiva y retención del calor con aislamiento continuo en CAPA INTERMEDIA.";
+        recs.push(strategyDB["Z4"][2], strategyDB["Z9"][0], strategyDB["Z7"][2], strategyDB["Z1"][2]);
+    }
+    // --- GRUPO B: DESIERTOS Y ARIDEZ ---
+    else if (totalLluvia < 250 && maxT >= 35) {
+        entorno = "Desierto Cálido Extremo";
+        descripcion = "Aridez brutal y calor sofocante. La prioridad absoluta es la protección solar profunda, altísima inercia térmica para retrasar la onda de calor y enfriamiento evaporativo (patios con agua).";
+        recs.push(strategyDB["Z8"][0], strategyDB["Z9"][1], strategyDB["Z2"][0], strategyDB["Z11"][0]);
+    }
+    else if (totalLluvia < 250 && minT <= 5) {
+        entorno = "Desierto Frío / Estepa Gélida";
+        descripcion = "Aridez extrema pero con inviernos duros. Oscilación térmica anual altísima. Exige compacidad masiva y muros Trombe para captar radiación invernal, sumado a aislamiento estricto.";
+        recs.push(strategyDB["Z7"][2], strategyDB["Z4"][2], strategyDB["Z9"][1]);
+    }
+    else if (totalLluvia >= 250 && totalLluvia < 500 && maxT >= 30) {
+        entorno = "Semiárido / Estepa Cálida";
+        descripcion = "Precipitaciones escasas y veranos muy cálidos. Transición hacia el desierto. Requiere purgado nocturno, masa térmica media-alta y protección solar en ventanas (celosías, parasoles).";
+        recs.push(strategyDB["Z8"][0], strategyDB["Z9"][0], strategyDB["Z11"][0]);
+    }
+    // --- GRUPO C: TROPICALES Y ECUATORIALES ---
+    else if (absLat <= 24 && minT >= 18 && totalLluvia >= 1800) {
+        entorno = "Ecuatorial / Selva Lluviosa";
+        descripcion = "Calor y humedad sofocante constantes todo el año sin estación seca. El diseño se basa 100% en la disipación: ventilación cruzada profunda, aleros inmensos y cerramientos hiper-permeables.";
+        recs.push(strategyDB["Z14"][0], strategyDB["Z12"][0], strategyDB["Z1"][0]);
+    }
+    else if (absLat <= 24 && minT >= 18 && lluviaVerano > lluviaInvierno) {
+        entorno = "Tropical de Sabana / Monzón Cálido";
+        descripcion = "Caluroso todo el año pero con una marcada temporada de lluvias. Requiere aleros extendidos contra el diluvio estival y ventilación natural regulable para los meses de bochorno.";
+        recs.push(strategyDB["Z14"][0], strategyDB["Z8"][2], strategyDB["Z9"][0]);
+    }
+    // --- GRUPO D: LATITUDES MEDIAS - VERANOS LLUVIOSOS ---
+    else if (absLat > 24 && absLat <= 45 && lluviaVerano > lluviaInvierno && maxT >= 28) {
+        entorno = "Subtropical Húmedo / Monzónico Costero";
+        descripcion = "Veranos con altísima carga higrométrica y lluvias fuertes, con inviernos que varían de frescos a fríos. Demanda ventilación estival agresiva y deshumidificación, combinada con aislamiento en CAPA INTERMEDIA para el invierno.";
+        recs.push(strategyDB["Z14"][1], strategyDB["Z12"][0], strategyDB["Z7"][2], strategyDB["Z8"][2]);
+    }
+    // --- GRUPO E: LATITUDES MEDIAS - VERANOS SECOS ---
+    else if (absLat > 24 && absLat <= 45 && lluviaInvierno >= lluviaVerano) {
+        if (maxT >= 32) {
+            entorno = "Mediterráneo Continentalizado / Verano Caluroso";
+            descripcion = "Veranos tórridos y absolutamente secos, inviernos fríos. Exige evitar el sobrecalentamiento estival mediante alta inercia térmica, persianas exteriores, purgado nocturno y retención calórica invernal.";
+            recs.push(strategyDB["Z8"][0], strategyDB["Z9"][0], strategyDB["Z11"][0], strategyDB["Z7"][2]);
+        } else {
+            entorno = "Mediterráneo Suave / Costero";
+            descripcion = "Veranos secos pero atenuados por la brisa oceánica, inviernos lluviosos y moderados. Prioriza estrategias pasivas equilibradas: protección solar ligera y control de humedad invernal.";
+            recs.push(strategyDB["Z8"][0], strategyDB["Z7"][0], strategyDB["Z4"][1]);
+        }
+    }
+    // --- GRUPO F: CLIMAS CONTINENTALES ---
+    else if (absLat > 35 && oscilacionAnual >= 22 && minT <= 2) {
+        if (maxT >= 28) {
+            entorno = "Continental de Verano Cálido";
+            descripcion = "Gran contraste estacional: inviernos muy fríos y veranos sofocantes. Requiere una envolvente adaptable con aislamiento riguroso en invierno y posibilidad de ventilación cruzada en verano.";
+            recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z14"][1]);
+        } else {
+            entorno = "Continental Frío / Hemiboreal";
+            descripcion = "Inviernos largos y gélidos con abundantes nevadas, veranos cortos. La prioridad es el confort de invierno: compacidad, hermeticidad al viento y máximo grosor de aislamiento en CAPA INTERMEDIA.";
+            recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z4"][0], strategyDB["Z9"][1]);
+        }
+    }
+    // --- GRUPO G: CLIMAS OCEÁNICOS ---
+    else if (absLat >= 40 && oscilacionAnual < 18 && maxT <= 25 && totalLluvia >= 600) {
+        entorno = "Templado Oceánico / Marítimo";
+        descripcion = "Lluvias constantes y cielos nublados todo el año. Sin extremos de calor o frío severo. El diseño debe maximizar la captación de luz natural e incorporar fachadas transpirables para evitar patologías por humedad profunda.";
+        recs.push(strategyDB["Z7"][0], strategyDB["Z4"][1], strategyDB["Z14"][1], strategyDB["Z7"][2]);
+    }
+    // --- GRUPO H: SUBPOLAR Y POLAR ---
+    else if (absLat > 55 && maxT < 18) {
+        entorno = "Subártico / Tundra Polar";
+        descripcion = "Frío extremo y permanente. Es imperativo un diseño aerodinámico contra tormentas de nieve, aislamiento térmico límite, ventanas de triple panel y sistemas de renovación de aire con recuperador de calor.";
+        recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z9"][1]);
+    }
+    // --- RESPALDO ---
+    else {
+        entorno = "Transición Templada";
+        descripcion = "Clima intermedio con estacionalidad moderada. Requiere un balance estándar de aislamiento térmico, protección solar en fachadas expuestas y ventilación controlada.";
+        recs.push(strategyDB["Z7"][2], strategyDB["Z8"][0], strategyDB["Z14"][1]);
     }
 
     // =========================================================================
-    // 4. IMPRESIÓN DEL RESULTADO Y UI
+    // 5. IMPRESIÓN DEL RESULTADO Y UI
     // =========================================================================
-    let textResult = `<p>El análisis satelital para <strong>${ciudad}, ${pais}</strong> indica una precipitación anual de <strong>${Math.round(pAnn)} mm</strong> y elevación de <strong>${Math.round(altitud)} msnm</strong>. Temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>.</p>`;
-    textResult += `<p class="mt-4">Clasificación Geoclimática (Köppen): <strong>${entorno}</strong>. <br>${descripcion}</p>`;
+    let textResult = `<p>El análisis satelital para <strong>${ciudad}, ${pais}</strong> indica una precipitación anual de <strong>${Math.round(totalLluvia)} mm</strong> y elevación de <strong>${Math.round(altitud)} msnm</strong>. Temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>.</p>`;
+    textResult += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. <br>${descripcion}</p>`;
 
     document.getElementById('analysis-text').innerHTML = textResult;
 
