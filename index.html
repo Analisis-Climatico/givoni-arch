@@ -390,10 +390,15 @@
             lat = parseFloat(e.latlng.lat.toFixed(4));
             lon = parseFloat(e.latlng.lng.toFixed(4));
             marker.setLatLng([lat,lon]);
+            
+            // NUEVO: Limpiar el buscador y ocultar los resultados
+            searchInput.value = '';
+            searchResults.classList.add('hidden');
+            
             await updateLocation(lat, lon);
             runClimateAnalysis();
         });
-
+        
         let searchTimeout;
         const searchInput = document.getElementById('map-search-input');
         const searchResults = document.getElementById('search-results');
@@ -442,7 +447,10 @@
             try {
                 const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${l_lat}&lon=${l_lon}`);
                 const data = await response.json();
-                currentLocationName = data.address.city || data.address.town || data.address.village || data.address.county || 'Guayaquil';
+                
+                // NUEVO: Se añade data.address.country y un fallback neutral
+                currentLocationName = data.address.city || data.address.town || data.address.village || data.address.county || data.address.country || 'Ubicación seleccionada';
+                
                 document.getElementById('location-text').innerText = `Ubicación: ${currentLocationName}`;
             } catch(err) {
                 document.getElementById('location-text').innerText = `Ubicación: ${l_lat}, ${l_lon}`;
