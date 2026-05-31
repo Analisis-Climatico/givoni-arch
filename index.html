@@ -2065,153 +2065,148 @@ function buildInteractiveVisualizer(strategies) {
     // Dibujamos la primera estrategia por defecto
     window.renderSVGForStrategy(0);
 }
-        function updateAnalysis(data){
-            const tableBody = document.getElementById('table-body');
-            tableBody.innerHTML = '';
-            let sumTMax = 0, sumTMin = 0, sumH = 0;
-            
-            data.forEach((d, i) => {
-                d.color = neonColors[i % neonColors.length];
-                const zones = detectZones(d.tMin, d.tMax, d.hr);
-                sumTMax += d.tMax; sumTMin += d.tMin; sumH += d.hr;
-                const badges = zones.map(z => `<span class="text-xs font-space px-2.5 py-1.5 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
-                
-                tableBody.innerHTML += `
-                    <tr class="border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/30 dark:hover:bg-slate-800/20 transition-colors">
-                        <td class="p-5 text-center flex justify-center items-center"><div class="w-3.5 h-3.5 rounded-full" style="background:${d.color}; box-shadow: 0 0 8px ${d.color}80"></div></td>
-                        <td class="p-5 uppercase font-bold text-slate-700 dark:text-slate-200 font-space text-sm text-center">${d.label}</td>
-                        <td class="p-5 text-center text-sm font-medium text-slate-800 dark:text-white">${d.tMax.toFixed(1)}°C</td>
-                        <td class="p-5 text-center text-sm font-medium text-slate-500 dark:text-slate-400">${d.tMin.toFixed(1)}°C</td>
-                        <td class="p-5 text-center text-blue-600 dark:text-cyan-400 font-bold text-sm">${d.hr.toFixed(0)}%</td>
-                        <td class="p-5 pl-6 flex flex-wrap justify-start gap-1.5">${badges}</td>
-                    </tr>`;
-            });
+        function updateAnalysis(data) {
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = '';
+    let sumTMax = 0, sumTMin = 0, sumH = 0;
+    
+    data.forEach((d, i) => {
+        d.color = neonColors[i % neonColors.length];
+        const zones = detectZones(d.tMin, d.tMax, d.hr);
+        sumTMax += d.tMax; 
+        sumTMin += d.tMin; 
+        sumH += d.hr;
+        
+        const badges = zones.map(z => `<span class="text-xs font-space px-2.5 py-1.5 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
+        
+        tableBody.innerHTML += `
+            <tr class="border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/30 dark:hover:bg-slate-800/20 transition-colors">
+                <td class="p-5 text-center flex justify-center items-center"><div class="w-3.5 h-3.5 rounded-full" style="background:${d.color}; box-shadow: 0 0 8px ${d.color}80"></div></td>
+                <td class="p-5 uppercase font-bold text-slate-700 dark:text-slate-200 font-space text-sm text-center">${d.label}</td>
+                <td class="p-5 text-center text-sm font-medium text-slate-800 dark:text-white">${d.tMax.toFixed(1)}°C</td>
+                <td class="p-5 text-center text-sm font-medium text-slate-500 dark:text-slate-400">${d.tMin.toFixed(1)}°C</td>
+                <td class="p-5 text-center text-blue-600 dark:text-cyan-400 font-bold text-sm">${d.hr.toFixed(0)}%</td>
+                <td class="p-5 pl-6 flex flex-wrap justify-start gap-1.5">${badges}</td>
+            </tr>`;
+    });
 
-            if (data.length === 0) {
-                document.getElementById('analysis-text').innerHTML = "No se encontraron datos climáticos.";
-                return;
-            }
+    if (data.length === 0) {
+        document.getElementById('analysis-text').innerHTML = "No se encontraron datos climáticos.";
+        return;
+    }
 
-            const avgTMax = sumTMax / data.length;
-            const avgTMin = sumTMin / data.length;
-            const avgHR = sumH / data.length;
+    // Variables de promedio calculadas una sola vez
+    const avgTMax = sumTMax / data.length;
+    const avgTMin = sumTMin / data.length;
+    const avgHR = sumH / data.length;
 
-            let text = `<p>El análisis termohigrométrico indica una temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>, con humedad media del <strong>${avgHR.toFixed(0)}%</strong>.</p>`;
-            
-            let recs = [];
-            
-            // =========================================================================
-            // MOTOR SINTETIZADOR BIOCLIMÁTICO DINÁMICO (Lógica Geoclimática Precisa)
-            // =========================================================================
-            const selectedTMaxes = data.map(d => d.tMax);
-            const selectedTMines = data.map(d => d.tMin);
-            const maxT = Math.max(...selectedTMaxes); 
-            const minT = Math.min(...selectedTMines); 
-            const avgTMax = d3.mean(selectedTMaxes);
-            const avgTMin = d3.mean(selectedTMines);
-            const avgHR = d3.mean(data.map(d => d.hr));
-            
-            const absLat = Math.abs(lat);
-            const oscilacionDiaria = avgTMax - avgTMin;
+    let text = `<p>El análisis termohigrométrico indica una temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>, con humedad media del <strong>${avgHR.toFixed(0)}%</strong>.</p>`;
+    
+    let recs = [];
+    
+    // =========================================================================
+    // MOTOR SINTETIZADOR BIOCLIMÁTICO DINÁMICO (Lógica Geoclimática Precisa)
+    // =========================================================================
+    const selectedTMaxes = data.map(d => d.tMax);
+    const selectedTMines = data.map(d => d.tMin);
+    const maxT = Math.max(...selectedTMaxes); 
+    const minT = Math.min(...selectedTMines); 
+    
+    // (SE ELIMINARON LAS REDECLARACIONES DE avgTMax, avgTMin y avgHR AQUÍ)
 
-            let entorno = "";
-            let descripcion = "";
+    const absLat = Math.abs(lat); // Nota: asume que la variable global 'lat' y 'lon' están definidas
+    const oscilacionDiaria = avgTMax - avgTMin;
 
-            // 1. MACRO-REGIONES GEOGRÁFICAS EN SEGUNDO PLANO (Resuelve el problema de lluvias/estaciones sin API extra)
-            let isAsiaOriental = (lat >= 20 && lat <= 50 && lon >= 90 && lon <= 150); // China, Japón, Corea
-            let isMediterraneo = (lat >= 30 && lat <= 47 && lon >= -10 && lon <= 40); // Italia, España, Grecia
-            let isCostaOesteUS = (lat >= 30 && lat <= 50 && lon >= -130 && lon <= -110); // California
-            let isSudamericaNoroccidental = (lat >= -5 && lat <= 15 && lon >= -85 && lon <= -70); // Ecuador, Colombia costa
+    let entorno = "";
+    let descripcion = "";
 
-            // 2. DIAGNÓSTICO EXACTO BASADO EN COORDENADA + TEMPERATURA
-            if (isAsiaOriental && maxT >= 25) {
-                entorno = "Subtropical Húmedo / Continental Monzónico";
-                descripcion = "Clima fuertemente influenciado por el monzón asiático. Veranos muy cálidos con extrema humedad y abundantes lluvias, e inviernos que varían de frescos a gélidos según la latitud. El diseño requiere máxima ventilación y protección solar estricta contra la alta carga estival, combinada con un aislamiento continuo estructural en CAPA INTERMEDIA para retener el calor en los meses de invierno y evitar condensaciones.";
-                recs.push(strategyDB["Z14"][1], strategyDB["Z12"][0], strategyDB["Z7"][2], strategyDB["Z8"][2]);
-            } 
-            else if ((isMediterraneo || isCostaOesteUS) && maxT >= 25) {
-                entorno = "Mediterráneo / Estacional de Verano Seco";
-                descripcion = "Condiciones clásicas del entorno mediterráneo: veranos cálidos y muy secos, con inviernos frescos o suaves y lluvias concentradas en la temporada fría. La principal preocupación bioclimática es evitar el sobrecalentamiento en verano mediante alta inercia térmica, purgado nocturno y dispositivos de control para lograr ganancia solar térmica igual a cero, asegurando la retención calórica invernal con aislamiento continuo en CAPA INTERMEDIA.";
-                recs.push(strategyDB["Z8"][0], strategyDB["Z9"][0], strategyDB["Z11"][0], strategyDB["Z7"][2]);
-            }
-            else if (isSudamericaNoroccidental || (absLat <= 24 && minT >= 18)) {
-                entorno = "Cálido Húmedo (Clima Ecuatorial / Tropical)";
-                descripcion = "Temperaturas altas sostenidas a lo largo del año con una fuerte carga de humedad ambiental. No existe invierno térmico. El objetivo principal e invariable del diseño es la disipación del calor mediante ventilación cruzada continua, aleros extendidos para lograr ganancia solar igual a cero, y el uso de envolventes ligeras y transpirables para mitigar el bochorno.";
-                recs.push(strategyDB["Z14"][0], strategyDB["Z8"][2], strategyDB["Z12"][0], strategyDB["Z1"][0]);
-            }
-            else if (absLat <= 24 && minT < 18) {
-                entorno = "Templado de Altura (Andino / Intertropical)";
-                descripcion = "Microclima de montaña con alta radiación diurna y descensos térmicos significativos por la noche. Exige un equilibrio pasivo riguroso: captación de energía solar durante el día a través de materiales masivos al interior, y retención estricta del calor nocturno utilizando de forma mandatoria aislamiento continuo instalado como CAPA INTERMEDIA en la envolvente general.";
-                recs.push(strategyDB["Z4"][2], strategyDB["Z9"][0], strategyDB["Z7"][2], strategyDB["Z1"][2]);
-            }
-            else if (minT < 5) {
-                entorno = "Continental Frío / Estacional Extremo";
-                descripcion = "Inviernos fríos prolongados con riesgo continuo de heladas, contrastando con veranos cortos que pueden presentar picos de calor. La máxima prioridad arquitectónica es la conservación pasiva de la energía interior. Exige un factor de forma compacto, hermeticidad al viento y el uso obligatorio de aislamiento continuo profundo configurado como CAPA INTERMEDIA en muros, suelos y cubiertas.";
-                recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z4"][0], strategyDB["Z9"][1]);
-            }
-            else {
-                entorno = "Templado Oceánico / Influencia Marítima";
-                descripcion = "Estacionalidad moderada por la proximidad al océano, con veranos suaves e inviernos frescos, manteniendo alta humedad regular. La estrategia central se enfoca en el control higrométrico para evitar patologías por humedad y la prevención de condensaciones intersticiales, demandando envolventes transpirables, ventilación higiénica constante y protección térmica perimetral con aislamiento continuo en CAPA INTERMEDIA.";
-                recs.push(strategyDB["Z7"][0], strategyDB["Z14"][1], strategyDB["Z4"][1], strategyDB["Z7"][2]);
-            }
+    // 1. MACRO-REGIONES GEOGRÁFICAS EN SEGUNDO PLANO
+    let isAsiaOriental = (lat >= 20 && lat <= 50 && lon >= 90 && lon <= 150);
+    let isMediterraneo = (lat >= 30 && lat <= 47 && lon >= -10 && lon <= 40);
+    let isCostaOesteUS = (lat >= 30 && lat <= 50 && lon >= -130 && lon <= -110);
+    let isSudamericaNoroccidental = (lat >= -5 && lat <= 15 && lon >= -85 && lon <= -70);
 
-            text += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. <br>${descripcion}</p>`;
+    // 2. DIAGNÓSTICO EXACTO BASADO EN COORDENADA + TEMPERATURA
+    if (isAsiaOriental && maxT >= 25) {
+        entorno = "Subtropical Húmedo / Continental Monzónico";
+        descripcion = "Clima fuertemente influenciado por el monzón asiático. Veranos muy cálidos con extrema humedad y abundantes lluvias, e inviernos que varían de frescos a gélidos según la latitud. El diseño requiere máxima ventilación y protección solar estricta contra la alta carga estival, combinada con un aislamiento continuo estructural en CAPA INTERMEDIA para retener el calor en los meses de invierno y evitar condensaciones.";
+        recs.push(strategyDB["Z14"][1], strategyDB["Z12"][0], strategyDB["Z7"][2], strategyDB["Z8"][2]);
+    } 
+    else if ((isMediterraneo || isCostaOesteUS) && maxT >= 25) {
+        entorno = "Mediterráneo / Estacional de Verano Seco";
+        descripcion = "Condiciones clásicas del entorno mediterráneo: veranos cálidos y muy secos, con inviernos frescos o suaves y lluvias concentradas en la temporada fría. La principal preocupación bioclimática es evitar el sobrecalentamiento en verano mediante alta inercia térmica, purgado nocturno y dispositivos de control para lograr ganancia solar térmica igual a cero, asegurando la retención calórica invernal con aislamiento continuo en CAPA INTERMEDIA.";
+        recs.push(strategyDB["Z8"][0], strategyDB["Z9"][0], strategyDB["Z11"][0], strategyDB["Z7"][2]);
+    }
+    else if (isSudamericaNoroccidental || (absLat <= 24 && minT >= 18)) {
+        entorno = "Cálido Húmedo (Clima Ecuatorial / Tropical)";
+        descripcion = "Temperaturas altas sostenidas a lo largo del año con una fuerte carga de humedad ambiental. No existe invierno térmico. El objetivo principal e invariable del diseño es la disipación del calor mediante ventilación cruzada continua, aleros extendidos para lograr ganancia solar igual a cero, y el uso de envolventes ligeras y transpirables para mitigar el bochorno.";
+        recs.push(strategyDB["Z14"][0], strategyDB["Z8"][2], strategyDB["Z12"][0], strategyDB["Z1"][0]);
+    }
+    else if (absLat <= 24 && minT < 18) {
+        entorno = "Templado de Altura (Andino / Intertropical)";
+        descripcion = "Microclima de montaña con alta radiación diurna y descensos térmicos significativos por la noche. Exige un equilibrio pasivo riguroso: captación de energía solar durante el día a través de materiales masivos al interior, y retención estricta del calor nocturno utilizando de forma mandatoria aislamiento continuo instalado como CAPA INTERMEDIA en la envolvente general.";
+        recs.push(strategyDB["Z4"][2], strategyDB["Z9"][0], strategyDB["Z7"][2], strategyDB["Z1"][2]);
+    }
+    else if (minT < 5) {
+        entorno = "Continental Frío / Estacional Extremo";
+        descripcion = "Inviernos fríos prolongados con riesgo continuo de heladas, contrastando con veranos cortos que pueden presentar picos de calor. La máxima prioridad arquitectónica es la conservación pasiva de la energía interior. Exige un factor de forma compacto, hermeticidad al viento y el uso obligatorio de aislamiento continuo profundo configurado como CAPA INTERMEDIA en muros, suelos y cubiertas.";
+        recs.push(strategyDB["Z7"][2], strategyDB["Z3"][2], strategyDB["Z4"][0], strategyDB["Z9"][1]);
+    }
+    else {
+        entorno = "Templado Oceánico / Influencia Marítima";
+        descripcion = "Estacionalidad moderada por la proximidad al océano, con veranos suaves e inviernos frescos, manteniendo alta humedad regular. La estrategia central se enfoca en el control higrométrico para evitar patologías por humedad y la prevención de condensaciones intersticiales, demandando envolventes transpirables, ventilación higiénica constante y protección térmica perimetral con aislamiento continuo en CAPA INTERMEDIA.";
+        recs.push(strategyDB["Z7"][0], strategyDB["Z14"][1], strategyDB["Z4"][1], strategyDB["Z7"][2]);
+    }
 
-            document.getElementById('analysis-text').innerHTML = text;
+    text += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. <br>${descripcion}</p>`;
+    document.getElementById('analysis-text').innerHTML = text;
 
-            // Filtro anti-duplicados y exclusión de SVGs problemáticos
-            const sinSVG = ["Ventilación cruzada profunda", "Cubierta extractora", "Vidrio de control solar"];
-            recs = recs.filter(r => !sinSVG.includes(r.t));
-            recs = recs.filter((obj, index, arr) => index === arr.findIndex((el) => el.t === obj.t));
-            
-            if (recs.length < 3) recs.push(strategyDB["Z1"][0], strategyDB["Z7"][2], strategyDB["Z2"][0]);
+    // Filtro anti-duplicados y exclusión de SVGs problemáticos
+    const sinSVG = ["Ventilación cruzada profunda", "Cubierta extractora", "Vidrio de control solar"];
+    recs = recs.filter(r => !sinSVG.includes(r.t));
+    recs = recs.filter((obj, index, arr) => index === arr.findIndex((el) => el.t === obj.t));
+    
+    if (recs.length < 3) recs.push(strategyDB["Z1"][0], strategyDB["Z7"][2], strategyDB["Z2"][0]);
 
-            const sl = document.getElementById('strategy-list');
-            sl.innerHTML = '';
-            recs.forEach(r => {
-                sl.innerHTML += `
-                    <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                        <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
-                        <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
-                    </div>`;
-            });
-            // Llamada limpia al generador visual y CIERRE DE LA FUNCIÓN UPDATEANALYSIS
-            buildInteractiveVisualizer(recs);
+    const sl = document.getElementById('strategy-list');
+    sl.innerHTML = '';
+    recs.forEach(r => {
+        sl.innerHTML += `
+            <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300">
+                <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
+                <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
+            </div>`;
+    });
 
-            const contenedorPunto5 = document.getElementById('interactive-visualizer');
+    // Llamada limpia al generador visual general
+    if (typeof buildInteractiveVisualizer === "function") {
+        buildInteractiveVisualizer(recs);
+    }
+
+    // ========================================================
+    // GENERADOR DEL MENÚ VISUALIZADOR INTERACTIVO
+    // ========================================================
+    const contenedorPunto5 = document.getElementById('interactive-visualizer');
 
     if (contenedorPunto5 && recs.length > 0) {
-
         // Construimos el contenedor del menú y del lienzo
-
         let menuHTML = `<div class="w-full flex-col lg:flex-row flex bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden shadow-sm">
-
             <div class="w-full lg:w-[35%] xl:w-[30%] border-b lg:border-b-0 lg:border-r border-slate-200/40 dark:border-slate-700/50 p-4 space-y-2 overflow-y-auto max-h-[550px]" id="strategy-menu">`;
 
         // Generamos los botones con la variable 'recs'
-
         recs.forEach((strat, i) => {
-
             let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
 
-            if(strat.t.includes('regulable') || strat.t.includes('transición') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>`;
-            if(strat.t.includes('Ventilación') || strat.t.includes('cruzada') || strat.t.includes('elevada')) icon = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-
-            if(strat.t.includes('Pieles') || strat.t.includes('Protección solar') || strat.t.includes('Parasoles') || strat.t.includes('extendida') || strat.t.includes('doble piel')) icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
-
-            if(strat.t.includes('Trombe') || strat.t.includes('acumulador') || strat.t.includes('inercia') || strat.t.includes('compacto')) icon = `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`;
-
-            if(strat.t.includes('Cubierta ventilada') || strat.t.includes('Chimenea') || strat.t.includes('extractora') || strat.t.includes('Lucernario')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
-
-            if(strat.t.includes('Deshumidificación') || strat.t.includes('agua') || strat.t.includes('húmedo') || strat.t.includes('evaporativa') || strat.t.includes('Nebulización') || strat.t.includes('Vegetación')) icon = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`;
-
-            if(strat.t.includes('Envolvente térmica') || strat.t.includes('Aislamiento') || strat.t.includes('aislada') || strat.t.includes('hermética') || strat.t.includes('Sectorización')) icon = `<svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
-
-            if(strat.t.includes('Galería solar') || strat.t.includes('Panel') || strat.t.includes('Orientación solar') || strat.t.includes('Cubierta captadora')) icon = `<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
-
-            if(strat.t.includes('Purgado nocturno')) icon = `<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>`;
-
-            if(strat.t.includes('Elevación palafítica')) icon = `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>`;
+            if (strat.t.includes('regulable') || strat.t.includes('transición') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>`;
+            if (strat.t.includes('Ventilación') || strat.t.includes('cruzada') || strat.t.includes('elevada')) icon = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+            if (strat.t.includes('Pieles') || strat.t.includes('Protección solar') || strat.t.includes('Parasoles') || strat.t.includes('extendida') || strat.t.includes('doble piel')) icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
+            if (strat.t.includes('Trombe') || strat.t.includes('acumulador') || strat.t.includes('inercia') || strat.t.includes('compacto')) icon = `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`;
+            if (strat.t.includes('Cubierta ventilada') || strat.t.includes('Chimenea') || strat.t.includes('extractora') || strat.t.includes('Lucernario')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
+            if (strat.t.includes('Deshumidificación') || strat.t.includes('agua') || strat.t.includes('húmedo') || strat.t.includes('evaporativa') || strat.t.includes('Nebulización') || strat.t.includes('Vegetación')) icon = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`;
+            if (strat.t.includes('Envolvente térmica') || strat.t.includes('Aislamiento') || strat.t.includes('aislada') || strat.t.includes('hermética') || strat.t.includes('Sectorización')) icon = `<svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`;
+            if (strat.t.includes('Galería solar') || strat.t.includes('Panel') || strat.t.includes('Orientación solar') || strat.t.includes('Cubierta captadora')) icon = `<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
+            if (strat.t.includes('Purgado nocturno')) icon = `<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>`;
+            if (strat.t.includes('Elevación palafítica')) icon = `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>`;
 
             menuHTML += `<button class="w-full text-left p-4 rounded-xl transition-all duration-300 strat-btn flex items-center gap-4 active:scale-95" onclick="renderSVGForStrategy(${i})">
                 <div class="mt-0.5">${icon}</div>
@@ -2220,9 +2215,11 @@ function buildInteractiveVisualizer(strategies) {
         });
 
         menuHTML += `</div><div class="w-full lg:w-[65%] xl:w-[70%] flex flex-col relative bg-transparent overflow-hidden min-h-[450px]"><div id="svg-canvas" class="flex-1 w-full h-full relative"></div></div></div>`;
-        // Lo mandamos al Punto 5
+        
         contenedorPunto5.innerHTML = menuHTML;
+        
         // Conectamos el botón con tu motor renderDiagramaArquitectonico
+        // Nota: Es normal tener esto aquí para aprovechar el closure de la variable 'recs'
         window.renderSVGForStrategy = function(index) {
             const strat = recs[index];
             document.querySelectorAll('.strat-btn').forEach((btn, idx) => {
@@ -2230,9 +2227,7 @@ function buildInteractiveVisualizer(strategies) {
                 else btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'active');
             });
 
-            // Llamamos a la función que ya tienes instalada arriba
             if (typeof renderDiagramaArquitectonico === "function") {
-
                 renderDiagramaArquitectonico(strat.t, index);
             }
         };
@@ -2240,8 +2235,7 @@ function buildInteractiveVisualizer(strategies) {
         // Dibujamos el primer diagrama automáticamente
         renderSVGForStrategy(0);
     }
-    // ========================================================
-        }
+}
         
         async function runClimateAnalysis(){
     document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos psicrométricos históricos.</span>";
