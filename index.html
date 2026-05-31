@@ -527,7 +527,7 @@
                         else { selectedYears.push(y); }
                     }
                     renderSelectors();
-                    runClimateAnalysis();
+                    // ELIMINADO: runClimateAnalysis(); para evitar actualización automática
                 };
                 yb.appendChild(c);
             }
@@ -540,7 +540,7 @@
                     if(selectedMonths.includes(i)) { if(selectedMonths.length > 1) selectedMonths = selectedMonths.filter(v=>v!==i); }
                     else { selectedMonths.push(i); }
                     renderSelectors();
-                    runClimateAnalysis();
+                    // ELIMINADO: runClimateAnalysis(); para evitar actualización automática
                 };
                 mb.appendChild(c);
             });
