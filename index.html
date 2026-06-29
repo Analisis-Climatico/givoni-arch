@@ -2180,10 +2180,16 @@ function buildInteractiveVisualizer(strategies) {
     
     const maxT = Math.max(...tMaxes); 
     const minT = Math.min(...tMines);
-    const totalLluvia = rainMensual.reduce((a, b) => a + b, 0);
 
-    const lluviaVerano = isNorte ? (rainMensual[5] + rainMensual[6] + rainMensual[7]) : (rainMensual[11] + rainMensual[0] + rainMensual[1]);
-    const lluviaInvierno = isNorte ? (rainMensual[11] + rainMensual[0] + rainMensual[1]) : (rainMensual[5] + rainMensual[6] + rainMensual[7]);
+    // Filtramos la lluvia solo a los meses que el usuario seleccionó
+    const rainFiltrada = rainMensual.map((v, i) => selectedMonths.includes(i) ? v : 0);
+    const totalLluvia = rainFiltrada.reduce((a, b) => a + b, 0);
+
+    // Lluvia estacional también filtrada por meses seleccionados
+    const mesesVerano = isNorte ? [5, 6, 7] : [11, 0, 1];
+    const mesesInvierno = isNorte ? [11, 0, 1] : [5, 6, 7];
+    const lluviaVerano = mesesVerano.reduce((sum, m) => sum + (selectedMonths.includes(m) ? rainMensual[m] : 0), 0);
+    const lluviaInvierno = mesesInvierno.reduce((sum, m) => sum + (selectedMonths.includes(m) ? rainMensual[m] : 0), 0);
 
     let entorno = "";
     let descripcion = "";
@@ -2290,7 +2296,7 @@ function buildInteractiveVisualizer(strategies) {
     // =========================================================================
     // 6. IMPRESIÓN DEL RESULTADO Y UI
     // =========================================================================
-    let textResult = `<p>El análisis satelital para <strong>${ciudad}, ${pais}</strong> indica una precipitación anual de <strong>${Math.round(totalLluvia)} mm</strong> y elevación de <strong>${Math.round(altitud)} msnm</strong>. Temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>.</p>`;
+    let textResult = `<p>El análisis satelital para <strong>${ciudad}, ${pais}</strong> indica una precipitación de <strong>${Math.round(totalLluvia)} mm</strong> en el periodo seleccionado y elevación de <strong>${Math.round(altitud)} msnm</strong>. Temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>.</p>`;
     textResult += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. <br>${descripcion}</p>`;
 
     document.getElementById('analysis-text').innerHTML = textResult;
