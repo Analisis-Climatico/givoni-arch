@@ -596,6 +596,7 @@
             } catch(e) {}
 
             const tooltip = d3.select('#chart-tooltip');
+            const linesGroup = g.append('g').attr('transform', 'translate(0,15)');
 
             data.forEach((d, i) => {
                 d.color = neonColors[i % neonColors.length];
@@ -608,11 +609,11 @@
                     points.push([x(t), y(hum)]);
                 }
                 
-                g.append('path').attr('id', `line-visible-${i}`).attr('class', 'climate-line').attr('d', d3.line().curve(d3.curveBasis)(points))
+                linesGroup.append('path').attr('id', `line-visible-${i}`).attr('class', 'climate-line').attr('d', d3.line().curve(d3.curveBasis)(points))
                     .attr('fill', 'none').attr('stroke', d.color).attr('stroke-width', 4).attr('stroke-linecap', 'round')
                     .style('filter', `drop-shadow(0 0 6px ${d.color})`).style('pointer-events', 'none');
 
-                g.append('path').attr('d', d3.line().curve(d3.curveBasis)(points)).attr('fill', 'none').attr('stroke', 'transparent').attr('stroke-width', 24)
+                linesGroup.append('path').attr('d', d3.line().curve(d3.curveBasis)(points)).attr('fill', 'none').attr('stroke', 'transparent').attr('stroke-width', 24)
                     .style('cursor', 'pointer')
                     .on('mouseover', (event) => {
                         d3.selectAll('.climate-line').style('opacity', 0.15);
