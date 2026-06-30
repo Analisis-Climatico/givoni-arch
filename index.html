@@ -2074,7 +2074,140 @@ function buildInteractiveVisualizer(strategies) {
     // Dibujamos la primera estrategia por defecto
     window.renderSVGForStrategy(0);
 }
-        async function updateAnalysis(data) {
+
+// =========================================================================
+// MOTOR DE CLASIFICACIÓN CLIMÁTICA KÖPPEN-GEIGER (fórmulas oficiales)
+// Recibe el perfil de 12 meses reales (independiente de selectedMonths) y
+// la latitud, y devuelve el código climático exacto (ej. "Csa", "Dfb", "Aw").
+// Esto reemplaza cualquier umbral inventado por el estándar científico
+// usado mundialmente, válido para cualquier ubicación del planeta.
+// =========================================================================
+function classifyKoppen(profile12, latitude) {
+    // profile12: array de 12 objetos {tMean, tMax, tMin, prec, hr}, índice 0 = Enero
+    const isNorte = latitude >= 0;
+    const tMeans = profile12.map(m => m.tMean);
+    const precs = profile12.map(m => m.prec);
+
+    const tAnnual = tMeans.reduce((a, b) => a + b, 0) / 12;
+    const tMaxMes = Math.max(...tMeans); // mes más cálido (por media mensual, criterio Köppen)
+    const tMinMes = Math.min(...tMeans); // mes más frío
+    const precAnnual = precs.reduce((a, b) => a + b, 0);
+    const mesesSobre10 = tMeans.filter(t => t >= 10).length;
+
+    // Meses de "verano" (mitad del año con más sol) y "invierno" según hemisferio
+    const idxVerano = isNorte ? [3,4,5,6,7,8] : [9,10,11,0,1,2];   // Abr-Sep / Oct-Mar
+    const idxInvierno = isNorte ? [9,10,11,0,1,2] : [3,4,5,6,7,8];
+    const precVerano = idxVerano.reduce((s, i) => s + precs[i], 0);
+    const precInvierno = idxInvierno.reduce((s, i) => s + precs[i], 0);
+    const pctVerano = precAnnual > 0 ? precVerano / precAnnual : 0;
+
+    // --- GRUPO B: ÁRIDO (se evalúa primero, como en el estándar oficial) ---
+    let umbral = tAnnual * 20;
+    if (pctVerano >= 0.7) umbral += 280;
+    else if (pctVerano >= 0.3) umbral += 140;
+    // si pctVerano < 0.3, +0
+
+    if (precAnnual < umbral) {
+        const esDesierto = precAnnual < umbral * 0.5;
+        const letra2 = esDesierto ? "W" : "S";
+        const letra3 = tAnnual >= 18 ? "h" : "k";
+        return {
+            codigo: `B${letra2}${letra3}`,
+            grupo: "B",
+            nombre: esDesierto
+                ? (letra3 === "h" ? "Desierto cálido" : "Desierto frío")
+                : (letra3 === "h" ? "Estepa cálida (semiárido)" : "Estepa fría (semiárido)"),
+            tAnnual, tMaxMes, tMinMes, precAnnual
+        };
+    }
+
+    // --- GRUPO A: TROPICAL (todos los meses con media >= 18°C) ---
+    if (tMinMes >= 18) {
+        const precMinMes = Math.min(...precs);
+        if (precMinMes >= 60) {
+            return { codigo: "Af", grupo: "A", nombre: "Tropical lluvioso (selva)", tAnnual, tMaxMes, tMinMes, precAnnual };
+        }
+        // Umbral Am: 100 - (precAnnual / 25)
+        const umbralAm = 100 - (precAnnual / 25);
+        if (precMinMes >= umbralAm) {
+            return { codigo: "Am", grupo: "A", nombre: "Tropical monzónico", tAnnual, tMaxMes, tMinMes, precAnnual };
+        }
+        // Aw o As: dry season en el mes de menor precipitación
+        const idxMesSeco = precs.indexOf(precMinMes);
+        const esSecoEnVerano = idxVerano.includes(idxMesSeco);
+        return {
+            codigo: esSecoEnVerano ? "As" : "Aw",
+            grupo: "A",
+            nombre: "Tropical de sabana (lluvias y secas)",
+            tAnnual, tMaxMes, tMinMes, precAnnual
+        };
+    }
+
+    // --- GRUPO E: POLAR (mes más cálido < 10°C) ---
+    if (tMaxMes < 10) {
+        return {
+            codigo: tMaxMes < 0 ? "EF" : "ET",
+            grupo: "E",
+            nombre: tMaxMes < 0 ? "Casquete polar (hielo)" : "Tundra polar",
+            tAnnual, tMaxMes, tMinMes, precAnnual
+        };
+    }
+
+    // --- DISTINCIÓN C vs D: usamos el umbral 0°C (estándar moderno Beck et al.) ---
+    const esGrupoD = tMinMes < 0;
+    const grupoLetra = esGrupoD ? "D" : "C";
+
+    // Segunda letra: régimen de precipitación
+    const precInviernoMax = Math.max(...idxInvierno.map(i => precs[i]));
+    const precVeranoMin = Math.min(...idxVerano.map(i => precs[i]));
+    const precVeranoMax = Math.max(...idxVerano.map(i => precs[i]));
+    const precInviernoMin = Math.min(...idxInvierno.map(i => precs[i]));
+
+    let letra2 = "f"; // por defecto: sin estación seca marcada
+    // Cs: verano seco (al menos 3x más lluvia en el mes más lluvioso de invierno que en el más seco de verano, y ese mes de verano < 40mm)
+    if (precInviernoMax >= precVeranoMin * 3 && precVeranoMin < 40) {
+        letra2 = "s";
+    }
+    // Cw/Dw: invierno seco (al menos 10x más lluvia en el mes más lluvioso de verano que en el más seco de invierno)
+    else if (precVeranoMax >= precInviernoMin * 10) {
+        letra2 = "w";
+    }
+
+    // Tercera letra: calor del verano
+    let letra3 = "b";
+    if (tMaxMes >= 22) {
+        letra3 = "a";
+    } else if (mesesSobre10 >= 4) {
+        letra3 = "b";
+    } else {
+        letra3 = "c";
+    }
+    // Dfd/Dwd/Dsd: invierno extremadamente frío (mes más frío bajo -38°C)
+    if (esGrupoD && tMinMes < -38) {
+        letra3 = "d";
+    }
+
+    const nombres = {
+        Cfa: "Subtropical húmedo", Cfb: "Oceánico templado", Cfc: "Oceánico subpolar",
+        Cwa: "Subtropical con invierno seco", Cwb: "Templado de altura (invierno seco)", Cwc: "Templado frío de altura (invierno seco)",
+        Csa: "Mediterráneo de verano cálido", Csb: "Mediterráneo de verano templado", Csc: "Mediterráneo de verano fresco",
+        Dfa: "Continental húmedo (verano cálido)", Dfb: "Continental húmedo (verano templado)", Dfc: "Subártico", Dfd: "Subártico extremo",
+        Dwa: "Continental con invierno seco (verano cálido)", Dwb: "Continental con invierno seco (verano templado)",
+        Dwc: "Subártico con invierno seco", Dwd: "Subártico extremo con invierno seco",
+        Dsa: "Continental mediterráneo (verano cálido)", Dsb: "Continental mediterráneo (verano templado)",
+        Dsc: "Subártico mediterráneo", Dsd: "Subártico mediterráneo extremo"
+    };
+    const codigo = `${grupoLetra}${letra2}${letra3}`;
+
+    return {
+        codigo,
+        grupo: grupoLetra,
+        nombre: nombres[codigo] || `Templado/Continental (${codigo})`,
+        tAnnual, tMaxMes, tMinMes, precAnnual
+    };
+}
+
+async function updateAnalysis(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
     
@@ -2199,126 +2332,119 @@ function buildInteractiveVisualizer(strategies) {
 
     let entorno = "";
     let descripcion = "";
+    let koppen = null;
 
     // =========================================================================
-    // 4. DIAGNÓSTICO CUALITATIVO DEL ENTORNO
+    // 4a. CLASIFICACIÓN CLIMÁTICA REAL (Köppen-Geiger sobre los 12 meses)
     // =========================================================================
-    // Lógica de clasificación:
-    //   · Prioridad 1 — Altitud extrema (condiciona todo lo demás)
-    //   · Prioridad 2 — Aridez (poca lluvia anual + baja HR invalida otras categorías)
-    //   · Prioridad 3 — Temperatura mínima absoluta (define si hay invierno real)
-    //   · Prioridad 4 — Temperatura máxima absoluta + latitud (trópico vs templado)
-    //   · Prioridad 5 — Amplitud térmica (continental vs oceánico)
-    //   · Prioridad 6 — Estacionalidad hídrica (mediterráneo vs subtropical húmedo)
+    // Usamos window.globalClimateProfile (12 meses reales, ya calculado en
+    // runClimateAnalysis, independiente de los meses que el usuario seleccionó)
+    // para clasificar según el estándar científico mundial, no umbrales propios.
+    if (window.globalClimateProfile && window.globalClimateProfile.length === 12) {
+        koppen = classifyKoppen(window.globalClimateProfile, lat);
+        entorno = `${koppen.nombre} (${koppen.codigo})`;
 
-    // =========================================================================
-    // 4a. ETIQUETA DEL GRUPO CLIMÁTICO (solo el nombre, sin descripción)
-    // =========================================================================
-    if (altitud >= 2800 && tMaxAbsoluta < 18) {
-        entorno = "Alta Montaña / Páramo Extremo";
-    } else if (altitud >= 1500 && tMaxAbsoluta < 26 && tMinAbsoluta > 2) {
-        entorno = "Templado de Altura / Valle Interandino";
-    } else if (totalLluvia < 250 || (totalLluvia < 450 && avgHR < 40)) {
-        if (tMaxAbsoluta >= 32)       entorno = "Desierto Cálido Extremo";
-        else if (tMinAbsoluta < 5)    entorno = "Desierto Frío / Estepa Gélida";
-        else                          entorno = "Semiárido / Estepa";
-    } else if (tMaxAbsoluta < 10) {
-        entorno = "Subártico / Tundra Polar";
-    } else if (tMinAbsoluta <= -8 && amplitud >= 25) {
-        entorno = "Continental Frío / Hemiboreal";
-    } else if (tMinAbsoluta < 0 && tMaxAbsoluta >= 22 && amplitud >= 20) {
-        entorno = "Continental de Verano Cálido";
-    } else if (tMinAbsoluta >= 18 && absLat <= 23) {
-        if (totalLluvia >= 1800 && avgHR >= 78)    entorno = "Ecuatorial / Selva Lluviosa";
-        else if (totalLluvia >= 800 && avgHR >= 65) entorno = "Tropical Húmedo / Costa Tropical";
-        else                                        entorno = "Tropical de Sabana / Monzón";
-    } else if (tMaxAbsoluta >= 28 && tMinAbsoluta >= 5 && avgHR >= 65) {
-        entorno = lluviaVerano >= lluviaInvierno * 1.3
-            ? "Subtropical Húmedo / Monzónico Costero"
-            : "Subtropical Seco de Verano / Mediterráneo Cálido";
-    } else if (tMaxAbsoluta >= 22 && tMinAbsoluta >= 2 && lluviaInvierno > lluviaVerano * 1.5 && avgHR < 68) {
-        entorno = "Mediterráneo / Verano Seco";
-    } else if (amplitud < 18 && totalLluvia >= 600 && avgHR >= 70) {
-        entorno = "Templado Oceánico / Marítimo";
-    } else if (tMinAbsoluta >= 0 && tMaxAbsoluta >= 20 && amplitud >= 15) {
-        entorno = "Templado Continental Suave";
+        // Ajuste de altitud: Köppen base no contempla elevación, pero a gran
+        // altitud el clima real es más frío que lo que sugiere la latitud.
+        // Lo anotamos como matiz sin alterar el código Köppen calculado.
+        if (altitud >= 2500 && (koppen.grupo === "A" || koppen.grupo === "B" || koppen.grupo === "C")) {
+            entorno += " — matizado por gran altitud";
+        }
     } else {
-        entorno = "Transición Templada";
+        // Fallback si por algún motivo no hay perfil de 12 meses disponible
+        entorno = "Clasificación no disponible";
     }
 
     // =========================================================================
-    // 4b. DESCRIPCIÓN MODULAR — 3 oraciones independientes por variable
+    // 4b. DESCRIPCIÓN MODULAR — derivada directamente del grupo/código Köppen
     // =========================================================================
-    // Cada oración se determina por su propia variable, independientemente
-    // del grupo asignado. Así la descripción es siempre coherente con los
-    // datos reales, sin importar en qué grupo caiga la etiqueta.
-
-    // --- ORACIÓN 1: Régimen térmico (basado en tMax, tMin y amplitud) ---
-    // El lenguaje usa gradientes ("tiende a", "se acerca a") en vez de
-    // categorías tajantes, para que zonas cercanas a un umbral no reciban
-    // frases contradictorias entre sí.
+    // Antes, estas 3 oraciones tenían su propia lógica de umbrales (tMaxAbsoluta,
+    // tMinAbsoluta, amplitud del periodo seleccionado), separada de Köppen.
+    // Eso permitía que la descripción contradijera la etiqueta, porque ambas
+    // podían "leer" la realidad climática de forma distinta.
+    //
+    // Ahora ambas vienen de la MISMA fuente: el objeto `koppen`, calculado con
+    // los 12 meses reales y la fórmula oficial. Es imposible que la descripción
+    // diga algo que la etiqueta no respalde, porque se deriva de ella.
     let oracionTermica = "";
-    if (tMinAbsoluta < -15) {
-        oracionTermica = `El verano apenas se insinúa frente a un invierno muy riguroso, con un contraste marcado entre ambas estaciones.`;
-    } else if (tMaxAbsoluta >= 30 && tMinAbsoluta <= 5) {
-        oracionTermica = `El año combina veranos muy calurosos con inviernos bastante fríos, generando una oscilación térmica notable entre estaciones.`;
-    } else if (tMaxAbsoluta >= 30 && amplitud >= 18) {
-        oracionTermica = `Hay un contraste estacional claro, con veranos calurosos e inviernos sensiblemente más frescos.`;
-    } else if (tMaxAbsoluta >= 30 && amplitud < 18) {
-        oracionTermica = `El calor se mantiene elevado durante buena parte del periodo, con poco alivio térmico entre el día y la noche.`;
-    } else if (tMinAbsoluta <= 3) {
-        oracionTermica = `El invierno puede acercarse o llegar a temperaturas de congelamiento, lo que pide especial atención térmica en esa estación.`;
-    } else if (tMaxAbsoluta >= 22) {
-        oracionTermica = `Las temperaturas se mantienen cálidas a moderadas durante el periodo, con una exigencia estacional moderada.`;
-    } else if (tMaxAbsoluta < 15) {
-        oracionTermica = `Las temperaturas tienden a ser bajas durante el periodo, orientando el diseño más hacia la conservación de calor que hacia la disipación.`;
-    } else {
-        oracionTermica = `El clima se mantiene templado y sin extremos marcados durante el periodo.`;
-    }
-
-    // --- ORACIÓN 2: Régimen hídrico (basado en totalLluvia, avgHR y estacionalidad) ---
     let oracionHidrica = "";
-    const ratioEstacional = lluviaInvierno > 0 ? lluviaVerano / lluviaInvierno : 99;
-    if (totalLluvia < 300) {
-        oracionHidrica = `La zona tiende a la aridez, una condición que pesa más que cualquier otro factor climático.`;
-    } else if (totalLluvia < 600 && avgHR < 55) {
-        oracionHidrica = `Las lluvias son limitadas y el ambiente tiende a ser seco, lo que pide cuidado con la ganancia solar.`;
-    } else if (totalLluvia >= 500 && lluviaInvierno > lluviaVerano * 1.4) {
-        oracionHidrica = `Las lluvias se concentran más en invierno, dejando los veranos relativamente secos.`;
-    } else if (totalLluvia >= 500 && ratioEstacional >= 1.4) {
-        oracionHidrica = `Las lluvias se concentran principalmente en la temporada cálida del año.`;
-    } else if (totalLluvia >= 1300 && avgHR >= 70) {
-        oracionHidrica = `La humedad ambiental es alta y constante durante todo el año, con lluvias frecuentes a lo largo del periodo.`;
-    } else if (totalLluvia >= 600 && avgHR >= 60) {
-        oracionHidrica = `Las lluvias son frecuentes y la humedad ambiental tiende a ser alta, lo que pide atención al control de la humedad interior.`;
-    } else {
-        oracionHidrica = `El régimen de lluvias se mantiene moderado, sin condiciones de aridez ni de saturación hídrica marcadas.`;
-    }
-    oracionHidrica += ` La humedad relativa promedio ronda el ${avgHR.toFixed(0)}%.`;
-
-    // --- ORACIÓN 3: Prioridad de diseño (cruza amplitud con tMax/tMin reales) ---
-    // Sigue bloqueando "protección solar" cuando el techo térmico es bajo,
-    // pero el umbral ahora es un rango (20-24°C) en vez de un corte exacto,
-    // y el lenguaje describe tendencias en vez de reglas absolutas.
     let oracionDiseno = "";
-    if (amplitud >= 32 && tMaxAbsoluta < 24) {
-        oracionDiseno = `Esto refleja un verano corto y fresco frente a un invierno muy marcado, más que un clima cálido. La prioridad es la compacidad y un buen aislamiento para conservar el calor, con poca necesidad de protección solar.`;
-    } else if (tMaxAbsoluta < 22 && tMinAbsoluta <= 3) {
-        oracionDiseno = `Con un techo térmico bajo y posibilidad de heladas, el diseño debe enfocarse en captar y conservar el calor disponible, más que en protegerse de él.`;
-    } else if (tMaxAbsoluta < 22) {
-        oracionDiseno = `Con temperaturas que no suelen ser altas, conviene aprovechar y retener el calor disponible antes que protegerse de él.`;
-    } else if (amplitud >= 25) {
-        oracionDiseno = `El marcado contraste entre el día y la noche es un factor clave del diseño: conviene una envolvente capaz de dar sombra en las horas de calor y conservar el calor cuando baja la temperatura.`;
-    } else if (amplitud >= 16 && tMaxAbsoluta >= 26) {
-        oracionDiseno = `El diseño se beneficia de responder a dos necesidades: sombra en las horas más calurosas y captación de calor cuando refresca.`;
-    } else if (amplitud < 14 && avgHR >= 68) {
-        oracionDiseno = `Con poco contraste térmico pero bastante humedad, conviene priorizar que el aire circule de forma constante en los espacios.`;
-    } else if (amplitud < 14 && tMaxAbsoluta >= 28) {
-        oracionDiseno = `Aunque el contraste térmico es bajo, el calor sostenido pide una buena protección solar y sistemas de enfriamiento pasivo.`;
-    } else if (tMinAbsoluta <= -3) {
-        oracionDiseno = `Los inviernos fríos hacen del aislamiento continuo y una envolvente bien sellada una prioridad alta del diseño.`;
+
+    if (koppen) {
+        const g = koppen.grupo;      // A, B, C, D, E
+        const cod = koppen.codigo;   // ej: Csa, Dfb, Aw, BWh
+        const letra2 = cod.length >= 2 ? cod[1] : "";
+        const letra3 = cod.length >= 3 ? cod[2] : "";
+
+        // --- ORACIÓN 1: Régimen térmico, según el GRUPO Köppen ---
+        if (g === "E") {
+            oracionTermica = `El clima es polar: incluso el mes más cálido del año apenas se acerca a una temperatura templada, sin un verano térmico real.`;
+        } else if (g === "D") {
+            oracionTermica = letra3 === "a"
+                ? `El año combina veranos cálidos con inviernos muy fríos, marcando un fuerte contraste continental entre estaciones.`
+                : `El clima es continental, con inviernos fríos a muy fríos y veranos frescos a templados.`;
+        } else if (g === "C") {
+            if (letra3 === "a") {
+                oracionTermica = `Los veranos son calurosos y los inviernos suaves, sin riesgo relevante de heladas.`;
+            } else if (letra3 === "b") {
+                oracionTermica = `Las temperaturas son templadas durante todo el año, sin veranos extremos ni inviernos severos.`;
+            } else {
+                oracionTermica = `El clima es templado pero con veranos frescos, propio de zonas de mayor latitud o altitud.`;
+            }
+        } else if (g === "B") {
+            oracionTermica = cod[2] === "h"
+                ? `Las temperaturas son elevadas durante buena parte del año, características de un clima árido cálido.`
+                : `El clima presenta un contraste térmico notable entre el día y la noche, típico de las zonas áridas frías.`;
+        } else if (g === "A") {
+            oracionTermica = `El clima es cálido de forma constante durante todo el año, sin una estación fría definida.`;
+        } else {
+            oracionTermica = `Las temperaturas se mantienen dentro de un rango moderado durante el periodo analizado.`;
+        }
+
+        // --- ORACIÓN 2: Régimen hídrico, según GRUPO + segunda letra Köppen ---
+        if (g === "B") {
+            oracionHidrica = cod[1] === "W"
+                ? `La aridez es extrema: las lluvias son prácticamente inexistentes durante el año.`
+                : `Las lluvias son escasas, propias de un clima semiárido.`;
+        } else if (g === "A") {
+            if (letra2 === "f") {
+                oracionHidrica = `Llueve de forma abundante y regular durante todo el año, sin una estación seca marcada.`;
+            } else if (letra2 === "m") {
+                oracionHidrica = `El régimen es monzónico: hay una breve estación más seca, compensada por lluvias muy intensas el resto del año.`;
+            } else {
+                oracionHidrica = `Existe una alternancia clara entre una estación húmeda y una estación seca a lo largo del año.`;
+            }
+        } else if (letra2 === "s") {
+            oracionHidrica = `Las lluvias se concentran en la temporada fría, dejando los veranos marcadamente secos.`;
+        } else if (letra2 === "w") {
+            oracionHidrica = `Las lluvias se concentran en la temporada cálida, con inviernos notablemente secos.`;
+        } else {
+            oracionHidrica = `Las lluvias se distribuyen de forma relativamente regular a lo largo del año, sin una estación seca marcada.`;
+        }
+        oracionHidrica += ` La humedad relativa promedio ronda el ${avgHR.toFixed(0)}%.`;
+
+        // --- ORACIÓN 3: Prioridad de diseño, según GRUPO + letras Köppen ---
+        if (g === "E") {
+            oracionDiseno = `La prioridad absoluta es la conservación de calor: máxima compacidad, aislamiento riguroso y protección frente al viento, sin necesidad real de protección solar.`;
+        } else if (g === "D" && letra3 !== "a") {
+            oracionDiseno = `El frío invernal exige aislamiento térmico continuo y hermeticidad en la envolvente, priorizando la captación solar pasiva sobre la protección solar.`;
+        } else if (g === "D" && letra3 === "a") {
+            oracionDiseno = `El diseño debe responder a dos estaciones opuestas: buen aislamiento y captación solar para el invierno, junto con sombra y ventilación para el verano.`;
+        } else if (g === "B") {
+            oracionDiseno = cod[2] === "h"
+                ? `Conviene una envolvente masiva con alta inercia térmica, protección solar profunda y estrategias de enfriamiento evaporativo.`
+                : `Conviene una envolvente compacta que module bien el contraste entre el día caluroso y la noche fría, combinando masa térmica con buen aislamiento.`;
+        } else if (g === "A") {
+            oracionDiseno = `La prioridad es la ventilación cruzada constante y la protección frente a la lluvia, evitando la inercia térmica pesada que retendría el calor.`;
+        } else if (letra3 === "a") {
+            oracionDiseno = `Conviene una envolvente que ofrezca sombra y ventilación en la temporada cálida, sin descuidar el confort en los meses más frescos.`;
+        } else {
+            oracionDiseno = `Las condiciones permiten estrategias pasivas moderadas, con un equilibrio entre aislamiento, protección solar y ventilación natural.`;
+        }
     } else {
-        oracionDiseno = `Las condiciones permiten estrategias pasivas moderadas, con un equilibrio sencillo entre aislamiento, protección solar y ventilación natural.`;
+        oracionTermica = `No fue posible determinar el régimen térmico con los datos disponibles.`;
+        oracionHidrica = `No fue posible determinar el régimen hídrico con los datos disponibles. La humedad relativa promedio ronda el ${avgHR.toFixed(0)}%.`;
+        oracionDiseno = `Se recomienda revisar la disponibilidad de datos climáticos para esta ubicación.`;
     }
 
     descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
@@ -2508,6 +2634,8 @@ function buildInteractiveVisualizer(strategies) {
 
         // --- EXTRACTOR AUTOMÁTICO DE PERFIL DE 12 MESES GLOBALES ---
         let monthlyT = Array(12).fill(0).map(() => []);
+        let monthlyTMax = Array(12).fill(0).map(() => []);
+        let monthlyTMin = Array(12).fill(0).map(() => []);
         let monthlyP = Array(12).fill(0);
         let monthlyH = Array(12).fill(0).map(() => []);
 
@@ -2516,7 +2644,11 @@ function buildInteractiveVisualizer(strategies) {
             let mx = rawDaily.temperature_2m_max[idx];
             let mn = rawDaily.temperature_2m_min[idx];
             let prec = rawDaily.precipitation_sum[idx];
-            if(mx != null && mn != null) monthlyT[m].push((mx + mn) / 2);
+            if(mx != null && mn != null) {
+                monthlyT[m].push((mx + mn) / 2);
+                monthlyTMax[m].push(mx);
+                monthlyTMin[m].push(mn);
+            }
             if(prec != null) monthlyP[m] += prec;
         });
 
@@ -2528,6 +2660,8 @@ function buildInteractiveVisualizer(strategies) {
 
         window.globalClimateProfile = Array.from({length: 12}, (_, m) => ({
             tMean: d3.mean(monthlyT[m]) || 0,
+            tMax: d3.mean(monthlyTMax[m]) || 0,
+            tMin: d3.mean(monthlyTMin[m]) || 0,
             prec: monthlyP[m] || 0,
             hr: d3.mean(monthlyH[m]) || 0
         }));
