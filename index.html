@@ -2211,96 +2211,102 @@ function buildInteractiveVisualizer(strategies) {
     //   · Prioridad 5 — Amplitud térmica (continental vs oceánico)
     //   · Prioridad 6 — Estacionalidad hídrica (mediterráneo vs subtropical húmedo)
 
-    // --- GRUPO A: ALTA MONTAÑA / PÁRAMO ---
+    // =========================================================================
+    // 4a. ETIQUETA DEL GRUPO CLIMÁTICO (solo el nombre, sin descripción)
+    // =========================================================================
     if (altitud >= 2800 && tMaxAbsoluta < 18) {
         entorno = "Alta Montaña / Páramo Extremo";
-        descripcion = "Clima condicionado por la elevación extrema. Se caracteriza por una atmósfera diáfana que permite una alta incidencia de radiación solar directa durante el día, contrastando fuertemente con descensos térmicos severos durante la noche. El diseño arquitectónico debe enfocarse primordialmente en la conservación de la energía, requiriendo un factor de forma compacto, masa térmica de alta inercia al interior para estabilizar las oscilaciones y una envolvente con aislamiento térmico perimetral continuo.";
-    }
-    // --- GRUPO B: TEMPLADO DE ALTURA ---
-    else if (altitud >= 1500 && tMaxAbsoluta < 26 && tMinAbsoluta > 2) {
+    } else if (altitud >= 1500 && tMaxAbsoluta < 26 && tMinAbsoluta > 2) {
         entorno = "Templado de Altura / Valle Interandino";
-        descripcion = "Microclima regulado por la altitud que presenta una marcada oscilación térmica diaria. Las jornadas suelen ser de cálidas a templadas con buena insolación, seguidas de noches significativamente más frías. La estrategia bioclimática central exige captación solar pasiva diurna a través de acristalamientos orientados, combinada con inercia térmica estructural para almacenar el calor y liberarlo progresivamente durante el descenso nocturno.";
-    }
-    // --- GRUPO C: ÁRIDO / DESÉRTICO ---
-    // Se evalúa antes que temperatura porque la aridez extrema invalida otras categorías
-    else if (totalLluvia < 250 || (totalLluvia < 450 && avgHR < 40)) {
-        if (tMaxAbsoluta >= 32) {
-            entorno = "Desierto Cálido Extremo";
-            descripcion = "Entorno caracterizado por una aridez extrema, niveles mínimos de humedad relativa y temperaturas diurnas altamente estresantes. La radiación solar incidente es constante e intensa. Las prioridades de diseño exigen una protección solar profunda en todas las aberturas, cerramientos masivos con alta inercia térmica para provocar un desfase en la onda de calor, y sistemas de enfriamiento evaporativo pasivo acoplados con purgado térmico nocturno.";
-        } else if (tMinAbsoluta < 5) {
-            entorno = "Desierto Frío / Estepa Gélida";
-            descripcion = "Condiciones de alta aridez combinadas con una oscilación térmica severa, presentando inviernos rigurosos y aire sumamente seco. El reto arquitectónico radica en bloquear los vientos fríos desecantes mientras se maximiza la ganancia solar. Se recomienda volumetría compacta, muros acumuladores o galerías acristaladas para la temporada invernal, y aislamiento térmico estricto en toda la envolvente exterior.";
-        } else {
-            entorno = "Semiárido / Estepa";
-            descripcion = "Clima árido de temperaturas moderadas con precipitaciones muy limitadas y baja humedad ambiental. Las estrategias pasivas deben ser flexibles, priorizando masa térmica media-alta para estabilizar las temperaturas interiores, protecciones solares regulables en las fachadas más expuestas, y diseño que facilite el purgado nocturno convectivo durante los meses cálidos.";
-        }
-    }
-    // --- GRUPO D: SUBÁRTICO / POLAR ---
-    // T_max tan baja que apenas hay verano térmico
-    else if (tMaxAbsoluta < 10) {
+    } else if (totalLluvia < 250 || (totalLluvia < 450 && avgHR < 40)) {
+        if (tMaxAbsoluta >= 32)       entorno = "Desierto Cálido Extremo";
+        else if (tMinAbsoluta < 5)    entorno = "Desierto Frío / Estepa Gélida";
+        else                          entorno = "Semiárido / Estepa";
+    } else if (tMaxAbsoluta < 10) {
         entorno = "Subártico / Tundra Polar";
-        descripcion = "Climatología extrema donde las temperaturas rara vez superan márgenes de confort y los periodos bajo cero son predominantes. Es imperativo el diseño de una arquitectura de supervivencia térmica: planteamientos volumétricos aerodinámicos, super-aislamiento térmico continuo, acristalamientos múltiples de alta eficiencia y sistemas mecánicos de renovación de aire con recuperación de calor.";
-    }
-    // --- GRUPO E: CONTINENTAL FRÍO ---
-    // Inviernos bajo cero + veranos frescos; amplitud muy alta
-    else if (tMinAbsoluta <= -8 && amplitud >= 25) {
+    } else if (tMinAbsoluta <= -8 && amplitud >= 25) {
         entorno = "Continental Frío / Hemiboreal";
-        descripcion = "Condiciones dominadas por inviernos prolongados, gélidos y con alta incidencia de precipitaciones sólidas, contrastando con veranos breves y frescos. La prioridad absoluta es la defensa térmica y la conservación energética pasiva: factores de forma compactos, hermeticidad extrema contra infiltraciones de viento frío, y espesores máximos de aislamiento continuo en todos los componentes de la envolvente.";
-    }
-    // --- GRUPO F: CONTINENTAL TEMPLADO ---
-    // Inviernos fríos pero veranos cálidos; amplitud alta
-    else if (tMinAbsoluta < 0 && tMaxAbsoluta >= 22 && amplitud >= 20) {
+    } else if (tMinAbsoluta < 0 && tMaxAbsoluta >= 22 && amplitud >= 20) {
         entorno = "Continental de Verano Cálido";
-        descripcion = "Entorno definido por un contraste estacional severo, oscilando entre inviernos rigurosos y veranos cálidos con posibles picos de humedad. El edificio debe operar termodinámicamente de forma dual: envolvente altamente aislada y hermética para conservar la calefacción en invierno, complementada con cerramientos dinámicos que posibiliten el sombreado efectivo y la ventilación cruzada en la temporada cálida.";
-    }
-    // --- GRUPO G: ECUATORIAL / TROPICAL ---
-    // Sin invierno térmico real + latitudes bajas
-    else if (tMinAbsoluta >= 18 && absLat <= 23) {
-        if (totalLluvia >= 1800 && avgHR >= 78) {
-            entorno = "Ecuatorial / Selva Lluviosa";
-            descripcion = "Entorno de altas temperaturas sostenidas y cargas higrométricas críticas durante todo el año, con precipitaciones abundantes y ausencia de invierno térmico. El objetivo arquitectónico invariable es la disipación continua del calor y la prevención de condensaciones: envolventes ligeras y transpirables, cubiertas sobre-elevadas con aleros profundos para sombra y protección pluvial, y optimización de la ventilación cruzada en todos los espacios.";
-        } else if (totalLluvia >= 800 && avgHR >= 65) {
-            entorno = "Tropical Húmedo / Costa Tropical";
-            descripcion = "Calor sostenido durante el año con una alternancia estacional entre periodos de precipitación intensa y fases algo más secas. El diseño demanda protecciones solares estrictas, cubiertas para rápida evacuación pluvial, y cerramientos operables que permitan ventilación cruzada intensiva en la época húmeda.";
-        } else {
-            entorno = "Tropical de Sabana / Monzón";
-            descripcion = "Condiciones de calor continuo marcadas por una clara alternancia entre estación húmeda y seca. Se requiere arquitectura adaptable: protecciones solares en fachadas, diseño preparado para el manejo de agua pluvial, y cerramientos operables que respondan a ambas estaciones.";
-        }
-    }
-    // --- GRUPO H: SUBTROPICAL / CÁLIDO HÚMEDO ---
-    // Calor importante, sin invierno extremo, latitudes medias-bajas
-    else if (tMaxAbsoluta >= 28 && tMinAbsoluta >= 5 && avgHR >= 65) {
-        if (lluviaVerano >= lluviaInvierno * 1.3) {
-            entorno = "Subtropical Húmedo / Monzónico Costero";
-            descripcion = "Veranos de alta exigencia térmica con intensa precipitación e inviernos suaves. Demanda envolventes adaptables: ventilación estival agresiva y deshumidificación, combinadas con aislamiento térmico perimetral moderado para los meses más frescos.";
-        } else {
-            entorno = "Subtropical Seco de Verano / Mediterráneo Cálido";
-            descripcion = "Veranos secos y muy cálidos contrastando con inviernos suaves y lluviosos. La arquitectura debe gestionar el sobrecalentamiento estival mediante inercia térmica pesada, dispositivos de sombreamiento exterior móviles y purgado nocturno, garantizando a su vez captación solar pasiva en invierno.";
-        }
-    }
-    // --- GRUPO I: MEDITERRÁNEO CLÁSICO ---
-    // Veranos secos, inviernos lluviosos, amplitud moderada
-    else if (tMaxAbsoluta >= 22 && tMinAbsoluta >= 2 && lluviaInvierno > lluviaVerano * 1.5 && avgHR < 68) {
+    } else if (tMinAbsoluta >= 18 && absLat <= 23) {
+        if (totalLluvia >= 1800 && avgHR >= 78)    entorno = "Ecuatorial / Selva Lluviosa";
+        else if (totalLluvia >= 800 && avgHR >= 65) entorno = "Tropical Húmedo / Costa Tropical";
+        else                                        entorno = "Tropical de Sabana / Monzón";
+    } else if (tMaxAbsoluta >= 28 && tMinAbsoluta >= 5 && avgHR >= 65) {
+        entorno = lluviaVerano >= lluviaInvierno * 1.3
+            ? "Subtropical Húmedo / Monzónico Costero"
+            : "Subtropical Seco de Verano / Mediterráneo Cálido";
+    } else if (tMaxAbsoluta >= 22 && tMinAbsoluta >= 2 && lluviaInvierno > lluviaVerano * 1.5 && avgHR < 68) {
         entorno = "Mediterráneo / Verano Seco";
-        descripcion = "Clima benigno con veranos secos y calurosos e inviernos frescos y lluviosos, atemperado en costas por masas de aire oceánico. El enfoque de diseño requiere control solar eficiente en los meses cálidos mediante aleros o celosías, integración de patios o galerías, y control higrométrico para prevenir patologías en invierno.";
-    }
-    // --- GRUPO J: OCEÁNICO / TEMPLADO HÚMEDO ---
-    // Amplitud baja, sin extremos, lluvias todo el año
-    else if (amplitud < 18 && totalLluvia >= 600 && avgHR >= 70) {
+    } else if (amplitud < 18 && totalLluvia >= 600 && avgHR >= 70) {
         entorno = "Templado Oceánico / Marítimo";
-        descripcion = "Clima moderado por influencia marítima, con precipitaciones regulares a lo largo del año, alta nubosidad y ausencia de picos de temperatura extremos. El diseño debe enfocarse en el control de la humedad y la maximización de la luz natural diurna, con envolventes transpirables y fachadas o cubiertas ventiladas para prevenir condensaciones intersticiales.";
-    }
-    // --- GRUPO K: TEMPLADO CONTINENTAL SUAVE ---
-    // Inviernos frescos pero sin heladas severas, veranos cálidos
-    else if (tMinAbsoluta >= 0 && tMaxAbsoluta >= 20 && amplitud >= 15) {
+    } else if (tMinAbsoluta >= 0 && tMaxAbsoluta >= 20 && amplitud >= 15) {
         entorno = "Templado Continental Suave";
-        descripcion = "Clima con estaciones bien diferenciadas pero sin extremos críticos: veranos cálidos y agradables e inviernos frescos sin heladas severas. El diseño requiere estrategias pasivas moderadas: aislamiento térmico estándar, protección solar en fachadas sur/oeste en verano, y aberturas orientadas a la captación solar en invierno.";
-    }
-    // --- RESPALDO ---
-    else {
+    } else {
         entorno = "Transición Templada";
-        descripcion = "Clima de características intermedias donde los factores termohigrométricos no alcanzan niveles de severidad crítica constante en ninguna época del año. El diseño arquitectónico goza de mayor libertad formal, requiriendo intervenciones pasivas estandarizadas: aislamiento moderado en la envolvente, protección solar calibrada en las fachadas con mayor asoleamiento diurno, y sistemas básicos de ventilación higiénica adecuada.";
     }
+
+    // =========================================================================
+    // 4b. DESCRIPCIÓN MODULAR — 3 oraciones independientes por variable
+    // =========================================================================
+    // Cada oración se determina por su propia variable, independientemente
+    // del grupo asignado. Así la descripción es siempre coherente con los
+    // datos reales, sin importar en qué grupo caiga la etiqueta.
+
+    // --- ORACIÓN 1: Régimen térmico (basado en tMax, tMin y amplitud) ---
+    let oracionTermica = "";
+    if (tMaxAbsoluta >= 32 && tMinAbsoluta <= 0) {
+        oracionTermica = `El régimen térmico es de contraste extremo: veranos tórridos (${tMaxAbsoluta.toFixed(1)}°C) e inviernos con heladas (${tMinAbsoluta.toFixed(1)}°C), con una amplitud de ${amplitud.toFixed(0)}°C que impone una oscilación térmica anual severa.`;
+    } else if (tMaxAbsoluta >= 32 && tMinAbsoluta > 0 && amplitud >= 20) {
+        oracionTermica = `Las temperaturas revelan un contraste estacional marcado: veranos cálidos de hasta ${tMaxAbsoluta.toFixed(1)}°C e inviernos frescos de ${tMinAbsoluta.toFixed(1)}°C, con una amplitud de ${amplitud.toFixed(0)}°C que condiciona estrategias tanto de verano como de invierno.`;
+    } else if (tMaxAbsoluta >= 32 && amplitud < 15) {
+        oracionTermica = `El calor es sostenido e intenso durante el periodo analizado, con máximas de ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C. La baja amplitud de ${amplitud.toFixed(0)}°C indica que el estrés térmico es constante sin alivio nocturno significativo.`;
+    } else if (tMaxAbsoluta >= 25 && tMinAbsoluta <= 0) {
+        oracionTermica = `El clima presenta veranos templado-cálidos (${tMaxAbsoluta.toFixed(1)}°C) e inviernos con heladas (${tMinAbsoluta.toFixed(1)}°C). La amplitud de ${amplitud.toFixed(0)}°C exige que la envolvente responda a demandas opuestas según la estación.`;
+    } else if (tMaxAbsoluta >= 25 && tMinAbsoluta > 0) {
+        oracionTermica = `Las temperaturas son cálidas a moderadas: máximas de ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, con una amplitud de ${amplitud.toFixed(0)}°C que define un clima de exigencia estacional moderada.`;
+    } else if (tMaxAbsoluta < 10) {
+        oracionTermica = `Las temperaturas son extremadamente bajas en todo el periodo: máximas de solo ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, condicionando un diseño orientado exclusivamente a la supervivencia térmica.`;
+    } else {
+        oracionTermica = `El régimen térmico es suave: máximas de ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, con una amplitud de ${amplitud.toFixed(0)}°C que no genera exigencias térmicas críticas en ninguna estación.`;
+    }
+
+    // --- ORACIÓN 2: Régimen hídrico (basado en totalLluvia, avgHR y estacionalidad) ---
+    let oracionHidrica = "";
+    const ratioEstacional = lluviaInvierno > 0 ? lluviaVerano / lluviaInvierno : 99;
+    if (totalLluvia < 250) {
+        oracionHidrica = `La aridez es extrema con solo ${Math.round(totalLluvia)} mm anuales y una humedad relativa del ${avgHR.toFixed(0)}%, condición que domina cualquier otra variable climática.`;
+    } else if (totalLluvia < 500 && avgHR < 50) {
+        oracionHidrica = `Las precipitaciones son escasas (${Math.round(totalLluvia)} mm anuales) y el ambiente es seco (HR ${avgHR.toFixed(0)}%), lo que requiere gestión cuidadosa de la ganancia solar y el purgado nocturno.`;
+    } else if (totalLluvia >= 500 && lluviaInvierno > lluviaVerano * 1.5) {
+        oracionHidrica = `El régimen hídrico es de tipo mediterráneo: precipitaciones concentradas en invierno (${Math.round(lluviaInvierno)} mm) y sequedad estival, con ${Math.round(totalLluvia)} mm anuales totales.`;
+    } else if (totalLluvia >= 500 && ratioEstacional >= 1.5) {
+        oracionHidrica = `Las lluvias son predominantemente estivales (${Math.round(lluviaVerano)} mm en verano frente a ${Math.round(lluviaInvierno)} mm en invierno), con ${Math.round(totalLluvia)} mm anuales totales y una HR del ${avgHR.toFixed(0)}%.`;
+    } else if (totalLluvia >= 1500 && avgHR >= 75) {
+        oracionHidrica = `La carga hídrica es crítica durante todo el año: ${Math.round(totalLluvia)} mm anuales distribuidos de forma regular y una humedad relativa del ${avgHR.toFixed(0)}% que genera riesgo constante de disconfort higrotérmico.`;
+    } else if (totalLluvia >= 700 && avgHR >= 65) {
+        oracionHidrica = `Las precipitaciones son abundantes (${Math.round(totalLluvia)} mm anuales) con una humedad relativa del ${avgHR.toFixed(0)}%, condición que requiere control permanente de la humedad interior y protección pluvial efectiva.`;
+    } else {
+        oracionHidrica = `El régimen hídrico es moderado con ${Math.round(totalLluvia)} mm anuales y una humedad relativa del ${avgHR.toFixed(0)}%, sin condiciones de aridez ni saturación hídrica extremas.`;
+    }
+
+    // --- ORACIÓN 3: Prioridad de diseño (basada en amplitud y HR combinadas) ---
+    let oracionDiseno = "";
+    if (amplitud >= 28) {
+        oracionDiseno = `La alta amplitud térmica (${amplitud.toFixed(0)}°C) es el factor determinante del diseño: se requiere alta inercia térmica en la masa estructural para amortiguar la oscilación, combinada con una envolvente capaz de funcionar tanto en modo de protección solar intensa como en modo de conservación de calor.`;
+    } else if (amplitud >= 18 && tMaxAbsoluta >= 28) {
+        oracionDiseno = `La amplitud de ${amplitud.toFixed(0)}°C exige una arquitectura de doble respuesta: dispositivos de sombreamiento exterior activos en verano y captación solar orientada en invierno, con masa térmica media-alta para estabilizar las oscilaciones diarias.`;
+    } else if (amplitud < 12 && avgHR >= 72) {
+        oracionDiseno = `La baja amplitud (${amplitud.toFixed(0)}°C) y la alta humedad (${avgHR.toFixed(0)}%) priorizan la ventilación continua y el control higrotérmico sobre la inercia térmica. Las envolventes deben ser transpirables y los espacios deben facilitar la circulación permanente del aire.`;
+    } else if (amplitud < 12 && tMaxAbsoluta >= 30) {
+        oracionDiseno = `A pesar de la baja amplitud (${amplitud.toFixed(0)}°C), el calor sostenido exige protección solar profunda en todas las orientaciones y sistemas de enfriamiento pasivo, evitando la inercia térmica pesada que retendría el calor nocturno.`;
+    } else if (tMinAbsoluta <= -5) {
+        oracionDiseno = `Los inviernos con heladas (${tMinAbsoluta.toFixed(1)}°C) hacen del aislamiento térmico continuo y la hermeticidad de la envolvente la prioridad absoluta, complementada con captación solar pasiva orientada para reducir la demanda de calefacción.`;
+    } else {
+        oracionDiseno = `Las condiciones climáticas permiten estrategias pasivas moderadas: aislamiento térmico estándar, protección solar calibrada según orientación y ventilación natural controlable son suficientes para garantizar el confort interior durante todo el año.`;
+    }
+
+    descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
 
     // =========================================================================
     // 5. EXTRACCIÓN DINÁMICA DE ESTRATEGIAS (Basado en el Top 2 de Zonas)
