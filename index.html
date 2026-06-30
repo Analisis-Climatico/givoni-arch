@@ -2254,21 +2254,27 @@ function buildInteractiveVisualizer(strategies) {
     // datos reales, sin importar en qué grupo caiga la etiqueta.
 
     // --- ORACIÓN 1: Régimen térmico (basado en tMax, tMin y amplitud) ---
+    // REGLA DE SEVERIDAD: si tMin < 0°C, JAMÁS se permite usar "suave" ni
+    // minimizar el riesgo térmico, sin importar qué tan bajo sea tMax.
     let oracionTermica = "";
-    if (tMaxAbsoluta >= 32 && tMinAbsoluta <= 0) {
+    if (tMaxAbsoluta < 15 && tMinAbsoluta < -15) {
+        oracionTermica = `El régimen térmico es de supervivencia: el pico máximo apenas alcanza ${tMaxAbsoluta.toFixed(1)}°C, un techo demasiado bajo para considerarse verano térmico, mientras el invierno desciende a ${tMinAbsoluta.toFixed(1)}°C. La amplitud de ${amplitud.toFixed(0)}°C refleja un verano breve y fresco que contrasta con un invierno extremo, no un clima cálido con noches frías.`;
+    } else if (tMaxAbsoluta >= 32 && tMinAbsoluta <= 0) {
         oracionTermica = `El régimen térmico es de contraste extremo: veranos tórridos (${tMaxAbsoluta.toFixed(1)}°C) e inviernos con heladas (${tMinAbsoluta.toFixed(1)}°C), con una amplitud de ${amplitud.toFixed(0)}°C que impone una oscilación térmica anual severa.`;
     } else if (tMaxAbsoluta >= 32 && tMinAbsoluta > 0 && amplitud >= 20) {
         oracionTermica = `Las temperaturas revelan un contraste estacional marcado: veranos cálidos de hasta ${tMaxAbsoluta.toFixed(1)}°C e inviernos frescos de ${tMinAbsoluta.toFixed(1)}°C, con una amplitud de ${amplitud.toFixed(0)}°C que condiciona estrategias tanto de verano como de invierno.`;
     } else if (tMaxAbsoluta >= 32 && amplitud < 15) {
         oracionTermica = `El calor es sostenido e intenso durante el periodo analizado, con máximas de ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C. La baja amplitud de ${amplitud.toFixed(0)}°C indica que el estrés térmico es constante sin alivio nocturno significativo.`;
-    } else if (tMaxAbsoluta >= 25 && tMinAbsoluta <= 0) {
-        oracionTermica = `El clima presenta veranos templado-cálidos (${tMaxAbsoluta.toFixed(1)}°C) e inviernos con heladas (${tMinAbsoluta.toFixed(1)}°C). La amplitud de ${amplitud.toFixed(0)}°C exige que la envolvente responda a demandas opuestas según la estación.`;
-    } else if (tMaxAbsoluta >= 25 && tMinAbsoluta > 0) {
+    } else if (tMinAbsoluta <= 0) {
+        // Cubre cualquier tMax (alto o bajo) cuando hay riesgo de congelamiento.
+        // Nunca debe llegar aquí una frase de "suave".
+        oracionTermica = `El invierno presenta riesgo real de congelamiento con mínimas de ${tMinAbsoluta.toFixed(1)}°C, lo que genera exigencias térmicas críticas en esa estación. El verano alcanza ${tMaxAbsoluta.toFixed(1)}°C, dejando una amplitud de ${amplitud.toFixed(0)}°C que la envolvente debe absorber sin comprometer la protección invernal.`;
+    } else if (tMaxAbsoluta >= 25) {
         oracionTermica = `Las temperaturas son cálidas a moderadas: máximas de ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, con una amplitud de ${amplitud.toFixed(0)}°C que define un clima de exigencia estacional moderada.`;
-    } else if (tMaxAbsoluta < 10) {
-        oracionTermica = `Las temperaturas son extremadamente bajas en todo el periodo: máximas de solo ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, condicionando un diseño orientado exclusivamente a la supervivencia térmica.`;
+    } else if (tMaxAbsoluta < 15) {
+        oracionTermica = `Las temperaturas son bajas en todo el periodo: máximas de solo ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, condicionando un diseño orientado a la conservación de calor más que a la disipación.`;
     } else {
-        oracionTermica = `El régimen térmico es suave: máximas de ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, con una amplitud de ${amplitud.toFixed(0)}°C que no genera exigencias térmicas críticas en ninguna estación.`;
+        oracionTermica = `El régimen térmico es templado y sin extremos: máximas de ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, con una amplitud de ${amplitud.toFixed(0)}°C dentro de rangos de confort moderado.`;
     }
 
     // --- ORACIÓN 2: Régimen hídrico (basado en totalLluvia, avgHR y estacionalidad) ---
@@ -2290,9 +2296,19 @@ function buildInteractiveVisualizer(strategies) {
         oracionHidrica = `El régimen hídrico es moderado con ${Math.round(totalLluvia)} mm anuales y una humedad relativa del ${avgHR.toFixed(0)}%, sin condiciones de aridez ni saturación hídrica extremas.`;
     }
 
-    // --- ORACIÓN 3: Prioridad de diseño (basada en amplitud y HR combinadas) ---
+    // --- ORACIÓN 3: Prioridad de diseño (cruza amplitud con tMax/tMin reales) ---
+    // REGLA DE BLOQUEO: si tMaxAbsoluta < 22°C, está PROHIBIDO mencionar
+    // "protección solar intensa" o "mitigación estival", sin importar la amplitud.
     let oracionDiseno = "";
-    if (amplitud >= 28) {
+    if (amplitud >= 35 && tMaxAbsoluta < 22) {
+        // Amplitud enorme pero techo bajo: clima polar/subártico, no hay verano que mitigar.
+        oracionDiseno = `La alta amplitud térmica (${amplitud.toFixed(0)}°C) refleja un verano breve y fresco que contrasta con un invierno extremo, no un clima cálido. El diseño requiere máxima compacidad volumétrica y aislamiento riguroso para la conservación de calor, descartando por completo la necesidad de mitigación estival o sombreamiento solar.`;
+    } else if (tMaxAbsoluta < 22 && tMinAbsoluta <= 0) {
+        // Techo bajo + heladas: prioridad total es captar y conservar calor, nunca protegerse del sol.
+        oracionDiseno = `Con un techo térmico de apenas ${tMaxAbsoluta.toFixed(1)}°C y mínimas de ${tMinAbsoluta.toFixed(1)}°C, el diseño debe maximizar la captación solar pasiva en todas las orientaciones posibles y blindar la envolvente con aislamiento continuo. Las estrategias de sombreamiento o protección solar no aplican en este contexto.`;
+    } else if (tMaxAbsoluta < 22) {
+        oracionDiseno = `Con temperaturas máximas que no superan los ${tMaxAbsoluta.toFixed(1)}°C, el confort depende de maximizar la captación solar y la inercia térmica para retener el calor disponible, no de protegerse de él. La ventilación y el sombreamiento son secundarios frente a la conservación térmica.`;
+    } else if (amplitud >= 28) {
         oracionDiseno = `La alta amplitud térmica (${amplitud.toFixed(0)}°C) es el factor determinante del diseño: se requiere alta inercia térmica en la masa estructural para amortiguar la oscilación, combinada con una envolvente capaz de funcionar tanto en modo de protección solar intensa como en modo de conservación de calor.`;
     } else if (amplitud >= 18 && tMaxAbsoluta >= 28) {
         oracionDiseno = `La amplitud de ${amplitud.toFixed(0)}°C exige una arquitectura de doble respuesta: dispositivos de sombreamiento exterior activos en verano y captación solar orientada en invierno, con masa térmica media-alta para estabilizar las oscilaciones diarias.`;
