@@ -2175,21 +2175,21 @@ function buildInteractiveVisualizer(strategies) {
     const absLat = Math.abs(lat);
     const isNorte = lat >= 0;
 
-    const tMaxes = data.map(d => d.tMax);
-    const tMines = data.map(d => d.tMin);
-    
-    const maxT = Math.max(...tMaxes); 
-    const minT = Math.min(...tMines);
+    // avgTMax y avgTMin ya están calculados arriba y reflejan los meses seleccionados.
+    // Los usamos directamente en el diagnóstico para consistencia total con la tabla mostrada.
 
-    // Filtramos la lluvia solo a los meses que el usuario seleccionó
+    // Lluvia: acumulamos solo los meses seleccionados y escalamos a equivalente anual
+    // para que los umbrales de diagnóstico (pensados en base anual) funcionen correctamente.
     const rainFiltrada = rainMensual.map((v, i) => selectedMonths.includes(i) ? v : 0);
-    const totalLluvia = rainFiltrada.reduce((a, b) => a + b, 0);
+    const lluviaPeriodo = rainFiltrada.reduce((a, b) => a + b, 0);
+    const numMesesSel = selectedMonths.length || 1;
+    const totalLluvia = (lluviaPeriodo / numMesesSel) * 12; // equivalente anual proyectado
 
-    // Lluvia estacional también filtrada por meses seleccionados
+    // Lluvia estacional: usamos los 12 meses de NASA para mantener la comparación verano/invierno.
     const mesesVerano = isNorte ? [5, 6, 7] : [11, 0, 1];
     const mesesInvierno = isNorte ? [11, 0, 1] : [5, 6, 7];
-    const lluviaVerano = mesesVerano.reduce((sum, m) => sum + (selectedMonths.includes(m) ? rainMensual[m] : 0), 0);
-    const lluviaInvierno = mesesInvierno.reduce((sum, m) => sum + (selectedMonths.includes(m) ? rainMensual[m] : 0), 0);
+    const lluviaVerano = mesesVerano.reduce((sum, m) => sum + rainMensual[m], 0);
+    const lluviaInvierno = mesesInvierno.reduce((sum, m) => sum + rainMensual[m], 0);
 
     let entorno = "";
     let descripcion = "";
@@ -2199,7 +2199,7 @@ function buildInteractiveVisualizer(strategies) {
     // =========================================================================
 
     // --- GRUPO A: ALTITUD EXTREMA Y PÁRAMO ---
-    if (altitud >= 2500 && maxT < 22) {
+    if (altitud >= 2500 && avgTMax < 22) {
         entorno = "Alta Montaña / Páramo Extremo";
         descripcion = "Clima condicionado por la elevación extrema. Se caracteriza por una atmósfera diáfana que permite una alta incidencia de radiación solar directa durante el día, contrastando fuertemente con descensos térmicos severos durante la noche. El diseño arquitectónico debe enfocarse primordialmente en la conservación de la energía, requiriendo un factor de forma compacto, masa térmica de alta inercia al interior para estabilizar las oscilaciones y una envolvente con aislamiento térmico perimetral continuo.";
     }
@@ -2210,7 +2210,7 @@ function buildInteractiveVisualizer(strategies) {
     }
     // --- GRUPO C: DESIERTOS Y ARIDEZ ---
     else if (totalLluvia < 300 || (totalLluvia < 500 && avgHR < 45)) {
-        if (maxT >= 33) {
+        if (avgTMax >= 33) {
             entorno = "Desierto Cálido Extremo";
             descripcion = "Entorno caracterizado por una aridez extrema, niveles mínimos de humedad relativa y temperaturas diurnas altamente estresantes. La radiación solar incidente es constante e intensa. Las prioridades de diseño exigen una protección solar profunda e integral en todas las aberturas, cerramientos masivos con alta inercia térmica para provocar un desfase en la onda de calor, y la implementación de sistemas de enfriamiento evaporativo pasivo acoplados con purgado térmico nocturno.";
         } else {
@@ -2223,7 +2223,7 @@ function buildInteractiveVisualizer(strategies) {
         descripcion = "Clima de transición caracterizado por precipitaciones limitadas, baja humedad ambiental y un notable contraste térmico entre el día y la noche. Las estrategias de aclimatación pasiva deben ser flexibles, priorizando el uso de masa térmica media-alta para estabilizar las temperaturas interiores, protecciones solares regulables en las fachadas más expuestas, y un diseño que facilite el purgado nocturno convectivo durante los meses cálidos.";
     }
     // --- GRUPO D: TROPICALES Y ECUATORIALES ---
-    else if (minT >= 17 && absLat <= 25) {
+    else if (avgTMin >= 17 && absLat <= 25) {
         if (totalLluvia >= 1500 && avgHR >= 75) {
             entorno = "Ecuatorial / Selva Lluviosa";
             descripcion = "Entorno de altas temperaturas sostenidas y cargas higrométricas críticas a lo largo de todo el año, con precipitaciones abundantes y ausencia de un invierno térmico. El objetivo arquitectónico invariable es la disipación continua del calor y la prevención de condensaciones. Es mandatorio el uso de envolventes ligeras y altamente transpirables, cubiertas sobre-elevadas con aleros profundos para sombra y protección pluvial, y la optimización de la ventilación cruzada en todos los espacios.";
@@ -2233,8 +2233,8 @@ function buildInteractiveVisualizer(strategies) {
         }
     }
     // --- GRUPO E: MEDITERRÁNEOS Y CALIFORNIANOS ---
-    else if (maxT >= 24 && lluviaInvierno > (lluviaVerano * 1.2) && avgHR < 65) {
-        if (maxT >= 30) {
+    else if (avgTMax >= 24 && lluviaInvierno > (lluviaVerano * 1.2) && avgHR < 65) {
+        if (avgTMax >= 30) {
             entorno = "Mediterráneo Continentalizado / Verano Seco";
             descripcion = "Estacionalidad muy marcada con veranos de alta exigencia térmica y total ausencia de precipitaciones, seguidos de inviernos frescos y lluviosos. La arquitectura debe operar de forma dual. Para el estío, es vital mitigar el sobrecalentamiento mediante el uso de inercia térmica pesada al interior, dispositivos de sombreamiento exterior móviles y purgado nocturno. Para el invierno, se debe garantizar la captación solar pasiva y la adecuada conservación del calor interior.";
         } else {
@@ -2243,13 +2243,13 @@ function buildInteractiveVisualizer(strategies) {
         }
     }
     // --- GRUPO F: SUBTROPICALES HÚMEDOS ---
-    else if (maxT >= 25 && minT >= -4 && lluviaVerano >= lluviaInvierno && avgHR >= 65) {
+    else if (avgTMax >= 25 && avgTMin >= -4 && lluviaVerano >= lluviaInvierno && avgHR >= 65) {
         entorno = "Subtropical Húmedo / Monzónico Costero";
         descripcion = "Régimen climático de alta exigencia estacional. Los veranos combinan altas temperaturas con intensa precipitación, elevando exponencialmente el riesgo de disconfort por bochorno; mientras que los inviernos registran descensos térmicos significativos. Demanda envolventes altamente adaptables: sistemas que faciliten una ventilación estival agresiva y deshumidificación, combinados con niveles adecuados de aislamiento térmico perimetral para reducir las pérdidas energéticas en los meses fríos.";
     }
     // --- GRUPO G: CONTINENTALES ---
-    else if (minT < -4 && maxT >= 18) {
-        if (maxT >= 25) {
+    else if (avgTMin < -4 && avgTMax >= 18) {
+        if (avgTMax >= 25) {
             entorno = "Continental de Verano Cálido";
             descripcion = "Entorno definido por un contraste estacional severo, oscilando entre inviernos rigurosos y veranos que pueden alcanzar temperaturas sofocantes con picos de humedad. El edificio debe funcionar termodinámicamente casi como dos estructuras distintas: requiere una envolvente altamente aislada y hermética para conservar la calefacción en invierno, complementada con cerramientos dinámicos que posibiliten el sombreado efectivo y la ventilación cruzada durante la temporada cálida.";
         } else {
@@ -2258,12 +2258,12 @@ function buildInteractiveVisualizer(strategies) {
         }
     }
     // --- GRUPO H: OCEÁNICOS ---
-    else if (maxT < 25 && minT >= -4 && avgHR >= 70) {
+    else if (avgTMax < 25 && avgTMin >= -4 && avgHR >= 70) {
         entorno = "Templado Oceánico / Marítimo";
         descripcion = "Clima moderado por la influencia marítima, caracterizado por precipitaciones regulares a lo largo de todo el año, alta nubosidad y ausencia de picos de temperatura extremos. El diseño arquitectónico debe enfocarse prioritariamente en el control de la humedad y la maximización de la luz natural diurna mediante vanos amplios. Se recomienda el uso de envolventes transpirables y sistemas de fachadas o cubiertas ventiladas para prevenir condensaciones intersticiales severas.";
     }
     // --- GRUPO I: SUBÁRTICO Y POLAR ---
-    else if (maxT < 18 && minT < -4) {
+    else if (avgTMax < 18 && avgTMin < -4) {
         entorno = "Subártico / Tundra Polar";
         descripcion = "Climatología extrema donde las temperaturas rara vez superan márgenes de confort y los periodos bajo cero son predominantes. Es imperativo el diseño de una arquitectura de supervivencia térmica: planteamientos volumétricos aerodinámicos para desviar vientos y acumulación de nieve, elevación estructural si existe permafrost, super-aislamiento térmico continuo, acristalamientos múltiples de alta eficiencia y sistemas mecánicos de renovación de aire con recuperación de calor.";
     }
@@ -2296,7 +2296,7 @@ function buildInteractiveVisualizer(strategies) {
     // =========================================================================
     // 6. IMPRESIÓN DEL RESULTADO Y UI
     // =========================================================================
-    let textResult = `<p>El análisis satelital para <strong>${ciudad}, ${pais}</strong> indica una precipitación de <strong>${Math.round(totalLluvia)} mm</strong> en el periodo seleccionado y elevación de <strong>${Math.round(altitud)} msnm</strong>. Temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>.</p>`;
+    let textResult = `<p>El análisis para <strong>${ciudad}, ${pais}</strong> indica una precipitación de <strong>${Math.round(lluviaPeriodo)} mm</strong> en el periodo seleccionado. Temperatura máxima promedio de <strong>${avgTMax.toFixed(1)}°C</strong> y mínima de <strong>${avgTMin.toFixed(1)}°C</strong>.</p>`;
     textResult += `<p class="mt-4">Diagnóstico Geoclimático: <strong>${entorno}</strong>. <br>${descripcion}</p>`;
 
     document.getElementById('analysis-text').innerHTML = textResult;
