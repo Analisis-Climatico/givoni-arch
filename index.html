@@ -2361,7 +2361,9 @@ async function updateAnalysis(data) {
     // runClimateAnalysis, independiente de los meses que el usuario seleccionó)
     // para clasificar según el estándar científico mundial, no umbrales propios.
     if (window.globalClimateProfile && window.globalClimateProfile.length === 12) {
+        console.log('=== PERFIL KÖPPEN ===', JSON.stringify(window.globalClimateProfile.map(m => m ? {tMean: m.tMean?.toFixed(1), prec: m.prec?.toFixed(0)} : 'NULL')));
         koppen = classifyKoppen(window.globalClimateProfile, lat);
+        console.log('=== RESULTADO KÖPPEN ===', koppen);
 
         if (koppen) {
             entorno = `${koppen.nombre} (${koppen.codigo})`;
@@ -2667,15 +2669,17 @@ async function updateAnalysis(data) {
             };
 
             const profileCurrent = buildMonthlyProfile(data.daily, data.hourly);
+            console.log('=== PROFILE CURRENT ===', JSON.stringify(profileCurrent.map(m => m ? {tMean: m.tMean?.toFixed(1), prec: m.prec?.toFixed(0)} : 'NULL')));
             let profileFinal = profileCurrent;
 
             if (esCurrent && dataPrev && dataPrev.daily && dataPrev.hourly) {
                 const profilePrev = buildMonthlyProfile(dataPrev.daily, dataPrev.hourly);
-                // Slot por slot: usamos el año en curso si tiene datos, si no, el anterior
+                console.log('=== PROFILE PREV ===', JSON.stringify(profilePrev.map(m => m ? {tMean: m.tMean?.toFixed(1), prec: m.prec?.toFixed(0)} : 'NULL')));
                 profileFinal = profileCurrent.map((slot, m) => slot !== null ? slot : profilePrev[m]);
             }
 
             window.globalClimateProfile = profileFinal;
+            console.log('=== GLOBAL PROFILE SET, length ===', window.globalClimateProfile.length, window.globalClimateProfile);
 
             // rawDaily/rawHourly para el extractor legacy que viene abajo — los dejamos
             // apuntando a los datos del año en curso (ya se usó para results arriba)
