@@ -2484,62 +2484,18 @@ async function updateAnalysis(data) {
         }
         oracionHidrica += ` La humedad relativa promedio ronda el ${avgHR.toFixed(0)}%.`;
 
-        // --- ORACIÓN 3: Prioridad de diseño ---
-        if (esAltitud) {
-            oracionDiseno = altitud >= 3500
-                ? `El diseño debe priorizar la captación solar pasiva y el aislamiento térmico continuo para compensar las noches frías, aprovechando la alta radiación solar diurna característica de estas elevaciones.`
-                : `Conviene una envolvente con buena inercia térmica para estabilizar las oscilaciones entre el día cálido y la noche fresca, complementada con captación solar orientada y protección frente al viento.`;
-        } else if (g === "E") {
-            oracionDiseno = `La prioridad absoluta es la conservación de calor: máxima compacidad, aislamiento riguroso y protección frente al viento, sin necesidad real de protección solar.`;
-        } else if (g === "D" && letra3 !== "a") {
-            oracionDiseno = `El frío invernal exige aislamiento térmico continuo y hermeticidad en la envolvente, priorizando la captación solar pasiva sobre la protección solar.`;
-        } else if (g === "D" && letra3 === "a") {
-            oracionDiseno = `El diseño debe responder a dos estaciones opuestas: buen aislamiento y captación solar para el invierno, junto con sombra y ventilación para el verano.`;
-        } else if (g === "B") {
-            oracionDiseno = cod[2] === "h"
-                ? `Conviene una envolvente masiva con alta inercia térmica, protección solar profunda y estrategias de enfriamiento evaporativo.`
-                : `El diseño exige reversibilidad estacional: aislamiento térmico continuo para retener el calor durante los meses fríos, combinado obligatoriamente con protecciones solares exteriores y ventilación para disipar las cargas térmicas en verano.`;
-        } else if (g === "A") {
-            oracionDiseno = `La prioridad es la ventilación cruzada constante y la protección frente a la lluvia, evitando la inercia térmica pesada que retendría el calor.`;
-        } else if (letra3 === "a") {
-            oracionDiseno = `Conviene una envolvente que ofrezca sombra y ventilación en la temporada cálida, sin descuidar el confort en los meses más frescos.`;
-        } else {
-            oracionDiseno = `Las condiciones permiten estrategias pasivas moderadas, con un equilibrio entre aislamiento, protección solar y ventilación natural.`;
-        }
+        // --- ORACIÓN 3: eliminada del resumen general ---
+        // Las estrategias de diseño se muestran en su propio apartado.
+        // Incluirlas aquí generaba contradicciones con las recomendaciones
+        // específicas del punto de estrategias.
+        oracionDiseno = "";
     } else {
         oracionTermica = `No fue posible determinar el régimen térmico con los datos disponibles.`;
         oracionHidrica = `No fue posible determinar el régimen hídrico con los datos disponibles. La humedad relativa promedio ronda el ${avgHR.toFixed(0)}%.`;
-        oracionDiseno = `Se recomienda revisar la disponibilidad de datos climáticos para esta ubicación.`;
+        oracionDiseno = "";
     }
 
-    descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
-
-    // =========================================================================
-    // 4c. CORTAFUEGOS TERMODINÁMICO UNIVERSAL
-    // =========================================================================
-    // Filtro final que sobrescribe oracionDiseno si las temperaturas REALES
-    // del periodo seleccionado contradicen las recomendaciones de Köppen.
-    // Köppen clasifica el clima anual; el usuario puede haber seleccionado
-    // solo meses fríos, lo que hace incoherente hablar de "sombra en verano".
-    //
-    // REGLA 1 — BLOQUEO DE VENTILACIÓN/SOMBRA: si tMaxAbsoluta < 22°C,
-    // está prohibido recomendar sombreamiento o ventilación estival.
-    // REGLA 2 — BLOQUEO DE CAPTACIÓN SOLAR: si tMinAbsoluta > 15°C,
-    // está prohibido recomendar aislamiento o captación solar pasiva invernal.
-    const textoFrio = oracionDiseno.match(/ventilación|sombra|sombreamiento|estival|verano|solar exterior|protección solar/i);
-    const textoCálido = oracionDiseno.match(/aislamiento|captación solar|calefacción|invierno|frío|helada/i);
-
-    if (tMaxAbsoluta < 22 && textoFrio) {
-        // El texto recomienda estrategias de calor pero el periodo es frío
-        oracionDiseno = tMinAbsoluta <= 0
-            ? `El periodo analizado presenta frío real con riesgo de heladas. La prioridad es el aislamiento continuo, la hermeticidad de la envolvente y la captación solar pasiva orientada. Las estrategias de sombreamiento o ventilación estival no aplican en este contexto.`
-            : `Con temperaturas que no alcanzan niveles altos, el confort depende de retener el calor disponible. Conviene buena inercia térmica y captación solar, sin necesidad de protección solar intensa.`;
-        descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
-    } else if (tMinAbsoluta > 15 && textoCálido) {
-        // El texto recomienda estrategias de frío pero el periodo es cálido
-        oracionDiseno = `El periodo analizado es cálido en todo su rango. La prioridad es la ventilación cruzada, la protección solar en fachadas expuestas y evitar la acumulación de calor en la masa estructural.`;
-        descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
-    }
+    descripcion = `${oracionTermica} ${oracionHidrica}`.trim();
     // =========================================================================
     let recs = [];
     
