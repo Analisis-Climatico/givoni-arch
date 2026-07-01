@@ -2361,15 +2361,13 @@ async function updateAnalysis(data) {
     // runClimateAnalysis, independiente de los meses que el usuario seleccionó)
     // para clasificar según el estándar científico mundial, no umbrales propios.
     if (window.globalClimateProfile && window.globalClimateProfile.length === 12) {
-        // Reemplazamos la precipitación de Open-Meteo (que falla en muchas zonas)
-        // con los datos de NASA POWER (rainMensual), que son climatológicos anuales
-        // y funcionan de forma fiable en cualquier parte del mundo.
         window.globalClimateProfile = window.globalClimateProfile.map((slot, m) => {
             if (slot === null) return { tMean: null, tMax: null, tMin: null, prec: rainMensual[m], hr: null };
             return { ...slot, prec: rainMensual[m] };
         });
-
+        console.log('rainMensual total:', rainMensual.reduce((a,b)=>a+b,0).toFixed(0), '| valores:', rainMensual.map(v=>v.toFixed(0)));
         koppen = classifyKoppen(window.globalClimateProfile, lat);
+        console.log('Köppen resultado:', koppen?.codigo, 'precAnnual:', koppen?.precAnnual?.toFixed(0));
 
         if (koppen) {
             entorno = `${koppen.nombre} (${koppen.codigo})`;
