@@ -2372,13 +2372,27 @@ async function updateAnalysis(data) {
         koppen = classifyKoppen(window.globalClimateProfile, lat);
 
         if (koppen) {
-            entorno = `${koppen.nombre} (${koppen.codigo})`;
+            // --- AJUSTE POR ALTITUD EN ZONAS TROPICALES ---
+            // Köppen clasifica el clima térmico pero no distingue entre un Cfb
+            // costero de latitudes medias (Londres, Vancouver) y un Cfb de alta
+            // montaña ecuatorial (Quito, Bogotá, Nairobi). La etiqueta muta
+            // cuando coinciden: código Cfb/Cwb/Cfc + latitud tropical (|lat|<23.5°)
+            // + altitud real > 1500 msnm, o altitud > 2500 msnm independientemente
+            // del código C, para reflejar la realidad geográfica.
+            const esCfbTropical = absLat <= 23.5 && altitud >= 1500 &&
+                (koppen.codigo === "Cfb" || koppen.codigo === "Cwb" || koppen.codigo === "Cfc" || koppen.codigo === "Cwc");
+            const esAlturaExtrema = altitud >= 2500 &&
+                (koppen.grupo === "A" || koppen.grupo === "C");
 
-            // Ajuste de altitud: Köppen base no contempla elevación, pero a gran
-            // altitud el clima real es más frío que lo que sugiere la latitud.
-            // Lo anotamos como matiz sin alterar el código Köppen calculado.
-            if (altitud >= 2500 && (koppen.grupo === "A" || koppen.grupo === "B" || koppen.grupo === "C")) {
-                entorno += " — matizado por gran altitud";
+            if (esCfbTropical || esAlturaExtrema) {
+                const subTipo = altitud >= 3500
+                    ? "Páramo / Alto Andino"
+                    : altitud >= 2500
+                        ? "Ecuatorial de Montaña / Templado de Altitud"
+                        : "Templado de Altitud / Tropical de Altura";
+                entorno = `${subTipo} (${koppen.codigo} alt.)`;
+            } else {
+                entorno = `${koppen.nombre} (${koppen.codigo})`;
             }
         } else {
             entorno = "Clasificación no disponible (datos insuficientes)";
@@ -2404,13 +2418,23 @@ async function updateAnalysis(data) {
     let oracionDiseno = "";
 
     if (koppen) {
-        const g = koppen.grupo;      // A, B, C, D, E
-        const cod = koppen.codigo;   // ej: Csa, Dfb, Aw, BWh
+        const g = koppen.grupo;
+        const cod = koppen.codigo;
         const letra2 = cod.length >= 2 ? cod[1] : "";
         const letra3 = cod.length >= 3 ? cod[2] : "";
 
-        // --- ORACIÓN 1: Régimen térmico, según el GRUPO Köppen ---
-        if (g === "E") {
+        // Detectamos si aplica la mutación de altitud (misma lógica que en 4a)
+        const esCfbTropicalDesc = absLat <= 23.5 && altitud >= 1500 &&
+            (cod === "Cfb" || cod === "Cwb" || cod === "Cfc" || cod === "Cwc");
+        const esAlturaExtremaDesc = altitud >= 2500 && (g === "A" || g === "C");
+        const esAltitud = esCfbTropicalDesc || esAlturaExtremaDesc;
+
+        // --- ORACIÓN 1: Régimen térmico ---
+        if (esAltitud) {
+            oracionTermica = altitud >= 3500
+                ? `El clima está dominado por la altitud extrema: días con radiación solar intensa y noches muy frías son la norma durante todo el año, sin un verano térmico real.`
+                : `La altitud modera las temperaturas de forma permanente, generando una primavera eterna sin veranos calurosos ni inviernos severos, pero con noches notablemente frescas.`;
+        } else if (g === "E") {
             oracionTermica = `El clima es polar: incluso el mes más cálido del año apenas se acerca a una temperatura templada, sin un verano térmico real.`;
         } else if (g === "D") {
             oracionTermica = letra3 === "a"
@@ -2434,8 +2458,12 @@ async function updateAnalysis(data) {
             oracionTermica = `Las temperaturas se mantienen dentro de un rango moderado durante el periodo analizado.`;
         }
 
-        // --- ORACIÓN 2: Régimen hídrico, según GRUPO + segunda letra Köppen ---
-        if (g === "B") {
+        // --- ORACIÓN 2: Régimen hídrico ---
+        if (esAltitud) {
+            oracionHidrica = letra2 === "w"
+                ? `Las lluvias tienden a concentrarse en una temporada definida, con una estación más seca durante el año.`
+                : `Las lluvias se distribuyen a lo largo del año, aunque la altitud reduce su intensidad respecto a las zonas bajas cercanas.`;
+        } else if (g === "B") {
             oracionHidrica = cod[1] === "W"
                 ? `La aridez es extrema: las lluvias son prácticamente inexistentes durante el año.`
                 : `Las lluvias son escasas, propias de un clima semiárido.`;
@@ -2456,8 +2484,12 @@ async function updateAnalysis(data) {
         }
         oracionHidrica += ` La humedad relativa promedio ronda el ${avgHR.toFixed(0)}%.`;
 
-        // --- ORACIÓN 3: Prioridad de diseño, según GRUPO + letras Köppen ---
-        if (g === "E") {
+        // --- ORACIÓN 3: Prioridad de diseño ---
+        if (esAltitud) {
+            oracionDiseno = altitud >= 3500
+                ? `El diseño debe priorizar la captación solar pasiva y el aislamiento térmico continuo para compensar las noches frías, aprovechando la alta radiación solar diurna característica de estas elevaciones.`
+                : `Conviene una envolvente con buena inercia térmica para estabilizar las oscilaciones entre el día cálido y la noche fresca, complementada con captación solar orientada y protección frente al viento.`;
+        } else if (g === "E") {
             oracionDiseno = `La prioridad absoluta es la conservación de calor: máxima compacidad, aislamiento riguroso y protección frente al viento, sin necesidad real de protección solar.`;
         } else if (g === "D" && letra3 !== "a") {
             oracionDiseno = `El frío invernal exige aislamiento térmico continuo y hermeticidad en la envolvente, priorizando la captación solar pasiva sobre la protección solar.`;
