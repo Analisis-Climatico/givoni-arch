@@ -2593,6 +2593,9 @@ async function updateAnalysis(data) {
             const data = await res.json();
             if (data.error) throw new Error(data.reason);
             if (data.elevation) window.alt = data.elevation;
+            // Log temporal para diagnóstico
+            const precSample = data.daily?.precipitation_sum?.slice(0,90) || [];
+            console.log('=== API PREC SAMPLE (primeros 90 dias) ===', precSample.filter(v=>v>0).length, 'valores > 0 de', precSample.length, '| suma total:', precSample.reduce((a,b)=>(a||0)+(b||0),0)?.toFixed(1));
             rawDaily = data.daily;
             rawHourly = data.hourly;
 
