@@ -2582,7 +2582,7 @@ async function updateAnalysis(data) {
         const pastDateString = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
 
         // URL mejorada: Añadida Radiación, Precipitación y forzado el modelo ERA5-Land (9km de resolución)
-        const apiBase = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,shortwave_radiation_sum&hourly=relative_humidity_2m&timezone=auto&models=era5_land`;
+        const apiBase = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,shortwave_radiation_sum&hourly=relative_humidity_2m&timezone=auto`;
 
         if (mode === 'mes') {
             const year = selectedYears[0];
