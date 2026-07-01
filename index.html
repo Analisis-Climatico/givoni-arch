@@ -2117,10 +2117,14 @@ function classifyKoppen(profile12, latitude) {
     const pctVerano = precAnnual > 0 ? precVerano / precAnnual : 0;
 
     // --- GRUPO B: ÁRIDO (se evalúa primero, como en el estándar oficial) ---
+    // Para zonas ecuatoriales (|lat| < 10°) no hay estaciones definidas,
+    // por lo que no se aplica el ajuste estacional del umbral B.
+    const absLatKoppen = Math.abs(latitude);
     let umbral = tAnnual * 20;
-    if (pctVerano >= 0.7) umbral += 280;
-    else if (pctVerano >= 0.3) umbral += 140;
-    // si pctVerano < 0.3, +0
+    if (absLatKoppen >= 10) {
+        if (pctVerano >= 0.7) umbral += 280;
+        else if (pctVerano >= 0.3) umbral += 140;
+    }
 
     if (precAnnual < umbral) {
         const esDesierto = precAnnual < umbral * 0.5;
@@ -2365,9 +2369,7 @@ async function updateAnalysis(data) {
             if (slot === null) return { tMean: null, tMax: null, tMin: null, prec: rainMensual[m], hr: null };
             return { ...slot, prec: rainMensual[m] };
         });
-        console.log('rainMensual total:', rainMensual.reduce((a,b)=>a+b,0).toFixed(0), '| valores:', rainMensual.map(v=>v.toFixed(0)));
         koppen = classifyKoppen(window.globalClimateProfile, lat);
-        console.log('Köppen resultado:', koppen?.codigo, 'precAnnual:', koppen?.precAnnual?.toFixed(0));
 
         if (koppen) {
             entorno = `${koppen.nombre} (${koppen.codigo})`;
