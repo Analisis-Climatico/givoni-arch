@@ -2567,6 +2567,7 @@ async function updateAnalysis(data) {
         
         async function runClimateAnalysis() {
     document.getElementById('analysis-text').innerHTML = "<span class='animate-pulse font-space tracking-widest uppercase text-xs text-blue-500'>Ejecutando motor de análisis bioclimático... Recopilando datos de alta resolución.</span>";
+    window.globalClimateProfile = null; // resetear antes de cada análisis
 
     let results = [];
     let rawDaily = null;
@@ -2626,34 +2627,59 @@ async function updateAnalysis(data) {
                 }
             });
 
-            // Construimos rawDaily/rawHourly para el extractor de 12 meses:
-            // usamos el año en curso para los meses que ya tienen datos, y el
-            // año anterior para completar los meses que aún no han llegado.
-            if (esCurrent && dataPrev && dataPrev.daily) {
-                const mesesCubiertos = new Set(
-                    rawDaily.time.map(t => parseInt(t.split('-')[1], 10) - 1)
-                );
-                // Concatenamos solo los días del año anterior en meses no cubiertos
-                const filtrarMesNoCubierto = (_, idx) => {
-                    const m = parseInt(dataPrev.daily.time[idx].split('-')[1], 10) - 1;
-                    return !mesesCubiertos.has(m);
-                };
-                const filtrarHourlyNoCubierto = (_, idx) => {
-                    const m = parseInt(dataPrev.hourly.time[idx].split('-')[1], 10) - 1;
-                    return !mesesCubiertos.has(m);
-                };
-                rawDaily = {
-                    time:               [...rawDaily.time,               ...dataPrev.daily.time.filter(filtrarMesNoCubierto)],
-                    temperature_2m_max: [...rawDaily.temperature_2m_max, ...dataPrev.daily.temperature_2m_max.filter(filtrarMesNoCubierto)],
-                    temperature_2m_min: [...rawDaily.temperature_2m_min, ...dataPrev.daily.temperature_2m_min.filter(filtrarMesNoCubierto)],
-                    precipitation_sum:  [...rawDaily.precipitation_sum,  ...dataPrev.daily.precipitation_sum.filter(filtrarMesNoCubierto)],
-                    shortwave_radiation_sum: [...rawDaily.shortwave_radiation_sum, ...dataPrev.daily.shortwave_radiation_sum.filter(filtrarMesNoCubierto)]
-                };
-                rawHourly = {
-                    time:                   [...rawHourly.time,                   ...dataPrev.hourly.time.filter(filtrarHourlyNoCubierto)],
-                    relative_humidity_2m:   [...rawHourly.relative_humidity_2m,   ...dataPrev.hourly.relative_humidity_2m.filter(filtrarHourlyNoCubierto)]
-                };
+            // Construimos el perfil de 12 meses para Köppen directamente:
+            // extraemos los promedios mensuales del año en curso (solo los meses
+            // con datos reales), y completamos los huecos con los del año anterior.
+            // Esto es más robusto que fusionar arrays raw.
+            const buildMonthlyProfile = (daily, hourly) => {
+                const mTMean = Array(12).fill(0).map(() => []);
+                const mTMax  = Array(12).fill(0).map(() => []);
+                const mTMin  = Array(12).fill(0).map(() => []);
+                const mP     = Array(12).fill(0);
+                const mH     = Array(12).fill(0).map(() => []);
+                daily.time.forEach((tStr, idx) => {
+                    const m  = parseInt(tStr.split('-')[1], 10) - 1;
+                    const mx = daily.temperature_2m_max[idx];
+                    const mn = daily.temperature_2m_min[idx];
+                    const pr = daily.precipitation_sum[idx];
+                    if (mx != null && mn != null) {
+                        mTMean[m].push((mx + mn) / 2);
+                        mTMax[m].push(mx);
+                        mTMin[m].push(mn);
+                    }
+                    if (pr != null) mP[m] += pr;
+                });
+                hourly.time.forEach((tStr, idx) => {
+                    const m  = parseInt(tStr.split('-')[1], 10) - 1;
+                    const hr = hourly.relative_humidity_2m[idx];
+                    if (hr != null) mH[m].push(hr);
+                });
+                return Array.from({length: 12}, (_, m) => {
+                    if (mTMean[m].length === 0) return null;
+                    return {
+                        tMean: d3.mean(mTMean[m]),
+                        tMax:  d3.mean(mTMax[m]),
+                        tMin:  d3.mean(mTMin[m]),
+                        prec:  mP[m],
+                        hr:    mH[m].length > 0 ? d3.mean(mH[m]) : null
+                    };
+                });
+            };
+
+            const profileCurrent = buildMonthlyProfile(data.daily, data.hourly);
+            let profileFinal = profileCurrent;
+
+            if (esCurrent && dataPrev && dataPrev.daily && dataPrev.hourly) {
+                const profilePrev = buildMonthlyProfile(dataPrev.daily, dataPrev.hourly);
+                // Slot por slot: usamos el año en curso si tiene datos, si no, el anterior
+                profileFinal = profileCurrent.map((slot, m) => slot !== null ? slot : profilePrev[m]);
             }
+
+            window.globalClimateProfile = profileFinal;
+
+            // rawDaily/rawHourly para el extractor legacy que viene abajo — los dejamos
+            // apuntando a los datos del año en curso (ya se usó para results arriba)
+            // El extractor legacy quedará como respaldo pero globalClimateProfile ya está listo.
         } else {
             for (const y of selectedYears) {
                 let yEnd = `${y}-12-31`;
@@ -2717,23 +2743,21 @@ async function updateAnalysis(data) {
             if(hr != null) monthlyH[m].push(hr);
         });
 
-        // --- EXTRACTOR AUTOMÁTICO DE PERFIL DE 12 MESES GLOBALES ---
-        // Mantenemos las 12 posiciones (índice = mes calendario), pero un mes
-        // sin NINGÚN día de temperatura real (ej: meses futuros del año en
-        // curso) queda en `null` en vez de rellenarse con 0. Un 0 falso
-        // contaminaba el promedio anual y sesgaba la clasificación Köppen
-        // hacia climas áridos. classifyKoppen ignora los meses en null.
-        window.globalClimateProfile = Array.from({length: 12}, (_, m) => {
-            const hayDatosTemp = monthlyT[m].length > 0;
-            if (!hayDatosTemp) return null;
-            return {
-                tMean: d3.mean(monthlyT[m]),
-                tMax: d3.mean(monthlyTMax[m]),
-                tMin: d3.mean(monthlyTMin[m]),
-                prec: monthlyP[m], // 0 aquí SÍ es válido: hubo días ese mes y no llovió
-                hr: monthlyH[m].length > 0 ? d3.mean(monthlyH[m]) : null
-            };
-        });
+        // El perfil ya fue construido directamente en modo 'mes' con año actual.
+        // Solo lo construimos aquí (extractor legacy) si no existe todavía.
+        if (!window.globalClimateProfile) {
+            window.globalClimateProfile = Array.from({length: 12}, (_, m) => {
+                const hayDatosTemp = monthlyT[m].length > 0;
+                if (!hayDatosTemp) return null;
+                return {
+                    tMean: d3.mean(monthlyT[m]),
+                    tMax: d3.mean(monthlyTMax[m]),
+                    tMin: d3.mean(monthlyTMin[m]),
+                    prec: monthlyP[m],
+                    hr: monthlyH[m].length > 0 ? d3.mean(monthlyH[m]) : null
+                };
+            });
+        }
 
         window.currentData = results;
         await drawChart(results);
