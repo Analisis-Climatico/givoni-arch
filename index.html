@@ -2515,7 +2515,31 @@ async function updateAnalysis(data) {
     descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
 
     // =========================================================================
-    // 5. EXTRACCIÓN DINÁMICA DE ESTRATEGIAS (Basado en el Top 2 de Zonas)
+    // 4c. CORTAFUEGOS TERMODINÁMICO UNIVERSAL
+    // =========================================================================
+    // Filtro final que sobrescribe oracionDiseno si las temperaturas REALES
+    // del periodo seleccionado contradicen las recomendaciones de Köppen.
+    // Köppen clasifica el clima anual; el usuario puede haber seleccionado
+    // solo meses fríos, lo que hace incoherente hablar de "sombra en verano".
+    //
+    // REGLA 1 — BLOQUEO DE VENTILACIÓN/SOMBRA: si tMaxAbsoluta < 22°C,
+    // está prohibido recomendar sombreamiento o ventilación estival.
+    // REGLA 2 — BLOQUEO DE CAPTACIÓN SOLAR: si tMinAbsoluta > 15°C,
+    // está prohibido recomendar aislamiento o captación solar pasiva invernal.
+    const textoFrio = oracionDiseno.match(/ventilación|sombra|sombreamiento|estival|verano|solar exterior|protección solar/i);
+    const textoCálido = oracionDiseno.match(/aislamiento|captación solar|calefacción|invierno|frío|helada/i);
+
+    if (tMaxAbsoluta < 22 && textoFrio) {
+        // El texto recomienda estrategias de calor pero el periodo es frío
+        oracionDiseno = tMinAbsoluta <= 0
+            ? `El periodo analizado presenta frío real con riesgo de heladas. La prioridad es el aislamiento continuo, la hermeticidad de la envolvente y la captación solar pasiva orientada. Las estrategias de sombreamiento o ventilación estival no aplican en este contexto.`
+            : `Con temperaturas que no alcanzan niveles altos, el confort depende de retener el calor disponible. Conviene buena inercia térmica y captación solar, sin necesidad de protección solar intensa.`;
+        descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
+    } else if (tMinAbsoluta > 15 && textoCálido) {
+        // El texto recomienda estrategias de frío pero el periodo es cálido
+        oracionDiseno = `El periodo analizado es cálido en todo su rango. La prioridad es la ventilación cruzada, la protección solar en fachadas expuestas y evitar la acumulación de calor en la masa estructural.`;
+        descripcion = `${oracionTermica} ${oracionHidrica} ${oracionDiseno}`;
+    }
     // =========================================================================
     let recs = [];
     
