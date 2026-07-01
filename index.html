@@ -2451,7 +2451,7 @@ async function updateAnalysis(data) {
         } else if (g === "B") {
             oracionTermica = cod[2] === "h"
                 ? `Las temperaturas son elevadas durante buena parte del año, características de un clima árido cálido.`
-                : `El clima presenta un contraste térmico notable entre el día y la noche, típico de las zonas áridas frías.`;
+                : `El clima presenta un contraste térmico estacional marcado, con veranos calurosos e inviernos fríos, en un entorno de baja precipitación.`;
         } else if (g === "A") {
             oracionTermica = `El clima es cálido de forma constante durante todo el año, sin una estación fría definida.`;
         } else {
@@ -2498,7 +2498,7 @@ async function updateAnalysis(data) {
         } else if (g === "B") {
             oracionDiseno = cod[2] === "h"
                 ? `Conviene una envolvente masiva con alta inercia térmica, protección solar profunda y estrategias de enfriamiento evaporativo.`
-                : `Conviene una envolvente compacta que module bien el contraste entre el día caluroso y la noche fría, combinando masa térmica con buen aislamiento.`;
+                : `El diseño exige reversibilidad estacional: aislamiento térmico continuo para retener el calor durante los meses fríos, combinado obligatoriamente con protecciones solares exteriores y ventilación para disipar las cargas térmicas en verano.`;
         } else if (g === "A") {
             oracionDiseno = `La prioridad es la ventilación cruzada constante y la protección frente a la lluvia, evitando la inercia térmica pesada que retendría el calor.`;
         } else if (letra3 === "a") {
