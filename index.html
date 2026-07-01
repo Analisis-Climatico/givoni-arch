@@ -229,6 +229,10 @@
                             <div id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base lg:text-lg font-light text-justify space-y-4">
                                 <span class="animate-pulse font-space tracking-widest text-xs uppercase text-blue-500">Ejecutando motor de análisis bioclimático... Recopilando datos históricos.</span>
                             </div>
+                            <div id="notice-anio-actual" style="display:none" class="mt-5 flex items-start gap-3 rounded-xl border border-blue-300/40 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-900/20 px-4 py-3">
+                                <svg class="shrink-0 mt-0.5 w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20A10 10 0 0112 2z"/></svg>
+                                <p class="text-xs text-blue-600 dark:text-blue-300 font-light leading-relaxed">En la selección del año actual, los datos son tomados junto con el año anterior para mayor precisión en el análisis climático.</p>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -2082,47 +2086,59 @@ function buildInteractiveVisualizer(strategies) {
 // Esto reemplaza cualquier umbral inventado por el estándar científico
 // usado mundialmente, válido para cualquier ubicación del planeta.
 // =========================================================================
-function classifyKoppen(profile12, lat) {
-    // 1. Filtrado de datos consistentes
-    const mesesValidos = profile12.filter(m => m !== null && m.temp !== undefined && m.prec !== undefined);
-    
-    // 2. Control de interrupción por carencia de datos
-    if (mesesValidos.length === 0) return null;
+function classifyKoppen(profile12, latitude) {
+    // profile12: array de 12 posiciones (índice 0 = Enero). Un mes sin datos
+    // reales (ej: meses futuros del año en curso) viene como `null` y se
+    // excluye de los promedios, en vez de contar como 0°C / 0mm.
+    const isNorte = latitude >= 0;
+    const mesesValidos = profile12.filter(m => m !== null);
+    const nMesesValidos = mesesValidos.length;
 
-    // 3. Cálculo de valores medios basados en la cuota real de meses
-    let tSum = 0, pSum = 0;
-    mesesValidos.forEach(m => {
-        tSum += m.temp;
-        pSum += m.prec;
-    });
-    
-    const tAnnual = tSum / mesesValidos.length;
-    const pAnnual = (pSum / mesesValidos.length) * 12; // Anualización teórica
+    if (nMesesValidos === 0) return null; // sin datos suficientes, no se clasifica
 
-    const isNorthern = lat >= 0;
-    const idxVerano = isNorthern ? [3, 4, 5, 6, 7, 8] : [9, 10, 11, 0, 1, 2];
-    const idxInvierno = isNorthern ? [9, 10, 11, 0, 1, 2] : [3, 4, 5, 6, 7, 8];
+    const tMeans = mesesValidos.map(m => m.tMean);
+    const precsValidos = mesesValidos.map(m => m.prec);
 
-    let precVerano = 0;
-    let precInvierno = 0;
+    const tAnnual = tMeans.reduce((a, b) => a + b, 0) / nMesesValidos;
+    const tMaxMes = Math.max(...tMeans); // mes más cálido (por media mensual, criterio Köppen)
+    const tMinMes = Math.min(...tMeans); // mes más frío
+    // precAnnual se proyecta a 12 meses si tenemos un subconjunto, para que
+    // el umbral de aridez (pensado en base anual) siga siendo comparable.
+    const precSumaValida = precsValidos.reduce((a, b) => a + b, 0);
+    const precAnnual = nMesesValidos > 0 ? (precSumaValida / nMesesValidos) * 12 : 0;
+    const mesesSobre10 = tMeans.filter(t => t >= 10).length;
 
-    // 4. Extracción de sumas estacionales sobre el índice inmutable 'i'
-    profile12.forEach((m, i) => {
-        if (m === null) return; 
+    // Meses de "verano" (mitad del año con más sol) y "invierno" según hemisferio.
+    // Filtramos por null para no sumar huecos, usando el índice real del mes.
+    const idxVerano = (isNorte ? [3,4,5,6,7,8] : [9,10,11,0,1,2]).filter(i => profile12[i] !== null);
+    const idxInvierno = (isNorte ? [9,10,11,0,1,2] : [3,4,5,6,7,8]).filter(i => profile12[i] !== null);
+    const precVerano = idxVerano.reduce((s, i) => s + profile12[i].prec, 0);
+    const precInvierno = idxInvierno.reduce((s, i) => s + profile12[i].prec, 0);
+    const pctVerano = precAnnual > 0 ? precVerano / precAnnual : 0;
 
-        if (idxVerano.includes(i)) {
-            precVerano += m.prec;
-        } else if (idxInvierno.includes(i)) {
-            precInvierno += m.prec; // <-- Transformación de la referencia residual
-        }
-    });
+    // --- GRUPO B: ÁRIDO (se evalúa primero, como en el estándar oficial) ---
+    let umbral = tAnnual * 20;
+    if (pctVerano >= 0.7) umbral += 280;
+    else if (pctVerano >= 0.3) umbral += 140;
+    // si pctVerano < 0.3, +0
 
-    // ... [Ejecución estándar de los bloques A, B, C, D, E] ...
-}
+    if (precAnnual < umbral) {
+        const esDesierto = precAnnual < umbral * 0.5;
+        const letra2 = esDesierto ? "W" : "S";
+        const letra3 = tAnnual >= 18 ? "h" : "k";
+        return {
+            codigo: `B${letra2}${letra3}`,
+            grupo: "B",
+            nombre: esDesierto
+                ? (letra3 === "h" ? "Desierto cálido" : "Desierto frío")
+                : (letra3 === "h" ? "Estepa cálida (semiárido)" : "Estepa fría (semiárido)"),
+            tAnnual, tMaxMes, tMinMes, precAnnual
+        };
+    }
 
     // --- GRUPO A: TROPICAL (todos los meses con media >= 18°C) ---
     if (tMinMes >= 18) {
-        const precMinMes = Math.min(...precs);
+        const precMinMes = Math.min(...precsValidos);
         if (precMinMes >= 60) {
             return { codigo: "Af", grupo: "A", nombre: "Tropical lluvioso (selva)", tAnnual, tMaxMes, tMinMes, precAnnual };
         }
@@ -2131,8 +2147,12 @@ function classifyKoppen(profile12, lat) {
         if (precMinMes >= umbralAm) {
             return { codigo: "Am", grupo: "A", nombre: "Tropical monzónico", tAnnual, tMaxMes, tMinMes, precAnnual };
         }
-        // Aw o As: dry season en el mes de menor precipitación
-        const idxMesSeco = precs.indexOf(precMinMes);
+        // Aw o As: dry season en el mes de menor precipitación.
+        // Buscamos la posición del mes seco dentro de mesesValidos y la
+        // traducimos al índice real de mes calendario para compararla con idxVerano.
+        const posMesSeco = precsValidos.indexOf(precMinMes);
+        const idxRealesValidos = profile12.map((m, i) => m !== null ? i : null).filter(i => i !== null);
+        const idxMesSeco = idxRealesValidos[posMesSeco];
         const esSecoEnVerano = idxVerano.includes(idxMesSeco);
         return {
             codigo: esSecoEnVerano ? "As" : "Aw",
@@ -2157,10 +2177,11 @@ function classifyKoppen(profile12, lat) {
     const grupoLetra = esGrupoD ? "D" : "C";
 
     // Segunda letra: régimen de precipitación
-    const precInviernoMax = Math.max(...idxInvierno.map(i => precs[i]));
-    const precVeranoMin = Math.min(...idxVerano.map(i => precs[i]));
-    const precVeranoMax = Math.max(...idxVerano.map(i => precs[i]));
-    const precInviernoMin = Math.min(...idxInvierno.map(i => precs[i]));
+    // idxInvierno/idxVerano ya vienen filtrados (solo índices de meses con datos)
+    const precInviernoMax = idxInvierno.length > 0 ? Math.max(...idxInvierno.map(i => profile12[i].prec)) : 0;
+    const precVeranoMin = idxVerano.length > 0 ? Math.min(...idxVerano.map(i => profile12[i].prec)) : 0;
+    const precVeranoMax = idxVerano.length > 0 ? Math.max(...idxVerano.map(i => profile12[i].prec)) : 0;
+    const precInviernoMin = idxInvierno.length > 0 ? Math.min(...idxInvierno.map(i => profile12[i].prec)) : 0;
 
     let letra2 = "f"; // por defecto: sin estación seca marcada
     // Cs: verano seco (al menos 3x más lluvia en el mes más lluvioso de invierno que en el más seco de verano, y ese mes de verano < 40mm)
@@ -2339,21 +2360,20 @@ async function updateAnalysis(data) {
     // Usamos window.globalClimateProfile (12 meses reales, ya calculado en
     // runClimateAnalysis, independiente de los meses que el usuario seleccionó)
     // para clasificar según el estándar científico mundial, no umbrales propios.
-    if (window.globalClimateProfile) {
-    koppen = classifyKoppen(window.globalClimateProfile, lat);
-    
-    if (koppen) {
-        entorno = `${koppen.nombre} (${koppen.codigo})`;
-    } else {
-        entorno = "Datos insuficientes para clasificación climática";
-    }
-}
+    if (window.globalClimateProfile && window.globalClimateProfile.length === 12) {
+        koppen = classifyKoppen(window.globalClimateProfile, lat);
 
-        // Ajuste de altitud: Köppen base no contempla elevación, pero a gran
-        // altitud el clima real es más frío que lo que sugiere la latitud.
-        // Lo anotamos como matiz sin alterar el código Köppen calculado.
-        if (altitud >= 2500 && (koppen.grupo === "A" || koppen.grupo === "B" || koppen.grupo === "C")) {
-            entorno += " — matizado por gran altitud";
+        if (koppen) {
+            entorno = `${koppen.nombre} (${koppen.codigo})`;
+
+            // Ajuste de altitud: Köppen base no contempla elevación, pero a gran
+            // altitud el clima real es más frío que lo que sugiere la latitud.
+            // Lo anotamos como matiz sin alterar el código Köppen calculado.
+            if (altitud >= 2500 && (koppen.grupo === "A" || koppen.grupo === "B" || koppen.grupo === "C")) {
+                entorno += " — matizado por gran altitud";
+            }
+        } else {
+            entorno = "Clasificación no disponible (datos insuficientes)";
         }
     } else {
         // Fallback si por algún motivo no hay perfil de 12 meses disponible
@@ -2563,43 +2583,77 @@ async function updateAnalysis(data) {
 
         if (mode === 'mes') {
             const year = selectedYears[0];
-            let endDate = `${year}-12-31`;
-            if (year === currentYearNum) {
-                endDate = pastDateString;
-            }
+            const esCurrent = year === currentYearNum;
+            let endDate = esCurrent ? pastDateString : `${year}-12-31`;
 
             const res = await fetch(`${apiBase}&start_date=${year}-01-01&end_date=${endDate}`);
             const data = await res.json();
-
             if (data.error) throw new Error(data.reason);
-            
-            // Guardamos la altitud real detectada por el modelo de 9km
-            if (data.elevation) window.alt = data.elevation; 
-            
+            if (data.elevation) window.alt = data.elevation;
             rawDaily = data.daily;
             rawHourly = data.hourly;
+
+            // Mostrar aviso solo cuando se analiza el año en curso
+            const noticeEl = document.getElementById('notice-anio-actual');
+            if (noticeEl) noticeEl.style.display = esCurrent ? 'flex' : 'none';
+            // para que el perfil de 12 meses de Köppen no quede con huecos en
+            // los meses futuros. Los datos del año anterior llenan esos huecos.
+            let dataPrev = null;
+            if (esCurrent) {
+                const prevYear = year - 1;
+                const resPrev = await fetch(`${apiBase}&start_date=${prevYear}-01-01&end_date=${prevYear}-12-31`);
+                dataPrev = await resPrev.json();
+                if (dataPrev.error) dataPrev = null;
+            }
 
             selectedMonths.forEach(m => {
                 const dailyFilter = (_, idx) => (parseInt(data.daily.time[idx].split('-')[1], 10) - 1) === m;
                 const hourlyFilter = (_, idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
-                
                 const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
                 const tMinFiltered = data.daily.temperature_2m_min.filter(dailyFilter);
                 const rainFiltered = data.daily.precipitation_sum.filter(dailyFilter);
                 const hrFiltered = data.hourly.relative_humidity_2m.filter(hourlyFilter);
                 const radFiltered = data.daily.shortwave_radiation_sum.filter(dailyFilter);
-
                 if (tMaxFiltered.length > 0) {
                     results.push({
                         label: `${months[m]} ${year}`,
                         tMax: d3.mean(tMaxFiltered),
                         tMin: d3.mean(tMinFiltered),
                         hr: d3.mean(hrFiltered),
-                        rain: d3.sum(rainFiltered), // CORRECCIÓN CRÍTICA: Suma de la lluvia mensual
-                        rad: d3.mean(radFiltered)   // Promedio de radiación diaria
+                        rain: d3.sum(rainFiltered),
+                        rad: d3.mean(radFiltered)
                     });
                 }
             });
+
+            // Construimos rawDaily/rawHourly para el extractor de 12 meses:
+            // usamos el año en curso para los meses que ya tienen datos, y el
+            // año anterior para completar los meses que aún no han llegado.
+            if (esCurrent && dataPrev && dataPrev.daily) {
+                const mesesCubiertos = new Set(
+                    rawDaily.time.map(t => parseInt(t.split('-')[1], 10) - 1)
+                );
+                // Concatenamos solo los días del año anterior en meses no cubiertos
+                const filtrarMesNoCubierto = (_, idx) => {
+                    const m = parseInt(dataPrev.daily.time[idx].split('-')[1], 10) - 1;
+                    return !mesesCubiertos.has(m);
+                };
+                const filtrarHourlyNoCubierto = (_, idx) => {
+                    const m = parseInt(dataPrev.hourly.time[idx].split('-')[1], 10) - 1;
+                    return !mesesCubiertos.has(m);
+                };
+                rawDaily = {
+                    time:               [...rawDaily.time,               ...dataPrev.daily.time.filter(filtrarMesNoCubierto)],
+                    temperature_2m_max: [...rawDaily.temperature_2m_max, ...dataPrev.daily.temperature_2m_max.filter(filtrarMesNoCubierto)],
+                    temperature_2m_min: [...rawDaily.temperature_2m_min, ...dataPrev.daily.temperature_2m_min.filter(filtrarMesNoCubierto)],
+                    precipitation_sum:  [...rawDaily.precipitation_sum,  ...dataPrev.daily.precipitation_sum.filter(filtrarMesNoCubierto)],
+                    shortwave_radiation_sum: [...rawDaily.shortwave_radiation_sum, ...dataPrev.daily.shortwave_radiation_sum.filter(filtrarMesNoCubierto)]
+                };
+                rawHourly = {
+                    time:                   [...rawHourly.time,                   ...dataPrev.hourly.time.filter(filtrarHourlyNoCubierto)],
+                    relative_humidity_2m:   [...rawHourly.relative_humidity_2m,   ...dataPrev.hourly.relative_humidity_2m.filter(filtrarHourlyNoCubierto)]
+                };
+            }
         } else {
             for (const y of selectedYears) {
                 let yEnd = `${y}-12-31`;
@@ -2663,21 +2717,23 @@ async function updateAnalysis(data) {
             if(hr != null) monthlyH[m].push(hr);
         });
 
-        window.globalClimateProfile = Array.from({ length: 12 }, (_, i) => {
-    const diasMes = rawDaily.time.filter(t => new Date(t).getMonth() === i);
-    
-    // Condición de aislamiento: preservar huecos futuros como null
-    if (diasMes.length === 0) return null; 
-
-    // Extracción exclusiva de datos válidos (eliminando "|| 0")
-    const tempMes = d3.mean(diasMes.map(t => rawDaily.temperature_2m_max[rawDaily.time.indexOf(t)]));
-    const precMes = d3.sum(diasMes.map(t => rawDaily.precipitation_sum[rawDaily.time.indexOf(t)]));
-    
-    return {
-        temp: tempMes,
-        prec: precMes
-    };
-});
+        // --- EXTRACTOR AUTOMÁTICO DE PERFIL DE 12 MESES GLOBALES ---
+        // Mantenemos las 12 posiciones (índice = mes calendario), pero un mes
+        // sin NINGÚN día de temperatura real (ej: meses futuros del año en
+        // curso) queda en `null` en vez de rellenarse con 0. Un 0 falso
+        // contaminaba el promedio anual y sesgaba la clasificación Köppen
+        // hacia climas áridos. classifyKoppen ignora los meses en null.
+        window.globalClimateProfile = Array.from({length: 12}, (_, m) => {
+            const hayDatosTemp = monthlyT[m].length > 0;
+            if (!hayDatosTemp) return null;
+            return {
+                tMean: d3.mean(monthlyT[m]),
+                tMax: d3.mean(monthlyTMax[m]),
+                tMin: d3.mean(monthlyTMin[m]),
+                prec: monthlyP[m], // 0 aquí SÍ es válido: hubo días ese mes y no llovió
+                hr: monthlyH[m].length > 0 ? d3.mean(monthlyH[m]) : null
+            };
+        });
 
         window.currentData = results;
         await drawChart(results);
