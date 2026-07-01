@@ -2499,14 +2499,19 @@ async function updateAnalysis(data) {
     // =========================================================================
     let recs = [];
     
-    // Ordenamos las zonas de mayor a menor frecuencia de aparición
-    const sortedZones = Object.keys(zoneTally).sort((a, b) => zoneTally[b] - zoneTally[a]);
-    
-    // Extraemos las 2 zonas más dominantes en el análisis anual
-    const top2Zones = sortedZones.slice(0, 2);
+    // Usamos TODAS las zonas psicrométricas detectadas a lo largo del año,
+    // no solo las más frecuentes. El diseño bioclimático debe responder a
+    // toda la variabilidad climática anual: una zona tocada por un solo mes
+    // (p. ej. un pico de calor o de humedad) sigue exigiendo estrategia propia,
+    // aunque no sea la condición "dominante" del año.
+    const allDetectedZones = Object.keys(zoneTally);
 
-    // Inyectamos las estrategias de tu strategyDB correspondientes a las zonas dominantes
-    top2Zones.forEach(zonaID => {
+    // El orden por frecuencia se conserva solo para PRIORIZAR visualmente
+    // las estrategias más relevantes primero, NO para decidir cuáles se incluyen.
+    const orderedZones = allDetectedZones.sort((a, b) => zoneTally[b] - zoneTally[a]);
+
+    // Inyectamos las estrategias de tu strategyDB correspondientes a TODAS las zonas detectadas
+    orderedZones.forEach(zonaID => {
         if (strategyDB[zonaID]) {
             strategyDB[zonaID].forEach(strat => {
                 if (strat) recs.push(strat);
