@@ -2582,7 +2582,7 @@ async function updateAnalysis(data) {
         const pastDateString = `${pastDate.getFullYear()}-${String(pastDate.getMonth() + 1).padStart(2, '0')}-${String(pastDate.getDate()).padStart(2, '0')}`;
 
         // URL mejorada: Añadida Radiación, Precipitación y forzado el modelo ERA5-Land (9km de resolución)
-        const apiBase = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,shortwave_radiation_sum&hourly=relative_humidity_2m&timezone=auto&models=era5_land`;
+        const apiBase = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,shortwave_radiation_sum&hourly=relative_humidity_2m&timezone=auto&models=era5_land`;
 
         if (mode === 'mes') {
             const year = selectedYears[0];
@@ -2594,8 +2594,10 @@ async function updateAnalysis(data) {
             if (data.error) throw new Error(data.reason);
             if (data.elevation) window.alt = data.elevation;
             // Log temporal para diagnóstico
-            const precSample = data.daily?.precipitation_sum?.slice(0,90) || [];
-            console.log('=== API PREC SAMPLE (primeros 90 dias) ===', precSample.filter(v=>v>0).length, 'valores > 0 de', precSample.length, '| suma total:', precSample.reduce((a,b)=>(a||0)+(b||0),0)?.toFixed(1));
+            const precSample = data.daily?.time?.slice(0,90).map((_, i) =>
+                (data.daily.precipitation_sum?.[i]||0) + (data.daily.rain_sum?.[i]||0) + (data.daily.showers_sum?.[i]||0)
+            ) || [];
+            console.log('=== API PREC SAMPLE (primeros 90 dias) ===', precSample.filter(v=>v>0).length, 'valores > 0 de', precSample.length, '| suma total:', precSample.reduce((a,b)=>a+b,0)?.toFixed(1));
             rawDaily = data.daily;
             rawHourly = data.hourly;
 
@@ -2617,7 +2619,12 @@ async function updateAnalysis(data) {
                 const hourlyFilter = (_, idx) => (parseInt(data.hourly.time[idx].split('-')[1], 10) - 1) === m;
                 const tMaxFiltered = data.daily.temperature_2m_max.filter(dailyFilter);
                 const tMinFiltered = data.daily.temperature_2m_min.filter(dailyFilter);
-                const rainFiltered = data.daily.precipitation_sum.filter(dailyFilter);
+                const rainFiltered = data.daily.time.map((tStr, idx) => {
+                    if ((parseInt(tStr.split('-')[1], 10) - 1) !== m) return null;
+                    return (data.daily.precipitation_sum?.[idx] || 0)
+                         + (data.daily.rain_sum?.[idx] || 0)
+                         + (data.daily.showers_sum?.[idx] || 0);
+                }).filter(v => v !== null);
                 const hrFiltered = data.hourly.relative_humidity_2m.filter(hourlyFilter);
                 const radFiltered = data.daily.shortwave_radiation_sum.filter(dailyFilter);
                 if (tMaxFiltered.length > 0) {
@@ -2646,7 +2653,11 @@ async function updateAnalysis(data) {
                     const m  = parseInt(tStr.split('-')[1], 10) - 1;
                     const mx = daily.temperature_2m_max[idx];
                     const mn = daily.temperature_2m_min[idx];
-                    const pr = daily.precipitation_sum[idx];
+                    // Sumamos las tres variables de precipitación disponibles
+                    // para cubrir los casos donde era5_land solo rellena alguna de ellas
+                    const pr = (daily.precipitation_sum?.[idx] || 0)
+                             + (daily.rain_sum?.[idx] || 0)
+                             + (daily.showers_sum?.[idx] || 0);
                     if (mx != null && mn != null) {
                         mTMean[m].push((mx + mn) / 2);
                         mTMax[m].push(mx);
@@ -2735,7 +2746,9 @@ async function updateAnalysis(data) {
             let m = parseInt(tStr.split('-')[1], 10) - 1;
             let mx = rawDaily.temperature_2m_max[idx];
             let mn = rawDaily.temperature_2m_min[idx];
-            let prec = rawDaily.precipitation_sum[idx];
+            let prec = (rawDaily.precipitation_sum?.[idx] || 0)
+                     + (rawDaily.rain_sum?.[idx] || 0)
+                     + (rawDaily.showers_sum?.[idx] || 0);
             if(mx != null && mn != null) {
                 monthlyT[m].push((mx + mn) / 2);
                 monthlyTMax[m].push(mx);
