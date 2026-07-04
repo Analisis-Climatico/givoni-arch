@@ -2499,18 +2499,40 @@ async function updateAnalysis(data) {
     // =========================================================================
     let recs = [];
     
-    // Usamos TODAS las zonas psicrométricas detectadas a lo largo del año,
-    // no solo las más frecuentes. El diseño bioclimático debe responder a
-    // toda la variabilidad climática anual: una zona tocada por un solo mes
-    // (p. ej. un pico de calor o de humedad) sigue exigiendo estrategia propia,
-    // aunque no sea la condición "dominante" del año.
-    const allDetectedZones = Object.keys(zoneTally);
+    // Ejes climáticos donde las estrategias de un lado CONTRADICEN al otro
+    // (p. ej. "sella y retén calor" vs "ventila y disipa calor" no pueden
+    // convivir como recomendaciones simultáneas para el mismo edificio).
+    //   Eje térmico:   retener/generar calor  vs  disipar/enfriar
+    //   Eje hídrico:   humidificar            vs  deshumidificar
+    const ejesEnConflicto = [
+        { a: ["Z3", "Z4", "Z5", "Z7"], b: ["Z2", "Z8", "Z9", "Z10", "Z11", "Z12", "Z13"] },
+        { a: ["Z6"], b: ["Z14"] }
+    ];
+
+    // Solo descartamos el lado de un eje que sea un caso AISLADO (aparece en 1
+    // solo periodo analizado) frente a un lado opuesto claramente RECURRENTE
+    // (2 o más periodos). Si ambos lados son recurrentes, se conservan los dos:
+    // el clima realmente exige ambas respuestas en momentos distintos del año.
+    // Este umbral (1 vs 2) es ajustable si tu criterio metodológico pide otro.
+    const zonasExcluidas = new Set();
+    ejesEnConflicto.forEach(({ a, b }) => {
+        const sumA = a.reduce((acc, z) => acc + (zoneTally[z] || 0), 0);
+        const sumB = b.reduce((acc, z) => acc + (zoneTally[z] || 0), 0);
+        if (sumA === 1 && sumB >= 2) a.forEach(z => zonasExcluidas.add(z));
+        else if (sumB === 1 && sumA >= 2) b.forEach(z => zonasExcluidas.add(z));
+    });
+
+    // Universo de zonas a mostrar: todas las detectadas, MENOS las descartadas
+    // por ser el lado anómalo de un eje en conflicto. Esto ya no es una
+    // competencia de frecuencia — es una regla de coherencia climática.
+    const allDetectedZones = Object.keys(zoneTally).filter(z => !zonasExcluidas.has(z));
 
     // El orden por frecuencia se conserva solo para PRIORIZAR visualmente
     // las estrategias más relevantes primero, NO para decidir cuáles se incluyen.
     const orderedZones = allDetectedZones.sort((a, b) => zoneTally[b] - zoneTally[a]);
 
-    // Inyectamos las estrategias de tu strategyDB correspondientes a TODAS las zonas detectadas
+    // Inyectamos las 3 estrategias completas de cada zona que quedó vigente,
+    // para mantener variedad de propuestas dentro de cada zona.
     orderedZones.forEach(zonaID => {
         if (strategyDB[zonaID]) {
             strategyDB[zonaID].forEach(strat => {
