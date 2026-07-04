@@ -2531,27 +2531,18 @@ async function updateAnalysis(data) {
     // las estrategias más relevantes primero, NO para decidir cuáles se incluyen.
     const orderedZones = allDetectedZones.sort((a, b) => zoneTally[b] - zoneTally[a]);
 
-    // ¿Es esta zona el lado MINORITARIO de su eje? (p. ej. Z3 en Guayaquil, donde
-    // domina claramente el eje de disipación de calor). No decide si se excluye
-    // -eso ya se resolvió arriba-, solo cuántas opciones mostrar de esa zona.
-    function esZonaMinoritaria(zonaID) {
-        for (const { a, b } of ejesEnConflicto) {
-            const enA = a.includes(zonaID), enB = b.includes(zonaID);
-            if (!enA && !enB) continue;
-            const sumA = a.reduce((acc, z) => acc + (zoneTally[z] || 0), 0);
-            const sumB = b.reduce((acc, z) => acc + (zoneTally[z] || 0), 0);
-            if (enA && sumA < sumB) return true;
-            if (enB && sumB < sumA) return true;
-        }
-        return false; // zona dominante de su eje, o sin eje (ej. Z1)
-    }
+    // Las N zonas MÁS TOPADAS (el carácter dominante real de este sitio, p. ej.
+    // en Guayaquil: Z12/Z13/Z14) reciben sus 3 recomendaciones completas.
+    // El resto de zonas detectadas NO se elimina —ya se filtró la contradicción
+    // arriba—, solo se resume a su opción más genérica y menos invasiva, para no
+    // darle el mismo peso a algo secundario en este clima.
+    // N es ajustable: súbelo si quieres más zonas con detalle completo.
+    const N_ZONAS_PRINCIPALES = 3;
+    const zonasPrincipales = new Set(orderedZones.slice(0, N_ZONAS_PRINCIPALES));
 
-    // Si la zona es minoritaria: solo su opción más genérica (índice 0), para no
-    // imponer su intervención más fuerte (p. ej. sellar herméticamente) sobre un
-    // clima donde esa zona es secundaria. Si es dominante: sus 2 primeras opciones.
     orderedZones.forEach(zonaID => {
         if (strategyDB[zonaID]) {
-            const nMostrar = esZonaMinoritaria(zonaID) ? 1 : 2;
+            const nMostrar = zonasPrincipales.has(zonaID) ? 3 : 1;
             strategyDB[zonaID].slice(0, nMostrar).forEach(strat => {
                 if (strat) recs.push(strat);
             });
