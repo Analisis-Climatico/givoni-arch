@@ -2531,11 +2531,28 @@ async function updateAnalysis(data) {
     // las estrategias más relevantes primero, NO para decidir cuáles se incluyen.
     const orderedZones = allDetectedZones.sort((a, b) => zoneTally[b] - zoneTally[a]);
 
-    // Inyectamos las 3 estrategias completas de cada zona que quedó vigente,
-    // para mantener variedad de propuestas dentro de cada zona.
+    // ¿Es esta zona el lado MINORITARIO de su eje? (p. ej. Z3 en Guayaquil, donde
+    // domina claramente el eje de disipación de calor). No decide si se excluye
+    // -eso ya se resolvió arriba-, solo cuántas opciones mostrar de esa zona.
+    function esZonaMinoritaria(zonaID) {
+        for (const { a, b } of ejesEnConflicto) {
+            const enA = a.includes(zonaID), enB = b.includes(zonaID);
+            if (!enA && !enB) continue;
+            const sumA = a.reduce((acc, z) => acc + (zoneTally[z] || 0), 0);
+            const sumB = b.reduce((acc, z) => acc + (zoneTally[z] || 0), 0);
+            if (enA && sumA < sumB) return true;
+            if (enB && sumB < sumA) return true;
+        }
+        return false; // zona dominante de su eje, o sin eje (ej. Z1)
+    }
+
+    // Si la zona es minoritaria: solo su opción más genérica (índice 0), para no
+    // imponer su intervención más fuerte (p. ej. sellar herméticamente) sobre un
+    // clima donde esa zona es secundaria. Si es dominante: sus 2 primeras opciones.
     orderedZones.forEach(zonaID => {
         if (strategyDB[zonaID]) {
-            strategyDB[zonaID].forEach(strat => {
+            const nMostrar = esZonaMinoritaria(zonaID) ? 1 : 2;
+            strategyDB[zonaID].slice(0, nMostrar).forEach(strat => {
                 if (strat) recs.push(strat);
             });
         }
