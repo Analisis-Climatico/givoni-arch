@@ -85,7 +85,10 @@
 .pdf-table td span { color: #ffffff !important; } /* Esta línea obliga a que el texto de las Zonas sea blanco */
 
         /* --- MODAL DE AYUDA --- */
-        #help-modal-overlay.flex-shown { display: flex !important; }
+        #help-modal-overlay.flex-shown, #save-modal-overlay.flex-shown, #history-modal-overlay.flex-shown { display: flex !important; animation: modalOverlayIn 0.2s ease-out; }
+        #help-modal-overlay.flex-shown > .glass-panel, #save-modal-overlay.flex-shown > .glass-panel, #history-modal-overlay.flex-shown > .glass-panel { animation: modalPanelIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes modalOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalPanelIn { from { opacity: 0; transform: scale(0.94) translateY(14px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
         .help-tab-btn { color: #64748b; background: transparent; border-left: 3px solid transparent; }
         .help-tab-btn:hover { background: rgba(148, 163, 184, 0.1); }
@@ -235,17 +238,18 @@
                         <button onclick="setMode('año')" id="btn-año" class="px-5 py-2.5 rounded-lg font-space font-bold text-sm tracking-wider uppercase transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50">AÑOS</button>
                     </div>
 
-                    <div class="flex flex-col gap-2 w-[180px]">
-                        <button id="pdf-btn" onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center w-full">
-                            Exportar PDF
-                        </button>
-                        <button id="save-btn" onclick="toggleSaveModal(true)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-2 w-full">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                            Guardar
-                        </button>
-                    </div>
+                    <button id="pdf-btn" onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center w-[180px]">
+                        Exportar PDF
+                    </button>
                 </div>
             </header>
+
+            <div class="w-full flex justify-end -mt-2 mb-1">
+                <button id="save-btn" onclick="toggleSaveModal(true)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-2 w-[180px]">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                    Guardar
+                </button>
+            </div>
 
             <div id="export-container" class="space-y-10 w-full block p-2 rounded-2xl relative">
                 
@@ -357,21 +361,45 @@
     <!-- MODAL DE GUARDAR ANÁLISIS -->
     <div id="save-modal-overlay" class="hidden fixed inset-0 z-[210] items-center justify-center p-4" onclick="if(event.target===this) toggleSaveModal(false)">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
-        <div class="glass-panel relative w-full max-w-md rounded-[24px] shadow-2xl p-6 border border-white/20 dark:border-white/10">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 flex-shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                </div>
-                <div>
-                    <h3 class="font-space font-bold text-sm uppercase tracking-wider text-slate-800 dark:text-slate-100">Guardar Análisis</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Se guardará en el historial de este navegador</p>
+        <div class="glass-panel relative w-full max-w-md rounded-[28px] shadow-2xl overflow-hidden border border-white/20 dark:border-white/10">
+            <div class="relative px-6 pt-6 pb-5 overflow-hidden bg-gradient-to-r from-indigo-600/10 via-blue-500/5 to-transparent border-b border-slate-200/60 dark:border-slate-800/60">
+                <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-indigo-400/10 blur-3xl pointer-events-none"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 flex-shrink-0">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-space font-bold text-base uppercase tracking-[0.12em] text-slate-800 dark:text-slate-100 leading-none">Guardar Análisis</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Se guarda en el historial de este navegador</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleSaveModal(false)" class="p-2 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
             </div>
-            <label class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 block">Nombre del análisis</label>
-            <input id="save-analysis-name" type="text" class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2.5 px-4 outline-none font-medium text-slate-700 dark:text-slate-200 focus:border-indigo-500 dark:focus:border-cyan-500 shadow-inner mb-5" placeholder="Ej. Análisis de Guayaquil, 2026 Enero - Junio">
-            <div class="flex gap-3">
-                <button onclick="toggleSaveModal(false)" class="flex-1 py-3 rounded-xl font-space font-bold text-xs uppercase tracking-wider bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800/50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]">Cancelar</button>
-                <button onclick="confirmSaveAnalysis()" class="flex-1 py-3 rounded-xl font-space font-bold text-xs uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-all active:scale-[0.98]">Guardar</button>
+
+            <div class="p-6">
+                <div class="flex items-center gap-3 rounded-2xl bg-indigo-500/5 border border-indigo-500/15 p-3.5 mb-5">
+                    <div class="help-card-icon bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 !mb-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p id="save-preview-location" class="font-space font-bold text-sm text-slate-800 dark:text-slate-100 truncate">Guayaquil</p>
+                        <p id="save-preview-period" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">2026 · Enero</p>
+                    </div>
+                </div>
+
+                <label class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 block">Nombre del análisis</label>
+                <input id="save-analysis-name" type="text" class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2.5 px-4 outline-none font-medium text-slate-700 dark:text-slate-200 focus:border-indigo-500 dark:focus:border-cyan-500 shadow-inner mb-5 transition-colors" placeholder="Ej. Análisis de Guayaquil, 2026 Enero - Junio">
+                <div class="flex gap-3">
+                    <button onclick="toggleSaveModal(false)" class="flex-1 py-3 rounded-xl font-space font-bold text-xs uppercase tracking-wider bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800/50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]">Cancelar</button>
+                    <button onclick="confirmSaveAnalysis()" class="flex-1 py-3 rounded-xl font-space font-bold text-xs uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                        Guardar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -394,6 +422,10 @@
                 <button onclick="toggleHistoryModal(false)" class="p-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 transition-all active:scale-95 relative z-10">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
+            </div>
+            <div class="flex items-center justify-between px-6 pt-4 flex-shrink-0">
+                <span id="history-count-label" class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">0 guardados</span>
+                <button onclick="clearAllHistory()" class="text-[11px] font-space font-bold uppercase tracking-wider text-red-500/80 hover:text-red-500 transition-colors">Vaciar todo</button>
             </div>
             <div id="history-list-container" class="flex-1 overflow-y-auto px-6 py-5 space-y-3"></div>
         </div>
@@ -3372,6 +3404,8 @@ async function updateAnalysis(data) {
             const overlay = document.getElementById('save-modal-overlay');
             if (show) {
                 document.getElementById('save-analysis-name').value = buildSuggestedName();
+                document.getElementById('save-preview-location').textContent = currentLocationName;
+                document.getElementById('save-preview-period').textContent = buildPeriodLabel(mode, selectedYears, selectedMonths);
                 overlay.classList.remove('hidden'); overlay.classList.add('flex-shown');
                 setTimeout(() => document.getElementById('save-analysis-name').focus(), 50);
             } else {
@@ -3424,8 +3458,9 @@ async function updateAnalysis(data) {
                 return;
             }
             container.innerHTML = list.map(entry => `
-                <div class="help-source items-center">
-                    <div class="help-card-icon bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                <div class="help-source items-center !pl-4 relative overflow-hidden">
+                    <span class="absolute left-0 top-0 bottom-0 w-1 ${entry.mode === 'mes' ? 'bg-gradient-to-b from-blue-500 to-cyan-400' : 'bg-gradient-to-b from-violet-500 to-fuchsia-400'}"></span>
+                    <div class="help-card-icon bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex-shrink-0 !mb-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -3442,6 +3477,15 @@ async function updateAnalysis(data) {
                     </div>
                 </div>
             `).join('');
+            document.getElementById('history-count-label').textContent = `${list.length} guardado${list.length === 1 ? '' : 's'}`;
+        }
+
+        function clearAllHistory() {
+            if (getHistoryList().length === 0) return;
+            if (confirm('¿Vaciar todo el historial guardado? Esta acción no se puede deshacer.')) {
+                setHistoryList([]);
+                renderHistoryList();
+            }
         }
 
         function deleteHistoryEntry(id) {
