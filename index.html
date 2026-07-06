@@ -11,7 +11,7 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -222,7 +222,7 @@
 
         <main id="main-content" class="flex-1 min-h-screen px-6 md:px-10 xl:px-14 pt-2 md:pt-3 xl:pt-4 pb-6 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
             
-            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-4">
+            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-20 xl:pb-16">
                 <div class="flex items-center gap-6">
                     <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap mt-1">Bienvenido a</span>
                     <img src="Tipo3.png" alt="CLÓVINA" class="h-16 md:h-18 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
@@ -244,11 +244,16 @@
                         <button id="pdf-btn" onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center w-full">
                             Exportar PDF
                         </button>
+                        <button id="save-btn" onclick="toggleSaveModal(true)" class="absolute top-full left-0 mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-2 w-full">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                            Guardar
+                        </button>
                     </div>
                 </div>
             </header>
 
-            <div class="w-full flex flex-wrap justify-end gap-2 -mt-3 mb-2">
+            <div class="w-full flex items-center justify-end gap-2 mt-3 mb-2">
+                <span class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mr-1">Descargas:</span>
                 <button id="png-btn" onclick="exportChartPNG()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     PNG
@@ -256,10 +261,6 @@
                 <button id="excel-btn" onclick="exportExcel()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     Excel
-                </button>
-                <button id="save-btn" onclick="toggleSaveModal(true)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                    Guardar
                 </button>
                 <button id="zip-btn" onclick="exportZIP()" class="bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-200 dark:to-slate-400 hover:opacity-90 text-white dark:text-slate-900 font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M8 12l4 4 4-4m-4-8v12"/></svg>
@@ -3348,6 +3349,25 @@ async function downloadPDF() {
     }
 }
 
+function ensureLibLoaded(globalName, url) {
+    return new Promise((resolve, reject) => {
+        if (window[globalName]) return resolve();
+        const existing = document.querySelector(`script[data-lib="${globalName}"]`);
+        if (existing) {
+            existing.addEventListener('load', () => resolve());
+            existing.addEventListener('error', () => reject(new Error(`No se pudo cargar ${globalName}`)));
+            const checkInterval = setInterval(() => { if (window[globalName]) { clearInterval(checkInterval); resolve(); } }, 100);
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = url;
+        script.dataset.lib = globalName;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`No se pudo cargar ${globalName}`));
+        document.head.appendChild(script);
+    });
+}
+
 async function exportChartPNG() {
     if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
     const btn = document.getElementById('png-btn');
@@ -3355,9 +3375,8 @@ async function exportChartPNG() {
     btn.innerHTML = 'PROCESANDO...';
     await new Promise(r => setTimeout(r, 50));
     try {
-        const isDark = document.documentElement.classList.contains('dark');
         const canvas = await html2canvas(document.getElementById('chart'), {
-            scale: 3, backgroundColor: isDark ? '#0b1220' : '#ffffff', useCORS: true, logging: false
+            scale: 3, backgroundColor: null, useCORS: true, logging: false
         });
         const link = document.createElement('a');
         link.download = `Climograma_Givoni_${currentLocationName.replace(/ /g, '_')}.png`;
@@ -3397,17 +3416,18 @@ function buildExcelWorkbook() {
     return wb;
 }
 
-function exportExcel() {
+async function exportExcel() {
     if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
     const btn = document.getElementById('excel-btn');
     const originalHtml = btn.innerHTML;
     btn.innerHTML = 'PROCESANDO...';
     try {
+        await ensureLibLoaded('XLSX', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js');
         const wb = buildExcelWorkbook();
         XLSX.writeFile(wb, `Datos_CLOVINA_${currentLocationName.replace(/ /g, '_')}.xlsx`);
     } catch (e) {
         console.error('Error Excel:', e);
-        alert('Hubo un error al generar el Excel.');
+        alert('Hubo un error al generar el Excel. Verifica tu conexión a internet e inténtalo de nuevo.');
     } finally {
         btn.innerHTML = originalHtml;
     }
@@ -3420,15 +3440,19 @@ async function exportZIP() {
     btn.innerHTML = 'GENERANDO ZIP...';
     await new Promise(r => setTimeout(r, 50));
     try {
+        await Promise.all([
+            ensureLibLoaded('XLSX', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js'),
+            ensureLibLoaded('JSZip', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js')
+        ]);
+
         const zip = new JSZip();
         const baseName = currentLocationName.replace(/ /g, '_');
 
         const pdf = await buildPDFObject();
         zip.file(`Reporte_CLOVINA_${baseName}.pdf`, pdf.output('blob'));
 
-        const isDark = document.documentElement.classList.contains('dark');
         const canvas = await html2canvas(document.getElementById('chart'), {
-            scale: 3, backgroundColor: isDark ? '#0b1220' : '#ffffff', useCORS: true, logging: false
+            scale: 3, backgroundColor: null, useCORS: true, logging: false
         });
         const pngBlob = await new Promise(res => canvas.toBlob(res, 'image/png', 1.0));
         zip.file(`Climograma_Givoni_${baseName}.png`, pngBlob);
@@ -3444,7 +3468,7 @@ async function exportZIP() {
         link.click();
     } catch (e) {
         console.error('Error ZIP:', e);
-        alert('Hubo un error al generar el archivo ZIP.');
+        alert('Hubo un error al generar el archivo ZIP. Verifica tu conexión a internet e inténtalo de nuevo.');
         const pdfContainer = document.getElementById('pdf-generator-container');
         if (pdfContainer) pdfContainer.style.display = "none";
     } finally {
