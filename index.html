@@ -603,13 +603,11 @@
                 total++;
             }
 
-            // Una zona solo cuenta como "detectada" si cubre al menos este % del
-            // barrido térmico real del periodo. Así, un mínimo que roza el límite
-            // de una zona por una fracción de grado no cuenta igual que una zona
-            // que realmente domina el rango del día. Ajustable si hace falta.
-            const UMBRAL_COBERTURA = 0.10;
+            // Ya no filtramos por % de cobertura: con los polígonos reales del SVG,
+            // cualquier zona que el barrido realmente toque es una condición
+            // geométrica real (no un artefacto de límites aproximados), así que se
+            // reporta tal cual.
             return Object.keys(conteo)
-                .filter(z => (conteo[z] / total) >= UMBRAL_COBERTURA)
                 .sort((a,b) => parseInt(a.slice(1)) - parseInt(b.slice(1)));
         }
 
