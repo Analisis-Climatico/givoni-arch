@@ -83,6 +83,13 @@
 .pdf-table td * { color: #1e293b !important; } /* Asegúrate de borrar esta si aún está */
 .pdf-table td { border-bottom: 1px solid #f1f5f9; padding: 18px 12px; text-align: center; font-size: 15px; color: #1e293b !important; font-weight: 500; }
 .pdf-table td span { color: #ffffff !important; } /* Esta línea obliga a que el texto de las Zonas sea blanco */
+
+        /* --- MODAL DE AYUDA --- */
+        #help-modal-overlay.flex-shown { display: flex !important; }
+        .help-tab-btn { color: #64748b; background: transparent; }
+        .help-tab-btn.active { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+        .dark .help-tab-btn { color: #94a3b8; }
+        .dark .help-tab-btn.active { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
@@ -145,9 +152,13 @@
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/60 mt-2">
+                <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/60 mt-2 space-y-2">
                     <button onclick="runClimateAnalysis()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-sm transition-all shadow-md active:scale-[0.98]">
                         Actualizar Análisis
+                    </button>
+                    <button onclick="toggleHelpModal(true)" class="w-full flex items-center justify-center gap-2 bg-slate-200/50 hover:bg-slate-200/80 dark:bg-slate-800/40 dark:hover:bg-slate-800/70 text-slate-500 dark:text-slate-400 font-space font-bold tracking-wider uppercase rounded-xl py-2.5 text-xs transition-all active:scale-[0.98]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        ¿Ayuda?
                     </button>
                 </div>
             </div>
@@ -295,6 +306,67 @@
 </div>
 
     <div id="chart-tooltip" class="absolute opacity-0 glass-panel px-6 py-5 rounded-2xl pointer-events-none z-[100] shadow-2xl flex flex-col gap-2 text-sm border-white/40 dark:border-white/10 backdrop-blur-3xl" data-html2canvas-ignore></div>
+
+    <!-- MODAL DE AYUDA -->
+    <div id="help-modal-overlay" class="hidden fixed inset-0 z-[200] items-center justify-center p-4 md:p-8" onclick="if(event.target===this) toggleHelpModal(false)">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div class="glass-panel relative w-full max-w-3xl h-[85vh] rounded-[24px] shadow-2xl flex flex-col overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 px-6 py-4 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h2 class="font-space font-bold text-lg uppercase tracking-[0.15em] text-slate-700 dark:text-slate-200">Centro de Ayuda</h2>
+                </div>
+                <button onclick="toggleHelpModal(false)" class="p-2 rounded-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/40 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="flex gap-1 px-6 pt-4 flex-shrink-0 overflow-x-auto">
+                <button data-help-tab="funcion" onclick="switchHelpTab('funcion')" class="help-tab-btn px-4 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all whitespace-nowrap">¿Qué es?</button>
+                <button data-help-tab="givoni" onclick="switchHelpTab('givoni')" class="help-tab-btn px-4 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all whitespace-nowrap">Climograma Givoni</button>
+                <button data-help-tab="pasos" onclick="switchHelpTab('pasos')" class="help-tab-btn px-4 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all whitespace-nowrap">Cómo usar</button>
+                <button data-help-tab="veracidad" onclick="switchHelpTab('veracidad')" class="help-tab-btn px-4 py-2.5 rounded-lg font-space font-bold text-xs tracking-wider uppercase transition-all whitespace-nowrap">Veracidad</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-6 py-5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+
+                <div id="help-panel-funcion" class="help-panel space-y-3">
+                    <h3 class="font-space font-bold text-base text-slate-800 dark:text-slate-100">¿Cuál es la función de CLÓVINA?</h3>
+                    <p>CLÓVINA es una herramienta de análisis bioclimático. A partir de una ubicación geográfica (buscada o detectada por GPS), obtiene datos históricos reales de temperatura y humedad relativa y los procesa para determinar el nivel de confort térmico de ese lugar.</p>
+                    <p>Con esos datos, la página genera automáticamente tres resultados: el climograma de Givoni de la zona, una tabla con los valores climáticos por periodo (mes o año) y un conjunto de estrategias arquitectónicas pasivas recomendadas (ventilación natural, sombra, masa térmica, calefacción, etc.) para lograr confort sin depender exclusivamente de sistemas mecánicos.</p>
+                    <p>Todo el análisis puede exportarse como reporte en PDF para su uso en estudios de diseño bioclimático, arquitectura sostenible o urbanismo.</p>
+                </div>
+
+                <div id="help-panel-givoni" class="help-panel space-y-3 hidden">
+                    <h3 class="font-space font-bold text-base text-slate-800 dark:text-slate-100">¿Qué es el climograma de Givoni?</h3>
+                    <p>Es una carta psicrométrica desarrollada por el arquitecto Baruch Givoni que relaciona la temperatura del aire con la humedad relativa para definir zonas de confort térmico y zonas donde se requiere una estrategia de diseño específica.</p>
+                    <p>Sobre esa matriz se ubican los puntos correspondientes a cada mes o año analizado. Según en qué zona cae cada punto, el climograma indica si el ambiente ya es confortable o si conviene aplicar ventilación, sombreamiento, masa térmica, enfriamiento evaporativo, calefacción o humidificación para acercarlo al confort.</p>
+                    <p>Es una herramienta clásica y ampliamente usada en arquitectura bioclimática porque traduce datos climáticos abstractos en decisiones de diseño concretas.</p>
+                </div>
+
+                <div id="help-panel-pasos" class="help-panel space-y-3 hidden">
+                    <h3 class="font-space font-bold text-base text-slate-800 dark:text-slate-100">¿Cómo se utiliza la página? (paso a paso)</h3>
+                    <ol class="list-decimal list-inside space-y-2">
+                        <li><b>Ubicación:</b> escribe una ciudad en "Buscar Ubicación" y selecciónala de la lista, o deja que el mapa detecte tu posición por GPS.</li>
+                        <li><b>Periodo:</b> elige el "Año Base" en el selector correspondiente.</li>
+                        <li><b>Modo:</b> arriba, en el encabezado, escoge si quieres analizar por "Meses" o por "Años".</li>
+                        <li><b>Selección:</b> marca los meses (o años) de estudio que quieres incluir en el análisis.</li>
+                        <li><b>Analizar:</b> pulsa el botón "Actualizar Análisis" para procesar los datos.</li>
+                        <li><b>Resultados:</b> revisa el climograma de Givoni, la tabla de datos y las estrategias arquitectónicas sugeridas.</li>
+                        <li><b>Exportar:</b> usa "Exportar PDF" si necesitas guardar o compartir el reporte completo.</li>
+                    </ol>
+                </div>
+
+                <div id="help-panel-veracidad" class="help-panel space-y-3 hidden">
+                    <h3 class="font-space font-bold text-base text-slate-800 dark:text-slate-100">¿Qué comprueba la veracidad de la página?</h3>
+                    <p><b>Datos climáticos:</b> la temperatura, humedad y precipitación provienen de fuentes públicas de reanálisis climático (Open-Meteo, basado en el modelo ERA5-Land) y de la NASA POWER, que registran valores históricos reales medidos y modelados para cualquier coordenada del planeta. No son valores inventados ni estimados a mano.</p>
+                    <p><b>Climograma de Givoni:</b> las zonas de confort y las estrategias que se dibujan sobre la carta psicrométrica corresponden a los límites y criterios definidos originalmente por Givoni, por lo que el diagnóstico de cada punto se apoya en un método reconocido en arquitectura bioclimática, no en una regla arbitraria.</p>
+                    <p><b>Clasificación climática de Köppen:</b> además del climograma, la página calcula por separado la clasificación climática de Köppen-Geiger a partir de las temperaturas y precipitaciones de los 12 meses del año. Esta clasificación funciona como una segunda verificación independiente: si el tipo de clima resultante (por ejemplo, tropical, templado o árido) es coherente con la zona y estrategias que muestra el climograma de Givoni, se confirma que el análisis representa fielmente el clima real de la ubicación consultada.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <script>
         const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -3011,6 +3083,32 @@ async function updateAnalysis(data) {
 }
 
         window.addEventListener('resize', () => { if(window.currentData) drawChart(window.currentData); });
+
+        // --- MODAL DE AYUDA ---
+        function toggleHelpModal(show) {
+            const overlay = document.getElementById('help-modal-overlay');
+            if (show) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex-shown');
+                if (!document.querySelector('.help-tab-btn.active')) switchHelpTab('funcion');
+            } else {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex-shown');
+            }
+        }
+
+        function switchHelpTab(tabName) {
+            document.querySelectorAll('.help-tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.helpTab === tabName);
+            });
+            document.querySelectorAll('.help-panel').forEach(panel => {
+                panel.classList.toggle('hidden', panel.id !== `help-panel-${tabName}`);
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleHelpModal(false);
+        });
         
         setMode('mes'); 
         updateLocation(lat, lon);
