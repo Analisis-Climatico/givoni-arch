@@ -11,6 +11,8 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -220,7 +222,7 @@
 
         <main id="main-content" class="flex-1 min-h-screen px-6 md:px-10 xl:px-14 pt-2 md:pt-3 xl:pt-4 pb-6 flex flex-col space-y-10 overflow-hidden transition-all duration-300">
             
-            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-20 xl:pb-16">
+            <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-4">
                 <div class="flex items-center gap-6">
                     <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap mt-1">Bienvenido a</span>
                     <img src="Tipo3.png" alt="CLÓVINA" class="h-16 md:h-18 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
@@ -242,13 +244,28 @@
                         <button id="pdf-btn" onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center w-full">
                             Exportar PDF
                         </button>
-                        <button id="save-btn" onclick="toggleSaveModal(true)" class="absolute top-full left-0 mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-2 w-full">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                            Guardar
-                        </button>
                     </div>
                 </div>
             </header>
+
+            <div class="w-full flex flex-wrap justify-end gap-2 -mt-3 mb-2">
+                <button id="png-btn" onclick="exportChartPNG()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    PNG
+                </button>
+                <button id="excel-btn" onclick="exportExcel()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Excel
+                </button>
+                <button id="save-btn" onclick="toggleSaveModal(true)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                    Guardar
+                </button>
+                <button id="zip-btn" onclick="exportZIP()" class="bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-200 dark:to-slate-400 hover:opacity-90 text-white dark:text-slate-900 font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-sm active:scale-95 flex justify-center items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M8 12l4 4 4-4m-4-8v12"/></svg>
+                    Descargar Todo (.zip)
+                </button>
+            </div>
 
             <div id="export-container" class="space-y-10 w-full block p-2 rounded-2xl relative">
                 
@@ -2930,6 +2947,7 @@ async function updateAnalysis(data) {
     const sinSVG = ["Ventilación cruzada profunda", "Cubierta extractora", "Vidrio de control solar"];
     recs = recs.filter(r => r && !sinSVG.includes(r.t)); 
     recs = recs.filter((obj, index, arr) => index === arr.findIndex((el) => el.t === obj.t));
+    window.currentStrategies = recs;
 
     const sl = document.getElementById('strategy-list');
     sl.innerHTML = '';
@@ -3193,148 +3211,244 @@ async function updateAnalysis(data) {
         document.getElementById('analysis-text').innerHTML = "Error al obtener datos climáticos. Por favor verifique su conexión o intente con un rango diferente.";
     }
 }
-        async function downloadPDF() {
-    const btn = document.getElementById('pdf-btn');
-    btn.innerHTML = `PROCESANDO...`;
+        async function buildPDFObject() {
+    const { jsPDF } = window.jspdf;
 
-    // Pequeña pausa para permitir que la UI cambie el texto del botón
+    // 1. Llenar Metadatos
+    document.getElementById('pdf-ubicacion').innerText = `Ubicación: ${currentLocationName}`;
+    let periodoStr = mode === 'mes' ? 
+        `${selectedMonths.map(m=>months[m]).join(', ')} / ${selectedYears[0]}` : 
+        `${selectedYears.join(', ')}`;
+    document.getElementById('pdf-periodo').innerText = `Periodo: ${periodoStr}`;
+    
+    // 2. Clonar Gráfico y OPTIMIZAR EXTREMADAMENTE SU RENDIMIENTO
+    document.getElementById('pdf-chart-container').innerHTML = document.getElementById('chart-canvas-inside').innerHTML;
+    const pdfSvg = document.querySelector('#pdf-chart-container svg');
+    if(pdfSvg) {
+        pdfSvg.querySelectorAll('*').forEach(el => {
+            el.style.filter = 'none';
+            el.removeAttribute('filter');
+            if(el.tagName === 'text') el.setAttribute('fill', '#000');
+        });
+    }
+
+    // 3. Dividir Tabla Dinámicamente para no dejar huecos
+    const tableRows = Array.from(document.querySelectorAll('#table-body tr'));
+    const table1 = document.createElement('table'); table1.className = 'pdf-table';
+    const table2 = document.createElement('table'); table2.className = 'pdf-table';
+    
+    const theadOriginal = document.querySelector('#data-table thead');
+    table1.appendChild(theadOriginal.cloneNode(true));
+    table2.appendChild(theadOriginal.cloneNode(true));
+
+    const tbody1 = document.createElement('tbody');
+    const tbody2 = document.createElement('tbody');
+    
+    const rowsForPage1 = Math.min(tableRows.length, 7);
+
+    tableRows.forEach((row, index) => {
+        const cleanRow = row.cloneNode(true);
+        cleanRow.className = ''; 
+        cleanRow.querySelectorAll('*').forEach(child => {
+            if (child.className && typeof child.className === 'string') {
+                child.className = child.className.replace(/text-white|dark:text-white|dark:text-slate-\d00|text-slate-\d00/g, '');
+            }
+        });
+
+        if(index < rowsForPage1) {
+            tbody1.appendChild(cleanRow);
+        } else {
+            tbody2.appendChild(cleanRow);
+        }
+    });
+
+    table1.appendChild(tbody1);
+    document.getElementById('pdf-table-container-1').innerHTML = '';
+    document.getElementById('pdf-table-container-1').appendChild(table1);
+    
+    document.getElementById('pdf-table-container-2').innerHTML = '';
+    if (tableRows.length > rowsForPage1) {
+        table2.appendChild(tbody2);
+        document.getElementById('pdf-table-container-2').appendChild(table2);
+    }
+
+    // 4. Copiar Resumen
+    document.getElementById('pdf-resumen-container').innerHTML = document.getElementById('analysis-text').innerHTML;
+
+    // 5. Repartir Estrategias Arquitectónicas Dinámicamente
+    const strategiesContainer1 = document.getElementById('pdf-estrategias-container-1');
+    const strategiesContainer2 = document.getElementById('pdf-estrategias-container-2');
+    strategiesContainer1.innerHTML = '';
+    strategiesContainer2.innerHTML = '';
+    
+    const allBoxes = document.querySelectorAll('#strategy-list > div');
+    const stratSpacePage2 = (tableRows.length > rowsForPage1) ? 2 : 4;
+
+    allBoxes.forEach((box, index) => {
+        const title = box.querySelector('p:first-child').innerText;
+        const desc = box.querySelector('p:last-child').innerText;
+        const stratHtml = `<div class="pdf-strat-box"><div class="pdf-strat-title">${title}</div><div class="pdf-text">${desc}</div></div>`;
+        
+        if (index < stratSpacePage2) {
+            strategiesContainer1.innerHTML += stratHtml;
+        } else {
+            strategiesContainer2.innerHTML += stratHtml;
+        }
+    });
+
+    // 6. Configuración jsPDF 
+    const pdfContainer = document.getElementById('pdf-generator-container');
+    pdfContainer.style.display = "block";
+    pdfContainer.style.position = "fixed";
+    pdfContainer.style.left = "0px";
+    pdfContainer.style.top = "0px";
+    pdfContainer.style.opacity = "0.01";
+    pdfContainer.style.zIndex = "-9999";
+
+    const pdf = new jsPDF('p', 'pt', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const opt = { scale: 1.5, useCORS: true, backgroundColor: "#ffffff", logging: false };
+
+    const canvas1 = await html2canvas(document.getElementById('pdf-page-1'), opt);
+    pdf.addImage(canvas1.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pdfWidth, (canvas1.height * pdfWidth) / canvas1.width);
+    
+    const hasPage2Content = (tableRows.length > rowsForPage1) || (allBoxes.length > 0);
+    if (hasPage2Content) {
+        pdf.addPage();
+        const canvas2 = await html2canvas(document.getElementById('pdf-page-2'), opt);
+        pdf.addImage(canvas2.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pdfWidth, (canvas2.height * pdfWidth) / canvas2.width);
+    }
+
+    if (allBoxes.length > stratSpacePage2) {
+        pdf.addPage();
+        const canvas3 = await html2canvas(document.getElementById('pdf-page-3'), opt);
+        pdf.addImage(canvas3.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pdfWidth, (canvas3.height * pdfWidth) / canvas3.width);
+    }
+
+    pdfContainer.style.display = "none";
+    return pdf;
+}
+
+async function downloadPDF() {
+    const btn = document.getElementById('pdf-btn');
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = `PROCESANDO...`;
     await new Promise(r => setTimeout(r, 100));
 
     try {
-        const { jsPDF } = window.jspdf;
-        
-        // 1. Llenar Metadatos
-        document.getElementById('pdf-ubicacion').innerText = `Ubicación: ${currentLocationName}`;
-        let periodoStr = mode === 'mes' ? 
-            `${selectedMonths.map(m=>months[m]).join(', ')} / ${selectedYears[0]}` : 
-            `${selectedYears.join(', ')}`;
-        document.getElementById('pdf-periodo').innerText = `Periodo: ${periodoStr}`;
-        
-        // 2. Clonar Gráfico y OPTIMIZAR EXTREMADAMENTE SU RENDIMIENTO
-        document.getElementById('pdf-chart-container').innerHTML = document.getElementById('chart-canvas-inside').innerHTML;
-        const pdfSvg = document.querySelector('#pdf-chart-container svg');
-        if(pdfSvg) {
-            // Eliminar filtros de sombra de las líneas climáticas. Esto reduce el tiempo de renderizado un 90%
-            pdfSvg.querySelectorAll('*').forEach(el => {
-                el.style.filter = 'none';
-                el.removeAttribute('filter');
-                if(el.tagName === 'text') el.setAttribute('fill', '#000');
-            });
-        }
-
-        // 3. Dividir Tabla Dinámicamente para no dejar huecos
-        const tableRows = Array.from(document.querySelectorAll('#table-body tr'));
-        const table1 = document.createElement('table'); table1.className = 'pdf-table';
-        const table2 = document.createElement('table'); table2.className = 'pdf-table';
-        
-        const theadOriginal = document.querySelector('#data-table thead');
-        table1.appendChild(theadOriginal.cloneNode(true));
-        table2.appendChild(theadOriginal.cloneNode(true));
-
-        const tbody1 = document.createElement('tbody');
-        const tbody2 = document.createElement('tbody');
-        
-        // Lógica inteligente: Pág 1 soporta hasta 7 filas perfectamente.
-        const rowsForPage1 = Math.min(tableRows.length, 7);
-
-        tableRows.forEach((row, index) => {
-            const cleanRow = row.cloneNode(true);
-            
-            // Eliminar forzosamente clases de Tailwind de modo oscuro
-            cleanRow.className = ''; 
-            cleanRow.querySelectorAll('*').forEach(child => {
-                if (child.className && typeof child.className === 'string') {
-                    child.className = child.className.replace(/text-white|dark:text-white|dark:text-slate-\d00|text-slate-\d00/g, '');
-                }
-            });
-
-            if(index < rowsForPage1) {
-                tbody1.appendChild(cleanRow);
-            } else {
-                tbody2.appendChild(cleanRow);
-            }
-        });
-
-        table1.appendChild(tbody1);
-        document.getElementById('pdf-table-container-1').innerHTML = '';
-        document.getElementById('pdf-table-container-1').appendChild(table1);
-        
-        document.getElementById('pdf-table-container-2').innerHTML = '';
-        if (tableRows.length > rowsForPage1) {
-            table2.appendChild(tbody2);
-            document.getElementById('pdf-table-container-2').appendChild(table2);
-        }
-
-        // 4. Copiar Resumen
-        document.getElementById('pdf-resumen-container').innerHTML = document.getElementById('analysis-text').innerHTML;
-
-        // 5. Repartir Estrategias Arquitectónicas Dinámicamente
-        const strategiesContainer1 = document.getElementById('pdf-estrategias-container-1');
-        const strategiesContainer2 = document.getElementById('pdf-estrategias-container-2');
-        strategiesContainer1.innerHTML = '';
-        strategiesContainer2.innerHTML = '';
-        
-        const allBoxes = document.querySelectorAll('#strategy-list > div');
-        
-        // Si usamos la Pág 2 para la tabla restante, caben menos estrategias. Si no, caben más.
-        const stratSpacePage2 = (tableRows.length > rowsForPage1) ? 2 : 4;
-
-        allBoxes.forEach((box, index) => {
-            const title = box.querySelector('p:first-child').innerText;
-            const desc = box.querySelector('p:last-child').innerText;
-            const stratHtml = `<div class="pdf-strat-box"><div class="pdf-strat-title">${title}</div><div class="pdf-text">${desc}</div></div>`;
-            
-            if (index < stratSpacePage2) {
-                strategiesContainer1.innerHTML += stratHtml;
-            } else {
-                strategiesContainer2.innerHTML += stratHtml;
-            }
-        });
-
-        // 6. Configuración jsPDF 
-        const pdfContainer = document.getElementById('pdf-generator-container');
-        pdfContainer.style.display = "block";
-        pdfContainer.style.position = "fixed";
-        pdfContainer.style.left = "0px";
-        pdfContainer.style.top = "0px";
-        pdfContainer.style.opacity = "0.01";
-        pdfContainer.style.zIndex = "-9999";
-
-        const pdf = new jsPDF('p', 'pt', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        // Bajar el scale de 2 a 1.5 es imperceptible en calidad pero mejora la velocidad un 40% adicional
-        const opt = { scale: 1.5, useCORS: true, backgroundColor: "#ffffff", logging: false };
-
-        // Renderizar Página 1 (Garantizada)
-        const canvas1 = await html2canvas(document.getElementById('pdf-page-1'), opt);
-        pdf.addImage(canvas1.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pdfWidth, (canvas1.height * pdfWidth) / canvas1.width);
-        
-        // Renderizar Página 2 (Solo si hay filas extras en la tabla o estrategias que colocar)
-        const hasPage2Content = (tableRows.length > rowsForPage1) || (allBoxes.length > 0);
-        if (hasPage2Content) {
-            pdf.addPage();
-            const canvas2 = await html2canvas(document.getElementById('pdf-page-2'), opt);
-            pdf.addImage(canvas2.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pdfWidth, (canvas2.height * pdfWidth) / canvas2.width);
-        }
-
-        // Renderizar Página 3 (Solo si las estrategias desbordaron a una tercera página)
-        if (allBoxes.length > stratSpacePage2) {
-            pdf.addPage();
-            const canvas3 = await html2canvas(document.getElementById('pdf-page-3'), opt);
-            pdf.addImage(canvas3.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pdfWidth, (canvas3.height * pdfWidth) / canvas3.width);
-        }
-
-        // Guardar y limpiar
-        pdfContainer.style.display = "none";
+        const pdf = await buildPDFObject();
         pdf.save(`Reporte_CLOVINA_${currentLocationName.replace(/ /g, '_')}.pdf`);
-
     } catch (error) {
         console.error("Error PDF:", error);
         alert("Hubo un error al generar el PDF. Verifica la consola.");
         const pdfContainer = document.getElementById('pdf-generator-container');
         if(pdfContainer) pdfContainer.style.display = "none";
     } finally {
-        btn.innerHTML = "EXPORTAR PDF";
+        btn.innerHTML = originalHtml;
+    }
+}
+
+async function exportChartPNG() {
+    if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
+    const btn = document.getElementById('png-btn');
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = 'PROCESANDO...';
+    await new Promise(r => setTimeout(r, 50));
+    try {
+        const isDark = document.documentElement.classList.contains('dark');
+        const canvas = await html2canvas(document.getElementById('chart'), {
+            scale: 3, backgroundColor: isDark ? '#0b1220' : '#ffffff', useCORS: true, logging: false
+        });
+        const link = document.createElement('a');
+        link.download = `Climograma_Givoni_${currentLocationName.replace(/ /g, '_')}.png`;
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+    } catch (e) {
+        console.error('Error PNG:', e);
+        alert('Hubo un error al exportar el PNG.');
+    } finally {
+        btn.innerHTML = originalHtml;
+    }
+}
+
+function buildExcelWorkbook() {
+    const wb = XLSX.utils.book_new();
+
+    const dataRows = window.currentData.map(d => {
+        const zones = (typeof detectZones === 'function') ? detectZones(d.tMin, d.tMax, d.hr) : [];
+        return {
+            'Periodo': d.label,
+            'Temp. Máx (°C)': +d.tMax.toFixed(1),
+            'Temp. Mín (°C)': +d.tMin.toFixed(1),
+            'Humedad Relativa (%)': +d.hr.toFixed(0),
+            'Precipitación (mm)': d.rain != null ? +Number(d.rain).toFixed(1) : '',
+            'Zonas Givoni': zones.join(', ')
+        };
+    });
+    const wsData = XLSX.utils.json_to_sheet(dataRows);
+    wsData['!cols'] = [{wch:20},{wch:15},{wch:15},{wch:20},{wch:18},{wch:32}];
+    XLSX.utils.book_append_sheet(wb, wsData, 'Datos Climaticos');
+
+    const stratRows = (window.currentStrategies || []).map(r => ({ 'Estrategia': r.t, 'Descripción': r.d }));
+    const wsStrat = XLSX.utils.json_to_sheet(stratRows.length ? stratRows : [{ 'Estrategia': 'Sin estrategias disponibles', 'Descripción': '' }]);
+    wsStrat['!cols'] = [{wch:32},{wch:90}];
+    XLSX.utils.book_append_sheet(wb, wsStrat, 'Estrategias');
+
+    return wb;
+}
+
+function exportExcel() {
+    if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
+    const btn = document.getElementById('excel-btn');
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = 'PROCESANDO...';
+    try {
+        const wb = buildExcelWorkbook();
+        XLSX.writeFile(wb, `Datos_CLOVINA_${currentLocationName.replace(/ /g, '_')}.xlsx`);
+    } catch (e) {
+        console.error('Error Excel:', e);
+        alert('Hubo un error al generar el Excel.');
+    } finally {
+        btn.innerHTML = originalHtml;
+    }
+}
+
+async function exportZIP() {
+    if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
+    const btn = document.getElementById('zip-btn');
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = 'GENERANDO ZIP...';
+    await new Promise(r => setTimeout(r, 50));
+    try {
+        const zip = new JSZip();
+        const baseName = currentLocationName.replace(/ /g, '_');
+
+        const pdf = await buildPDFObject();
+        zip.file(`Reporte_CLOVINA_${baseName}.pdf`, pdf.output('blob'));
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const canvas = await html2canvas(document.getElementById('chart'), {
+            scale: 3, backgroundColor: isDark ? '#0b1220' : '#ffffff', useCORS: true, logging: false
+        });
+        const pngBlob = await new Promise(res => canvas.toBlob(res, 'image/png', 1.0));
+        zip.file(`Climograma_Givoni_${baseName}.png`, pngBlob);
+
+        const wb = buildExcelWorkbook();
+        const xlsxArray = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+        zip.file(`Datos_CLOVINA_${baseName}.xlsx`, xlsxArray);
+
+        const content = await zip.generateAsync({ type: 'blob' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = `CLOVINA_${baseName}.zip`;
+        link.click();
+    } catch (e) {
+        console.error('Error ZIP:', e);
+        alert('Hubo un error al generar el archivo ZIP.');
+        const pdfContainer = document.getElementById('pdf-generator-container');
+        if (pdfContainer) pdfContainer.style.display = "none";
+    } finally {
+        btn.innerHTML = originalHtml;
     }
 }
 
