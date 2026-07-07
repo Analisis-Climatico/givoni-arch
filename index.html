@@ -23,14 +23,18 @@
     </script>
     
     <style>
-        * { transition: background-color 0.35s cubic-bezier(0.4,0,0.2,1), color 0.35s cubic-bezier(0.4,0,0.2,1), border-color 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.15s cubic-bezier(0.4,0,0.2,1); }
+        *:not(svg):not(svg *) { transition: background-color 0.3s cubic-bezier(0.4,0,0.2,1), color 0.3s cubic-bezier(0.4,0,0.2,1), border-color 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1); }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        .glass-panel { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(24px) saturate(140%) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important; }
-        .dark .glass-panel { background: rgba(15, 23, 42, 0.5) !important; backdrop-filter: blur(30px) saturate(130%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.04) !important; }
+        .glass-panel { background: rgba(255, 255, 255, 0.35) !important; backdrop-filter: blur(16px) saturate(140%) !important; border: 1px solid rgba(255, 255, 255, 0.6) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.5) !important; }
+        .dark .glass-panel { background: rgba(15, 23, 42, 0.5) !important; backdrop-filter: blur(20px) saturate(130%) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.04) !important; }
+        /* Los modales llevan mucho texto: usamos un fondo más opaco para que
+           el texto gris sea legible incluso con contenido de color detrás. */
+        .modal-solid-panel { background: rgba(255, 255, 255, 0.94) !important; backdrop-filter: blur(16px) saturate(140%) !important; }
+        .dark .modal-solid-panel { background: rgba(15, 23, 42, 0.92) !important; }
         .sidebar-transition { transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
         .dark #chart-canvas-inside svg > g > g:first-child { filter: invert(0.9) hue-rotate(180deg); }
 
@@ -243,7 +247,7 @@
             
             <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-4">
                 <div class="flex items-center gap-6">
-                    <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap mt-1">Bienvenido a</span>
+                    <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-600 dark:text-slate-400 font-bold whitespace-nowrap mt-1">Bienvenido a</span>
                     <img src="Tipo3.png" alt="CLÓVINA" class="h-16 md:h-18 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
                 </div>
 
@@ -322,7 +326,7 @@
                 
                 <section class="space-y-4 w-full">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">01 / Climograma de Givoni</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400">01 / Climograma de Givoni</h2>
                         <span class="text-sm font-bold text-cyan-500 bg-cyan-500/10 px-3 py-1.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
@@ -334,10 +338,10 @@
 
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-10 w-full">
                     <div class="xl:col-span-7 space-y-4 overflow-hidden flex flex-col justify-start">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">02 / Cuadro de Datos</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 px-1">02 / Cuadro de Datos</h2>
                         <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl overflow-x-auto w-full">
                             <table class="w-full text-left text-sm table-fixed min-w-[550px]" id="data-table">
-                                <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold font-space text-xs">
+                                <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold font-space text-xs">
                                     <tr>
                                         <th class="p-5 text-center w-[12%]">Muestra</th>
                                         <th class="p-5 text-center w-[20%]">Periodo</th>
@@ -353,7 +357,7 @@
                     </div>
 
                     <div class="xl:col-span-5 space-y-4">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">03 / Resumen General</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 px-1">03 / Resumen General</h2>
                         <div class="glass-panel glass-panel-variant rounded-[24px] p-8 h-[calc(100%-2.5rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
                             <div id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base lg:text-lg font-light text-justify space-y-4">
                                 <span class="animate-pulse font-space tracking-widest text-xs uppercase text-blue-500">Ejecutando motor de análisis bioclimático... Recopilando datos históricos.</span>
@@ -367,13 +371,13 @@
                 </section>
 
                 <section class="space-y-4 w-full">
-                    <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 px-1">04 / Estrategias Arquitectónicas</h2>
+                    <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 px-1">04 / Estrategias Arquitectónicas</h2>
                     <div id="strategy-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </section>
 
                 <section class="space-y-6 w-full pt-4">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">05 / Imagen Arquitectónica Referencial</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400">05 / Imagen Arquitectónica Referencial</h2>
                     </div>
                     <div id="interactive-visualizer" class="glass-panel rounded-[24px] overflow-hidden border border-slate-200/50 dark:border-white/5 shadow-2xl flex flex-col lg:flex-row min-h-[500px]">
                     </div>
@@ -428,7 +432,7 @@
     <!-- MODAL DE GUARDAR ANÁLISIS -->
     <div id="save-modal-overlay" class="hidden fixed inset-0 z-[210] items-center justify-center p-4" onclick="if(event.target===this) toggleSaveModal(false)">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
-        <div class="glass-panel relative w-full max-w-md rounded-[28px] shadow-2xl overflow-hidden border border-white/20 dark:border-white/10">
+        <div class="glass-panel modal-solid-panel relative w-full max-w-md rounded-[28px] shadow-2xl overflow-hidden border border-white/20 dark:border-white/10">
             <div class="relative px-6 pt-6 pb-5 overflow-hidden bg-gradient-to-r from-indigo-600/10 via-blue-500/5 to-transparent border-b border-slate-200/60 dark:border-slate-800/60">
                 <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-indigo-400/10 blur-3xl pointer-events-none"></div>
                 <div class="flex items-center justify-between relative z-10">
@@ -438,7 +442,7 @@
                         </div>
                         <div>
                             <h3 class="font-space font-bold text-base uppercase tracking-[0.12em] text-slate-800 dark:text-slate-100 leading-none">Guardar Análisis</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Se guarda en el historial de este navegador</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1.5">Se guarda en el historial de este navegador</p>
                         </div>
                     </div>
                     <button onclick="toggleSaveModal(false)" class="p-2 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
@@ -454,11 +458,11 @@
                     </div>
                     <div class="min-w-0">
                         <p id="save-preview-location" class="font-space font-bold text-sm text-slate-800 dark:text-slate-100 truncate">Guayaquil</p>
-                        <p id="save-preview-period" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">2026 · Enero</p>
+                        <p id="save-preview-period" class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">2026 · Enero</p>
                     </div>
                 </div>
 
-                <label class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 block">Nombre del análisis</label>
+                <label class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5 block">Nombre del análisis</label>
                 <input id="save-analysis-name" type="text" class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2.5 px-4 outline-none font-medium text-slate-700 dark:text-slate-200 focus:border-indigo-500 dark:focus:border-cyan-500 shadow-inner mb-5 transition-colors" placeholder="Ej. Análisis de Guayaquil, 2026 Enero - Junio">
                 <div class="flex gap-3">
                     <button onclick="toggleSaveModal(false)" class="flex-1 py-3 rounded-xl font-space font-bold text-xs uppercase tracking-wider bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800/50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all active:scale-[0.98]">Cancelar</button>
@@ -474,7 +478,7 @@
     <!-- MODAL DE HISTORIAL / MEMORIA DE CÁLCULO -->
     <div id="history-modal-overlay" class="hidden fixed inset-0 z-[200] items-center justify-center p-4 md:p-8" onclick="if(event.target===this) toggleHistoryModal(false)">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
-        <div class="glass-panel relative w-full max-w-2xl h-[80vh] rounded-[28px] shadow-2xl flex flex-col overflow-hidden border border-white/20 dark:border-white/10">
+        <div class="glass-panel modal-solid-panel relative w-full max-w-2xl h-[80vh] rounded-[28px] shadow-2xl flex flex-col overflow-hidden border border-white/20 dark:border-white/10">
             <div class="relative flex items-center justify-between px-7 py-5 flex-shrink-0 overflow-hidden bg-gradient-to-r from-indigo-600/10 via-blue-500/5 to-transparent border-b border-slate-200/60 dark:border-slate-800/60">
                 <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-indigo-400/10 blur-3xl pointer-events-none"></div>
                 <div class="flex items-center gap-4 relative z-10">
@@ -483,7 +487,7 @@
                     </div>
                     <div>
                         <h2 class="font-space font-bold text-lg uppercase tracking-[0.15em] text-slate-800 dark:text-slate-100 leading-none">Historial</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">Tus análisis guardados en este navegador</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">Tus análisis guardados en este navegador</p>
                     </div>
                 </div>
                 <button onclick="toggleHistoryModal(false)" class="p-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 transition-all active:scale-95 relative z-10">
@@ -491,7 +495,7 @@
                 </button>
             </div>
             <div class="flex items-center justify-between px-6 pt-4 flex-shrink-0">
-                <span id="history-count-label" class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">0 guardados</span>
+                <span id="history-count-label" class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">0 guardados</span>
                 <button onclick="clearAllHistory()" class="text-[11px] font-space font-bold uppercase tracking-wider text-red-500/80 hover:text-red-500 transition-colors">Vaciar todo</button>
             </div>
             <div id="history-list-container" class="flex-1 overflow-y-auto px-6 py-5 space-y-3"></div>
@@ -501,7 +505,7 @@
     <!-- MODAL DE AYUDA -->
     <div id="help-modal-overlay" class="hidden fixed inset-0 z-[200] items-center justify-center p-4 md:p-8" onclick="if(event.target===this) toggleHelpModal(false)">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
-        <div class="glass-panel relative w-full max-w-4xl h-[88vh] rounded-[28px] shadow-2xl flex flex-col overflow-hidden border border-white/20 dark:border-white/10">
+        <div class="glass-panel modal-solid-panel relative w-full max-w-4xl h-[88vh] rounded-[28px] shadow-2xl flex flex-col overflow-hidden border border-white/20 dark:border-white/10">
 
             <div class="relative flex items-center justify-between px-7 py-5 flex-shrink-0 overflow-hidden bg-gradient-to-r from-blue-600/10 via-cyan-500/5 to-transparent border-b border-slate-200/60 dark:border-slate-800/60">
                 <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none"></div>
@@ -511,7 +515,7 @@
                     </div>
                     <div>
                         <h2 class="font-space font-bold text-lg uppercase tracking-[0.15em] text-slate-800 dark:text-slate-100 leading-none">Centro de Ayuda</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">Guía rápida de CLÓVINA · Análisis Bioclimático</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">Guía rápida de CLÓVINA · Análisis Bioclimático</p>
                     </div>
                 </div>
                 <button onclick="toggleHelpModal(false)" class="p-2.5 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 transition-all active:scale-95 relative z-10">
@@ -528,7 +532,7 @@
                         </span>
                         <span>
                             <span class="block font-space font-bold text-xs tracking-wider uppercase">¿Qué es?</span>
-                            <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">Función de la página</span>
+                            <span class="block text-[11px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">Función de la página</span>
                         </span>
                     </button>
                     <button data-help-tab="givoni" onclick="switchHelpTab('givoni')" class="help-tab-btn flex items-center gap-3 px-3.5 py-3 rounded-xl text-left transition-all flex-shrink-0 w-full min-w-[210px] md:min-w-0">
@@ -537,7 +541,7 @@
                         </span>
                         <span>
                             <span class="block font-space font-bold text-xs tracking-wider uppercase">Givoni</span>
-                            <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">El climograma</span>
+                            <span class="block text-[11px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">El climograma</span>
                         </span>
                     </button>
                     <button data-help-tab="pasos" onclick="switchHelpTab('pasos')" class="help-tab-btn flex items-center gap-3 px-3.5 py-3 rounded-xl text-left transition-all flex-shrink-0 w-full min-w-[210px] md:min-w-0">
@@ -546,7 +550,7 @@
                         </span>
                         <span>
                             <span class="block font-space font-bold text-xs tracking-wider uppercase">Cómo usar</span>
-                            <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">Paso a paso</span>
+                            <span class="block text-[11px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">Paso a paso</span>
                         </span>
                     </button>
                     <button data-help-tab="veracidad" onclick="switchHelpTab('veracidad')" class="help-tab-btn flex items-center gap-3 px-3.5 py-3 rounded-xl text-left transition-all flex-shrink-0 w-full min-w-[210px] md:min-w-0">
@@ -555,7 +559,7 @@
                         </span>
                         <span>
                             <span class="block font-space font-bold text-xs tracking-wider uppercase">Veracidad</span>
-                            <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">Fuentes y validación</span>
+                            <span class="block text-[11px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">Fuentes y validación</span>
                         </span>
                     </button>
                     <button data-help-tab="descargas" onclick="switchHelpTab('descargas')" class="help-tab-btn flex items-center gap-3 px-3.5 py-3 rounded-xl text-left transition-all flex-shrink-0 w-full min-w-[210px] md:min-w-0">
@@ -564,7 +568,7 @@
                         </span>
                         <span>
                             <span class="block font-space font-bold text-xs tracking-wider uppercase">Descargas</span>
-                            <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">PDF, PNG, Excel, ZIP</span>
+                            <span class="block text-[11px] text-slate-600 dark:text-slate-400 font-medium mt-0.5">PDF, PNG, Excel, ZIP</span>
                         </span>
                     </button>
                 </nav>
@@ -585,28 +589,28 @@
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 001.7-9.7A6 6 0 006 9.3 4 4 0 003 15z"/></svg>
                                 </div>
                                 <p class="font-space font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200">Datos reales</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Temperatura y humedad históricas de cualquier coordenada del planeta.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Temperatura y humedad históricas de cualquier coordenada del planeta.</p>
                             </div>
                             <div class="help-card">
                                 <div class="help-card-icon bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l7-3v13M9 19l-6 2V8l6-2m0 13l7-3M9 6l7 3"/></svg>
                                 </div>
                                 <p class="font-space font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200">Climograma Givoni</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Diagnóstico visual de confort térmico mes a mes o año a año.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Diagnóstico visual de confort térmico mes a mes o año a año.</p>
                             </div>
                             <div class="help-card">
                                 <div class="help-card-icon bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m6.364.636l-1.414 1.414M21 12h-2M17.364 17.364l-1.414-1.414M12 19v2M7.05 17.364l1.414-1.414M5 12H3m2.05-6.364L6.464 6.05M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
                                 </div>
                                 <p class="font-space font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200">Estrategias pasivas</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Recomendaciones arquitectónicas para lograr confort sin depender de sistemas mecánicos.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Recomendaciones arquitectónicas para lograr confort sin depender de sistemas mecánicos.</p>
                             </div>
                             <div class="help-card">
                                 <div class="help-card-icon bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H8a2 2 0 01-2-2V5a2 2 0 012-2h6l6 6v11a2 2 0 01-2 2z"/></svg>
                                 </div>
                                 <p class="font-space font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200">Reporte en PDF</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Exporta el análisis completo, listo para estudios y presentaciones.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Exporta el análisis completo, listo para estudios y presentaciones.</p>
                             </div>
                         </div>
                     </div>
@@ -620,7 +624,7 @@
                         <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">Es una carta psicrométrica desarrollada por el arquitecto <b class="text-slate-800 dark:text-slate-100">Baruch Givoni</b>, que relaciona la temperatura del aire con la humedad relativa para definir zonas de confort y zonas donde se requiere una estrategia de diseño específica. Sobre esa matriz se ubica cada mes o año analizado, y según la zona en que cae, la página recomienda una estrategia.</p>
 
                         <div>
-                            <p class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Estrategias que puede sugerir</p>
+                            <p class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Estrategias que puede sugerir</p>
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                                 <div class="help-chip"><span class="help-chip-dot bg-cyan-500"></span>Ventilación natural</div>
                                 <div class="help-chip"><span class="help-chip-dot bg-amber-500"></span>Sombreamiento</div>
@@ -671,7 +675,7 @@
                             </div>
                             <div>
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Datos climáticos · Open-Meteo (ERA5-Land) y NASA POWER</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Temperatura, humedad y precipitación provienen de reanálisis climático público, con valores históricos reales medidos y modelados. No son datos inventados ni estimados a mano.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Temperatura, humedad y precipitación provienen de reanálisis climático público, con valores históricos reales medidos y modelados. No son datos inventados ni estimados a mano.</p>
                             </div>
                         </div>
 
@@ -681,7 +685,7 @@
                             </div>
                             <div>
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Climograma de Givoni</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Las zonas de confort y estrategias dibujadas sobre la carta psicrométrica siguen los límites y criterios originales de Givoni, un método reconocido en arquitectura bioclimática.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Las zonas de confort y estrategias dibujadas sobre la carta psicrométrica siguen los límites y criterios originales de Givoni, un método reconocido en arquitectura bioclimática.</p>
                             </div>
                         </div>
 
@@ -691,7 +695,7 @@
                             </div>
                             <div>
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Clasificación climática de Köppen-Geiger</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Se calcula por separado a partir de las temperaturas y precipitaciones de los 12 meses. Funciona como una segunda verificación independiente: si el tipo de clima resultante coincide con la zona que muestra el climograma de Givoni, se confirma que el análisis refleja fielmente el clima real del lugar.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Se calcula por separado a partir de las temperaturas y precipitaciones de los 12 meses. Funciona como una segunda verificación independiente: si el tipo de clima resultante coincide con la zona que muestra el climograma de Givoni, se confirma que el análisis refleja fielmente el clima real del lugar.</p>
                             </div>
                         </div>
                     </div>
@@ -710,7 +714,7 @@
                             </div>
                             <div>
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">PDF</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Reporte completo: climograma, tabla de datos y estrategias recomendadas, listo para imprimir o compartir.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Reporte completo: climograma, tabla de datos y estrategias recomendadas, listo para imprimir o compartir.</p>
                             </div>
                         </div>
 
@@ -720,7 +724,7 @@
                             </div>
                             <div>
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">PNG (fondo transparente, con versión clara y oscura)</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Descarga solo la imagen del climograma de Givoni, con el fondo transparente para usarlo en cualquier documento o presentación. Se adapta automáticamente al modo en el que esté la página: si tienes activado el <b>modo oscuro</b>, se descarga una versión con colores pensados para fondos oscuros; si estás en <b>modo claro</b>, se descarga una versión con colores pensados para fondos claros. Así puedes elegir la que mejor se vea según dónde vayas a usar la imagen, simplemente cambiando el modo antes de descargar.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Descarga solo la imagen del climograma de Givoni, con el fondo transparente para usarlo en cualquier documento o presentación. Se adapta automáticamente al modo en el que esté la página: si tienes activado el <b>modo oscuro</b>, se descarga una versión con colores pensados para fondos oscuros; si estás en <b>modo claro</b>, se descarga una versión con colores pensados para fondos claros. Así puedes elegir la que mejor se vea según dónde vayas a usar la imagen, simplemente cambiando el modo antes de descargar.</p>
                             </div>
                         </div>
 
@@ -730,7 +734,7 @@
                             </div>
                             <div>
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Excel</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Archivo .xlsx con tres hojas: Resumen (ubicación, periodo y diagnóstico), Datos Climáticos (temperatura máxima, mínima, humedad y zonas Givoni por periodo) y Estrategias (nombre y descripción de cada recomendación).</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Archivo .xlsx con tres hojas: Resumen (ubicación, periodo y diagnóstico), Datos Climáticos (temperatura máxima, mínima, humedad y zonas Givoni por periodo) y Estrategias (nombre y descripción de cada recomendación).</p>
                             </div>
                         </div>
 
@@ -740,7 +744,7 @@
                             </div>
                             <div>
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Descargar Todo (.zip)</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Empaqueta el PDF, el PNG y el Excel juntos en un solo archivo comprimido, para no tener que descargarlos uno por uno.</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">Empaqueta el PDF, el PNG y el Excel juntos en un solo archivo comprimido, para no tener que descargarlos uno por uno.</p>
                             </div>
                         </div>
 
@@ -1087,10 +1091,12 @@
             const y = d3.scaleLinear().domain([0, 35]).range([innerHeight, 0]);
 
             try {
-                const response = await fetch('pruega-de-svg.svg');
-                const rawSVG = await response.text();
+                if (!window.__psychroSVGCache) {
+                    const response = await fetch('pruega-de-svg.svg');
+                    window.__psychroSVGCache = await response.text();
+                }
                 const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(rawSVG, "image/svg+xml");
+                const svgDoc = parser.parseFromString(window.__psychroSVGCache, "image/svg+xml");
                 const importedSVG = document.importNode(svgDoc.documentElement, true);
                 importedSVG.setAttribute("width", innerWidth);
                 importedSVG.setAttribute("height", innerHeight);
@@ -3797,7 +3803,7 @@ async function exportZIP() {
                     <div class="flex flex-col items-center justify-center h-full text-center py-10">
                         <svg class="w-12 h-12 text-slate-300 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <p class="font-space font-bold text-sm text-slate-500 dark:text-slate-400 mt-3">Aún no tienes análisis guardados</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[280px]">Usa el botón "Guardar" (debajo de Exportar PDF) para guardar tu primer análisis.</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-[280px]">Usa el botón "Guardar" (debajo de Exportar PDF) para guardar tu primer análisis.</p>
                     </div>`;
                 return;
             }
@@ -3809,7 +3815,7 @@ async function exportZIP() {
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100 truncate">${escapeHtml(entry.name)}</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${buildPeriodLabel(entry.mode, entry.selectedYears, entry.selectedMonths)} · Guardado ${formatSavedDate(entry.savedAt)}</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">${buildPeriodLabel(entry.mode, entry.selectedYears, entry.selectedMonths)} · Guardado ${formatSavedDate(entry.savedAt)}</p>
                     </div>
                     <div class="flex gap-2 flex-shrink-0">
                         <button onclick="loadHistoryEntry('${entry.id}')" class="history-action-btn history-load-btn" title="Cargar análisis">
