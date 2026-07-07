@@ -128,6 +128,26 @@
         .dark .history-load-btn:hover { background: rgba(6, 182, 212, 0.22); }
         .history-delete-btn { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
         .history-delete-btn:hover { background: rgba(239, 68, 68, 0.18); transform: scale(1.05); }
+
+        /* --- BARRA DE DESCARGAS --- */
+        .download-toolbar-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 12px; border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11px;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            color: #64748b; background: transparent; border: none; cursor: pointer;
+            transition: background 0.15s, color 0.15s, transform 0.1s;
+        }
+        .download-toolbar-btn:hover { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+        .download-toolbar-btn:active { transform: scale(0.96); }
+        .dark .download-toolbar-btn { color: #94a3b8; }
+        .dark .download-toolbar-btn:hover { background: rgba(6, 182, 212, 0.14); color: #22d3ee; }
+        .download-toolbar-zip {
+            background: linear-gradient(135deg, #2563eb, #06b6d4) !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 10px -2px rgba(37, 99, 235, 0.4);
+        }
+        .download-toolbar-zip:hover { filter: brightness(1.1); color: #ffffff !important; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
@@ -248,24 +268,28 @@
                 </div>
             </header>
 
-            <div class="w-full flex items-center justify-end gap-2 mt-3 mb-2">
-                <span class="text-[11px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mr-1">Descargas:</span>
-                <button id="pdf-btn" onclick="downloadPDF()" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-md shadow-blue-500/20 active:scale-95 flex justify-center items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
-                    PDF
-                </button>
-                <button id="png-btn" onclick="exportChartPNG()" class="bg-gradient-to-r from-cyan-500 to-sky-400 hover:from-cyan-400 hover:to-sky-300 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-md shadow-cyan-500/20 active:scale-95 flex justify-center items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    PNG
-                </button>
-                <button id="excel-btn" onclick="exportExcel()" class="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-md shadow-emerald-500/20 active:scale-95 flex justify-center items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    Excel
-                </button>
-                <button id="zip-btn" onclick="exportZIP()" class="bg-gradient-to-r from-blue-700 via-cyan-500 to-blue-600 hover:opacity-90 text-white font-space font-bold px-4 py-2 rounded-xl text-xs tracking-widest uppercase transition-all shadow-md shadow-blue-500/20 active:scale-95 flex justify-center items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M8 12l4 4 4-4m-4-8v12"/></svg>
-                    Descargar Todo (.zip)
-                </button>
+            <div class="w-full flex justify-end mt-3 mb-2">
+                <div class="inline-flex items-center gap-0.5 bg-white/50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-1.5 shadow-sm backdrop-blur-xl">
+                    <span class="text-[10px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 pl-2 pr-1.5 hidden sm:inline">Descargas</span>
+                    <div class="w-px h-5 bg-slate-300/60 dark:bg-slate-700/60 mx-0.5 hidden sm:block"></div>
+                    <button id="pdf-btn" onclick="downloadPDF()" title="Exportar PDF" class="download-toolbar-btn">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+                        PDF
+                    </button>
+                    <button id="png-btn" onclick="exportChartPNG()" title="Exportar PNG" class="download-toolbar-btn">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        PNG
+                    </button>
+                    <button id="excel-btn" onclick="exportExcel()" title="Exportar Excel" class="download-toolbar-btn">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Excel
+                    </button>
+                    <div class="w-px h-5 bg-slate-300/60 dark:bg-slate-700/60 mx-0.5"></div>
+                    <button id="zip-btn" onclick="exportZIP()" title="Descargar todo (.zip)" class="download-toolbar-btn download-toolbar-zip">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M8 12l4 4 4-4m-4-8v12"/></svg>
+                        Todo (.zip)
+                    </button>
+                </div>
             </div>
 
             <div id="export-container" class="space-y-10 w-full block p-2 rounded-2xl relative">
@@ -3498,7 +3522,6 @@ function buildExcelWorkbook() {
     ];
     const wsResumen = XLSX.utils.aoa_to_sheet(aoaResumen);
     wsResumen['!cols'] = [{wch:28},{wch:60}];
-    wsResumen['!merges'] = [{ s: { r:0, c:0 }, e: { r:0, c:1 } }];
     XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
 
     // ---- Hoja 2: Datos Climáticos (solo lo relevante para el climograma de Givoni) ----
@@ -3524,10 +3547,6 @@ function buildExcelWorkbook() {
     ];
     const wsData = XLSX.utils.aoa_to_sheet(aoaData);
     wsData['!cols'] = [{wch:22},{wch:16},{wch:16},{wch:20},{wch:32}];
-    wsData['!merges'] = [
-        { s: { r:0, c:0 }, e: { r:0, c: headers.length - 1 } },
-        { s: { r:1, c:0 }, e: { r:1, c: headers.length - 1 } }
-    ];
     // Formato numérico con unidades: el valor sigue siendo un número real
     // (editable, sumable, ordenable en Excel), solo cambia cómo se muestra.
     rows.forEach((row, i) => {
@@ -3553,7 +3572,6 @@ function buildExcelWorkbook() {
     ];
     const wsStrat = XLSX.utils.aoa_to_sheet(aoaStrat);
     wsStrat['!cols'] = [{wch:32},{wch:95}];
-    wsStrat['!merges'] = [{ s: { r:0, c:0 }, e: { r:0, c:1 } }];
     XLSX.utils.book_append_sheet(wb, wsStrat, 'Estrategias');
 
     return wb;
@@ -3567,7 +3585,7 @@ async function exportExcel() {
     try {
         await ensureLibLoaded('XLSX', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js');
         const wb = buildExcelWorkbook();
-        XLSX.writeFile(wb, `Datos_CLOVINA_${currentLocationName.replace(/ /g, '_')}.xlsx`);
+        XLSX.writeFile(wb, `Datos_CLOVINA_${currentLocationName.replace(/ /g, '_')}.xlsx`, { ignoreEC: false });
     } catch (e) {
         console.error('Error Excel:', e);
         alert('Hubo un error al generar el Excel. Verifica tu conexión a internet e inténtalo de nuevo.');
@@ -3601,7 +3619,7 @@ async function exportZIP() {
         zip.file(`Climograma_Givoni_${baseName}.png`, pngBlob);
 
         const wb = buildExcelWorkbook();
-        const xlsxArray = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+        const xlsxArray = XLSX.write(wb, { type: 'array', bookType: 'xlsx', ignoreEC: false });
         zip.file(`Datos_CLOVINA_${baseName}.xlsx`, xlsxArray);
 
         // PDF, PNG y XLSX ya vienen comprimidos: usamos STORE (sin recomprimir)
