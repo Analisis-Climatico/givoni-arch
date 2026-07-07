@@ -129,25 +129,25 @@
         .history-delete-btn { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
         .history-delete-btn:hover { background: rgba(239, 68, 68, 0.18); transform: scale(1.05); }
 
-        /* --- BARRA DE DESCARGAS --- */
-        .download-toolbar-btn {
-            display: flex; align-items: center; gap: 6px;
-            padding: 7px 12px; border-radius: 10px;
-            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11px;
-            letter-spacing: 0.05em; text-transform: uppercase;
-            color: #64748b; background: transparent; border: none; cursor: pointer;
-            transition: background 0.15s, color 0.15s, transform 0.1s;
+        /* --- MENÚ DE DESCARGAS --- */
+        .download-menu-item {
+            display: flex; align-items: center; gap: 12px; width: 100%;
+            padding: 10px 12px; border-radius: 12px; text-align: left;
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px;
+            color: #334155; background: transparent; border: none; cursor: pointer;
+            transition: background 0.15s;
         }
-        .download-toolbar-btn:hover { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
-        .download-toolbar-btn:active { transform: scale(0.96); }
-        .dark .download-toolbar-btn { color: #94a3b8; }
-        .dark .download-toolbar-btn:hover { background: rgba(6, 182, 212, 0.14); color: #22d3ee; }
-        .download-toolbar-zip {
-            background: linear-gradient(135deg, #2563eb, #06b6d4) !important;
-            color: #ffffff !important;
-            box-shadow: 0 2px 10px -2px rgba(37, 99, 235, 0.4);
-        }
-        .download-toolbar-zip:hover { filter: brightness(1.1); color: #ffffff !important; }
+        .download-menu-item:hover { background: rgba(37, 99, 235, 0.08); }
+        .dark .download-menu-item { color: #e2e8f0; }
+        .dark .download-menu-item:hover { background: rgba(6, 182, 212, 0.1); }
+        .download-menu-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .download-menu-desc { display: block; font-size: 11px; font-weight: 500; text-transform: none; letter-spacing: normal; color: #94a3b8; margin-top: 1px; }
+        .dark .download-menu-desc { color: #64748b; }
+        .download-menu-item-highlight { background: rgba(37, 99, 235, 0.06); }
+        .download-menu-item-highlight:hover { background: rgba(37, 99, 235, 0.14); }
+        .dark .download-menu-item-highlight { background: rgba(6, 182, 212, 0.06); }
+        .dark .download-menu-item-highlight:hover { background: rgba(6, 182, 212, 0.14); }
+        #download-menu-btn.menu-open #download-menu-chevron { transform: rotate(180deg); }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
@@ -265,32 +265,58 @@
                             Guardar
                         </button>
                     </div>
+
+                    <div class="relative w-[180px]">
+                        <button id="download-menu-btn" onclick="toggleDownloadMenu()" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-space font-bold px-5 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-md shadow-blue-500/20 active:scale-95 flex justify-center items-center gap-2 w-full">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+                            Descargar
+                            <svg id="download-menu-chevron" class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+
+                        <div id="download-menu-panel" class="hidden absolute right-0 top-full mt-2 w-72 glass-panel rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden z-30 p-1.5">
+                            <button id="pdf-btn" onclick="downloadPDF(); toggleDownloadMenu(false)" class="download-menu-item">
+                                <span class="download-menu-icon bg-blue-500/10 text-blue-600 dark:text-cyan-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+                                </span>
+                                <span>
+                                    <span class="block">PDF</span>
+                                    <span class="download-menu-desc">Reporte completo</span>
+                                </span>
+                            </button>
+                            <button id="png-btn" onclick="exportChartPNG(); toggleDownloadMenu(false)" class="download-menu-item">
+                                <span class="download-menu-icon bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </span>
+                                <span>
+                                    <span class="block">PNG</span>
+                                    <span class="download-menu-desc">Solo el climograma</span>
+                                </span>
+                            </button>
+                            <button id="excel-btn" onclick="exportExcel(); toggleDownloadMenu(false)" class="download-menu-item">
+                                <span class="download-menu-icon bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </span>
+                                <span>
+                                    <span class="block">Excel</span>
+                                    <span class="download-menu-desc">Datos y estrategias</span>
+                                </span>
+                            </button>
+
+                            <div class="h-px bg-slate-200/60 dark:bg-slate-800/60 my-1.5"></div>
+
+                            <button id="zip-btn" onclick="exportZIP(); toggleDownloadMenu(false)" class="download-menu-item download-menu-item-highlight">
+                                <span class="download-menu-icon bg-gradient-to-br from-blue-600 to-cyan-500 text-white">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M8 12l4 4 4-4m-4-8v12"/></svg>
+                                </span>
+                                <span>
+                                    <span class="block">Descargar Todo</span>
+                                    <span class="download-menu-desc">PDF + PNG + Excel (.zip)</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </header>
-
-            <div class="w-full flex justify-end mt-3 mb-2">
-                <div class="inline-flex items-center gap-0.5 bg-white/50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-1.5 shadow-sm backdrop-blur-xl">
-                    <span class="text-[10px] font-space font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 pl-2 pr-1.5 hidden sm:inline">Descargas</span>
-                    <div class="w-px h-5 bg-slate-300/60 dark:bg-slate-700/60 mx-0.5 hidden sm:block"></div>
-                    <button id="pdf-btn" onclick="downloadPDF()" title="Exportar PDF" class="download-toolbar-btn">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
-                        PDF
-                    </button>
-                    <button id="png-btn" onclick="exportChartPNG()" title="Exportar PNG" class="download-toolbar-btn">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        PNG
-                    </button>
-                    <button id="excel-btn" onclick="exportExcel()" title="Exportar Excel" class="download-toolbar-btn">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Excel
-                    </button>
-                    <div class="w-px h-5 bg-slate-300/60 dark:bg-slate-700/60 mx-0.5"></div>
-                    <button id="zip-btn" onclick="exportZIP()" title="Descargar todo (.zip)" class="download-toolbar-btn download-toolbar-zip">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M8 12l4 4 4-4m-4-8v12"/></svg>
-                        Todo (.zip)
-                    </button>
-                </div>
-            </div>
 
             <div id="export-container" class="space-y-10 w-full block p-2 rounded-2xl relative">
                 
@@ -3664,7 +3690,23 @@ async function exportZIP() {
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { toggleHelpModal(false); toggleSaveModal(false); toggleHistoryModal(false); }
+            if (e.key === 'Escape') { toggleHelpModal(false); toggleSaveModal(false); toggleHistoryModal(false); toggleDownloadMenu(false); }
+        });
+
+        // --- MENÚ DE DESCARGAS ---
+        function toggleDownloadMenu(show) {
+            const panel = document.getElementById('download-menu-panel');
+            const btn = document.getElementById('download-menu-btn');
+            const shouldShow = show === undefined ? panel.classList.contains('hidden') : show;
+            panel.classList.toggle('hidden', !shouldShow);
+            btn.classList.toggle('menu-open', shouldShow);
+        }
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('download-menu-panel');
+            const btn = document.getElementById('download-menu-btn');
+            if (panel && !panel.classList.contains('hidden') && !panel.contains(e.target) && !btn.contains(e.target)) {
+                toggleDownloadMenu(false);
+            }
         });
 
         // --- HISTORIAL / MEMORIA DE CÁLCULO (guardado local en el navegador) ---
