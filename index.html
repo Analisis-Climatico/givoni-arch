@@ -11,7 +11,6 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -509,6 +508,15 @@
                             <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">Fuentes y validación</span>
                         </span>
                     </button>
+                    <button data-help-tab="descargas" onclick="switchHelpTab('descargas')" class="help-tab-btn flex items-center gap-3 px-3.5 py-3 rounded-xl text-left transition-all flex-shrink-0 w-full min-w-[210px] md:min-w-0">
+                        <span class="help-tab-icon w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </span>
+                        <span>
+                            <span class="block font-space font-bold text-xs tracking-wider uppercase">Descargas</span>
+                            <span class="block text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">PDF, PNG, Excel, ZIP</span>
+                        </span>
+                    </button>
                 </nav>
 
                 <div class="flex-1 overflow-y-auto px-6 md:px-8 py-6">
@@ -635,6 +643,60 @@
                                 <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Clasificación climática de Köppen-Geiger</p>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Se calcula por separado a partir de las temperaturas y precipitaciones de los 12 meses. Funciona como una segunda verificación independiente: si el tipo de clima resultante coincide con la zona que muestra el climograma de Givoni, se confirma que el análisis refleja fielmente el clima real del lugar.</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- PANEL: DESCARGAS -->
+                    <div id="help-panel-descargas" class="help-panel space-y-4 hidden">
+                        <div>
+                            <span class="text-[11px] font-space font-bold uppercase tracking-[0.25em] text-indigo-600 dark:text-indigo-400">Guardar y descargar</span>
+                            <h3 class="font-space font-bold text-xl text-slate-800 dark:text-slate-100 mt-1">¿Qué puedo guardar o descargar?</h3>
+                        </div>
+                        <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">Junto al gráfico encontrarás el botón <b class="text-slate-800 dark:text-slate-100">Guardar</b>, para nombrar y conservar el análisis actual en tu Historial (guardado en este navegador). Debajo del encabezado está la barra de <b class="text-slate-800 dark:text-slate-100">Descargas</b>, con cuatro formatos:</p>
+
+                        <div class="help-source">
+                            <div class="help-card-icon bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">PDF</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Reporte completo: climograma, tabla de datos y estrategias recomendadas, listo para imprimir o compartir.</p>
+                            </div>
+                        </div>
+
+                        <div class="help-source">
+                            <div class="help-card-icon bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex-shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">PNG (fondo transparente, con versión clara y oscura)</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Descarga solo la imagen del climograma de Givoni, con el fondo transparente para usarlo en cualquier documento o presentación. Se adapta automáticamente al modo en el que esté la página: si tienes activado el <b>modo oscuro</b>, se descarga una versión con colores pensados para fondos oscuros; si estás en <b>modo claro</b>, se descarga una versión con colores pensados para fondos claros. Así puedes elegir la que mejor se vea según dónde vayas a usar la imagen, simplemente cambiando el modo antes de descargar.</p>
+                            </div>
+                        </div>
+
+                        <div class="help-source">
+                            <div class="help-card-icon bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 flex-shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Excel</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Archivo .xlsx con tres hojas: Resumen (ubicación, periodo y diagnóstico), Datos Climáticos (temperatura máxima, mínima, humedad y zonas Givoni por periodo) y Estrategias (nombre y descripción de cada recomendación).</p>
+                            </div>
+                        </div>
+
+                        <div class="help-source">
+                            <div class="help-card-icon bg-slate-500/10 text-slate-700 dark:text-slate-300 flex-shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7M8 12l4 4 4-4m-4-8v12"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-space font-bold text-sm text-slate-800 dark:text-slate-100">Descargar Todo (.zip)</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Empaqueta el PDF, el PNG y el Excel juntos en un solo archivo comprimido, para no tener que descargarlos uno por uno.</p>
+                            </div>
+                        </div>
+
+                        <div class="help-note">
+                            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <p>El Historial (botón junto a "¿Ayuda?") guarda tus análisis con un nombre, ubicación y periodo para volver a cargarlos más adelante sin tener que repetir la búsqueda.</p>
                         </div>
                     </div>
 
@@ -3383,48 +3445,12 @@ function ensureLibLoaded(globalName, url) {
     });
 }
 
-function buildChartPNGBlob(scale = 3) {
+async function buildChartPNGBlob(scale = 2.5) {
+    const canvas = await html2canvas(document.getElementById('chart'), {
+        scale, backgroundColor: null, useCORS: true, logging: false
+    });
     return new Promise((resolve, reject) => {
-        try {
-            const svgEl = document.querySelector('#chart-canvas-inside svg');
-            if (!svgEl) return reject(new Error('No se encontró el gráfico.'));
-
-            const clone = svgEl.cloneNode(true);
-            const vb = svgEl.viewBox && svgEl.viewBox.baseVal;
-            const bbox = svgEl.getBoundingClientRect();
-            const width = (vb && vb.width) ? vb.width : bbox.width;
-            const height = (vb && vb.height) ? vb.height : bbox.height;
-            clone.setAttribute('width', width);
-            clone.setAttribute('height', height);
-
-            // Quitamos sombras/filtros pesados (más rápido y evita artefactos)
-            clone.querySelectorAll('*').forEach(el => {
-                el.removeAttribute('filter');
-                el.style.filter = 'none';
-            });
-
-            // Si está en modo oscuro, reproducimos el mismo ajuste de color que se ve en pantalla
-            const isDark = document.documentElement.classList.contains('dark');
-            if (isDark) {
-                const firstGroup = clone.querySelector('g > g:first-child');
-                if (firstGroup) firstGroup.style.filter = 'invert(0.9) hue-rotate(180deg)';
-            }
-
-            const svgData = new XMLSerializer().serializeToString(clone);
-            const svg64 = btoa(unescape(encodeURIComponent(svgData)));
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = width * scale;
-                canvas.height = height * scale;
-                const ctx = canvas.getContext('2d');
-                ctx.scale(scale, scale);
-                ctx.drawImage(img, 0, 0, width, height);
-                canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('No se pudo generar el PNG.')), 'image/png', 1.0);
-            };
-            img.onerror = () => reject(new Error('Error al procesar el gráfico para PNG.'));
-            img.src = 'data:image/svg+xml;base64,' + svg64;
-        } catch (e) { reject(e); }
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('No se pudo generar el PNG.')), 'image/png', 1.0);
     });
 }
 
@@ -3434,7 +3460,7 @@ async function exportChartPNG() {
     const originalHtml = btn.innerHTML;
     btn.innerHTML = 'PROCESANDO...';
     try {
-        const blob = await buildChartPNGBlob(3);
+        const blob = await buildChartPNGBlob(2.5);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `Climograma_Givoni_${currentLocationName.replace(/ /g, '_')}.png`;
@@ -3476,8 +3502,8 @@ function buildExcelWorkbook() {
     wsResumen['!merges'] = [{ s: { r:0, c:0 }, e: { r:0, c:1 } }];
     XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
 
-    // ---- Hoja 2: Datos Climáticos ----
-    const headers = ['Periodo', 'Temp. Máx (°C)', 'Temp. Mín (°C)', 'Humedad Relativa (%)', 'Precipitación (mm)', 'Zonas Givoni'];
+    // ---- Hoja 2: Datos Climáticos (solo lo relevante para el climograma de Givoni) ----
+    const headers = ['Periodo', 'Temp. Máx (°C)', 'Temp. Mín (°C)', 'Humedad Relativa (%)', 'Zonas Givoni'];
     const rows = window.currentData.map(d => {
         const hasFullData = d.tMax != null && d.tMin != null && d.hr != null;
         const zones = (hasFullData && typeof detectZones === 'function') ? detectZones(d.tMin, d.tMax, d.hr) : [];
@@ -3486,7 +3512,6 @@ function buildExcelWorkbook() {
             hasFullData ? +Number(d.tMax).toFixed(1) : 'Sin datos',
             hasFullData ? +Number(d.tMin).toFixed(1) : 'Sin datos',
             hasFullData ? +Number(d.hr).toFixed(0) : 'Sin datos',
-            d.rain != null ? +Number(d.rain).toFixed(1) : '',
             zones.join(', ')
         ];
     });
@@ -3499,24 +3524,21 @@ function buildExcelWorkbook() {
         ...rows
     ];
     const wsData = XLSX.utils.aoa_to_sheet(aoaData);
-    wsData['!cols'] = [{wch:22},{wch:16},{wch:16},{wch:20},{wch:18},{wch:32}];
+    wsData['!cols'] = [{wch:22},{wch:16},{wch:16},{wch:20},{wch:32}];
     wsData['!merges'] = [
         { s: { r:0, c:0 }, e: { r:0, c: headers.length - 1 } },
         { s: { r:1, c:0 }, e: { r:1, c: headers.length - 1 } }
     ];
-    // (Nota: el autofiltro se quitó porque la build "mini" de la librería
-    // no lo soporta correctamente y corrompía el archivo al abrirlo)
     // Formato numérico con unidades: el valor sigue siendo un número real
     // (editable, sumable, ordenable en Excel), solo cambia cómo se muestra.
     rows.forEach((row, i) => {
         const r = 4 + i; // fila de datos (0-index), tras título+subtítulo+vacío+encabezado
-        [1, 2, 3, 4].forEach(c => {
+        [1, 2, 3].forEach(c => {
             const ref = XLSX.utils.encode_cell({ r, c });
             const cell = wsData[ref];
             if (cell && cell.t === 'n') {
                 if (c === 1 || c === 2) cell.z = '0.0"°C"';
                 else if (c === 3) cell.z = '0"%"';
-                else if (c === 4) cell.z = '0.0" mm"';
             }
         });
     });
