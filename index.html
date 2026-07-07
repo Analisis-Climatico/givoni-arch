@@ -3504,7 +3504,8 @@ function buildExcelWorkbook() {
         { s: { r:0, c:0 }, e: { r:0, c: headers.length - 1 } },
         { s: { r:1, c:0 }, e: { r:1, c: headers.length - 1 } }
     ];
-    wsData['!autofilter'] = { ref: XLSX.utils.encode_range({ s:{r:3,c:0}, e:{r:3+rows.length, c:headers.length-1} }) };
+    // (Nota: el autofiltro se quitó porque la build "mini" de la librería
+    // no lo soporta correctamente y corrompía el archivo al abrirlo)
     // Formato numérico con unidades: el valor sigue siendo un número real
     // (editable, sumable, ordenable en Excel), solo cambia cómo se muestra.
     rows.forEach((row, i) => {
