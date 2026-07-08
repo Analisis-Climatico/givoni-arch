@@ -106,6 +106,10 @@
         @keyframes modalOverlayIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes modalPanelIn { from { opacity: 0; transform: scale(0.94) translateY(14px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
+        /* --- APARICIÓN SUAVE DE SECCIONES AL ACTUALIZAR EL ANÁLISIS --- */
+        @keyframes sectionFadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .section-refresh-anim { animation: sectionFadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
         .help-tab-btn { color: #64748b; background: transparent; border-left: 3px solid transparent; }
         .help-tab-btn:hover { background: rgba(148, 163, 184, 0.1); }
         .help-tab-btn.active { background: rgba(37, 99, 235, 0.1); border-left: 3px solid #3b82f6; color: #1d4ed8; }
@@ -227,7 +231,7 @@
                 </div>
 
                 <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/60 mt-2 space-y-2">
-                    <button onclick="runClimateAnalysis()" class="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-sm transition-all shadow-md shadow-emerald-500/20 active:scale-[0.98]">
+                    <button onclick="runClimateAnalysis()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 hover:-translate-y-0.5 hover:shadow-lg text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-sm transition-all shadow-md shadow-amber-600/30 active:scale-[0.98]">
                         Actualizar Análisis
                     </button>
                     <div class="grid grid-cols-2 gap-2">
@@ -3353,11 +3357,23 @@ async function updateAnalysis(data) {
         
         // El arreglo results ahora SÍ tiene .rain y .rad
         updateAnalysis(results);
+        playRefreshAnimation();
 
     } catch(e) {
         console.error("Error al procesar datos climáticos:", e);
         document.getElementById('analysis-text').innerHTML = "Error al obtener datos climáticos. Por favor verifique su conexión o intente con un rango diferente.";
     }
+}
+
+function playRefreshAnimation() {
+    const container = document.getElementById('export-container');
+    if (!container) return;
+    Array.from(container.children).forEach((child, i) => {
+        child.classList.remove('section-refresh-anim');
+        void child.offsetWidth; // fuerza reflow para poder reiniciar la animación
+        child.style.animationDelay = `${i * 70}ms`;
+        child.classList.add('section-refresh-anim');
+    });
 }
         async function buildPDFObject() {
     const { jsPDF } = window.jspdf;
