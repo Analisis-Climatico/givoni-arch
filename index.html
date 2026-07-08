@@ -37,6 +37,11 @@
         /* Acento de color a la izquierda de los títulos de sección, para más jerarquía visual */
         .section-title-accent { position: relative; padding-left: 14px; }
         .section-title-accent::before { content: ''; position: absolute; left: 0; top: 2px; bottom: 2px; width: 3px; border-radius: 3px; background: linear-gradient(180deg, #22d3ee, #34d399, #d4a94a); }
+        .section-title-accent.accent-cyan::before { background: linear-gradient(180deg, #22d3ee, #0891b2); }
+        .section-title-accent.accent-emerald::before { background: linear-gradient(180deg, #34d399, #059669); }
+        .section-title-accent.accent-amber::before { background: linear-gradient(180deg, #fbbf24, #d97706); }
+        .section-title-accent.accent-violet::before { background: linear-gradient(180deg, #a78bfa, #7c3aed); }
+        .section-title-accent.accent-rose::before { background: linear-gradient(180deg, #fb7185, #e11d48); }
         /* Los modales llevan mucho texto: usamos un fondo más opaco para que
            el texto gris sea legible incluso con contenido de color detrás. */
         .modal-solid-panel { background: rgba(255, 255, 255, 0.94) !important; backdrop-filter: blur(16px) saturate(140%) !important; }
@@ -262,7 +267,7 @@
                     <button onclick="toggleDarkMode()" id="mode-switch" class="w-20 h-10 rounded-full bg-slate-200/90 dark:bg-slate-900/80 border border-slate-300/40 dark:border-white/10 relative p-1 backdrop-blur-sm flex items-center justify-between px-2.5 flex-shrink-0 shadow-inner">
                         <div id="mode-indicator" class="absolute top-[3px] left-[4px] w-[32px] h-[32px] rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 dark:from-cyan-400 dark:to-emerald-400 shadow-md transition-transform duration-300 ease-out"></div>
                         <svg class="w-5 h-5 text-orange-500 dark:text-slate-500 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        <svg class="w-5 h-5 text-slate-400 dark:text-cyan-400 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        <svg class="w-5 h-5 text-slate-400 dark:text-white z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </button>
 
                     <div class="flex gap-1 bg-slate-200/60 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-300/20 dark:border-slate-800/40">
@@ -271,7 +276,7 @@
                     </div>
 
                     <div class="w-[180px]">
-                        <button id="save-btn" onclick="toggleSaveModal(true)" class="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 hover:-translate-y-0.5 hover:shadow-lg text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-md shadow-amber-500/20 active:scale-95 flex justify-center items-center gap-2 w-full">
+                        <button id="save-btn" onclick="toggleSaveModal(true)" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 hover:-translate-y-0.5 hover:shadow-lg text-white font-space font-bold px-6 py-2.5 rounded-xl text-sm tracking-widest uppercase transition-all shadow-md shadow-amber-600/30 active:scale-95 flex justify-center items-center gap-2 w-full">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                             Guardar
                         </button>
@@ -333,7 +338,7 @@
                 
                 <section class="space-y-4 w-full">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent">01 / Climograma de Givoni</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-cyan"><span class="text-cyan-600 dark:text-cyan-400">01</span> / Climograma de Givoni</h2>
                         <span class="text-sm font-bold text-cyan-500 bg-cyan-500/10 px-3 py-1.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
                     <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
@@ -345,7 +350,7 @@
 
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-10 w-full">
                     <div class="xl:col-span-7 space-y-4 overflow-hidden flex flex-col justify-start">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent">02 / Cuadro de Datos</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-emerald"><span class="text-emerald-600 dark:text-emerald-400">02</span> / Cuadro de Datos</h2>
                         <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl overflow-x-auto w-full">
                             <table class="w-full text-left text-sm table-fixed min-w-[550px]" id="data-table">
                                 <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold font-space text-xs">
@@ -364,7 +369,7 @@
                     </div>
 
                     <div class="xl:col-span-5 space-y-4">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent">03 / Resumen General</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-amber"><span class="text-amber-600 dark:text-amber-400">03</span> / Resumen General</h2>
                         <div class="glass-panel glass-panel-variant rounded-[24px] p-8 h-[calc(100%-2.5rem)] flex flex-col justify-between shadow-xl min-h-[220px]">
                             <div id="analysis-text" class="text-slate-600 dark:text-slate-300 leading-relaxed text-base lg:text-lg font-light text-justify space-y-4">
                                 <span class="animate-pulse font-space tracking-widest text-xs uppercase text-blue-500">Ejecutando motor de análisis bioclimático... Recopilando datos históricos.</span>
@@ -378,13 +383,13 @@
                 </section>
 
                 <section class="space-y-4 w-full">
-                    <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent">04 / Estrategias Arquitectónicas</h2>
+                    <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-violet"><span class="text-violet-600 dark:text-violet-400">04</span> / Estrategias Arquitectónicas</h2>
                     <div id="strategy-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </section>
 
                 <section class="space-y-6 w-full pt-4">
                     <div class="flex justify-between items-center px-1">
-                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400">05 / Imagen Arquitectónica Referencial</h2>
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-rose"><span class="text-rose-600 dark:text-rose-400">05</span> / Imagen Arquitectónica Referencial</h2>
                     </div>
                     <div id="interactive-visualizer" class="glass-panel rounded-[24px] overflow-hidden border border-slate-200/50 dark:border-white/5 shadow-2xl flex flex-col lg:flex-row min-h-[500px]">
                     </div>
@@ -444,7 +449,7 @@
                 <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-amber-400/10 blur-3xl pointer-events-none"></div>
                 <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-400 flex items-center justify-center shadow-lg shadow-amber-500/20 flex-shrink-0">
+                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center shadow-lg shadow-amber-600/30 flex-shrink-0">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                         </div>
                         <div>
