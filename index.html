@@ -109,6 +109,11 @@
         /* --- APARICIÓN SUAVE DE SECCIONES AL ACTUALIZAR EL ANÁLISIS --- */
         @keyframes sectionFadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .section-refresh-anim { animation: sectionFadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .table-row-anim { animation: sectionFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+        /* --- SPINNER PARA BOTONES EN PROCESO --- */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: -2px; }
 
         .help-tab-btn { color: #64748b; background: transparent; border-left: 3px solid transparent; }
         .help-tab-btn:hover { background: rgba(148, 163, 184, 0.1); }
@@ -2786,7 +2791,7 @@ async function updateAnalysis(data) {
         const badges = zones.map(z => `<span class="text-xs font-space px-2.5 py-1.5 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
         
         tableBody.innerHTML += `
-            <tr class="border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/30 dark:hover:bg-slate-800/20 transition-colors">
+            <tr class="table-row-anim border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/30 dark:hover:bg-slate-800/20 transition-colors" style="animation-delay:${i * 40}ms">
                 <td class="p-5 text-center flex justify-center items-center"><div class="w-3.5 h-3.5 rounded-full" style="background:${d.color}; box-shadow: 0 0 8px ${d.color}80"></div></td>
                 <td class="p-5 uppercase font-bold text-slate-700 dark:text-slate-200 font-space text-sm text-center">${d.label}</td>
                 <td class="p-5 text-center text-sm font-medium text-slate-800 dark:text-white">${hasData ? d.tMax.toFixed(1) + '°C' : 'Sin datos'}</td>
@@ -3103,9 +3108,9 @@ async function updateAnalysis(data) {
 
     const sl = document.getElementById('strategy-list');
     sl.innerHTML = '';
-    recs.forEach(r => {
+    recs.forEach((r, i) => {
         sl.innerHTML += `
-            <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300">
+            <div class="table-row-anim p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300" style="animation-delay:${i * 60}ms">
                 <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
                 <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
             </div>`;
@@ -3496,7 +3501,7 @@ function playRefreshAnimation() {
 async function downloadPDF() {
     const btn = document.getElementById('pdf-btn');
     const originalHtml = btn.innerHTML;
-    btn.innerHTML = `PROCESANDO...`;
+    btn.innerHTML = `<span class="btn-spinner"></span>Procesando...`;
     await new Promise(r => setTimeout(r, 100));
 
     try {
@@ -3543,7 +3548,7 @@ async function exportChartPNG() {
     if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
     const btn = document.getElementById('png-btn');
     const originalHtml = btn.innerHTML;
-    btn.innerHTML = 'PROCESANDO...';
+    btn.innerHTML = '<span class="btn-spinner"></span>Procesando...';
     try {
         const blob = await buildChartPNGBlob(2.5);
         const link = document.createElement('a');
@@ -3643,7 +3648,7 @@ async function exportExcel() {
     if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
     const btn = document.getElementById('excel-btn');
     const originalHtml = btn.innerHTML;
-    btn.innerHTML = 'PROCESANDO...';
+    btn.innerHTML = '<span class="btn-spinner"></span>Procesando...';
     try {
         await ensureLibLoaded('XLSX', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.mini.min.js');
         const wb = buildExcelWorkbook();
@@ -3660,7 +3665,7 @@ async function exportZIP() {
     if (!window.currentData || !window.currentData.length) { alert('Primero actualiza el análisis.'); return; }
     const btn = document.getElementById('zip-btn');
     const originalHtml = btn.innerHTML;
-    btn.innerHTML = 'GENERANDO ZIP...';
+    btn.innerHTML = '<span class="btn-spinner"></span>Generando ZIP...';
     await new Promise(r => setTimeout(r, 50));
     try {
         await Promise.all([
