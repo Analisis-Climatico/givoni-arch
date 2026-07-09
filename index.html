@@ -23,7 +23,7 @@
     </script>
     
     <style>
-        *:not(svg):not(svg *) { transition: background-color 0.3s cubic-bezier(0.4,0,0.2,1), color 0.3s cubic-bezier(0.4,0,0.2,1), border-color 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1); }
+        *:not(svg):not(svg *) { transition: background-color 0.3s cubic-bezier(0.4,0,0.2,1), color 0.3s cubic-bezier(0.4,0,0.2,1), border-color 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.2s cubic-bezier(0.4,0,0.2,1); }
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -109,7 +109,16 @@
         /* --- APARICIÓN SUAVE DE SECCIONES AL ACTUALIZAR EL ANÁLISIS --- */
         @keyframes sectionFadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .section-refresh-anim { animation: sectionFadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+        /* Revelado escalonado de filas/tarjetas: controlado por JS (más confiable que animar al insertar) */
+        .reveal-item { opacity: 0; transform: translateY(14px); transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1); }
+        .reveal-item.reveal-visible { opacity: 1; transform: translateY(0); }
         .table-row-anim { animation: sectionFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        /* Para elementos que YA tienen su propio efecto hover con transform (como las
+           tarjetas de estrategias): solo animamos opacidad al aparecer, para no
+           competir con esa animación de hover y dejarla funcionar con normalidad. */
+        .card-fade-in { animation: cardFadeIn 0.45s ease-out both; }
+        @keyframes cardFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- SPINNER PARA BOTONES EN PROCESO --- */
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -2791,7 +2800,7 @@ async function updateAnalysis(data) {
         const badges = zones.map(z => `<span class="text-xs font-space px-2.5 py-1.5 rounded-md font-bold text-white tracking-wider shadow-sm" style="background:${zoneConfig[z]?.color || '#475569'}">${z}</span>`).join(' ');
         
         tableBody.innerHTML += `
-            <tr class="table-row-anim border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/30 dark:hover:bg-slate-800/20 transition-colors" style="animation-delay:${i * 40}ms">
+            <tr class="reveal-item border-b border-slate-200/40 dark:border-slate-800/30 hover:bg-slate-100/30 dark:hover:bg-slate-800/20 transition-colors">
                 <td class="p-5 text-center flex justify-center items-center"><div class="w-3.5 h-3.5 rounded-full" style="background:${d.color}; box-shadow: 0 0 8px ${d.color}80"></div></td>
                 <td class="p-5 uppercase font-bold text-slate-700 dark:text-slate-200 font-space text-sm text-center">${d.label}</td>
                 <td class="p-5 text-center text-sm font-medium text-slate-800 dark:text-white">${hasData ? d.tMax.toFixed(1) + '°C' : 'Sin datos'}</td>
@@ -2800,6 +2809,7 @@ async function updateAnalysis(data) {
                 <td class="p-5 pl-6 flex flex-wrap justify-start gap-1.5">${badges}</td>
             </tr>`;
     });
+    staggerReveal(tableBody, 'tr', 40);
 
     if (data.length === 0) {
         document.getElementById('analysis-text').innerHTML = "No se encontraron datos climáticos.";
@@ -3110,7 +3120,7 @@ async function updateAnalysis(data) {
     sl.innerHTML = '';
     recs.forEach((r, i) => {
         sl.innerHTML += `
-            <div class="table-row-anim p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300" style="animation-delay:${i * 60}ms">
+            <div class="card-fade-in p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300" style="animation-delay:${i * 60}ms">
                 <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
                 <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
             </div>`;
