@@ -120,6 +120,35 @@
         .card-fade-in { animation: cardFadeIn 0.45s ease-out both; }
         @keyframes cardFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* --- BRILLO DEL LOGO (efecto "respirando") --- */
+        @keyframes logoGlowPulse {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(6,182,212,0.15)); }
+            50% { filter: drop-shadow(0 0 22px rgba(6,182,212,0.45)) drop-shadow(0 0 8px rgba(212,169,74,0.25)); }
+        }
+        .dark .logo-glow-pulse { animation: logoGlowPulse 4s ease-in-out infinite; }
+
+        /* --- MARCO CON BRILLO ANIMADO PARA EL CLIMOGRAMA --- */
+        .chart-glow-frame { position: relative; }
+        .chart-glow-frame::before {
+            content: ''; position: absolute; inset: -1.5px; border-radius: 26px; z-index: -1;
+            background: conic-gradient(from var(--glow-angle, 0deg), #22d3ee, #34d399, #d4a94a, #a78bfa, #22d3ee);
+            opacity: 0.55; filter: blur(6px);
+            animation: glowRotate 8s linear infinite;
+        }
+        @keyframes glowRotate { to { --glow-angle: 360deg; } }
+        @property --glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+        /* --- PULSO SUAVE DEL BOTÓN PRINCIPAL (en reposo) --- */
+        @keyframes ctaBreathe {
+            0%, 100% { box-shadow: 0 4px 14px -2px rgba(217,119,6,0.35); }
+            50% { box-shadow: 0 4px 26px 2px rgba(217,119,6,0.55); }
+        }
+        .cta-breathe { animation: ctaBreathe 2.8s ease-in-out infinite; }
+
+        /* --- BRILLO EXTRA AL PASAR EL MOUSE POR LAS TARJETAS --- */
+        .card-fade-in:hover { box-shadow: 0 12px 30px -10px rgba(6,182,212,0.25); }
+        .dark .card-fade-in:hover { box-shadow: 0 12px 30px -10px rgba(6,182,212,0.15); }
+
         /* --- SPINNER PARA BOTONES EN PROCESO --- */
         @keyframes spin { to { transform: rotate(360deg); } }
         .btn-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: -2px; }
@@ -245,7 +274,7 @@
                 </div>
 
                 <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800/60 mt-2 space-y-2">
-                    <button onclick="runClimateAnalysis()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 hover:-translate-y-0.5 hover:shadow-lg text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-sm transition-all shadow-md shadow-amber-600/30 active:scale-[0.98]">
+                    <button onclick="runClimateAnalysis()" class="cta-breathe w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 hover:-translate-y-0.5 hover:shadow-lg text-white font-space font-bold tracking-wider uppercase rounded-xl py-3.5 text-sm transition-all shadow-md active:scale-[0.98]">
                         Actualizar Análisis
                     </button>
                     <div class="grid grid-cols-2 gap-2">
@@ -278,7 +307,7 @@
             <header id="header-container" class="flex flex-col xl:flex-row justify-between items-center gap-6 border-b border-slate-200/60 dark:border-slate-800/40 w-full pb-4">
                 <div class="flex items-center gap-6">
                     <span class="text-base md:text-lg uppercase tracking-[0.55em] text-slate-600 dark:text-slate-400 font-bold whitespace-nowrap mt-1">Bienvenido a</span>
-                    <img src="Tipo3.png" alt="CLÓVINA" class="h-16 md:h-18 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                    <img src="Tipo3.png" alt="CLÓVINA" class="h-16 md:h-18 xl:h-20 w-auto object-contain filter dark:drop-shadow-[0_0_15px_rgba(6,182,212,0.2)] logo-glow-pulse">
                 </div>
 
                 <div class="flex items-center gap-5">
@@ -359,7 +388,7 @@
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-cyan"><span class="text-cyan-600 dark:text-cyan-400">01</span> / Climograma de Givoni</h2>
                         <span class="text-sm font-bold text-cyan-500 bg-cyan-500/10 px-3 py-1.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
+                    <div class="chart-glow-frame w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
                         <div id="chart" class="w-full relative" style="height: 760px;">
                             <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
                         </div>
@@ -2779,6 +2808,7 @@ function staggerReveal(container, selector, delayStep = 40) {
 }
 
 async function updateAnalysis(data) {
+  try {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
     
@@ -3181,6 +3211,13 @@ async function updateAnalysis(data) {
         };
         renderSVGForStrategy(0);
     }
+  } catch (e) {
+    console.error('Error en updateAnalysis:', e);
+    const analysisText = document.getElementById('analysis-text');
+    if (analysisText) {
+        analysisText.innerHTML = `<span class="text-red-500 dark:text-red-400 font-space text-sm">Ocurrió un error al procesar el análisis. Intenta actualizar de nuevo o revisa la consola (F12) para más detalle.</span>`;
+    }
+  }
 }
         
         async function runClimateAnalysis() {
