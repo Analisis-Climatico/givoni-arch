@@ -2769,6 +2769,15 @@ function classifyKoppen(profile12, latitude) {
     };
 }
 
+function staggerReveal(container, selector, delayStep = 40) {
+    if (!container) return;
+    const items = container.querySelectorAll(selector);
+    items.forEach((el, i) => {
+        el.classList.remove('reveal-visible');
+        setTimeout(() => el.classList.add('reveal-visible'), i * delayStep + 20);
+    });
+}
+
 async function updateAnalysis(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
