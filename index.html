@@ -127,17 +127,6 @@
         }
         .dark .logo-glow-pulse { animation: logoGlowPulse 4s ease-in-out infinite; }
 
-        /* --- MARCO CON BRILLO ANIMADO PARA EL CLIMOGRAMA --- */
-        .chart-glow-frame { position: relative; }
-        .chart-glow-frame::before {
-            content: ''; position: absolute; inset: -1.5px; border-radius: 26px; z-index: -1;
-            background: conic-gradient(from var(--glow-angle, 0deg), #22d3ee, #34d399, #d4a94a, #a78bfa, #22d3ee);
-            opacity: 0.55; filter: blur(6px);
-            animation: glowRotate 8s linear infinite;
-        }
-        @keyframes glowRotate { to { --glow-angle: 360deg; } }
-        @property --glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-
         /* --- PULSO SUAVE DEL BOTÓN PRINCIPAL (en reposo) --- */
         @keyframes ctaBreathe {
             0%, 100% { box-shadow: 0 4px 14px -2px rgba(217,119,6,0.35); }
@@ -388,7 +377,7 @@
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-cyan"><span class="text-cyan-600 dark:text-cyan-400">01</span> / Climograma de Givoni</h2>
                         <span class="text-sm font-bold text-cyan-500 bg-cyan-500/10 px-3 py-1.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
-                    <div class="chart-glow-frame w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
                         <div id="chart" class="w-full relative" style="height: 760px;">
                             <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
                         </div>
