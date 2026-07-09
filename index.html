@@ -1899,7 +1899,7 @@ function buildInteractiveVisualizer(strategies) {
     const container = document.getElementById('interactive-visualizer');
     if(!container || strategies.length === 0) return;
 
-    let menuHTML = `<div class="w-full flex-col lg:flex-row flex bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 overflow-hidden shadow-sm">
+    let menuHTML = `<div class="w-full flex-col lg:flex-row flex bg-white/25 dark:bg-slate-900/25 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden shadow-sm">
         <div class="w-full lg:w-[35%] xl:w-[30%] border-b lg:border-b-0 lg:border-r border-slate-200/40 dark:border-slate-700/50 p-4 space-y-2 overflow-y-auto max-h-[550px]" id="strategy-menu">`;
 
     strategies.forEach((strat, i) => {
