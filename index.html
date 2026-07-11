@@ -30,7 +30,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
         .glass-panel { background: rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(20px) saturate(160%) !important; border: 1px solid rgba(255, 255, 255, 0.18) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; }
-        .dark .glass-panel { background: rgba(15, 23, 42, 0.20) !important; backdrop-filter: blur(24px) saturate(160%) !important; border: 1px solid rgba(255, 255, 255, 0.06) !important; box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.7) !important; }
+        .dark .glass-panel { background: rgba(15, 23, 42, 0.55) !important; backdrop-filter: blur(24px) saturate(160%) !important; border: 1px solid rgba(255, 255, 255, 0.06) !important; box-shadow: 0 45px 90px -20px rgba(0, 0, 0, 0.7) !important; }
         /* El sidebar recibe además un leve degradado propio de marca, para que no se vea como un bloque plano */
         #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.06), transparent 45%, rgba(6,182,212,0.05)) !important; }
         .dark #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.1), transparent 45%, rgba(6,182,212,0.08)) !important; }
@@ -204,11 +204,10 @@
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[10%] w-[65vw] h-[65vw] rounded-full bg-gradient-to-tr from-cyan-400/35 dark:from-cyan-400/25 to-transparent blur-[130px] opacity-80"></div>
-        <div class="absolute bottom-[10%] left-[20%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-fuchsia-400/30 dark:from-fuchsia-400/22 to-transparent blur-[130px] opacity-70"></div>
-        <div class="absolute top-[20%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-bl from-blue-500/35 dark:from-blue-500/25 to-transparent blur-[130px] opacity-70"></div>
-        <div class="absolute bottom-[-5%] right-[10%] w-[40vw] h-[40vw] rounded-full bg-gradient-to-tl from-amber-400/25 dark:from-amber-400/18 to-transparent blur-[130px] opacity-60"></div>
-        <div class="absolute top-[15%] left-[30%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-r from-teal-400/30 dark:from-teal-400/20 via-cyan-400/20 dark:via-cyan-400/14 to-transparent blur-[130px] opacity-70"></div>
+        <div class="absolute top-[-10%] left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-cyan-400/5 dark:from-cyan-400/4 to-transparent blur-[160px] opacity-40"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-fuchsia-400/4 dark:from-fuchsia-400/3 to-transparent blur-[160px] opacity-35"></div>
+        <div class="absolute top-[20%] right-[-5%] w-[42vw] h-[42vw] rounded-full bg-gradient-to-bl from-blue-500/5 dark:from-blue-500/4 to-transparent blur-[160px] opacity-35"></div>
+        <div class="absolute bottom-[-5%] right-[10%] w-[38vw] h-[38vw] rounded-full bg-gradient-to-tl from-amber-400/4 dark:from-amber-400/3 to-transparent blur-[160px] opacity-30"></div>
     </div>
 
     <div class="absolute top-4 right-6 text-xs tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-400/60 z-50 pointer-events-none select-none">
@@ -379,9 +378,11 @@
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-cyan"><span class="text-cyan-600 dark:text-cyan-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V9m4 8V5m4 12v-4M4 21h16"/></svg>01</span> / Climograma de Givoni</h2>
                         <span class="text-sm font-bold text-cyan-500 bg-cyan-500/10 px-3 py-1.5 rounded border border-cyan-500/20 uppercase tracking-wider">Matriz Psicrométrica</span>
                     </div>
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-x-auto overflow-y-hidden flex items-center justify-center">
-                        <div id="chart" class="relative min-w-[900px] w-full" style="height: 760px;">
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
+                        <div class="w-full overflow-x-auto overflow-y-hidden">
+                            <div id="chart" class="relative min-w-[900px] w-full" style="height: 760px;">
                             <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
+                        </div>
                         </div>
                     </div>
                 </section>
@@ -389,7 +390,8 @@
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-10 w-full">
                     <div class="xl:col-span-7 space-y-4 overflow-hidden flex flex-col justify-start">
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-emerald"><span class="text-emerald-600 dark:text-emerald-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18v16H3V4zm0 5.5h18M3 15h18M9 4v16"/></svg>02</span> / Cuadro de Datos</h2>
-                        <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl overflow-x-auto w-full">
+                        <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl w-full min-h-[200px] overflow-hidden">
+                            <div class="overflow-x-auto w-full">
                             <table class="w-full text-left text-sm table-fixed min-w-[550px]" id="data-table">
                                 <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold font-space text-xs">
                                     <tr>
@@ -403,6 +405,7 @@
                                 </thead>
                                 <tbody id="table-body" class="font-medium divide-y divide-slate-200/40 dark:divide-slate-800/30 text-slate-700 dark:text-slate-300 text-base text-center"></tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
 
@@ -2147,6 +2150,9 @@ async function updateAnalysis(data) {
     staggerReveal(tableBody, 'tr', 40);
 
     if (data.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="p-10 text-center text-slate-400 dark:text-slate-500 font-space text-sm">
+            No hay periodos seleccionados. Elige al menos un mes o año en el panel izquierdo.
+        </td></tr>`;
         document.getElementById('analysis-text').innerHTML = "No se encontraron datos climáticos.";
         return;
     }
