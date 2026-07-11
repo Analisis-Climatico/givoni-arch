@@ -29,21 +29,15 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        .glass-panel { background: rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(20px) saturate(160%) !important; border: 1px solid rgba(255, 255, 255, 0.18) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; }
+        .glass-panel { background: rgba(255, 255, 255, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.4) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; }
 
-        /* Variante que separa el desenfoque (en una capa aparte) del recorte de esquinas
-           (en el contenedor). Esto evita el bug del navegador donde combinar
-           backdrop-filter + border-radius + overflow-hidden + scroll interno
-           genera un corte/costura visible en la esquina redondeada. */
-        .glass-panel-clip { position: relative; background: transparent !important; border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); }
-        .dark .glass-panel-clip { border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4); }
-        .glass-panel-clip::before {
-            content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-            background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px) saturate(160%);
-        }
-        .dark .glass-panel-clip::before { background: rgba(15, 23, 42, 0.20); backdrop-filter: blur(24px) saturate(160%); }
+        /* Variante para tarjetas con scroll interno (como la tabla): misma
+           transparencia simple, sin desenfoque, para que el recorte de la
+           esquina redondeada nunca falle. */
+        .glass-panel-clip { position: relative; background: rgba(255, 255, 255, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); }
+        .dark .glass-panel-clip { background: rgba(15, 23, 42, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4); }
         .glass-panel-clip > * { position: relative; z-index: 1; }
-        .dark .glass-panel { background: rgba(15, 23, 42, 0.20) !important; backdrop-filter: blur(24px) saturate(160%) !important; border: 1px solid rgba(255, 255, 255, 0.06) !important; box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4) !important; }
+        .dark .glass-panel { background: rgba(15, 23, 42, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4) !important; }
         /* El sidebar recibe además un leve degradado propio de marca, para que no se vea como un bloque plano */
         #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.06), transparent 45%, rgba(6,182,212,0.05)) !important; }
         .dark #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.1), transparent 45%, rgba(6,182,212,0.08)) !important; }
@@ -57,7 +51,7 @@
         .section-title-accent.accent-rose::before { background: linear-gradient(180deg, #fb7185, #e11d48); }
         /* Los modales llevan mucho texto: usamos un fondo más opaco para que
            el texto gris sea legible incluso con contenido de color detrás. */
-        .modal-solid-panel { background: rgba(255, 255, 255, 0.94) !important; backdrop-filter: blur(16px) saturate(140%) !important; }
+        .modal-solid-panel { background: rgba(255, 255, 255, 0.94) !important; }
         .dark .modal-solid-panel { background: rgba(15, 23, 42, 0.92) !important; }
         .sidebar-transition { transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), padding 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
         .dark #chart-canvas-inside svg > g > g:first-child { filter: invert(0.9) hue-rotate(180deg); }
