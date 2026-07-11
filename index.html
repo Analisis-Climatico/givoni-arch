@@ -30,19 +30,6 @@
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
         .glass-panel { background: rgba(255, 255, 255, 0.12) !important; backdrop-filter: blur(20px) saturate(160%) !important; border: 1px solid rgba(255, 255, 255, 0.18) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; }
-
-        /* Variante que separa el desenfoque (en una capa aparte) del recorte de esquinas
-           (en el contenedor). Esto evita el bug del navegador donde combinar
-           backdrop-filter + border-radius + overflow-hidden + scroll interno
-           genera un corte/costura visible en la esquina redondeada. */
-        .glass-panel-clip { position: relative; background: transparent !important; border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); }
-        .dark .glass-panel-clip { border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4); }
-        .glass-panel-clip::before {
-            content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-            background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px) saturate(160%);
-        }
-        .dark .glass-panel-clip::before { background: rgba(15, 23, 42, 0.20); backdrop-filter: blur(24px) saturate(160%); }
-        .glass-panel-clip > * { position: relative; z-index: 1; }
         .dark .glass-panel { background: rgba(15, 23, 42, 0.20) !important; backdrop-filter: blur(24px) saturate(160%) !important; border: 1px solid rgba(255, 255, 255, 0.06) !important; box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4) !important; }
         /* El sidebar recibe además un leve degradado propio de marca, para que no se vea como un bloque plano */
         #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.06), transparent 45%, rgba(6,182,212,0.05)) !important; }
@@ -403,7 +390,7 @@
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-10 w-full">
                     <div class="xl:col-span-7 space-y-4 overflow-hidden flex flex-col justify-start">
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-emerald"><span class="text-emerald-600 dark:text-emerald-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18v16H3V4zm0 5.5h18M3 15h18M9 4v16"/></svg>02</span> / Cuadro de Datos</h2>
-                        <div class="glass-panel-clip rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl w-full min-h-[200px] overflow-hidden">
+                        <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl w-full min-h-[200px] overflow-hidden">
                             <div class="overflow-x-auto w-full">
                             <table class="w-full text-left text-sm table-fixed min-w-[550px]" id="data-table">
                                 <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold font-space text-xs">
