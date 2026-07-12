@@ -135,13 +135,13 @@
         .cta-breathe { animation: ctaBreathe 2.8s ease-in-out infinite; }
 
         /* --- BRILLO EXTRA AL PASAR EL MOUSE POR LAS TARJETAS --- */
-        .card-fade-in:hover { box-shadow: 0 12px 30px -10px rgba(6,182,212,0.25); }
+        .card-fade-in:hover { box-shadow: 0 16px 40px -10px rgba(6,182,212,0.35), inset 0 1px 1px rgba(255,255,255,0.6); border-color: rgba(6,182,212,0.4); }
 
         /* La última fila de la tabla no debe tener línea inferior recta,
            ya que queda justo pegada a la esquina redondeada del contenedor
            y genera un corte/costura visible entre lo recto y lo curvo. */
         #table-body tr:last-child { border-bottom: none !important; }
-        .dark .card-fade-in:hover { box-shadow: 0 12px 30px -10px rgba(6,182,212,0.15); }
+        .dark .card-fade-in:hover { box-shadow: 0 16px 40px -10px rgba(6,182,212,0.3), inset 0 1px 1px rgba(255,255,255,0.08); border-color: rgba(34,211,238,0.35); }
 
         /* --- SPINNER PARA BOTONES EN PROCESO --- */
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -206,13 +206,14 @@
         #download-menu-btn.menu-open #download-menu-chevron { transform: rotate(180deg); }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b1f3a] dark:via-[#1a1440] dark:to-[#06141f] text-slate-800 dark:text-slate-100 min-h-screen relative">
+<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-[linear-gradient(135deg,#0b1f3a_0%,#152a4a_25%,#1a1440_55%,#0d2b2e_80%,#06141f_100%)] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-cyan-400/25 dark:from-cyan-400/22 to-transparent blur-[100px] opacity-90"></div>
-        <div class="absolute bottom-[10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-fuchsia-400/22 dark:from-fuchsia-400/18 to-transparent blur-[100px] opacity-80"></div>
-        <div class="absolute top-[20%] right-[-5%] w-[42vw] h-[42vw] rounded-full bg-gradient-to-bl from-blue-500/25 dark:from-blue-500/22 to-transparent blur-[100px] opacity-80"></div>
-        <div class="absolute bottom-[-5%] right-[10%] w-[38vw] h-[38vw] rounded-full bg-gradient-to-tl from-amber-400/20 dark:from-amber-400/16 to-transparent blur-[100px] opacity-70"></div>
+        <div class="absolute top-[-10%] left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-cyan-400/28 dark:from-cyan-400/25 to-transparent blur-[100px] opacity-90"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-fuchsia-400/25 dark:from-fuchsia-400/20 to-transparent blur-[100px] opacity-85"></div>
+        <div class="absolute top-[20%] right-[-5%] w-[42vw] h-[42vw] rounded-full bg-gradient-to-bl from-blue-500/28 dark:from-blue-500/25 to-transparent blur-[100px] opacity-85"></div>
+        <div class="absolute bottom-[-5%] right-[10%] w-[38vw] h-[38vw] rounded-full bg-gradient-to-tl from-amber-400/22 dark:from-amber-400/18 to-transparent blur-[100px] opacity-75"></div>
+        <div class="absolute top-[40%] left-[45%] w-[35vw] h-[35vw] rounded-full bg-gradient-to-r from-emerald-400/18 dark:from-emerald-400/16 to-transparent blur-[110px] opacity-65"></div>
     </div>
 
     <div class="absolute top-4 right-6 text-xs tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-400/60 z-50 pointer-events-none select-none">
@@ -2478,7 +2479,7 @@ async function updateAnalysis(data) {
     sl.innerHTML = '';
     recs.forEach((r, i) => {
         sl.innerHTML += `
-            <div class="card-fade-in p-6 rounded-2xl border border-slate-200 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/10 shadow-sm transition-transform hover:-translate-y-1 duration-300" style="animation-delay:${i * 60}ms">
+            <div class="card-fade-in p-6 rounded-2xl border border-white/60 dark:border-white/10 bg-white/50 dark:bg-white/[0.04] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] transition-transform hover:-translate-y-1.5 duration-300" style="animation-delay:${i * 60}ms">
                 <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
                 <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
             </div>`;
