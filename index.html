@@ -143,6 +143,11 @@
 
         /* --- BRILLO EXTRA AL PASAR EL MOUSE POR LAS TARJETAS --- */
         .card-fade-in:hover { box-shadow: 0 12px 30px -10px rgba(6,182,212,0.25); }
+
+        /* La última fila de la tabla no debe tener línea inferior recta,
+           ya que queda justo pegada a la esquina redondeada del contenedor
+           y genera un corte/costura visible entre lo recto y lo curvo. */
+        #table-body tr:last-child { border-bottom: none !important; }
         .dark .card-fade-in:hover { box-shadow: 0 12px 30px -10px rgba(6,182,212,0.15); }
 
         /* --- SPINNER PARA BOTONES EN PROCESO --- */
