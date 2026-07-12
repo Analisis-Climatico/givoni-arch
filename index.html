@@ -29,8 +29,8 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        .glass-panel { background: rgba(255, 255, 255, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.4) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; }
-        .dark .glass-panel { background: rgba(15, 23, 42, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4) !important; }
+        .glass-panel { background: rgba(255, 255, 255, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.65) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.5) !important; }
+        .dark .glass-panel { background: rgba(15, 23, 42, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.16) !important; box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.06) !important; }
         /* El sidebar recibe además un leve degradado propio de marca, para que no se vea como un bloque plano */
         #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.06), transparent 45%, rgba(6,182,212,0.05)) !important; }
         .dark #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.1), transparent 45%, rgba(6,182,212,0.08)) !important; }
@@ -206,13 +206,13 @@
         #download-menu-btn.menu-open #download-menu-chevron { transform: rotate(180deg); }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
+<body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b1f3a] dark:via-[#1a1440] dark:to-[#06141f] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-cyan-400/16 dark:from-cyan-400/12 to-transparent blur-[150px] opacity-70"></div>
-        <div class="absolute bottom-[10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-fuchsia-400/14 dark:from-fuchsia-400/10 to-transparent blur-[150px] opacity-60"></div>
-        <div class="absolute top-[20%] right-[-5%] w-[42vw] h-[42vw] rounded-full bg-gradient-to-bl from-blue-500/16 dark:from-blue-500/12 to-transparent blur-[150px] opacity-60"></div>
-        <div class="absolute bottom-[-5%] right-[10%] w-[38vw] h-[38vw] rounded-full bg-gradient-to-tl from-amber-400/12 dark:from-amber-400/9 to-transparent blur-[150px] opacity-50"></div>
+        <div class="absolute top-[-10%] left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-cyan-400/25 dark:from-cyan-400/22 to-transparent blur-[100px] opacity-90"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-fuchsia-400/22 dark:from-fuchsia-400/18 to-transparent blur-[100px] opacity-80"></div>
+        <div class="absolute top-[20%] right-[-5%] w-[42vw] h-[42vw] rounded-full bg-gradient-to-bl from-blue-500/25 dark:from-blue-500/22 to-transparent blur-[100px] opacity-80"></div>
+        <div class="absolute bottom-[-5%] right-[10%] w-[38vw] h-[38vw] rounded-full bg-gradient-to-tl from-amber-400/20 dark:from-amber-400/16 to-transparent blur-[100px] opacity-70"></div>
     </div>
 
     <div class="absolute top-4 right-6 text-xs tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-400/60 z-50 pointer-events-none select-none">
