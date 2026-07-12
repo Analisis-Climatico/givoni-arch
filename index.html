@@ -29,15 +29,8 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 10px; }
 
-        .glass-panel { background: rgba(255, 255, 255, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.4) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; }
-
-        /* Variante para tarjetas con scroll interno (como la tabla): misma
-           transparencia simple, sin desenfoque, para que el recorte de la
-           esquina redondeada nunca falle. */
-        .glass-panel-clip { position: relative; background: rgba(255, 255, 255, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); }
-        .dark .glass-panel-clip { background: rgba(15, 23, 42, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4); }
-        .glass-panel-clip > * { position: relative; z-index: 1; }
-        .dark .glass-panel { background: rgba(15, 23, 42, 0.55) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4) !important; }
+        .glass-panel { background: rgba(255, 255, 255, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.4) !important; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important; }
+        .dark .glass-panel { background: rgba(15, 23, 42, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4) !important; }
         /* El sidebar recibe además un leve degradado propio de marca, para que no se vea como un bloque plano */
         #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.06), transparent 45%, rgba(6,182,212,0.05)) !important; }
         .dark #sidebar { background-image: linear-gradient(160deg, rgba(59,130,246,0.1), transparent 45%, rgba(6,182,212,0.08)) !important; }
@@ -216,10 +209,10 @@
 <body class="bg-gradient-to-br from-[#e0f2fe] via-[#f1f5f9] to-[#fae8ff] dark:bg-gradient-to-br dark:from-[#0b132b] dark:via-[#101c3d] dark:to-[#060a17] text-slate-800 dark:text-slate-100 min-h-screen relative">
     
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-cyan-400/5 dark:from-cyan-400/4 to-transparent blur-[160px] opacity-40"></div>
-        <div class="absolute bottom-[10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-fuchsia-400/4 dark:from-fuchsia-400/3 to-transparent blur-[160px] opacity-35"></div>
-        <div class="absolute top-[20%] right-[-5%] w-[42vw] h-[42vw] rounded-full bg-gradient-to-bl from-blue-500/5 dark:from-blue-500/4 to-transparent blur-[160px] opacity-35"></div>
-        <div class="absolute bottom-[-5%] right-[10%] w-[38vw] h-[38vw] rounded-full bg-gradient-to-tl from-amber-400/4 dark:from-amber-400/3 to-transparent blur-[160px] opacity-30"></div>
+        <div class="absolute top-[-10%] left-[10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-cyan-400/16 dark:from-cyan-400/12 to-transparent blur-[150px] opacity-70"></div>
+        <div class="absolute bottom-[10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-fuchsia-400/14 dark:from-fuchsia-400/10 to-transparent blur-[150px] opacity-60"></div>
+        <div class="absolute top-[20%] right-[-5%] w-[42vw] h-[42vw] rounded-full bg-gradient-to-bl from-blue-500/16 dark:from-blue-500/12 to-transparent blur-[150px] opacity-60"></div>
+        <div class="absolute bottom-[-5%] right-[10%] w-[38vw] h-[38vw] rounded-full bg-gradient-to-tl from-amber-400/12 dark:from-amber-400/9 to-transparent blur-[150px] opacity-50"></div>
     </div>
 
     <div class="absolute top-4 right-6 text-xs tracking-[0.35em] uppercase font-bold text-slate-400/80 dark:text-slate-400/60 z-50 pointer-events-none select-none">
@@ -402,8 +395,7 @@
                 <section class="grid grid-cols-1 xl:grid-cols-12 gap-10 w-full">
                     <div class="xl:col-span-7 space-y-4 overflow-hidden flex flex-col justify-start">
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-emerald"><span class="text-emerald-600 dark:text-emerald-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18v16H3V4zm0 5.5h18M3 15h18M9 4v16"/></svg>02</span> / Cuadro de Datos</h2>
-                        <div class="glass-panel-clip rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl w-full min-h-[200px] overflow-hidden">
-                            <div class="overflow-x-auto w-full">
+                        <div class="glass-panel rounded-[24px] border border-slate-200/60 dark:border-slate-800/80 shadow-xl w-full min-h-[200px] overflow-x-auto">
                             <table class="w-full text-left text-sm table-fixed min-w-[550px]" id="data-table">
                                 <thead class="bg-slate-100/40 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold font-space text-xs">
                                     <tr>
@@ -417,7 +409,6 @@
                                 </thead>
                                 <tbody id="table-body" class="font-medium divide-y divide-slate-200/40 dark:divide-slate-800/30 text-slate-700 dark:text-slate-300 text-base text-center"></tbody>
                             </table>
-                            </div>
                         </div>
                     </div>
 
