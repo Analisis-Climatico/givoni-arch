@@ -254,7 +254,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </button>
                     </div>
-                    <ul id="search-results" class="absolute top-full left-0 w-full mt-1 glass-panel rounded-xl hidden flex-col overflow-hidden z-50 text-xs shadow-2xl border border-slate-200/50 dark:border-slate-700/50"></ul>
+                    <ul id="search-results" class="absolute top-full left-0 w-full mt-1 modal-solid-panel rounded-xl hidden flex-col overflow-hidden z-50 text-xs shadow-2xl border border-slate-200/50 dark:border-slate-700/50"></ul>
                 </div>
 
                 <div class="mb-4">
@@ -594,6 +594,7 @@
                 <input id="comment-name-input" type="text" maxlength="40" class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2.5 px-4 outline-none font-medium text-slate-700 dark:text-slate-200 focus:border-emerald-500 dark:focus:border-emerald-400 shadow-inner transition-colors" placeholder="Tu nombre">
                 <textarea id="comment-text-input" maxlength="500" rows="3" class="w-full text-sm bg-white/40 dark:bg-slate-900/40 border border-slate-300/60 dark:border-slate-800/80 rounded-xl py-2.5 px-4 outline-none font-medium text-slate-700 dark:text-slate-200 focus:border-emerald-500 dark:focus:border-emerald-400 shadow-inner transition-colors resize-none" placeholder="Escribe un problema o sugerencia..."></textarea>
                 <button onclick="submitComment()" class="w-full py-2.5 rounded-xl font-space font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-md transition-all active:scale-[0.98]">Publicar comentario</button>
+                <p id="comments-status-note" class="text-[11px] text-slate-400 dark:text-slate-500 text-center"></p>
             </div>
 
             <div id="comments-list-container" class="flex-1 overflow-y-auto px-6 py-5 space-y-3"></div>
@@ -975,16 +976,19 @@
 
         async function handleSearchAutocomplete(query) {
             if(query.length < 3) { searchResults.classList.add('hidden'); return; }
+            searchResults.innerHTML = `<li class="px-4 py-3 text-slate-400 dark:text-slate-500 text-xs flex items-center"><span class="btn-spinner" style="border-top-color:currentColor;border-color:rgba(148,163,184,0.3)"></span>Buscando...</li>`;
+            searchResults.classList.remove('hidden');
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`);
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=6&addressdetails=1`);
+                if (!res.ok) throw new Error('network');
                 const data = await res.json();
                 searchResults.innerHTML = '';
                 if(data.length > 0) {
                     searchResults.classList.remove('hidden');
                     data.forEach(item => {
                         const li = document.createElement('li');
-                        li.className = 'px-4 py-3 hover:bg-blue-500/20 dark:hover:bg-cyan-500/20 cursor-pointer border-b border-slate-200/20 dark:border-slate-700/50 last:border-0 transition-colors text-slate-700 dark:text-slate-200';
-                        li.innerText = item.display_name;
+                        li.className = 'px-4 py-3 hover:bg-blue-500/15 dark:hover:bg-cyan-500/15 cursor-pointer border-b border-slate-200/20 dark:border-slate-700/50 last:border-0 transition-colors text-slate-700 dark:text-slate-200 flex items-start gap-2.5';
+                        li.innerHTML = `<svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-500 dark:text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${item.display_name}</span>`;
                         li.onclick = () => {
                             lat = parseFloat(parseFloat(item.lat).toFixed(4));
                             lon = parseFloat(parseFloat(item.lon).toFixed(4));
@@ -999,9 +1003,11 @@
                         searchResults.appendChild(li);
                     });
                 } else {
-                    searchResults.classList.add('hidden');
+                    searchResults.innerHTML = `<li class="px-4 py-3 text-slate-400 dark:text-slate-500 text-xs">No se encontraron ubicaciones. Intenta ser más específico.</li>`;
                 }
-            } catch (error) {}
+            } catch (error) {
+                searchResults.innerHTML = `<li class="px-4 py-3 text-red-500 dark:text-red-400 text-xs">No se pudo buscar. Revisa tu conexión e inténtalo de nuevo.</li>`;
+            }
         }
 
         document.addEventListener('click', (e) => {
@@ -3316,6 +3322,12 @@ async function exportZIP() {
         // --- COMENTARIOS / SUGERENCIAS (guardado local en el navegador) ---
         const COMMENTS_KEY = 'clovina_comments_v1';
         const AUTHOR_ID_KEY = 'clovina_author_id';
+        // ⚠️ PENDIENTE: reemplaza esta URL por tu endpoint real de Formspree
+        // (la obtienes al crear una cuenta gratis en https://formspree.io)
+        // para que cada comentario también te llegue por correo, sin importar
+        // desde qué dispositivo lo escriban. Mientras esté vacío, los
+        // comentarios solo se guardan localmente en el navegador de quien los escribe.
+        const FORMSPREE_ENDPOINT = '';
 
         function getAuthorId() {
             let id = localStorage.getItem(AUTHOR_ID_KEY);
@@ -3345,6 +3357,10 @@ async function exportZIP() {
             const overlay = document.getElementById('comments-modal-overlay');
             if (show) {
                 renderCommentsList();
+                const note = document.getElementById('comments-status-note');
+                note.textContent = FORMSPREE_ENDPOINT
+                    ? 'Tu comentario se guarda aquí y también llega por correo al autor.'
+                    : 'Por ahora tu comentario solo queda guardado en este navegador (aún no está conectado el envío por correo).';
                 overlay.classList.remove('hidden'); overlay.classList.add('flex-shown');
             } else {
                 overlay.classList.add('hidden'); overlay.classList.remove('flex-shown');
@@ -3376,6 +3392,21 @@ async function exportZIP() {
             setComments(list);
             textInput.value = '';
             renderCommentsList();
+
+            // Envía además el comentario por correo al autor de la página (Formspree),
+            // para que le llegue sin importar desde qué dispositivo se escribió.
+            if (FORMSPREE_ENDPOINT) {
+                fetch(FORMSPREE_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        nombre: entry.name,
+                        comentario: entry.text,
+                        fecha: entry.createdAt,
+                        pagina: 'CLÓVINA - ' + (currentLocationName || '')
+                    })
+                }).catch(() => {});
+            }
         }
 
         function deleteComment(id) {
