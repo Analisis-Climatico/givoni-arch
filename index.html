@@ -1294,18 +1294,21 @@ function renderDiagramaArquitectonico(t, index = 0) {
     const callout = (startX, startY, endX, endY, texto, align="auto") => {
         let anchor = align;
         if (align === "auto") anchor = endX > startX ? "start" : "end";
-        // Ancho aproximado del chip según longitud del texto (para que el fondo encaje bien)
         const charW = 6.4;
         const padX = 10;
         const boxW = Math.min(texto.length * charW + padX * 2, 230);
         const boxX = anchor === "start" ? endX : endX - boxW;
+        const chipFill = isDark ? "#0f172a" : "#ffffff";
+        const chipFillOpacity = isDark ? 0.85 : 0.95;
+        const chipStroke = isDark ? "#334155" : "#cbd5e1";
+        const textFill = isDark ? "#f1f5f9" : "#1e293b";
         return `
-            <path d="M ${startX} ${startY} L ${endX} ${endY}" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.85"/>
-            <circle cx="${startX}" cy="${startY}" r="4" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
-            <circle cx="${startX}" cy="${startY}" r="1.6" fill="#38bdf8"/>
-            <rect x="${boxX}" y="${endY - 13}" width="${boxW}" height="22" rx="6" fill="#0f172a" fill-opacity="0.82" stroke="#334155" stroke-width="1"/>
-            <rect x="${boxX}" y="${endY - 13}" width="3" height="22" rx="1.5" fill="#38bdf8"/>
-            <text x="${anchor === 'start' ? boxX + 12 : boxX + boxW - 12}" y="${endY + 4}" fill="#f1f5f9" font-family="'Inter', sans-serif" font-size="11.5" font-weight="600" text-anchor="${anchor}" letter-spacing="0.1">${texto}</text>
+            <path d="M ${startX} ${startY} L ${endX} ${endY}" fill="none" stroke="#0ea5e9" stroke-width="1.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.85"/>
+            <circle cx="${startX}" cy="${startY}" r="4" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>
+            <circle cx="${startX}" cy="${startY}" r="1.6" fill="#0ea5e9"/>
+            <rect x="${boxX}" y="${endY - 13}" width="${boxW}" height="22" rx="6" fill="${chipFill}" fill-opacity="${chipFillOpacity}" stroke="${chipStroke}" stroke-width="1" filter="url(#drop-soft)"/>
+            <rect x="${boxX}" y="${endY - 13}" width="3" height="22" rx="1.5" fill="#0ea5e9"/>
+            <text x="${anchor === 'start' ? boxX + 12 : boxX + boxW - 12}" y="${endY + 4}" fill="${textFill}" font-family="'Inter', sans-serif" font-size="11.5" font-weight="600" text-anchor="${anchor}" letter-spacing="0.1">${texto}</text>
         `;
     };
 
@@ -1360,11 +1363,18 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <stop offset="45%" stop-color="#0f172a" stop-opacity="0.4"/>
                 <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
             </radialGradient>
-            <radialGradient id="sky-glow-light" cx="12%" cy="18%" r="75%">
-                <stop offset="0%" stop-color="#fde68a" stop-opacity="0.35"/>
-                <stop offset="45%" stop-color="#e0f2fe" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+            <radialGradient id="sky-glow-light" cx="50%" cy="0%" r="90%">
+                <stop offset="0%" stop-color="#e2e8f0" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#f8fafc" stop-opacity="0"/>
             </radialGradient>
+            <linearGradient id="ground-gradient-dark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e293b"/>
+                <stop offset="100%" stop-color="#0b1120"/>
+            </linearGradient>
+            <linearGradient id="ground-gradient-light" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#cbd5e1"/>
+                <stop offset="100%" stop-color="#94a3b8"/>
+            </linearGradient>
             <linearGradient id="ground-gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#1e293b"/>
                 <stop offset="100%" stop-color="#0b1120"/>
@@ -1407,11 +1417,11 @@ function renderDiagramaArquitectonico(t, index = 0) {
 
     // 2. ELEMENTOS BASE COMUNES
     const groundLine = `
-        <rect x="0" y="340" width="800" height="60" fill="url(#ground-gradient)"/>
-        <rect x="0" y="340" width="800" height="40" fill="url(#dots-sand)"/>
-        <rect x="0" y="340" width="800" height="10" fill="url(#dots-soil)"/>
+        <rect x="0" y="340" width="800" height="60" fill="url(#${isDark ? 'ground-gradient-dark' : 'ground-gradient-light'})"/>
+        <rect x="0" y="340" width="800" height="40" fill="url(#dots-sand)" opacity="${isDark ? 1 : 0.5}"/>
+        <rect x="0" y="340" width="800" height="10" fill="url(#dots-soil)" opacity="${isDark ? 1 : 0.5}"/>
         <rect x="0" y="336" width="800" height="6" fill="#38bdf8" opacity="0.06"/>
-        <line x1="0" y1="340" x2="800" y2="340" stroke="#475569" stroke-width="1.5" opacity="0.7"/>
+        <line x1="0" y1="340" x2="800" y2="340" stroke="${isDark ? '#475569' : '#64748b'}" stroke-width="1.5" opacity="0.7"/>
     `;
     const sunObj = `
         <circle cx="100" cy="70" r="70" fill="url(#sun-glow)" class="svg-sun-pulse"/>
@@ -2019,12 +2029,19 @@ function renderDiagramaArquitectonico(t, index = 0) {
         
         let cleanAttributes = attributes.replace(/\s*marker-(?:end|mid)="url\([^)]+\)"/, '');
         cleanAttributes = cleanAttributes.replace(/d="[^"]+"/, `d="${dCurved}"`);
+        if (!/stroke-linecap=/.test(cleanAttributes)) {
+            cleanAttributes = cleanAttributes.trim().replace(/\/?$/, ' stroke-linecap="round"');
+        }
         
         return `<path ${cleanAttributes}/>
                 <g filter="url(#soft-glow)">
-                    <path d="M -9 -6 Q 2 0 -9 6 L -3 0 Z" fill="${stroke}"/>
+                    <path d="M -22 -7 L -9 0 L -22 7" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+                    <path d="M -11 -8 L 4 0 L -11 8" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" />
-                </g>`;
+                </g>
+                <circle r="3.2" fill="${stroke}" opacity="0.55" filter="url(#soft-glow)">
+                    <animateMotion dur="${dur}" repeatCount="indefinite" path="${dCurved}" begin="${delay}" keyPoints="0;0.7;0.7" keyTimes="0;0.85;1" calcMode="linear"/>
+                </circle>`;
     });
 
     // 5. INYECCIÓN FINAL AL NAVEGADOR
