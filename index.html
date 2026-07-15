@@ -53,6 +53,8 @@
            blancas directamente, sin tocar el resto de colores de las zonas. */
         .dark #chart-canvas-inside svg path[style*="stroke:#000000"] { stroke: #ffffff !important; }
         .dark #chart-canvas-inside svg text[style*="fill:#000000"] { fill: #ffffff !important; }
+        .psychro-pct-label { fill: #1e293b; }
+        .dark .psychro-pct-label { fill: #ffffff; }
 
         .strat-btn.active { background: rgba(37, 99, 235, 0.15); border-left: 4px solid #3b82f6; box-shadow: inset 0 0 20px rgba(37, 99, 235, 0.05); }
         .dark .strat-btn.active { background: rgba(6, 182, 212, 0.15); border-left: 4px solid #06b6d4; box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05); }
@@ -1164,6 +1166,34 @@
                 importedSVG.setAttribute("height", innerHeight);
                 importedSVG.setAttribute("preserveAspectRatio", "none");
                 importedSVG.setAttribute("transform", "translate(0,65)");
+
+                // Etiquetas de % de Humedad Relativa, ubicadas en el punto exacto
+                // donde termina cada curva dentro del SVG original (calculado a
+                // partir de las coordenadas reales del archivo pruega-de-svg.svg).
+                const svgNS = "http://www.w3.org/2000/svg";
+                const pctLabels = [
+                    { pct: '100%', x: 740.3,  y: 92.2,  dx: -18, dy: -12 },
+                    { pct: '90%',  x: 780.8,  y: 92.2,  dx: -14, dy: -12 },
+                    { pct: '80%',  x: 824.6,  y: 92.2,  dx: -14, dy: -12 },
+                    { pct: '70%',  x: 874.1,  y: 92.2,  dx: -14, dy: -12 },
+                    { pct: '60%',  x: 934.2,  y: 92.2,  dx: -14, dy: -12 },
+                    { pct: '50%',  x: 1002.6, y: 92.2,  dx: -14, dy: -12 },
+                    { pct: '40%',  x: 1089.9, y: 92.2,  dx: -32, dy: -12 },
+                    { pct: '30%',  x: 1122.2, y: 209.2, dx: -48, dy: 6 },
+                    { pct: '20%',  x: 1122.2, y: 374.1, dx: -48, dy: 6 },
+                    { pct: '10%',  x: 1122.2, y: 537.7, dx: -48, dy: 6 },
+                ];
+                pctLabels.forEach(lbl => {
+                    const t = document.createElementNS(svgNS, "text");
+                    t.setAttribute("x", lbl.x + lbl.dx);
+                    t.setAttribute("y", lbl.y + lbl.dy);
+                    t.setAttribute("font-size", "16");
+                    t.setAttribute("font-family", "Space Grotesk, sans-serif");
+                    t.setAttribute("font-weight", "700");
+                    t.setAttribute("class", "psychro-pct-label");
+                    t.textContent = lbl.pct;
+                    importedSVG.appendChild(t);
+                });
                 g.append("g").style("opacity","0.85").node().appendChild(importedSVG);
             } catch(e) {}
 
