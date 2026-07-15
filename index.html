@@ -1288,6 +1288,7 @@
 function renderDiagramaArquitectonico(t, index = 0) {
     let svgContent = "";
     let labelsContent = "";
+    const isDark = document.documentElement.classList.contains('dark');
 
     // Función de Etiquetado Técnico Inteligente
     const callout = (startX, startY, endX, endY, texto, align="auto") => {
@@ -1354,10 +1355,15 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <circle cx="4" cy="4" r="1.5" fill="#94a3b8" opacity="0.4"/>
                 <circle cx="10" cy="10" r="1" fill="#94a3b8" opacity="0.2"/>
             </pattern>
-            <radialGradient id="sky-glow" cx="12%" cy="18%" r="75%">
+            <radialGradient id="sky-glow-dark" cx="12%" cy="18%" r="75%">
                 <stop offset="0%" stop-color="#1e293b" stop-opacity="0.9"/>
                 <stop offset="45%" stop-color="#0f172a" stop-opacity="0.4"/>
                 <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="sky-glow-light" cx="12%" cy="18%" r="75%">
+                <stop offset="0%" stop-color="#fde68a" stop-opacity="0.35"/>
+                <stop offset="45%" stop-color="#e0f2fe" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
             </radialGradient>
             <linearGradient id="ground-gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#1e293b"/>
@@ -1994,13 +2000,30 @@ function renderDiagramaArquitectonico(t, index = 0) {
         
         const delayMatch = style ? style.match(/animation-delay:\s*([\d\.]+)s/) : null;
         if (delayMatch) delay = delayMatch[1] + 's';
+
+        // Convierte líneas rectas de 2 puntos (M x y L x y) en curvas suaves.
+        // Los trazados que ya usan Q/C (curvas dibujadas a mano) se respetan tal cual.
+        let dCurved = d;
+        const straightMatch = d.match(/^M\s*(-?[\d.]+)\s+(-?[\d.]+)\s*L\s*(-?[\d.]+)\s+(-?[\d.]+)\s*$/);
+        if (straightMatch) {
+            const x1 = parseFloat(straightMatch[1]), y1 = parseFloat(straightMatch[2]);
+            const x2 = parseFloat(straightMatch[3]), y2 = parseFloat(straightMatch[4]);
+            const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+            const dx = x2 - x1, dy = y2 - y1;
+            const len = Math.sqrt(dx * dx + dy * dy) || 1;
+            const px = -dy / len, py = dx / len; // perpendicular unitario
+            const bend = Math.min(len * 0.16, 34) * (cls.includes('delayed') ? -1 : 1);
+            const cx = mx + px * bend, cy = my + py * bend;
+            dCurved = `M ${x1} ${y1} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${x2} ${y2}`;
+        }
         
-        const cleanAttributes = attributes.replace(/\s*marker-(?:end|mid)="url\([^)]+\)"/, '');
+        let cleanAttributes = attributes.replace(/\s*marker-(?:end|mid)="url\([^)]+\)"/, '');
+        cleanAttributes = cleanAttributes.replace(/d="[^"]+"/, `d="${dCurved}"`);
         
         return `<path ${cleanAttributes}/>
-                <g fill="${stroke}">
-                    <polygon points="-8,-5 6,0 -8,5" />
-                    <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${d}" begin="${delay}" />
+                <g filter="url(#soft-glow)">
+                    <path d="M -9 -6 Q 2 0 -9 6 L -3 0 Z" fill="${stroke}"/>
+                    <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" />
                 </g>`;
     });
 
@@ -2008,7 +2031,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
     document.getElementById('svg-canvas').innerHTML = `
         <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
             ${defsSVG}
-            <rect x="0" y="0" width="800" height="400" fill="url(#sky-glow)"/>
+            <rect x="0" y="0" width="800" height="400" fill="url(#${isDark ? 'sky-glow-dark' : 'sky-glow-light'})"/>
             ${svgContent}
             <g class="labels-layer">
                 ${labelsContent}
