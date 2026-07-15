@@ -3322,12 +3322,13 @@ async function exportZIP() {
         // --- COMENTARIOS / SUGERENCIAS (guardado local en el navegador) ---
         const COMMENTS_KEY = 'clovina_comments_v1';
         const AUTHOR_ID_KEY = 'clovina_author_id';
-        // ⚠️ PENDIENTE: reemplaza esta URL por tu endpoint real de Formspree
-        // (la obtienes al crear una cuenta gratis en https://formspree.io)
-        // para que cada comentario también te llegue por correo, sin importar
-        // desde qué dispositivo lo escriban. Mientras esté vacío, los
-        // comentarios solo se guardan localmente en el navegador de quien los escribe.
-        const FORMSPREE_ENDPOINT = '';
+        // ⚠️ PENDIENTE: reemplaza esto por tu Access Key real de Web3Forms
+        // (la obtienes gratis, sin contraseña, en https://web3forms.com — solo
+        // pones tu correo y te la envían) para que cada comentario también te
+        // llegue por correo, sin importar desde qué dispositivo lo escriban.
+        // Mientras esté vacío, los comentarios solo se guardan localmente en
+        // el navegador de quien los escribe.
+        const WEB3FORMS_ACCESS_KEY = 'd6406851-bec0-4e5c-8d22-7452a3915922';
 
         function getAuthorId() {
             let id = localStorage.getItem(AUTHOR_ID_KEY);
@@ -3358,7 +3359,7 @@ async function exportZIP() {
             if (show) {
                 renderCommentsList();
                 const note = document.getElementById('comments-status-note');
-                note.textContent = FORMSPREE_ENDPOINT
+                note.textContent = WEB3FORMS_ACCESS_KEY
                     ? 'Tu comentario se guarda aquí y también llega por correo al autor.'
                     : 'Por ahora tu comentario solo queda guardado en este navegador (aún no está conectado el envío por correo).';
                 overlay.classList.remove('hidden'); overlay.classList.add('flex-shown');
@@ -3395,13 +3396,15 @@ async function exportZIP() {
 
             // Envía además el comentario por correo al autor de la página (Formspree),
             // para que le llegue sin importar desde qué dispositivo se escribió.
-            if (FORMSPREE_ENDPOINT) {
-                fetch(FORMSPREE_ENDPOINT, {
+            if (WEB3FORMS_ACCESS_KEY) {
+                fetch('https://api.web3forms.com/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
-                        nombre: entry.name,
-                        comentario: entry.text,
+                        access_key: WEB3FORMS_ACCESS_KEY,
+                        subject: 'Nuevo comentario en CLÓVINA',
+                        name: entry.name,
+                        message: entry.text,
                         fecha: entry.createdAt,
                         pagina: 'CLÓVINA - ' + (currentLocationName || '')
                     })
