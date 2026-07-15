@@ -1403,6 +1403,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 @keyframes flow-ray { from { stroke-dashoffset: 25; } to { stroke-dashoffset: 0; } }
                 .svg-heat-radiate { animation: heat-pulse 3s ease-in-out infinite alternate; }
                 @keyframes heat-pulse { 0% { opacity: 0.05; } 100% { opacity: 0.3; } }
+                .svg-impact-pulse { transform-origin: center; transform-box: fill-box; animation: impact-pulse 1.4s ease-out infinite; }
+                @keyframes impact-pulse { 0% { transform: scale(0.4); opacity: 0.7; } 100% { transform: scale(2.6); opacity: 0; } }
                 .animate-spin { transform-origin: center; transform-box: fill-box; animation: spin 4s linear infinite; }
                 @keyframes spin { 100% { transform: rotate(360deg); } }
                 .animate-pulse { animation: simple-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
@@ -1950,8 +1952,9 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="410" y="80" width="30" height="260" fill="url(#hatch-insulation)"/>
             <rect x="440" y="80" width="15" height="260" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/>
             ${sunObj}
-            <path d="M 600 150 L 470 150" fill="none" stroke="#ef4444" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 450 150 L 420 150" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" class="svg-ray-bounce"/>
+            <path d="M 130 100 L 345 195" fill="none" stroke="#ef4444" stroke-width="5" class="svg-ray-bounce"/>
+            <path d="M 345 195 L 385 215" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.35" class="svg-ray-bounce"/>
+            <circle cx="350" cy="197" r="6" fill="#ef4444" opacity="0.5" class="svg-impact-pulse"/>
         `;
         labelsContent += callout(425, 200, 560, 260, "Material Aislante", "start");
         labelsContent += callout(380, 240, 240, 280, "Muro Estructural", "end");
@@ -2039,8 +2042,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
                     <path d="M -11 -8 L 4 0 L -11 8" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" />
                 </g>
-                <circle r="3.2" fill="${stroke}" opacity="0.55" filter="url(#soft-glow)">
-                    <animateMotion dur="${dur}" repeatCount="indefinite" path="${dCurved}" begin="${delay}" keyPoints="0;0.7;0.7" keyTimes="0;0.85;1" calcMode="linear"/>
+                <circle r="3.4" fill="${stroke}" opacity="0.6" filter="url(#soft-glow)">
+                    <animateMotion dur="${dur}" repeatCount="indefinite" path="${dCurved}" begin="${delay}" keyPoints="0;0.62;0.62" keyTimes="0;0.85;1" calcMode="linear"/>
+                </circle>
+                <circle r="2.2" fill="${stroke}" opacity="0.4">
+                    <animateMotion dur="${dur}" repeatCount="indefinite" path="${dCurved}" begin="${(parseFloat(delay) + parseFloat(dur) * 0.28).toFixed(2)}s" keyPoints="0;0.4;0.4" keyTimes="0;0.85;1" calcMode="linear"/>
+                </circle>
+                <circle r="1.4" fill="${stroke}" opacity="0.3">
+                    <animateMotion dur="${dur}" repeatCount="indefinite" path="${dCurved}" begin="${(parseFloat(delay) + parseFloat(dur) * 0.55).toFixed(2)}s" keyPoints="0;0.2;0.2" keyTimes="0;0.85;1" calcMode="linear"/>
                 </circle>`;
     });
 
@@ -2048,7 +2057,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
     document.getElementById('svg-canvas').innerHTML = `
         <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" class="w-full h-full drop-shadow-xl absolute inset-0 z-10">
             ${defsSVG}
-            <rect x="0" y="0" width="800" height="400" fill="url(#${isDark ? 'sky-glow-dark' : 'sky-glow-light'})"/>
+            <rect x="0" y="0" width="800" height="400" fill="url(#sky-glow-dark)" opacity="${isDark ? 1 : 0}"/>
             ${svgContent}
             <g class="labels-layer">
                 ${labelsContent}
