@@ -2064,16 +2064,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
             impactPulse = `<circle cx="${ex}" cy="${ey}" r="5" fill="${stroke}" opacity="0.5" class="svg-impact-pulse" style="animation-delay:${delay}"/>`;
         }
 
-        // Da a cada partícula una forma acorde a lo que representa: viento (estela alargada), agua/humedad (gota), calor/sol (brasa por defecto)
+        // Clasificación de color: azul/cian = viento (estela alargada), rojo/naranja/amarillo = calor (brasa, forma por defecto)
         const s = stroke.toLowerCase();
-        const isWind = cls.includes('wind-flow') && (s === '#06b6d4' || s === '#0ea5e9' || s === '#22d3ee');
-        const isWater = s === '#3b82f6' || s === '#2563eb' || s === '#38bdf8';
+        const isWind = ['#06b6d4', '#0ea5e9', '#22d3ee', '#3b82f6', '#2563eb', '#38bdf8', '#60a5fa'].includes(s);
         const particle = (r) => {
             if (isWind) return `<ellipse rx="${(r*1.9).toFixed(1)}" ry="${(r*0.6).toFixed(1)}" fill="${stroke}"/>`;
-            if (isWater) return `<path d="M 0 ${(-r*1.4).toFixed(1)} C ${(r*1.3).toFixed(1)} ${(-r*0.1).toFixed(1)} ${(r*1.1).toFixed(1)} ${(r*1.4).toFixed(1)} 0 ${(r*1.4).toFixed(1)} C ${(-r*1.1).toFixed(1)} ${(r*1.4).toFixed(1)} ${(-r*1.3).toFixed(1)} ${(-r*0.1).toFixed(1)} 0 ${(-r*1.4).toFixed(1)} Z" fill="${stroke}"/>`;
             return `<circle r="${r}" fill="${stroke}"/>`;
         };
-        const pRotate = isWater ? '0' : 'auto';
+        const pRotate = 'auto';
         
         return `<path ${cleanAttributes}/>
                 <g filter="url(#soft-glow)">
@@ -2711,9 +2709,57 @@ async function updateAnalysis(data) {
             </div>`;
     });
 
+    // ================= INICIO BLOQUE TEMPORAL: VISUALIZAR TODOS LOS SVG =================
+    // Esto rompe a propósito la conexión con el resultado filtrado por clima (recs)
+    // para poder revisar/mejorar cada ilustración de una sola vez.
+    // Para revertir: eliminar este bloque y dejar `buildInteractiveVisualizer(recs);` como estaba.
+    const TEMP_SHOW_ALL_SVGS = true;
+    const ALL_STRATEGIES_TEMP = [
+        { t: "Ventilación regulable", d: "Incorporar ventanas operables y aperturas graduables que permitan controlar el flujo de aire según las condiciones térmicas del ambiente." },
+        { t: "Cubierta ventilada", d: "Diseñar cubiertas separadas de la estructura principal para permitir la disipación del calor acumulado antes de ingresar al interior." },
+        { t: "Protección solar ligera", d: "Utilizar aleros y elementos de sombra que reduzcan ganancias térmicas sin bloquear completamente la iluminación natural." },
+        { t: "Espacios de transición", d: "Incorporar corredores, terrazas o galerías que funcionen como amortiguadores térmicos entre exterior e interior." },
+        { t: "Fachada permeable", d: "Utilizar celosías o paneles perforados que permitan ventilación constante y reduzcan sensación de encierro térmico." },
+        { t: "Ventilación elevada", d: "Diseñar aperturas superiores que faciliten la salida natural del aire caliente acumulado." },
+        { t: "Núcleo compacto", d: "Organizar espacios de uso frecuente alrededor de zonas centrales para conservar mejor el calor interior generado por ocupación y equipos." },
+        { t: "Envolvente térmica", d: "Utilizar cerramientos aislantes que reduzcan pérdidas de calor hacia el exterior." },
+        { t: "Carpintería hermética", d: "Incorporar puertas y ventanas con sellos térmicos que eviten infiltraciones de aire frío." },
+        { t: "Muro Trombe", d: "Incorporar muros oscuros con vidrio exterior que acumulen calor solar y lo transfieran lentamente al interior." },
+        { t: "Galería solar", d: "Diseñar espacios acristalados que funcionen como captadores de calor durante el día." },
+        { t: "Orientación solar estratégica", d: "Ubicar las áreas principales hacia fachadas con mayor incidencia solar para maximizar captación térmica natural." },
+        { t: "Panel solar térmico", d: "Incorporar sistemas de captación solar para producir agua caliente o calefacción interior." },
+        { t: "Cubierta captadora", d: "Diseñar techos inclinados orientados hacia el sol para optimizar el rendimiento energético." },
+        { t: "Acumulación térmica hidráulica", d: "Utilizar depósitos de agua caliente para conservar energía térmica durante más tiempo." },
+        { t: "Patio húmedo", d: "Incorporar espacios interiores con vegetación y agua para incrementar naturalmente la humedad ambiental." },
+        { t: "Fuente evaporativa", d: "Utilizar cuerpos de agua pequeños que aporten humedad al aire mediante evaporación continua." },
+        { t: "Material higroscópico", d: "Emplear acabados de arcilla, barro o madera natural capaces de absorber y liberar humedad gradualmente." },
+        { t: "Doble envolvente térmica", d: "Incorporar cámaras de aire entre capas de fachada para disminuir pérdidas de calor." },
+        { t: "Acceso amortiguador", d: "Diseñar vestíbulos cerrados que reduzcan el ingreso directo de aire frío al abrir puertas exteriores." },
+        { t: "Aislamiento continuo", d: "Utilizar materiales térmicos en cubiertas, muros y pisos para conservar temperaturas interiores estables." },
+        { t: "Parasoles móviles", d: "Incorporar elementos ajustables que controlen la incidencia solar según la hora del día." },
+        { t: "Fachada de doble piel", d: "Diseñar una segunda capa exterior ventilada que reduzca el calentamiento directo de la envolvente." },
+        { t: "Cubierta extendida", d: "Utilizar grandes volados o aleros para proteger fachadas y aberturas de radiación intensa." },
+        { t: "Muro acumulador", d: "Utilizar muros gruesos de adobe, piedra o concreto que absorban calor durante el día y retrasen su ingreso al interior." },
+        { t: "Piso de inercia térmica", d: "Incorporar superficies de piedra o concreto pulido que mantengan temperaturas más frescas por mayor tiempo." },
+        { t: "Protección de masa térmica", d: "Evitar exposición solar directa sobre materiales acumuladores mediante sombra exterior permanente." },
+        { t: "Espejo de agua climático", d: "Incorporar superficies de agua poco profundas que refresquen el aire circundante mediante evaporación." },
+        { t: "Nebulización pasiva", d: "Utilizar sistemas de microaspersión en patios o áreas exteriores para disminuir temperatura ambiental." },
+        { t: "Vegetación refrescante", d: "Incorporar jardines densos capaces de reducir el calor mediante evapotranspiración." },
+        { t: "Purgado nocturno", d: "Mantener aperturas nocturnas para liberar el calor almacenado en muros y pisos térmicos." },
+        { t: "Lucernario térmico", d: "Incorporar aperturas superiores que favorezcan la extracción natural del aire caliente acumulado." },
+        { t: "Chimenea solar invertida", d: "Utilizar diferencias térmicas y de altura para acelerar la salida del aire caliente durante la noche." },
+        { t: "Ventilación mecánica asistida", d: "Utilizar extractores o ventiladores estratégicamente ubicados para reforzar el movimiento natural del aire." },
+        { t: "Sectorización térmica", d: "Dividir áreas interiores según demanda climática para reducir consumo energético innecesario." },
+        { t: "Fachada aislada", d: "Utilizar materiales con baja transmitancia térmica para reducir la carga de enfriamiento artificial." },
+        { t: "Elevación palafítica", d: "Separar la edificación del suelo mediante pilotes para evitar acumulación de humedad ascendente y mejorar ventilación inferior." },
+        { t: "Deshumidificación material", d: "Utilizar materiales transpirables e higroscópicos como madera natural, morteros de cal o arcilla que regulen la humedad ambiental." },
+        { t: "Cámara ventilada", d: "Incorporar separaciones de aire en cubiertas y muros para evitar condensación y acumulación de humedad interior." }
+    ];
+    // ================== FIN BLOQUE TEMPORAL ==================
+
     // Envío de estrategias al motor visualizador (SVGs)
     if (typeof buildInteractiveVisualizer === "function") {
-        buildInteractiveVisualizer(recs);
+        buildInteractiveVisualizer(TEMP_SHOW_ALL_SVGS ? ALL_STRATEGIES_TEMP : recs);
     }
   } catch (e) {
     console.error('Error en updateAnalysis:', e);
