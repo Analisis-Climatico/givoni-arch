@@ -1432,8 +1432,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 @keyframes simple-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
                 .svg-water-animate { animation: wave-slide 3s linear infinite; }
                 @keyframes wave-slide { 0% { transform: translateX(0); } 100% { transform: translateX(12px); } }
-                .svg-tree-sway { transform-origin: center; transform-box: fill-box; animation: tree-sway 4s ease-in-out infinite; }
-                @keyframes tree-sway { 0%, 100% { transform: rotate(-4deg) scale(0.98); } 50% { transform: rotate(4deg) scale(1.02); } }
+                .svg-tree-sway { transform-origin: center; transform-box: fill-box; animation: tree-sway 4.5s ease-in-out infinite; }
+                @keyframes tree-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
             </style>
         </defs>
     `;
@@ -1462,9 +1462,23 @@ function renderDiagramaArquitectonico(t, index = 0) {
     if (t === "Ventilación regulable") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
+            <rect x="245" y="283" width="30" height="5" fill="#94a3b8" opacity="0.6"/>
+            <rect x="247" y="217" width="26" height="66" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="250" y="220" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
+            <rect x="250" y="220" width="20" height="8" fill="#ffffff" opacity="0.15"/>
+            <line x1="260" y1="220" x2="260" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
+            <rect x="385" y="283" width="30" height="5" fill="#94a3b8" opacity="0.6"/>
+            <rect x="387" y="217" width="26" height="66" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="390" y="220" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
+            <rect x="390" y="220" width="20" height="8" fill="#ffffff" opacity="0.15"/>
+            <line x1="400" y1="220" x2="400" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
+            <rect x="525" y="283" width="30" height="5" fill="#94a3b8" opacity="0.6"/>
+            <rect x="527" y="217" width="26" height="66" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="530" y="220" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
+            <rect x="530" y="220" width="20" height="8" fill="#ffffff" opacity="0.15"/>
+            <line x1="540" y1="220" x2="540" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
+            <path d="M 400 217 Q 400 195 385 190" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="2 3"/>
+            <path d="M 385 190 L 392 187 M 385 190 L 386 197" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
             <path d="M 120 250 L 240 250" fill="none" stroke="#06b6d4" stroke-width="5" class="svg-wind-flow"/>
             <path d="M 270 250 Q 330 250 380 250" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
             <path d="M 410 250 Q 470 250 520 250" fill="none" stroke="#06b6d4" stroke-width="4" class="svg-wind-flow"/>
@@ -1476,9 +1490,13 @@ function renderDiagramaArquitectonico(t, index = 0) {
         svgContent += `
             ${groundLine}
             <rect x="250" y="180" width="300" height="160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="220" y="138" width="360" height="8" fill="#0f172a" opacity="0.12"/>
+            <rect x="220" y="130" width="10" height="12" fill="#64748b"/>
             <rect x="260" y="140" width="10" height="40" fill="#94a3b8"/>
             <rect x="395" y="100" width="10" height="80" fill="#94a3b8"/>
             <rect x="530" y="140" width="10" height="40" fill="#94a3b8"/>
+            <rect x="570" y="130" width="10" height="12" fill="#64748b"/>
+            <rect x="220" y="132" width="360" height="6" fill="#38bdf8" opacity="0.12"/>
             <polygon points="220,140 400,60 580,140 580,130 400,50 220,130" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="220" y1="140" x2="580" y2="140" stroke="#cbd5e1" stroke-width="2"/>
             ${sunObj}
@@ -1490,8 +1508,11 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Protección solar ligera") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
+            <polygon points="225,340 205,340 250,240 260,240" fill="#0f172a" opacity="0.08"/>
+            <rect x="250" y="150" width="50" height="140" fill="#0f172a" opacity="0.05"/>
             <line x1="220" y1="340" x2="220" y2="120" stroke="#a1a1aa" stroke-width="2" stroke-dasharray="4 4"/>
             <rect x="215" y="150" width="10" height="140" fill="url(#perforated)"/>
+            <rect x="213" y="148" width="14" height="144" fill="none" stroke="#94a3b8" stroke-width="1.5" rx="2"/>
             ${sunObj}
             <path d="M 130 90 L 215 170" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
             <path d="M 225 180 L 300 220" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.3" class="svg-ray-bounce"/>
@@ -1504,6 +1525,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine}
             <rect x="400" y="120" width="200" height="220" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="250" y="120" width="150" height="220" fill="#e2e8f0" opacity="0.3" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="260" y="150" width="12" height="190" fill="#cbd5e1"/>
+            <rect x="378" y="150" width="12" height="190" fill="#cbd5e1"/>
             <polygon points="220,120 400,50 630,120" fill="none" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="220" y1="120" x2="630" y2="120" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="250" y1="120" x2="250" y2="340" stroke="#cbd5e1" stroke-width="5"/>
@@ -1517,18 +1540,23 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Fachada permeable") {
         svgContent += `
             ${groundLine}
+            <rect x="197" y="118" width="21" height="224" fill="none" stroke="#94a3b8" stroke-width="2"/>
             <rect x="200" y="120" width="15" height="220" fill="url(#perforated)" stroke="#94a3b8" stroke-width="2"/>
             ${drawHouse(300, 160, 250, 180)}
             <path d="M 80 220 L 180 220" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 230 220 L 290 220" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7" class="svg-wind-flow"/>
-            <path d="M 230 260 L 290 260" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.7" class="svg-wind-flow"/>
+            <path d="M 230 210 L 290 200" fill="none" stroke="#06b6d4" stroke-width="2.5" opacity="0.6" class="svg-wind-flow"/>
+            <path d="M 230 235 L 290 240" fill="none" stroke="#06b6d4" stroke-width="2.5" opacity="0.6" class="svg-wind-flow"/>
+            <path d="M 230 260 L 290 275" fill="none" stroke="#06b6d4" stroke-width="2.5" opacity="0.6" class="svg-wind-flow"/>
         `;
         labelsContent += callout(207, 180, 240, 80, "Muro Permeable / Celosía", "end");
         labelsContent += callout(260, 220, 560, 280, "Viento Filtrado", "start");
     } else if (t === "Ventilación elevada") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
+            <rect x="252" y="160" width="296" height="35" fill="#ef4444" opacity="0.06"/>
+            <rect x="247" y="177" width="26" height="46" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="250" y="180" width="20" height="40" fill="url(#glass-lines)" stroke="#38bdf8"/>
+            <rect x="527" y="177" width="26" height="46" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="530" y="180" width="20" height="40" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <path d="M 350 300 Q 400 220 300 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 450 300 Q 400 220 500 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
@@ -1551,6 +1579,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="330" y="160" width="140" height="100" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="3"/>
             <rect x="330" y="160" width="140" height="100" fill="#ea580c" opacity="0.1"/>
             <circle cx="400" cy="200" r="60" fill="#ea580c" opacity="0.15" class="svg-heat-radiate"/>
+            <circle cx="400" cy="210" r="14" fill="none" stroke="#ea580c" stroke-width="2.5" opacity="0.7"/>
+            <path d="M 393 210 L 400 217 L 410 203" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
             <path d="M 400 160 L 400 110" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 400 260 L 400 310" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 330 210 L 250 210" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
@@ -1561,6 +1591,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Envolvente térmica") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
+            <path d="M 277 340 L 277 160 L 400 78 L 523 160 L 523 340" fill="none" stroke="#14b8a6" stroke-width="3" stroke-dasharray="2 6" opacity="0.6"/>
             <rect x="290" y="160" width="10" height="180" fill="url(#hatch-insulation)"/>
             <rect x="285" y="160" width="5" height="180" fill="#64748b"/>
             ${sunObj}
@@ -1573,25 +1604,24 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine}
             <rect x="350" y="50" width="100" height="80" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="350" y="270" width="100" height="70" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="376" y="126" width="48" height="148" fill="none" stroke="#ef4444" stroke-width="3" rx="2"/>
             <rect x="380" y="130" width="40" height="140" fill="#d1d5db" stroke="#71717a" stroke-width="2"/>
             <rect x="395" y="135" width="10" height="130" fill="url(#glass-lines)" stroke="#38bdf8"/>
-            <circle cx="380" cy="130" r="5" fill="#ef4444"/>
-            <circle cx="420" cy="130" r="5" fill="#ef4444"/>
-            <circle cx="380" cy="270" r="5" fill="#ef4444"/>
-            <circle cx="420" cy="270" r="5" fill="#ef4444"/>
-            <path d="M 600 200 L 440 200" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 430 200 Q 415 200 420 170" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.5"/>
+            <path d="M 600 200 L 460 200" fill="none" stroke="#06b6d4" stroke-width="6" class="svg-wind-flow"/>
+            <path d="M 445 194 L 425 194 M 445 206 L 425 206" fill="none" stroke="#06b6d4" stroke-width="3" opacity="0.4"/>
         `;
         labelsContent += callout(400, 200, 560, 150, "Vidrio de Alta Eficiencia", "start");
-        labelsContent += callout(380, 130, 240, 100, "Juntas Herméticas", "end");
+        labelsContent += callout(400, 126, 240, 100, "Junta Hermética Continua", "end");
     } else if (t === "Muro Trombe") {
         svgContent += `
             ${groundLine}
             <rect x="340" y="90" width="10" height="250" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <rect x="350" y="90" width="30" height="250" fill="#ea580c" opacity="0.1"/>
+            <rect x="350" y="90" width="6" height="250" fill="#0f172a" opacity="0.15"/>
             <rect x="380" y="90" width="40" height="250" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="2"/>
             <rect x="380" y="90" width="10" height="250" fill="#1f2937"/>
             <rect x="420" y="90" width="20" height="250" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="420" y="90" width="6" height="250" fill="#0f172a" opacity="0.12"/>
             <polygon points="320,80 460,50 460,70 340,90" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
             ${sunObj}
             <path d="M 120 100 L 330 180" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
@@ -1878,11 +1908,11 @@ function renderDiagramaArquitectonico(t, index = 0) {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <rect x="140" y="240" width="15" height="100" fill="#713f12"/>
-            <g class="svg-tree-sway" style="transform-origin: 147px 200px;">
+            <g class="svg-tree-sway" style="transform-origin: 50% 100%;">
                 <circle cx="147" cy="200" r="50" fill="#16a34a" opacity="0.8"/>
             </g>
             <rect x="620" y="260" width="12" height="80" fill="#713f12"/>
-            <g class="svg-tree-sway" style="transform-origin: 626px 230px; animation-delay: -1s;">
+            <g class="svg-tree-sway" style="transform-origin: 50% 100%; animation-delay: -1s;">
                 <circle cx="626" cy="230" r="40" fill="#15803d" opacity="0.7"/>
             </g>
             ${sunObj}
@@ -2122,30 +2152,52 @@ function buildInteractiveVisualizer(strategies) {
     let menuHTML = `<div class="w-full flex-col lg:flex-row flex">
         <div class="w-full lg:w-[35%] xl:w-[30%] border-b lg:border-b-0 lg:border-r border-slate-200/40 dark:border-slate-700/50 p-4 space-y-2 overflow-y-auto max-h-[550px]" id="strategy-menu">`;
 
+    // Mapeo exacto: cada estrategia (t) tiene su propio ícono, sin coincidencias parciales que se pisen entre sí
+    const ICONOS_ESTRATEGIA = {
+        "Ventilación regulable": `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16M17 9l3 3-3 3"/></svg>`,
+        "Cubierta ventilada": `<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-6 9 6M6 10v3M18 10v3M4 20h16M9 20v-4h6v4"/></svg>`,
+        "Protección solar ligera": `<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path stroke-linecap="round" d="M2 19h20M12 3v1"/></svg>`,
+        "Espacios de transición": `<svg class="w-5 h-5 text-lime-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 21V9l8-6 8 6v12M9 21v-6h6v6"/></svg>`,
+        "Fachada permeable": `<svg class="w-5 h-5 text-lime-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M5 4v16M9 4v16M13 4v16M17 4v16M21 4v16"/></svg>`,
+        "Ventilación elevada": `<svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h16M8 10l4-4 4 4M12 6v14"/></svg>`,
+        "Núcleo compacto": `<svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="9" y="9" width="6" height="6" fill="currentColor"/></svg>`,
+        "Envolvente térmica": `<svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V9l9-6 9 6v12H3zm5-3v-6h8v6"/></svg>`,
+        "Carpintería hermética": `<svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><path stroke-linecap="round" d="M12 4v16M4 12h16"/></svg>`,
+        "Muro Trombe": `<svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><rect x="12" y="4" width="8" height="16" fill="currentColor" opacity="0.2"/><rect x="12" y="4" width="8" height="16"/></svg>`,
+        "Galería solar": `<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V11l9-7 9 7v10H3z M3 21h18"/><path stroke-linecap="round" d="M8 21v-8h8v8"/></svg>`,
+        "Orientación solar estratégica": `<svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3"/></svg>`,
+        "Panel solar térmico": `<svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="1"/><path stroke-linecap="round" d="M3 10h18M3 14h18M9 6v12M15 6v12"/></svg>`,
+        "Cubierta captadora": `<svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 14l9-9 9 9"/><circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><path stroke-linecap="round" d="M5 14v6h14v-6"/></svg>`,
+        "Acumulación térmica hidráulica": `<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C9 6 6 9.5 6 13a6 6 0 0012 0c0-3.5-3-7-6-11z"/></svg>`,
+        "Patio húmedo": `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3C9.5 6.5 7 9.8 7 13a5 5 0 0010 0c0-3.2-2.5-6.5-5-10z"/><path stroke-linecap="round" d="M3 20c1.5-1.5 3-1.5 4.5 0s3 1.5 4.5 0 3-1.5 4.5 0 3 1.5 4.5 0"/></svg>`,
+        "Fuente evaporativa": `<svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6M8 6l1.5 2M16 6l-1.5 2"/><ellipse cx="12" cy="17" rx="7" ry="4"/></svg>`,
+        "Material higroscópico": `<svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7c2 2 4-2 6 0s4-2 6 0 4-2 4 0M4 13c2 2 4-2 6 0s4-2 6 0 4-2 4 0M4 19c2 2 4-2 6 0s4-2 6 0 4-2 4 0"/></svg>`,
+        "Doble envolvente térmica": `<svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="4" height="16" rx="0.5"/><rect x="17" y="4" width="4" height="16" rx="0.5"/><path stroke-linecap="round" stroke-dasharray="1.5 2" d="M10 7h4M10 12h4M10 17h4"/></svg>`,
+        "Acceso amortiguador": `<svg class="w-5 h-5 text-lime-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="1"/><path stroke-linecap="round" d="M12 3v18"/><circle cx="10" cy="12" r="0.8" fill="currentColor" stroke="none"/></svg>`,
+        "Aislamiento continuo": `<svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-6 9 6v11a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"/><path stroke-linecap="round" d="M8 21v-6h8v6"/></svg>`,
+        "Parasoles móviles": `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h18M3 9l18-3M3 13l18-3M3 17l18-3"/></svg>`,
+        "Fachada de doble piel": `<svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16M8 4v16M14 4h6v16h-6"/></svg>`,
+        "Cubierta extendida": `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 9l10-5 10 5M5 9v11h14V9M2 9h20"/></svg>`,
+        "Muro acumulador": `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`,
+        "Piso de inercia térmica": `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="14" width="18" height="6" rx="1"/><path stroke-linecap="round" d="M3 10h18M7 14v-4M12 14v-4M17 14v-4"/></svg>`,
+        "Protección de masa térmica": `<svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z"/><rect x="9" y="10" width="6" height="6"/></svg>`,
+        "Espejo de agua climático": `<svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="9" rx="1"/><path stroke-linecap="round" d="M6 13c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0"/><path stroke-linecap="round" opacity="0.5" d="M6 16c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0"/></svg>`,
+        "Nebulización pasiva": `<svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="11" r="0.8" fill="currentColor" stroke="none"/><circle cx="16" cy="11" r="0.8" fill="currentColor" stroke="none"/><path stroke-linecap="round" d="M5 17c1.5-1.5 3-1.5 4.5 0s3 1.5 4.5 0 3-1.5 4.5 0"/></svg>`,
+        "Vegetación refrescante": `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-7"/><path d="M12 14c-4 0-6-2.5-6-6 0-1 .2-1.8.5-2.5C7.5 6 9 6.5 10 8c0-2.5 1-4.5 2-6 1 1.5 2 3.5 2 6 1-1.5 2.5-2 4.5-2.5.3.7.5 1.5.5 2.5 0 3.5-2 6-6 6z" fill="currentColor" opacity="0.15"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14c-4 0-6-2.5-6-6 0-1 .2-1.8.5-2.5C7.5 6 9 6.5 10 8c0-2.5 1-4.5 2-6 1 1.5 2 3.5 2 6 1-1.5 2.5-2 4.5-2.5.3.7.5 1.5.5 2.5 0 3.5-2 6-6 6z"/></svg>`,
+        "Purgado nocturno": `<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>`,
+        "Lucernario térmico": `<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20V9l8-6 8 6v11"/><path stroke-linecap="round" d="M9 20v-6h6v6"/><circle cx="12" cy="10" r="1.6" fill="currentColor" stroke="none"/></svg>`,
+        "Chimenea solar invertida": `<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M7 12h10l2 10H5l2-10z"/><path stroke-linecap="round" d="M12 15v4"/></svg>`,
+        "Ventilación mecánica asistida": `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c0-3 1.5-5 4-5s3 2 2 4-4 2-6 1zm0 0c0 3-1.5 5-4 5s-3-2-2-4 4-2 6-1zm0 0c3 0 5 1.5 5 4s-2 3-4 2-2-4-1-6zm0 0c-3 0-5-1.5-5-4s2-3 4-2 2 4 1 6z"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>`,
+        "Sectorización térmica": `<svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3zm9 0v18M3 12h18"/></svg>`,
+        "Fachada aislada": `<svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="0.5"/><rect x="9.5" y="4" width="5" height="16" rx="0.5" fill="currentColor" opacity="0.25"/><rect x="16" y="4" width="5" height="16" rx="0.5"/></svg>`,
+        "Elevación palafítica": `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16v6H4v-6zM6 16v5M10 16v5M14 16v5M18 16v5"/></svg>`,
+        "Deshumidificación material": `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3C9.5 6.5 7 9.8 7 13a5 5 0 0010 0c0-3.2-2.5-6.5-5-10z"/><path stroke-linecap="round" stroke-width="2.4" d="M4.5 4.5l15 15"/></svg>`,
+        "Cámara ventilada": `<svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M6 3v18M14 3v18"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l1.5 1.5L9 12M9 15l1.5 1.5L9 18"/></svg>`
+    };
+    const ICONO_DEFECTO = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
+
     strategies.forEach((strat, i) => {
-        let icon = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
-        
-        if(strat.t.includes('regulable') || strat.t.includes('transición') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>`;
-        // Parasoles móviles: lamas / persiana ajustable
-        if(strat.t.includes('Parasoles')) icon = `<svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h18M3 9l18-3M3 13l18-3M3 17l18-3"/></svg>`;
-        // Fachada de doble piel: dos capas paralelas
-        else if(strat.t.includes('doble piel')) icon = `<svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16M8 4v16M14 4h6v16h-6"/></svg>`;
-        // Cubierta extendida: alero/volado sobre la fachada
-        else if(strat.t.includes('extendida')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 9l10-5 10 5M5 9v11h14V9M2 9h20"/></svg>`;
-        // Ventilación mecánica asistida: aspas de ventilador
-        else if(strat.t.includes('Ventilación') || strat.t.includes('cruzada') || strat.t.includes('elevada')) icon = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c0-3 1.5-5 4-5s3 2 2 4-4 2-6 1zm0 0c0 3-1.5 5-4 5s-3-2-2-4 4-2 6-1zm0 0c3 0 5 1.5 5 4s-2 3-4 2-2-4-1-6zm0 0c-3 0-5-1.5-5-4s2-3 4-2 2 4 1 6z"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>`;
-        // Sectorización térmica: planta dividida en zonas
-        else if(strat.t.includes('Sectorización')) icon = `<svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3zm9 0v18M3 12h18"/></svg>`;
-        // Fachada aislada: muro con capa aislante
-        else if(strat.t.includes('Envolvente térmica') || strat.t.includes('Aislamiento') || strat.t.includes('aislada') || strat.t.includes('hermética')) icon = `<svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21V9l9-6 9 6v12H3zm5-3v-6h8v6"/></svg>`;
-        // Elevación palafítica: pilotes elevando la edificación
-        else if(strat.t.includes('Elevación palafítica')) icon = `<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16v6H4v-6zM6 16v5M10 16v5M14 16v5M18 16v5"/></svg>`;
-        else if(strat.t.includes('regulable') || strat.t.includes('transición') || strat.t.includes('permeable')) icon = `<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>`;
-        else if(strat.t.includes('Trombe') || strat.t.includes('acumulador') || strat.t.includes('inercia') || strat.t.includes('compacto')) icon = `<svg class="w-5 h-5 text-orange-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>`;
-        else if(strat.t.includes('Cubierta ventilada') || strat.t.includes('Chimenea') || strat.t.includes('extractora') || strat.t.includes('Lucernario')) icon = `<svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`;
-        else if(strat.t.includes('Deshumidificación') || strat.t.includes('agua') || strat.t.includes('húmedo') || strat.t.includes('evaporativa') || strat.t.includes('Nebulización') || strat.t.includes('Vegetación')) icon = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`;
-        else if(strat.t.includes('Galería solar') || strat.t.includes('Panel') || strat.t.includes('Orientación solar') || strat.t.includes('Cubierta captadora')) icon = `<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
-        else if(strat.t.includes('Purgado nocturno')) icon = `<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>`;
+        const icon = ICONOS_ESTRATEGIA[strat.t] || ICONO_DEFECTO;
 
         menuHTML += `<button class="w-full text-left p-4 rounded-xl transition-all duration-300 strat-btn flex items-center gap-4 active:scale-95" onclick="renderSVGForStrategy(${i})">
             <div class="mt-0.5">${icon}</div>
