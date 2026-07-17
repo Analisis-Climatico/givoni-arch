@@ -1566,7 +1566,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine} ${drawHouse(320, 160, 250, 180)}
             <polygon points="245,340 215,340 260,240 275,240" fill="#0f172a" opacity="0.08"/>
             <rect x="270" y="150" width="50" height="140" fill="#0f172a" opacity="0.05"/>
-            <rect x="205" y="140" width="40" height="200" rx="4" fill="none" stroke="#94a3b8" stroke-width="2"/>
+            <rect x="203" y="137" width="44" height="205" rx="4" fill="${isDark ? '#0f172a' : '#f8fafc'}" stroke="#94a3b8" stroke-width="2"/>
             <g transform="translate(225,158) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
             <g transform="translate(225,178) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
             <g transform="translate(225,198) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
@@ -1609,22 +1609,35 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 406 315 L 406 290 M 406 302 Q 396 294 393 282 M 406 302 Q 416 294 419 282" stroke="#15803d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             ${sunObj}
             <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 40 210 Q 120 180 200 210 T 360 210" fill="none" stroke="#22d3ee" stroke-width="26" stroke-linecap="round" opacity="0.14" filter="url(#soft-glow)"/>
-            <path d="M 40 210 Q 120 180 200 210 T 360 210" fill="none" stroke="#0ea5e9" stroke-width="18" stroke-linecap="round" opacity="0.12"/>
-            <path d="M 40 206 Q 120 176 200 206 T 360 206" fill="none" stroke="#67e8f9" stroke-width="3.5" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.95" filter="url(#soft-glow)">
-                <animate attributeName="stroke-dashoffset" from="18" to="0" dur="0.9s" repeatCount="indefinite"/>
+            <path d="M 30 230 C 90 180, 130 260, 190 210 S 300 160 370 205" fill="none" stroke="#22d3ee" stroke-width="30" stroke-linecap="round" opacity="0.12" filter="url(#soft-glow)"/>
+            <path d="M 30 230 C 90 180, 130 260, 190 210 S 300 160 370 205" fill="none" stroke="#2dd4bf" stroke-width="16" stroke-linecap="round" opacity="0.15"/>
+            <path d="M 30 226 C 90 178, 128 254, 188 208 S 296 162 366 202" fill="none" stroke="#a5f3fc" stroke-width="4" stroke-linecap="round" opacity="0.9" filter="url(#soft-glow)"/>
+            <path d="M 30 234 C 90 186, 132 262, 192 214 S 302 168 372 210" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round" opacity="0.75" filter="url(#soft-glow)"/>
+            <path d="M 30 230 C 90 180, 130 260, 190 210 S 300 160 370 205" fill="none" stroke="#e0f7fa" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round" opacity="0.95" filter="url(#soft-glow)">
+                <animate attributeName="stroke-dashoffset" from="24" to="0" dur="1.2s" repeatCount="indefinite"/>
             </path>
-            <path d="M 40 214 Q 120 184 200 214 T 360 214" fill="none" stroke="#22d3ee" stroke-width="3" stroke-dasharray="1 6" stroke-linecap="round" opacity="0.85" filter="url(#soft-glow)">
-                <animate attributeName="stroke-dashoffset" from="0" to="21" dur="1.1s" repeatCount="indefinite"/>
-            </path>
-            <path d="M 40 210 Q 120 180 200 210 T 360 210" fill="none" stroke="#a5f3fc" stroke-width="2.5" stroke-dasharray="1 8" stroke-linecap="round" opacity="0.9" filter="url(#soft-glow)">
-                <animate attributeName="stroke-dashoffset" from="27" to="0" dur="1.4s" repeatCount="indefinite"/>
-            </path>
-            <circle r="3" fill="#67e8f9" opacity="0.9" filter="url(#soft-glow)">
-                <animateMotion dur="2.4s" repeatCount="indefinite" path="M 40 210 Q 120 180 200 210 T 360 210"/>
+            <g filter="url(#soft-glow)">
+                <path d="M 355 190 L 385 203 L 355 220" fill="none" stroke="#67e8f9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <g opacity="0.55" filter="url(#soft-glow)">
+                <path d="M 95 175 Q 105 160 118 168 Q 128 174 120 186 Q 113 196 100 190" fill="none" stroke="#5eead4" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <g opacity="0.5" filter="url(#soft-glow)">
+                <path d="M 240 245 Q 252 232 264 242 Q 273 250 264 260 Q 256 268 245 262" fill="none" stroke="#67e8f9" stroke-width="1.8" stroke-linecap="round"/>
+            </g>
+            <g opacity="0.4">
+                <path d="M 60 250 Q 70 265 85 260" fill="none" stroke="#a5f3fc" stroke-width="1.4" stroke-dasharray="1 4" stroke-linecap="round"/>
+                <path d="M 200 170 Q 215 158 228 165" fill="none" stroke="#a5f3fc" stroke-width="1.4" stroke-dasharray="1 4" stroke-linecap="round"/>
+                <path d="M 320 230 Q 335 240 348 232" fill="none" stroke="#5eead4" stroke-width="1.4" stroke-dasharray="1 4" stroke-linecap="round"/>
+            </g>
+            <circle r="2.6" fill="#e0f7fa" opacity="0.9" filter="url(#soft-glow)">
+                <animateMotion dur="2.2s" repeatCount="indefinite" path="M 30 230 C 90 180, 130 260, 190 210 S 300 160 370 205"/>
             </circle>
-            <circle r="2" fill="#a5f3fc" opacity="0.8" filter="url(#soft-glow)">
-                <animateMotion dur="3s" repeatCount="indefinite" begin="0.8s" path="M 40 210 Q 120 180 200 210 T 360 210"/>
+            <circle r="1.8" fill="#5eead4" opacity="0.75" filter="url(#soft-glow)">
+                <animateMotion dur="2.8s" repeatCount="indefinite" begin="0.7s" path="M 30 230 C 90 180, 130 260, 190 210 S 300 160 370 205"/>
+            </circle>
+            <circle r="1.4" fill="#a5f3fc" opacity="0.7">
+                <animateMotion dur="3.4s" repeatCount="indefinite" begin="1.4s" path="M 30 230 C 90 180, 130 260, 190 210 S 300 160 370 205"/>
             </circle>
             <text x="130" y="325" fill="${isDark ? '#fca5a5' : '#b91c1c'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">EXTERIOR</text>
             <text x="500" y="325" fill="${isDark ? '#7dd3fc' : '#0369a1'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">INTERIOR</text>
