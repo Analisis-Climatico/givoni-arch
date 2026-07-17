@@ -1491,22 +1491,30 @@ function renderDiagramaArquitectonico(t, index = 0) {
     // 3. LÓGICAS CONDICIONALES DE DIBUJO ESTRATÉGICO
     if (t === "Ventilación regulable") {
         svgContent += `
+            <circle cx="650" cy="50" r="18" fill="#ffffff" opacity="0.5"/>
+            <circle cx="670" cy="55" r="14" fill="#ffffff" opacity="0.5"/>
+            <circle cx="630" cy="58" r="12" fill="#ffffff" opacity="0.5"/>
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
+            <circle cx="595" cy="335" r="22" fill="#16a34a" opacity="0.7"/>
+            <circle cx="615" cy="330" r="16" fill="#15803d" opacity="0.6"/>
             <rect x="245" y="283" width="30" height="5" fill="#94a3b8" opacity="0.6"/>
             <rect x="247" y="217" width="26" height="66" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="250" y="220" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <rect x="250" y="220" width="20" height="8" fill="#ffffff" opacity="0.15"/>
             <line x1="260" y1="220" x2="260" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
+            <path d="M 251 226 L 269 222 M 251 234 L 269 230 M 251 242 L 269 238" stroke="#0ea5e9" stroke-width="1" opacity="0.5"/>
             <rect x="385" y="283" width="30" height="5" fill="#94a3b8" opacity="0.6"/>
             <rect x="387" y="217" width="26" height="66" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="390" y="220" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <rect x="390" y="220" width="20" height="8" fill="#ffffff" opacity="0.15"/>
             <line x1="400" y1="220" x2="400" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
+            <path d="M 391 226 L 409 222 M 391 234 L 409 230 M 391 242 L 409 238" stroke="#0ea5e9" stroke-width="1" opacity="0.5"/>
             <rect x="525" y="283" width="30" height="5" fill="#94a3b8" opacity="0.6"/>
             <rect x="527" y="217" width="26" height="66" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="530" y="220" width="20" height="60" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <rect x="530" y="220" width="20" height="8" fill="#ffffff" opacity="0.15"/>
             <line x1="540" y1="220" x2="540" y2="280" stroke="#94a3b8" stroke-width="1.5"/>
+            <path d="M 531 226 L 549 222 M 531 234 L 549 230 M 531 242 L 549 238" stroke="#0ea5e9" stroke-width="1" opacity="0.5"/>
             <path d="M 400 217 Q 400 195 385 190" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="2 3"/>
             <path d="M 385 190 L 392 187 M 385 190 L 386 197" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
             <path d="M 120 250 L 240 250" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-wind-flow"/>
@@ -1521,44 +1529,64 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine}
             <rect x="250" y="180" width="300" height="160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="220" y="138" width="360" height="8" fill="#0f172a" opacity="0.12"/>
-            <rect x="220" y="130" width="10" height="12" fill="#64748b"/>
+            <rect x="215" y="122" width="20" height="18" rx="2" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M 218 126 L 232 126 M 218 130 L 232 130 M 218 134 L 232 134" stroke="#94a3b8" stroke-width="1"/>
             <rect x="260" y="140" width="10" height="40" fill="#94a3b8"/>
             <rect x="395" y="100" width="10" height="80" fill="#94a3b8"/>
             <rect x="530" y="140" width="10" height="40" fill="#94a3b8"/>
-            <rect x="570" y="130" width="10" height="12" fill="#64748b"/>
+            <rect x="565" y="122" width="20" height="18" rx="2" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M 568 126 L 582 126 M 568 130 L 582 130 M 568 134 L 582 134" stroke="#94a3b8" stroke-width="1"/>
             <rect x="220" y="132" width="360" height="6" fill="#38bdf8" opacity="0.12"/>
-            <polygon points="220,140 400,60 580,140 580,130 400,50 220,130" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="220,140 400,60 580,140 580,130 400,50 220,130" fill="url(#roof-gradient)" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M 260 122 L 260 132 M 320 100 L 320 112 M 480 100 L 480 112 M 540 122 L 540 132" stroke="#94a3b8" stroke-width="1" opacity="0.4"/>
             <line x1="220" y1="140" x2="580" y2="140" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="330" y1="115" x2="330" y2="135" stroke="#94a3b8" stroke-width="1" opacity="0.7"/>
+            <path d="M 325 118 L 330 113 L 335 118 M 325 132 L 330 137 L 335 132" fill="none" stroke="#94a3b8" stroke-width="1"/>
             ${sunObj}
             <path d="M 150 160 L 650 160" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(400, 130, 560, 100, "Cámara de Aire Ventilada", "start");
+        labelsContent += callout(330, 125, 560, 100, "Cámara de Aire Ventilada", "start");
         labelsContent += callout(400, 55, 240, 30, "Cubierta Ligera Superior", "end");
+        labelsContent += callout(225, 130, 200, 200, "Rejilla de Entrada", "end");
     } else if (t === "Protección solar ligera") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <polygon points="225,340 205,340 250,240 260,240" fill="#0f172a" opacity="0.08"/>
             <rect x="250" y="150" width="50" height="140" fill="#0f172a" opacity="0.05"/>
             <line x1="220" y1="340" x2="220" y2="120" stroke="#a1a1aa" stroke-width="2" stroke-dasharray="4 4"/>
-            <rect x="215" y="150" width="10" height="140" fill="url(#perforated)"/>
             <rect x="213" y="148" width="14" height="144" fill="none" stroke="#94a3b8" stroke-width="1.5" rx="2"/>
+            <line x1="215" y1="155" x2="225" y2="162" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="170" x2="225" y2="177" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="185" x2="225" y2="192" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="200" x2="225" y2="207" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="215" x2="225" y2="222" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="230" x2="225" y2="237" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="245" x2="225" y2="252" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="260" x2="225" y2="267" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="215" y1="275" x2="225" y2="282" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
             ${sunObj}
-            <path d="M 130 90 L 215 170" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
+            <path d="M 130 90 L 218 168" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
             <path d="M 225 180 L 300 220" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.3" class="svg-ray-bounce"/>
-            <path d="M 215 170 L 160 130" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.8" class="svg-ray-bounce"/>
+            <path d="M 218 168 L 175 145" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.8" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(220, 180, 240, 100, "Pantalla Ligera (Celosía)", "end");
+        labelsContent += callout(220, 200, 240, 100, "Lamas Regulables", "end");
         labelsContent += callout(300, 220, 560, 260, "Radiación Atenuada", "start");
     } else if (t === "Espacios de transición") {
         svgContent += `
             ${groundLine}
             <rect x="400" y="120" width="200" height="220" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="250" y="120" width="150" height="220" fill="#e2e8f0" opacity="0.3" stroke="#cbd5e1" stroke-width="1"/>
+            <path d="M 260 340 L 260 270 L 390 270 M 260 300 L 390 300" fill="none" stroke="#cbd5e1" stroke-width="1" opacity="0.5"/>
             <rect x="260" y="150" width="12" height="190" fill="#cbd5e1"/>
             <rect x="378" y="150" width="12" height="190" fill="#cbd5e1"/>
             <polygon points="220,120 400,50 630,120" fill="none" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="220" y1="120" x2="630" y2="120" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="250" y1="120" x2="250" y2="340" stroke="#cbd5e1" stroke-width="5"/>
+            <rect x="290" y="310" width="55" height="10" rx="2" fill="#a16207" opacity="0.7"/>
+            <rect x="295" y="295" width="6" height="18" fill="#a16207" opacity="0.7"/>
+            <rect x="335" y="295" width="6" height="18" fill="#a16207" opacity="0.7"/>
+            <path d="M 355 340 L 358 305 Q 358 295 368 295 Q 378 295 378 305 L 380 340 Z" fill="#16a34a" opacity="0.6"/>
+            <rect x="356" y="335" width="26" height="8" fill="#78716c"/>
             ${sunObj}
             <path d="M 50 180 L 150 180" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
@@ -1570,29 +1598,37 @@ function renderDiagramaArquitectonico(t, index = 0) {
         svgContent += `
             ${groundLine}
             <rect x="197" y="118" width="21" height="224" fill="none" stroke="#94a3b8" stroke-width="2"/>
-            <rect x="200" y="120" width="15" height="220" fill="url(#perforated)" stroke="#94a3b8" stroke-width="2"/>
+            <rect x="200" y="120" width="15" height="220" fill="#e2e8f0" opacity="0.4" stroke="#94a3b8" stroke-width="2"/>
+            <path d="M 202 128 L 213 128 L 213 139 L 202 139 Z M 202 148 L 213 148 L 213 159 L 202 159 Z M 202 168 L 213 168 L 213 179 L 202 179 Z M 202 188 L 213 188 L 213 199 L 202 199 Z M 202 208 L 213 208 L 213 219 L 202 219 Z M 202 228 L 213 228 L 213 239 L 202 239 Z M 202 248 L 213 248 L 213 259 L 202 259 Z M 202 268 L 213 268 L 213 279 L 202 279 Z M 202 288 L 213 288 L 213 299 L 202 299 Z M 202 308 L 213 308 L 213 319 L 202 319 Z" fill="none" stroke="#64748b" stroke-width="1"/>
+            <rect x="216" y="118" width="6" height="224" fill="#0f172a" opacity="0.06"/>
             ${drawHouse(300, 160, 250, 180)}
             <path d="M 80 220 L 180 220" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 230 210 L 290 200" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.6" class="svg-wind-flow"/>
             <path d="M 230 235 L 290 240" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.6" class="svg-wind-flow"/>
             <path d="M 230 260 L 290 275" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.6" class="svg-wind-flow"/>
         `;
-        labelsContent += callout(207, 180, 240, 80, "Muro Permeable / Celosía", "end");
-        labelsContent += callout(260, 220, 560, 280, "Viento Filtrado", "start");
+        labelsContent += callout(207, 200, 240, 100, "Celosía de Bloques", "end");
+        labelsContent += callout(260, 220, 560, 280, "Viento Filtrado y Difuso", "start");
     } else if (t === "Ventilación elevada") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
-            <rect x="252" y="160" width="296" height="35" fill="#ef4444" opacity="0.06"/>
+            <rect x="252" y="160" width="296" height="45" fill="#ef4444" opacity="0.1"/>
+            <rect x="252" y="160" width="296" height="20" fill="#ef4444" opacity="0.1"/>
+            <rect x="220" y="150" width="20" height="14" rx="2" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M 223 154 L 237 154 M 223 158 L 237 158" stroke="#94a3b8" stroke-width="1"/>
+            <rect x="560" y="150" width="20" height="14" rx="2" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+            <path d="M 563 154 L 577 154 M 563 158 L 577 158" stroke="#94a3b8" stroke-width="1"/>
             <rect x="247" y="177" width="26" height="46" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="250" y="180" width="20" height="40" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <rect x="527" y="177" width="26" height="46" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="530" y="180" width="20" height="40" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <path d="M 350 300 Q 400 220 300 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 450 300 Q 400 220 500 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
-            <path d="M 280 190 L 200 170" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
-            <path d="M 520 190 L 600 170" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
+            <path d="M 400 320 Q 400 240 400 195" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.6" class="svg-float-up"/>
+            <path d="M 280 190 L 230 158" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
+            <path d="M 520 190 L 570 158" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
         `;
-        labelsContent += callout(260, 190, 240, 120, "Salida de Aire Caliente", "end");
+        labelsContent += callout(230, 158, 240, 100, "Rejilla Superior", "end");
         labelsContent += callout(400, 260, 560, 280, "Estrato Caliente (Estratificación)", "start");
     } else if (t === "Núcleo compacto") {
         svgContent += `
@@ -1605,6 +1641,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <line x1="470" y1="60" x2="470" y2="160" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="330" y1="260" x2="330" y2="340" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="470" y1="260" x2="470" y2="340" stroke="#cbd5e1" stroke-width="3"/>
+            <rect x="220" y="90" width="26" height="18" rx="2" fill="none" stroke="#94a3b8" stroke-width="2"/>
+            <circle cx="233" cy="93" r="2" fill="#94a3b8"/>
+            <rect x="550" y="90" width="30" height="20" rx="3" fill="none" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="550" y1="98" x2="580" y2="98" stroke="#94a3b8" stroke-width="1.5"/>
+            <rect x="220" y="290" width="34" height="16" rx="8" fill="none" stroke="#94a3b8" stroke-width="2"/>
+            <circle cx="235" cy="298" r="4" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+            <rect x="560" y="285" width="24" height="24" fill="none" stroke="#94a3b8" stroke-width="2"/>
+            <line x1="560" y1="285" x2="584" y2="309" stroke="#94a3b8" stroke-width="1.5"/>
             <rect x="330" y="160" width="140" height="100" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="3"/>
             <rect x="330" y="160" width="140" height="100" fill="#ea580c" opacity="0.1"/>
             <circle cx="400" cy="200" r="60" fill="#ea580c" opacity="0.15" class="svg-heat-radiate"/>
@@ -1615,13 +1659,21 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 330 210 L 250 210" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             <path d="M 470 210 L 550 210" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
         `;
-        labelsContent += callout(400, 210, 560, 280, "Núcleo Central Generador", "start");
-        labelsContent += callout(250, 110, 240, 40, "Zonas Perimetrales Servidas", "end");
+        labelsContent += callout(400, 210, 560, 340, "Núcleo Central Generador", "start");
+        labelsContent += callout(233, 99, 240, 40, "Zonas Perimetrales Servidas", "end");
     } else if (t === "Envolvente térmica") {
         svgContent += `
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <rect x="290" y="160" width="10" height="180" fill="url(#hatch-insulation)"/>
             <rect x="285" y="160" width="5" height="180" fill="#64748b"/>
+            <rect x="150" y="200" width="16" height="50" rx="8" fill="none" stroke="#ef4444" stroke-width="2"/>
+            <rect x="154" y="225" width="8" height="21" rx="4" fill="#ef4444"/>
+            <circle cx="158" cy="248" r="7" fill="#ef4444"/>
+            <text x="158" y="196" fill="#ef4444" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle">32°</text>
+            <rect x="440" y="220" width="16" height="50" rx="8" fill="none" stroke="#22d3ee" stroke-width="2"/>
+            <rect x="444" y="245" width="8" height="21" rx="4" fill="#22d3ee"/>
+            <circle cx="448" cy="268" r="7" fill="#22d3ee"/>
+            <text x="448" y="216" fill="#22d3ee" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle">23°</text>
             ${sunObj}
             <path d="M 120 90 L 275 160" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
         `;
@@ -1634,11 +1686,13 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="350" y="270" width="100" height="70" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="376" y="126" width="48" height="148" fill="none" stroke="#ef4444" stroke-width="3" rx="2"/>
             <rect x="380" y="130" width="40" height="140" fill="#d1d5db" stroke="#71717a" stroke-width="2"/>
-            <rect x="395" y="135" width="10" height="130" fill="url(#glass-lines)" stroke="#38bdf8"/>
+            <rect x="390" y="135" width="6" height="130" fill="url(#glass-lines)" stroke="#38bdf8" opacity="0.9"/>
+            <rect x="398" y="135" width="4" height="130" fill="#bae6fd" opacity="0.3"/>
+            <rect x="404" y="135" width="6" height="130" fill="url(#glass-lines)" stroke="#38bdf8" opacity="0.9"/>
             <path d="M 600 200 L 460 200" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 445 194 L 425 194 M 445 206 L 425 206" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.4"/>
         `;
-        labelsContent += callout(400, 200, 560, 150, "Vidrio de Alta Eficiencia", "start");
+        labelsContent += callout(397, 200, 560, 150, "Doble Vidriado + Cámara", "start");
         labelsContent += callout(400, 126, 240, 100, "Junta Hermética Continua", "end");
     } else if (t === "Muro Trombe") {
         svgContent += `
@@ -1648,15 +1702,21 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="350" y="90" width="6" height="250" fill="#0f172a" opacity="0.15"/>
             <rect x="380" y="90" width="40" height="250" fill="url(#hatch-mass)" stroke="#713f12" stroke-width="2"/>
             <rect x="380" y="90" width="10" height="250" fill="#1f2937"/>
+            <rect x="382" y="105" width="6" height="16" rx="2" fill="#1f2937" stroke="#78716c" stroke-width="1"/>
+            <rect x="382" y="300" width="6" height="16" rx="2" fill="#1f2937" stroke="#78716c" stroke-width="1"/>
             <rect x="420" y="90" width="20" height="250" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="420" y="90" width="6" height="250" fill="#0f172a" opacity="0.12"/>
-            <polygon points="320,80 460,50 460,70 340,90" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="320,80 460,50 460,70 340,90" fill="url(#roof-gradient)" opacity="0.7" stroke="#cbd5e1" stroke-width="2"/>
             ${sunObj}
             <path d="M 120 100 L 330 180" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <rect x="380" y="90" width="40" height="250" fill="#ea580c" opacity="0.2" class="svg-heat-radiate"/>
+            <path d="M 500 320 Q 460 260 388 305" fill="none" stroke="#38bdf8" stroke-width="3" class="svg-wind-flow"/>
+            <path d="M 388 110 Q 460 140 500 100" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
             <path d="M 450 150 L 550 150" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
             <path d="M 450 250 L 550 250" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
         `;
+        labelsContent += callout(385, 300, 240, 330, "Rejilla de Aire Frío", "end");
+        labelsContent += callout(385, 113, 240, 60, "Rejilla de Aire Caliente", "end");
         labelsContent += callout(340, 150, 240, 60, "Lámina de Vidrio", "end");
         labelsContent += callout(365, 200, 240, 280, "Cámara de Aire Caliente", "end");
         labelsContent += callout(400, 180, 560, 80, "Muro de Masa (Acumulador)", "start");
@@ -2137,14 +2197,34 @@ function renderDiagramaArquitectonico(t, index = 0) {
             cleanAttributes = cleanAttributes.trim().replace(/\/?$/, ' stroke-linecap="round"');
         }
 
-        // ===== VIENTO: ráfaga fluida continua, sin flechas ni líneas cortadas =====
+        // ===== VIENTO: manojo de hebras paralelas + partículas de polvo arrastradas =====
         if (isWindArrow) {
-            const gustDur = (parseFloat(dur) * 1.15).toFixed(2);
-            const gustDelay2 = (parseFloat(delay) + parseFloat(dur) * 0.4).toFixed(2);
+            // Vector aproximado de dirección/perpendicular a partir de inicio y fin del trazo (sirve para curvas rectas o dibujadas a mano)
+            const allNums = dCurved.match(/-?[\d.]+/g).map(Number);
+            const gx1 = allNums[0], gy1 = allNums[1];
+            const gx2 = allNums[allNums.length - 2], gy2 = allNums[allNums.length - 1];
+            const gdx = gx2 - gx1, gdy = gy2 - gy1;
+            const glen = Math.sqrt(gdx * gdx + gdy * gdy) || 1;
+            const gpx = -gdy / glen, gpy = gdx / glen;
+            const baseDur = parseFloat(dur);
+            const baseDelay = parseFloat(delay);
+            const strand = (offset, width, dash, gap, spd, op, extraDelay, glow) => {
+                const tx = (gpx * offset).toFixed(1), ty = (gpy * offset).toFixed(1);
+                return `<path ${cleanAttributes} transform="translate(${tx} ${ty})" stroke-width="${width}" pathLength="100" stroke-dasharray="${dash} ${gap}" opacity="${op}" ${glow ? 'filter="url(#soft-glow)"' : ''} style="animation: wind-gust ${spd}s linear infinite; animation-delay:${(baseDelay + extraDelay).toFixed(2)}s;"/>`;
+            };
+            const dust = (r, offset, spd, delayOff) => `
+                <circle r="${r}" fill="${stroke}" opacity="0.65" filter="url(#soft-glow)">
+                    <animateMotion dur="${spd}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay + delayOff).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/>
+                    <animateTransform attributeName="transform" type="translate" additive="sum" values="${(gpx*offset).toFixed(1)} ${(gpy*offset).toFixed(1)}; ${(-gpx*offset).toFixed(1)} ${(-gpy*offset).toFixed(1)}; ${(gpx*offset).toFixed(1)} ${(gpy*offset).toFixed(1)}" dur="${(spd*0.4).toFixed(1)}s" repeatCount="indefinite"/>
+                </circle>`;
             return `
-                <path ${cleanAttributes} stroke-width="7" opacity="0.14"/>
-                <path ${cleanAttributes} stroke-width="7" pathLength="100" stroke-dasharray="26 74" opacity="0.5" filter="url(#soft-glow)" style="animation: wind-gust ${gustDur}s linear infinite; animation-delay:${delay};"/>
-                <path ${cleanAttributes} stroke-width="3.5" pathLength="100" stroke-dasharray="16 84" opacity="0.8" style="animation: wind-gust ${dur} linear infinite; animation-delay:${gustDelay2}s;"/>
+                <path ${cleanAttributes} stroke-width="9" opacity="0.1"/>
+                ${strand(-5, 5.5, 22, 78, baseDur * 1.3, 0.28, 0, true)}
+                ${strand(0, 7, 30, 70, baseDur * 1.1, 0.45, baseDur * 0.25, true)}
+                ${strand(5, 4, 16, 84, baseDur * 0.95, 0.55, baseDur * 0.5, false)}
+                ${strand(2, 2.2, 10, 90, baseDur * 0.8, 0.75, baseDur * 0.15, false)}
+                ${dust(1.6, -8, baseDur * 1.4, 0)}
+                ${dust(1.1, 7, baseDur * 1.6, baseDur * 0.6)}
             `;
         }
 
