@@ -1373,6 +1373,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
                     <path d="M 20 5 L 25 15 L 15 15 Z" fill="#15803d" opacity="0.3"/>
                 </g>
             </pattern>
+            <pattern id="grass-blades" patternUnits="userSpaceOnUse" width="18" height="18">
+                <path d="M2 18 Q1 9 3 1" stroke="#5a8f3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                <path d="M7 18 Q8.5 8 6 0" stroke="#6fae48" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                <path d="M12 18 Q13 10 11 3" stroke="#4d7c33" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                <path d="M16 18 Q17 11 15.5 5" stroke="#5a8f3a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+            </pattern>
             <pattern id="dots-sand" patternUnits="userSpaceOnUse" width="6" height="6">
                 <circle cx="3" cy="3" r="1" fill="#f5deb3" opacity="0.35"/>
             </pattern>
@@ -1474,6 +1480,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
         <rect x="0" y="340" width="800" height="60" fill="url(#${isDark ? 'ground-gradient-dark' : 'ground-gradient-light'})"/>
         <rect x="0" y="340" width="800" height="40" fill="url(#dots-sand)" opacity="${isDark ? 1 : 0.6}"/>
         <rect x="0" y="340" width="800" height="10" fill="url(#dots-soil)" opacity="${isDark ? 1 : 0.6}"/>
+        <rect x="0" y="337" width="800" height="4" fill="${isDark ? '#2f5322' : '#3f6b28'}"/>
+        <rect x="0" y="323" width="800" height="16" fill="url(#grass-blades)"/>
         <line x1="0" y1="340" x2="800" y2="340" stroke="${isDark ? '#6b4f36' : '#8a6642'}" stroke-width="1.5" opacity="0.7"/>
     `;
     const sunObj = `
@@ -1557,41 +1565,64 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine} ${drawHouse(320, 160, 250, 180)}
             <polygon points="245,340 215,340 260,240 275,240" fill="#0f172a" opacity="0.08"/>
             <rect x="270" y="150" width="50" height="140" fill="#0f172a" opacity="0.05"/>
-            <rect x="198" y="140" width="54" height="160" rx="4" fill="none" stroke="#94a3b8" stroke-width="2"/>
-            <g transform="translate(225,158) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
-            <g transform="translate(225,178) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
-            <g transform="translate(225,198) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
-            <g transform="translate(225,218) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
-            <g transform="translate(225,238) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
-            <g transform="translate(225,258) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
-            <g transform="translate(225,278) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <rect x="205" y="140" width="40" height="200" rx="4" fill="none" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(225,158) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,178) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,198) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,218) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,238) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,258) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,278) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,298) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,318) rotate(-28)"><rect x="-17" y="-3.5" width="34" height="7" rx="2.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
             ${sunObj}
             <path d="M 130 90 L 225 178" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
             <path d="M 245 198 L 320 240" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.35" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(225, 158, 240, 90, "Lamas Regulables", "end");
+        labelsContent += callout(225, 158, 240, 90, "Aspas Regulables", "end");
         labelsContent += callout(300, 240, 560, 260, "Luz Difusa, Menos Calor", "start");
     } else if (t === "Espacios de transición") {
         svgContent += `
             ${groundLine}
-            <rect x="60" y="120" width="540" height="220" fill="url(#transition-temp-gradient)" opacity="0.5"/>
             <rect x="400" y="120" width="200" height="220" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="250" y="120" width="150" height="220" fill="#e2e8f0" opacity="0.25" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="402" y="122" width="196" height="216" fill="#38bdf8" opacity="0.08"/>
+            <rect x="250" y="120" width="150" height="220" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="1"/>
             <rect x="260" y="150" width="12" height="190" fill="#cbd5e1"/>
             <rect x="378" y="150" width="12" height="190" fill="#cbd5e1"/>
-            <polygon points="220,120 400,50 630,120" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <polygon points="220,120 400,50 630,120" fill="url(#roof-gradient)" opacity="0.5" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="220" y1="120" x2="630" y2="120" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="250" y1="120" x2="250" y2="340" stroke="#cbd5e1" stroke-width="5"/>
+            <line x1="325" y1="120" x2="325" y2="140" stroke="#94a3b8" stroke-width="2"/>
+            <circle cx="325" cy="140" r="3" fill="#64748b"/>
+            <g class="svg-tree-sway" style="transform-origin: 50% 0%;">
+                <path d="M 325 140 L 300 133 M 325 140 L 350 133 M 325 140 L 310 152 M 325 140 L 340 152" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+            </g>
+            <rect x="440" y="300" width="70" height="30" rx="6" fill="#78716c" opacity="0.7"/>
+            <rect x="435" y="285" width="12" height="20" rx="3" fill="#78716c" opacity="0.7"/>
+            <rect x="500" y="285" width="12" height="20" rx="3" fill="#78716c" opacity="0.7"/>
+            <rect x="530" y="255" width="45" height="32" rx="2" fill="#334155" stroke="#64748b" stroke-width="2"/>
+            <rect x="545" y="287" width="15" height="10" fill="#64748b"/>
+            <rect x="270" y="310" width="26" height="30" rx="2" fill="#78350f" opacity="0.8"/>
+            <path d="M 283 310 L 283 280 M 283 295 Q 270 285 268 270 M 283 295 Q 296 285 298 270 M 283 288 Q 275 278 272 268" stroke="#16a34a" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <rect x="395" y="315" width="22" height="25" rx="2" fill="#78350f" opacity="0.8"/>
+            <path d="M 406 315 L 406 290 M 406 302 Q 396 294 393 282 M 406 302 Q 416 294 419 282" stroke="#15803d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             ${sunObj}
-            <path d="M 50 180 L 150 180" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 170 180 C 250 180, 300 200, 390 200" fill="none" stroke="#38bdf8" stroke-width="4" opacity="0.8" class="svg-wind-flow-delayed"/>
+            <path d="M 40 210 Q 120 180 200 210 T 360 210" fill="none" stroke="#38bdf8" stroke-width="22" stroke-linecap="round" opacity="0.16"/>
+            <path d="M 40 210 Q 120 180 200 210 T 360 210" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="1 11" stroke-linecap="round" opacity="0.9">
+                <animate attributeName="stroke-dashoffset" from="24" to="0" dur="1.3s" repeatCount="indefinite"/>
+            </path>
+            <circle r="2.4" fill="#38bdf8" opacity="0.7" filter="url(#soft-glow)">
+                <animateMotion dur="3s" repeatCount="indefinite" path="M 40 210 Q 120 180 200 210 T 360 210"/>
+            </circle>
+            <circle r="1.6" fill="#7dd3fc" opacity="0.6">
+                <animateMotion dur="3.6s" repeatCount="indefinite" begin="1s" path="M 40 210 Q 120 180 200 210 T 360 210"/>
+            </circle>
             <text x="130" y="325" fill="${isDark ? '#fca5a5' : '#b91c1c'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">EXTERIOR</text>
-            <text x="325" y="325" fill="${isDark ? '#e2e8f0' : '#475569'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">COLCHÓN TÉRMICO</text>
             <text x="500" y="325" fill="${isDark ? '#7dd3fc' : '#0369a1'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">INTERIOR</text>
         `;
-        labelsContent += callout(325, 180, 240, 80, "Espacio Semi-abierto (Galería)", "end");
-        labelsContent += callout(400, 200, 560, 180, "Zona Interior Protegida", "start");
+        labelsContent += callout(325, 145, 240, 80, "Espacio Semi-abierto (Galería)", "end");
+        labelsContent += callout(500, 200, 560, 170, "Flujo de Aire y Temperatura Controlado", "start");
     } else if (t === "Fachada permeable") {
         svgContent += `
             ${groundLine}
@@ -2187,34 +2218,21 @@ function renderDiagramaArquitectonico(t, index = 0) {
             cleanAttributes = cleanAttributes.trim().replace(/\/?$/, ' stroke-linecap="round"');
         }
 
-        // ===== VIENTO: manojo de hebras paralelas + partículas de polvo arrastradas =====
+        // ===== VIENTO: cinta ancha y fluida con textura de puntos viajando dentro =====
         if (isWindArrow) {
-            // Vector aproximado de dirección/perpendicular a partir de inicio y fin del trazo (sirve para curvas rectas o dibujadas a mano)
-            const allNums = dCurved.match(/-?[\d.]+/g).map(Number);
-            const gx1 = allNums[0], gy1 = allNums[1];
-            const gx2 = allNums[allNums.length - 2], gy2 = allNums[allNums.length - 1];
-            const gdx = gx2 - gx1, gdy = gy2 - gy1;
-            const glen = Math.sqrt(gdx * gdx + gdy * gdy) || 1;
-            const gpx = -gdy / glen, gpy = gdx / glen;
             const baseDur = parseFloat(dur);
             const baseDelay = parseFloat(delay);
-            const strand = (offset, width, dash, gap, spd, op, extraDelay, glow) => {
-                const tx = (gpx * offset).toFixed(1), ty = (gpy * offset).toFixed(1);
-                return `<path ${cleanAttributes} transform="translate(${tx} ${ty})" stroke-width="${width}" pathLength="100" stroke-dasharray="${dash} ${gap}" opacity="${op}" ${glow ? 'filter="url(#soft-glow)"' : ''} style="animation: wind-gust ${spd}s linear infinite; animation-delay:${(baseDelay + extraDelay).toFixed(2)}s;"/>`;
-            };
-            const dust = (r, offset, spd, delayOff) => `
-                <circle r="${r}" fill="${stroke}" opacity="0.65" filter="url(#soft-glow)">
-                    <animateMotion dur="${spd}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay + delayOff).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/>
-                    <animateTransform attributeName="transform" type="translate" additive="sum" values="${(gpx*offset).toFixed(1)} ${(gpy*offset).toFixed(1)}; ${(-gpx*offset).toFixed(1)} ${(-gpy*offset).toFixed(1)}; ${(gpx*offset).toFixed(1)} ${(gpy*offset).toFixed(1)}" dur="${(spd*0.4).toFixed(1)}s" repeatCount="indefinite"/>
-                </circle>`;
+            const dotCount = 6;
+            let dots = '';
+            for (let i = 0; i < dotCount; i++) {
+                const off = i / dotCount;
+                dots += `<circle r="2" fill="#e0f2fe" opacity="0.9"><animateMotion dur="${baseDur}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay - off * baseDur).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/></circle>`;
+            }
             return `
-                <path ${cleanAttributes} stroke-width="9" opacity="0.1"/>
-                ${strand(-5, 5.5, 22, 78, baseDur * 1.3, 0.28, 0, true)}
-                ${strand(0, 7, 30, 70, baseDur * 1.1, 0.45, baseDur * 0.25, true)}
-                ${strand(5, 4, 16, 84, baseDur * 0.95, 0.55, baseDur * 0.5, false)}
-                ${strand(2, 2.2, 10, 90, baseDur * 0.8, 0.75, baseDur * 0.15, false)}
-                ${dust(1.6, -8, baseDur * 1.4, 0)}
-                ${dust(1.1, 7, baseDur * 1.6, baseDur * 0.6)}
+                <path ${cleanAttributes} stroke-width="18" opacity="0.1" filter="url(#soft-glow)"/>
+                <path ${cleanAttributes} stroke-width="11" opacity="0.28" filter="url(#soft-glow)"/>
+                <path ${cleanAttributes} stroke-width="5" opacity="0.6" pathLength="100" stroke-dasharray="45 55" style="animation: wind-gust ${(baseDur * 0.9).toFixed(2)}s linear infinite; animation-delay:${baseDelay}s;"/>
+                ${dots}
             `;
         }
 
