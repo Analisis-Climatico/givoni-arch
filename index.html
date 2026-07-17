@@ -1443,6 +1443,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 .svg-wind-flow { stroke-dasharray: 12 8; animation: flow-wind 2.5s linear infinite; }
                 .svg-wind-flow-delayed { stroke-dasharray: 12 8; animation: flow-wind 2.5s linear infinite; animation-delay: 1.2s; }
                 @keyframes flow-wind { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+                @keyframes wind-gust { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
                 .svg-float-up { stroke-dasharray: 10 10; animation: flow-heat 3s linear infinite; }
                 @keyframes flow-heat { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
                 .svg-ray-bounce { stroke-dasharray: 15 10; animation: flow-ray 3.5s linear infinite; }
@@ -2073,6 +2074,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         const strokeMatch = attributes.match(/stroke="([^"]+)"/);
         const classMatch = attributes.match(/class="([^"]+)"/);
         const styleMatch = attributes.match(/style="([^"]+)"/);
+        const widthMatch = attributes.match(/stroke-width="([^"]+)"/);
         
         if (!dMatch || !strokeMatch) return match;
         
@@ -2080,6 +2082,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         const stroke = strokeMatch[1];
         const cls = classMatch ? classMatch[1] : '';
         const style = styleMatch ? styleMatch[1] : '';
+        const origStrokeWidth = widthMatch ? widthMatch[1] : '4';
         
         let dur = '2.5s';
         if (cls.includes('ray-bounce')) dur = '3.5s';
@@ -2128,10 +2131,24 @@ function renderDiagramaArquitectonico(t, index = 0) {
         
         let cleanAttributes = attributes.replace(/\s*marker-(?:end|mid)="url\([^)]+\)"/, '');
         cleanAttributes = cleanAttributes.replace(/d="[^"]+"/, `d="${dCurved}"`);
+        cleanAttributes = cleanAttributes.replace(/\s*class="[^"]*"/, '');
+        cleanAttributes = cleanAttributes.replace(/\s*stroke-width="[^"]*"/, '');
         if (!/stroke-linecap=/.test(cleanAttributes)) {
             cleanAttributes = cleanAttributes.trim().replace(/\/?$/, ' stroke-linecap="round"');
         }
-        
+
+        // ===== VIENTO: ráfaga fluida continua, sin flechas ni líneas cortadas =====
+        if (isWindArrow) {
+            const gustDur = (parseFloat(dur) * 1.15).toFixed(2);
+            const gustDelay2 = (parseFloat(delay) + parseFloat(dur) * 0.4).toFixed(2);
+            return `
+                <path ${cleanAttributes} stroke-width="7" opacity="0.14"/>
+                <path ${cleanAttributes} stroke-width="7" pathLength="100" stroke-dasharray="26 74" opacity="0.5" filter="url(#soft-glow)" style="animation: wind-gust ${gustDur}s linear infinite; animation-delay:${delay};"/>
+                <path ${cleanAttributes} stroke-width="3.5" pathLength="100" stroke-dasharray="16 84" opacity="0.8" style="animation: wind-gust ${dur} linear infinite; animation-delay:${gustDelay2}s;"/>
+            `;
+        }
+
+        // ===== CALOR / RAYOS: mantiene punta y brasa, tiene sentido direccional real =====
         // Calcula el punto final del trazo para colocar ahí un pulso de impacto (solo en rayos que "chocan" contra algo)
         let impactPulse = '';
         if (cls.includes('ray-bounce')) {
@@ -2139,16 +2156,9 @@ function renderDiagramaArquitectonico(t, index = 0) {
             const ex = nums[nums.length - 2], ey = nums[nums.length - 1];
             impactPulse = `<circle cx="${ex}" cy="${ey}" r="5" fill="${stroke}" opacity="0.5" class="svg-impact-pulse" style="animation-delay:${delay}"/>`;
         }
-
-        // Clasificación de color: azul/cian = viento (estela alargada), rojo/naranja/amarillo = calor (brasa, forma por defecto)
-        const s = stroke.toLowerCase();
-        const isWind = ['#06b6d4', '#0ea5e9', '#22d3ee', '#3b82f6', '#2563eb', '#38bdf8', '#60a5fa'].includes(s);
-        const particle = (r) => {
-            if (isWind) return `<ellipse rx="${(r*1.7).toFixed(1)}" ry="${(r*0.55).toFixed(1)}" fill="${stroke}"/>`;
-            return `<circle r="${r}" fill="${stroke}"/>`;
-        };
+        const particle = (r) => `<circle r="${r}" fill="${stroke}"/>`;
         
-        return `<path ${cleanAttributes}/>
+        return `<path ${cleanAttributes} stroke-width="${origStrokeWidth}" stroke-dasharray="${cls.includes('ray-bounce') ? '15 10' : '10 10'}" style="animation: ${cls.includes('ray-bounce') ? 'flow-ray 3.5s' : 'flow-heat 3s'} linear infinite;"/>
                 <g filter="url(#soft-glow)">
                     <path d="M -11 -8 L 4 0 L -11 8" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" />
