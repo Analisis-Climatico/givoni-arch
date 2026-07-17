@@ -1374,11 +1374,11 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 </g>
             </pattern>
             <pattern id="dots-sand" patternUnits="userSpaceOnUse" width="6" height="6">
-                <circle cx="3" cy="3" r="1" fill="#cbd5e1" opacity="0.3"/>
+                <circle cx="3" cy="3" r="1" fill="#f5deb3" opacity="0.35"/>
             </pattern>
             <pattern id="dots-soil" patternUnits="userSpaceOnUse" width="12" height="12">
-                <circle cx="4" cy="4" r="1.5" fill="#94a3b8" opacity="0.4"/>
-                <circle cx="10" cy="10" r="1" fill="#94a3b8" opacity="0.2"/>
+                <circle cx="4" cy="4" r="1.5" fill="#7c5a3a" opacity="0.4"/>
+                <circle cx="10" cy="10" r="1" fill="#7c5a3a" opacity="0.25"/>
             </pattern>
             <linearGradient id="chip-gradient-dark" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#1e293b"/>
@@ -1387,6 +1387,11 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <linearGradient id="chip-gradient-light" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#ffffff"/>
                 <stop offset="100%" stop-color="#f1f5f9"/>
+            </linearGradient>
+            <linearGradient id="transition-temp-gradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ef4444" stop-opacity="0.18"/>
+                <stop offset="45%" stop-color="#94a3b8" stop-opacity="0.08"/>
+                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.15"/>
             </linearGradient>
             <linearGradient id="wall-gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#f8fafc" stop-opacity="0.9"/>
@@ -1414,12 +1419,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <stop offset="100%" stop-color="#f8fafc" stop-opacity="0"/>
             </radialGradient>
             <linearGradient id="ground-gradient-dark" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#1e293b"/>
-                <stop offset="100%" stop-color="#0b1120"/>
+                <stop offset="0%" stop-color="#6b4a2e"/>
+                <stop offset="100%" stop-color="#2e1d10"/>
             </linearGradient>
             <linearGradient id="ground-gradient-light" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#cbd5e1"/>
-                <stop offset="100%" stop-color="#94a3b8"/>
+                <stop offset="0%" stop-color="#cda877"/>
+                <stop offset="100%" stop-color="#9c7040"/>
             </linearGradient>
             <linearGradient id="ground-gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#1e293b"/>
@@ -1467,10 +1472,9 @@ function renderDiagramaArquitectonico(t, index = 0) {
     // 2. ELEMENTOS BASE COMUNES
     const groundLine = `
         <rect x="0" y="340" width="800" height="60" fill="url(#${isDark ? 'ground-gradient-dark' : 'ground-gradient-light'})"/>
-        <rect x="0" y="340" width="800" height="40" fill="url(#dots-sand)" opacity="${isDark ? 1 : 0.5}"/>
-        <rect x="0" y="340" width="800" height="10" fill="url(#dots-soil)" opacity="${isDark ? 1 : 0.5}"/>
-        <rect x="0" y="336" width="800" height="6" fill="#38bdf8" opacity="0.06"/>
-        <line x1="0" y1="340" x2="800" y2="340" stroke="${isDark ? '#475569' : '#64748b'}" stroke-width="1.5" opacity="0.7"/>
+        <rect x="0" y="340" width="800" height="40" fill="url(#dots-sand)" opacity="${isDark ? 1 : 0.6}"/>
+        <rect x="0" y="340" width="800" height="10" fill="url(#dots-soil)" opacity="${isDark ? 1 : 0.6}"/>
+        <line x1="0" y1="340" x2="800" y2="340" stroke="${isDark ? '#6b4f36' : '#8a6642'}" stroke-width="1.5" opacity="0.7"/>
     `;
     const sunObj = `
         <circle cx="100" cy="70" r="70" fill="url(#sun-glow)" class="svg-sun-pulse"/>
@@ -1550,32 +1554,29 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(225, 130, 200, 200, "Rejilla de Entrada", "end");
     } else if (t === "Protección solar ligera") {
         svgContent += `
-            ${groundLine} ${drawHouse(300, 160, 250, 180)}
-            <polygon points="225,340 205,340 250,240 260,240" fill="#0f172a" opacity="0.08"/>
-            <rect x="250" y="150" width="50" height="140" fill="#0f172a" opacity="0.05"/>
-            <line x1="220" y1="340" x2="220" y2="120" stroke="#a1a1aa" stroke-width="2" stroke-dasharray="4 4"/>
-            <rect x="213" y="148" width="14" height="144" fill="none" stroke="#94a3b8" stroke-width="1.5" rx="2"/>
-            <line x1="215" y1="155" x2="225" y2="162" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="170" x2="225" y2="177" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="185" x2="225" y2="192" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="200" x2="225" y2="207" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="215" x2="225" y2="222" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="230" x2="225" y2="237" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="245" x2="225" y2="252" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="260" x2="225" y2="267" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="215" y1="275" x2="225" y2="282" stroke="#cbd5e1" stroke-width="3.5" stroke-linecap="round"/>
+            ${groundLine} ${drawHouse(320, 160, 250, 180)}
+            <polygon points="245,340 215,340 260,240 275,240" fill="#0f172a" opacity="0.08"/>
+            <rect x="270" y="150" width="50" height="140" fill="#0f172a" opacity="0.05"/>
+            <rect x="198" y="140" width="54" height="160" rx="4" fill="none" stroke="#94a3b8" stroke-width="2"/>
+            <g transform="translate(225,158) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,178) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,198) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,218) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,238) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,258) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
+            <g transform="translate(225,278) rotate(-28)"><rect x="-24" y="-4" width="48" height="8" rx="3" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/></g>
             ${sunObj}
-            <path d="M 130 90 L 218 168" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 225 180 L 300 220" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.3" class="svg-ray-bounce"/>
-            <path d="M 218 168 L 175 145" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.8" class="svg-ray-bounce"/>
+            <path d="M 130 90 L 225 178" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
+            <path d="M 245 198 L 320 240" fill="none" stroke="#fcd34d" stroke-width="2" opacity="0.35" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(220, 200, 240, 100, "Lamas Regulables", "end");
-        labelsContent += callout(300, 220, 560, 260, "Radiación Atenuada", "start");
+        labelsContent += callout(225, 158, 240, 90, "Lamas Regulables", "end");
+        labelsContent += callout(300, 240, 560, 260, "Luz Difusa, Menos Calor", "start");
     } else if (t === "Espacios de transición") {
         svgContent += `
             ${groundLine}
+            <rect x="60" y="120" width="540" height="220" fill="url(#transition-temp-gradient)" opacity="0.5"/>
             <rect x="400" y="120" width="200" height="220" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="250" y="120" width="150" height="220" fill="#e2e8f0" opacity="0.3" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="250" y="120" width="150" height="220" fill="#e2e8f0" opacity="0.25" stroke="#cbd5e1" stroke-width="1"/>
             <rect x="260" y="150" width="12" height="190" fill="#cbd5e1"/>
             <rect x="378" y="150" width="12" height="190" fill="#cbd5e1"/>
             <polygon points="220,120 400,50 630,120" fill="none" stroke="#cbd5e1" stroke-width="2"/>
@@ -1585,6 +1586,9 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 50 180 L 150 180" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 120 90 L 250 160" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
             <path d="M 170 180 C 250 180, 300 200, 390 200" fill="none" stroke="#38bdf8" stroke-width="4" opacity="0.8" class="svg-wind-flow-delayed"/>
+            <text x="130" y="325" fill="${isDark ? '#fca5a5' : '#b91c1c'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">EXTERIOR</text>
+            <text x="325" y="325" fill="${isDark ? '#e2e8f0' : '#475569'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">COLCHÓN TÉRMICO</text>
+            <text x="500" y="325" fill="${isDark ? '#7dd3fc' : '#0369a1'}" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle" opacity="0.85">INTERIOR</text>
         `;
         labelsContent += callout(325, 180, 240, 80, "Espacio Semi-abierto (Galería)", "end");
         labelsContent += callout(400, 200, 560, 180, "Zona Interior Protegida", "start");
@@ -1616,14 +1620,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="250" y="180" width="20" height="40" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <rect x="527" y="177" width="26" height="46" fill="none" stroke="#94a3b8" stroke-width="2.5"/>
             <rect x="530" y="180" width="20" height="40" fill="url(#glass-lines)" stroke="#38bdf8"/>
-            <path d="M 340 300 Q 380 240 340 205" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
-            <path d="M 460 300 Q 420 240 460 205" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
-            <path d="M 400 320 Q 400 260 400 210" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.6" class="svg-float-up"/>
-            <path d="M 260 177 L 260 160" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
-            <path d="M 540 177 L 540 160" fill="none" stroke="#ef4444" stroke-width="5" class="svg-float-up"/>
+            <path d="M 400 320 L 400 200" fill="none" stroke="#ef4444" stroke-width="4" opacity="0.7" class="svg-float-up"/>
+            <path d="M 400 195 L 265 172" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
+            <path d="M 400 195 L 535 172" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
         `;
         labelsContent += callout(260, 160, 240, 100, "Rejilla Superior", "end");
-        labelsContent += callout(400, 260, 560, 280, "Estrato Caliente (Estratificación)", "start");
+        labelsContent += callout(400, 260, 560, 280, "Aire Caliente Acumulado", "start");
     } else if (t === "Núcleo compacto") {
         svgContent += `
             <rect x="150" y="60" width="500" height="280" fill="none" stroke="#cbd5e1" stroke-width="5"/>
