@@ -1585,6 +1585,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Espacios de transición") {
         svgContent += `
             ${groundLine}
+            <rect x="220" y="326" width="410" height="16" fill="${isDark ? '#1e293b' : '#cbd5e1'}"/>
             <rect x="400" y="120" width="200" height="220" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="402" y="122" width="196" height="216" fill="#38bdf8" opacity="0.08"/>
             <rect x="250" y="120" width="150" height="220" fill="#e2e8f0" opacity="0.2" stroke="#cbd5e1" stroke-width="1"/>
@@ -1616,10 +1617,13 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Fachada permeable") {
         svgContent += `
             ${groundLine}
+            <rect x="195" y="330" width="30" height="12" fill="${isDark ? '#1e293b' : '#cbd5e1'}"/>
             <rect x="197" y="118" width="21" height="224" fill="none" stroke="#94a3b8" stroke-width="2"/>
             <rect x="200" y="120" width="15" height="220" fill="#e2e8f0" opacity="0.4" stroke="#94a3b8" stroke-width="2"/>
             <path d="M 202 128 L 213 128 L 213 139 L 202 139 Z M 202 148 L 213 148 L 213 159 L 202 159 Z M 202 168 L 213 168 L 213 179 L 202 179 Z M 202 188 L 213 188 L 213 199 L 202 199 Z M 202 208 L 213 208 L 213 219 L 202 219 Z M 202 228 L 213 228 L 213 239 L 202 239 Z M 202 248 L 213 248 L 213 259 L 202 259 Z M 202 268 L 213 268 L 213 279 L 202 279 Z M 202 288 L 213 288 L 213 299 L 202 299 Z M 202 308 L 213 308 L 213 319 L 202 319 Z" fill="none" stroke="#64748b" stroke-width="1"/>
             <rect x="216" y="118" width="6" height="224" fill="#0f172a" opacity="0.06"/>
+            <rect x="140" y="312" width="24" height="28" rx="2" fill="#78350f" opacity="0.8"/>
+            <path d="M 152 312 L 152 285 M 152 298 Q 141 289 138 276 M 152 298 Q 163 289 166 276" stroke="#16a34a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             ${drawHouse(300, 160, 250, 180)}
             <path d="M 80 220 L 180 220" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 230 210 L 290 200" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.6" class="svg-wind-flow"/>
@@ -2232,10 +2236,13 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 const off = i / 6;
                 dots += `<circle r="2" fill="#e0f7fa" opacity="0.9" filter="url(#soft-glow)"><animateMotion dur="${baseDur}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay - off * baseDur).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/></circle>`;
             }
-            const swirl = (x, y, scale, color, op) => `
+            const swirl = (x, y, scale, color, op, spinDur) => `
                 <g transform="translate(${x},${y}) scale(${scale})" opacity="${op}" filter="url(#soft-glow)">
-                    <path d="M -8 5 Q -8 -8 5 -8 Q 18 -8 18 5 Q 18 16 8 16 Q 0 16 0 8" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="0" cy="8" r="1.4" fill="${color}"/>
+                    <g>
+                        <animateTransform attributeName="transform" type="rotate" from="0 5 4" to="360 5 4" dur="${spinDur}s" repeatCount="indefinite"/>
+                        <path d="M -8 5 Q -8 -8 5 -8 Q 18 -8 18 5 Q 18 16 8 16 Q 0 16 0 8" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="0" cy="8" r="1.4" fill="${color}"/>
+                    </g>
                 </g>`;
             return `
                 <path ${windAttrs} stroke="#22d3ee" stroke-width="20" opacity="0.12" filter="url(#soft-glow)"/>
@@ -2244,12 +2251,15 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <path ${windAttrs} stroke="#e0f7fa" stroke-width="2" opacity="0.95" pathLength="100" stroke-dasharray="2 7" filter="url(#soft-glow)">
                     <animate attributeName="stroke-dashoffset" from="18" to="0" dur="${(baseDur * 0.5).toFixed(2)}s" repeatCount="indefinite"/>
                 </path>
-                ${swirl(s1x, s1y, 1, '#5eead4', 0.55)}
-                ${swirl(s2x, s2y, 0.8, '#67e8f9', 0.45)}
+                ${swirl(s1x, s1y, 1, '#5eead4', 0.55, 2.2)}
+                ${swirl(s2x, s2y, 0.8, '#67e8f9', 0.45, 1.7)}
                 <path d="M ${t1x} ${t1y} q 10 8 4 18" fill="none" stroke="#a5f3fc" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>
                 <path d="M ${t2x} ${t2y} q -10 -8 -4 -18" fill="none" stroke="#5eead4" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>
                 <g transform="translate(${ex},${ey}) rotate(${angleDeg})" filter="url(#soft-glow)">
-                    <path d="M -14 -9 L 6 0 L -14 9" fill="none" stroke="#e0f7fa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <g>
+                        <animateTransform attributeName="transform" type="translate" values="-3 0; 4 0; -3 0" dur="0.9s" repeatCount="indefinite"/>
+                        <path d="M -14 -9 L 6 0 L -14 9" fill="none" stroke="#e0f7fa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
                 </g>
                 ${dots}
             `;
