@@ -1400,9 +1400,6 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <stop offset="45%" stop-color="#94a3b8" stop-opacity="0.08"/>
                 <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.15"/>
             </linearGradient>
-            <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 Z" fill="#ef4444"/>
-            </marker>
             <linearGradient id="wall-gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#f8fafc" stop-opacity="0.9"/>
                 <stop offset="100%" stop-color="#e2e8f0" stop-opacity="0.95"/>
@@ -1657,14 +1654,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <line x1="150" y1="260" x2="650" y2="260" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="330" y1="60" x2="330" y2="340" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="470" y1="60" x2="470" y2="340" stroke="#cbd5e1" stroke-width="3"/>
-            <path d="M 285 138 L 348 170" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 400 138 L 400 160" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 520 138 L 452 170" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 285 210 L 330 210" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 520 210 L 470 210" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 285 285 L 348 250" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 400 285 L 400 260" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
-            <path d="M 520 285 L 452 250" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 285 138 L 348 170" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <path d="M 400 138 L 400 160" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <path d="M 520 138 L 452 170" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <path d="M 285 210 L 330 210" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <path d="M 520 210 L 470 210" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <path d="M 285 285 L 348 250" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <path d="M 400 285 L 400 260" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <path d="M 520 285 L 452 250" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
             <g stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <g transform="translate(230,108)">
                     <rect x="-35" y="-8" width="70" height="24" rx="4"/>
@@ -1790,46 +1787,44 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(400, 180, 560, 80, "Muro de Masa (Acumulador)", "start");
     } else if (t === "Galería solar") {
         svgContent += `
-            <rect x="150" y="100" width="500" height="220" fill="${isDark ? '#1e293b' : '#f1f5f9'}" stroke="#cbd5e1" stroke-width="4"/>
-            <rect x="150" y="100" width="170" height="220" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6 4"/>
-            <rect x="158" y="108" width="154" height="204" fill="url(#hatch-concrete)" opacity="0.4"/>
-            <line x1="320" y1="100" x2="320" y2="320" stroke="#cbd5e1" stroke-width="5"/>
-            <path d="M 480 100 L 480 175 L 560 175 L 560 100" fill="none" stroke="#cbd5e1" stroke-width="2.5"/>
-            <path d="M 500 175 A 20 20 0 0 1 480 195" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="440" y="270" width="20" height="26" rx="2" fill="#78350f" opacity="0.8"/>
-            <path d="M 450 270 L 450 248 M 450 260 Q 441 253 439 243 M 450 260 Q 459 253 461 243" stroke="#16a34a" stroke-width="2" fill="none" stroke-linecap="round"/>
-            <circle cx="195" cy="285" r="10" fill="#16a34a" opacity="0.75"/>
-            <circle cx="220" cy="290" r="13" fill="#15803d" opacity="0.8"/>
-            <circle cx="250" cy="283" r="9" fill="#16a34a" opacity="0.7"/>
-            <circle cx="275" cy="288" r="11" fill="#15803d" opacity="0.75"/>
-            <circle cx="450" cy="45" r="26" fill="#f59e0b" class="svg-sun-pulse"/>
-            <path d="M 420 75 L 400 100" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
-            <path d="M 450 78 L 450 100" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
-            <path d="M 480 75 L 500 100" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
-            <path d="M 300 200 L 340 200" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
-            <path d="M 350 200 C 400 200, 420 230, 470 230" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
-            <path d="M 480 230 L 560 230" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.7" class="svg-float-up"/>
+            <rect x="180" y="130" width="440" height="230" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="3"/>
+            <rect x="180" y="130" width="14" height="230" fill="#0ea5e9" opacity="0.35"/>
+            <rect x="176" y="130" width="4" height="230" fill="#38bdf8"/>
+            <path d="M 182 145 L 182 345" stroke="#7dd3fc" stroke-width="1" stroke-dasharray="2 6" opacity="0.7"/>
+            <line x1="330" y1="130" x2="330" y2="245" stroke="#cbd5e1" stroke-width="4"/>
+            <line x1="330" y1="245" x2="500" y2="245" stroke="#cbd5e1" stroke-width="4"/>
+            <path d="M 500 245 L 500 285" fill="none" stroke="#cbd5e1" stroke-width="2.5"/>
+            <path d="M 500 245 A 40 40 0 0 1 540 285" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <path d="M 205 335 l 6 -16 M 218 337 l 6 -18 M 231 335 l 6 -16 M 244 337 l 6 -18" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="410" y="315" width="20" height="26" rx="2" fill="#78350f" opacity="0.8"/>
+            <path d="M 420 315 L 420 292 M 420 304 Q 411 297 409 287 M 420 304 Q 429 297 431 287" stroke="#16a34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="230" cy="55" r="24" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 200 80 L 190 130" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
+            <path d="M 235 82 L 232 130" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
+            <path d="M 265 85 L 270 130" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
+            <path d="M 220 235 Q 260 190 320 165" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
+            <path d="M 340 200 L 420 200" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
+            <path d="M 340 235 L 470 235" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
+            <path d="M 330 340 Q 330 300 340 260" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.7" class="svg-float-up"/>
         `;
-        labelsContent += callout(230, 108, 160, 60, "Envolvente Vidriada", "end");
-        labelsContent += callout(450, 60, 400, 40, "Radiación Directa", "start");
-        labelsContent += callout(560, 130, 640, 90, "Galería (Efecto Invernadero)", "start");
-        labelsContent += callout(400, 210, 260, 250, "Conducción a través de Masa Térmica", "end");
-        labelsContent += callout(320, 300, 400, 340, "Convección Pasiva", "start");
-        labelsContent += callout(480, 195, 640, 250, "Muro Divisorio Interior", "start");
+        labelsContent += callout(182, 150, 150, 90, "Envolvente Vidriada", "end");
+        labelsContent += callout(230, 60, 300, 40, "Radiación Directa", "start");
+        labelsContent += callout(500, 160, 600, 100, "Galería (Efecto Invernadero)", "start");
+        labelsContent += callout(400, 200, 620, 220, "Conducción a través de Masa Térmica", "start");
+        labelsContent += callout(340, 300, 220, 340, "Convección Pasiva", "end");
+        labelsContent += callout(330, 260, 600, 320, "Muro Divisorio Interior", "start");
     } else if (t === "Orientación solar estratégica") {
         svgContent += `
-            <path d="M 150 280 A 250 150 0 0 1 650 280" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="6 6" opacity="0.7"/>
-            <g transform="translate(400, 200) rotate(-25)">
+            <g transform="translate(400, 220) rotate(-25)">
                 <rect x="-150" y="-80" width="300" height="160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="3"/>
                 <line x1="-150" y1="0" x2="150" y2="0" stroke="#cbd5e1" stroke-dasharray="5 5" stroke-width="2"/>
             </g>
+            <path d="M 130 290 A 270 190 0 0 1 670 290" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="6 6" opacity="0.85"/>
             <circle r="22" fill="#f59e0b" class="svg-sun-pulse">
-                <animateMotion dur="6s" repeatCount="indefinite" path="M 150 280 A 250 150 0 0 1 650 280" rotate="0"/>
+                <animateMotion dur="6s" repeatCount="indefinite" path="M 130 290 A 270 190 0 0 1 670 290" rotate="0"/>
             </circle>
-            <path d="M 220 110 L 330 140" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 335 150 L 300 180" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.6" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(400, 120, 560, 80, "Eje Rotado Óptimo", "start");
+        labelsContent += callout(400, 100, 560, 70, "Eje Rotado Óptimo", "start");
         labelsContent += callout(150, 280, 240, 330, "Trayectoria Solar Crítica", "end");
     } else if (t === "Panel solar térmico") {
         svgContent += `
@@ -1890,10 +1885,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <line x1="500" y1="40" x2="500" y2="100" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="300" y1="300" x2="300" y2="360" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="500" y1="300" x2="500" y2="360" stroke="#cbd5e1" stroke-width="2"/>
-            <path d="M 300 170 A 30 30 0 0 0 270 200" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>
-            <line x1="300" y1="170" x2="270" y2="170" stroke="#cbd5e1" stroke-width="3"/>
-            <path d="M 500 230 A 30 30 0 0 0 530 200" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>
-            <line x1="500" y1="230" x2="530" y2="230" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="300" y1="155" x2="300" y2="185" stroke="${isDark ? '#1e293b' : '#f1f5f9'}" stroke-width="5"/>
+            <line x1="300" y1="155" x2="272" y2="155" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 272 155 A 30 30 0 0 1 300 183" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.8"/>
+            <line x1="500" y1="215" x2="500" y2="245" stroke="${isDark ? '#1e293b' : '#f1f5f9'}" stroke-width="5"/>
+            <line x1="500" y1="215" x2="528" y2="215" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 528 215 A 30 30 0 0 1 500 243" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.8"/>
             <rect x="300" y="100" width="200" height="200" fill="${isDark ? '#0f172a' : '#e2e8f0'}" opacity="0.5" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="308" y="108" width="184" height="184" fill="none" stroke="#94a3b8" stroke-width="1" stroke-dasharray="10 6" opacity="0.4"/>
             <rect x="320" y="118" width="8" height="34" fill="#713f12"/>
