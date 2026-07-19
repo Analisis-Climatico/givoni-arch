@@ -1711,13 +1711,21 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="330" y="160" width="140" height="100" fill="url(#hatch-concrete)" stroke="#ea580c" stroke-width="3"/>
             <rect x="330" y="160" width="140" height="100" fill="#ea580c" opacity="0.1"/>
             <circle cx="400" cy="210" r="60" fill="#ea580c" opacity="0.15" class="svg-heat-radiate"/>
-            <g stroke="#ea580c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85">
-                <circle cx="386" cy="196" r="5"/>
-                <path d="M 386 202 L 386 216 M 380 208 L 392 208"/>
-                <circle cx="414" cy="196" r="5"/>
-                <path d="M 414 202 L 414 216 M 408 208 L 420 208"/>
-                <circle cx="400" cy="192" r="5"/>
-                <path d="M 400 198 L 400 214 M 393 206 L 407 206"/>
+            <g stroke="#ea580c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+                <g transform="translate(383,213)">
+                    <circle cy="-19" r="6.5" fill="${isDark ? '#1e293b' : '#fff7ed'}"/>
+                    <path d="M -9 8 Q -10 -8 0 -8 Q 10 -8 9 8 Z" fill="${isDark ? '#1e293b' : '#fff7ed'}"/>
+                    <path d="M 8 -2 L 15 -12"/>
+                </g>
+                <g transform="translate(417,213)">
+                    <circle cy="-19" r="6.5" fill="${isDark ? '#1e293b' : '#fff7ed'}"/>
+                    <path d="M -9 8 Q -10 -8 0 -8 Q 10 -8 9 8 Z" fill="${isDark ? '#1e293b' : '#fff7ed'}"/>
+                    <path d="M -8 -2 L -15 -12"/>
+                </g>
+                <g transform="translate(400,192)">
+                    <circle cy="-19" r="7" fill="${isDark ? '#1e293b' : '#fff7ed'}"/>
+                    <path d="M -10 9 Q -11 -9 0 -9 Q 11 -9 10 9 Z" fill="${isDark ? '#1e293b' : '#fff7ed'}"/>
+                </g>
             </g>
             <path d="M 400 260 L 400 305" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
         `;
@@ -2211,34 +2219,39 @@ function renderDiagramaArquitectonico(t, index = 0) {
         const delayMatch = style ? style.match(/animation-delay:\s*([\d\.]+)s/) : null;
         if (delayMatch) delay = delayMatch[1] + 's';
 
-        // Convierte líneas rectas de 2 puntos (M x y L x y) en curvas suaves.
-        // El viento recibe una ondulación tipo brisa solo si el tramo es largo; en tramos cortos, curva simple.
-        // Los trazados que ya usan Q/C (curvas dibujadas a mano) se respetan tal cual.
+        // Convierte cualquier trazo en curvas suaves.
+        // El viento SIEMPRE recibe ondulación tipo brisa (se recalcula desde inicio/fin, sin importar cómo estaba dibujado originalmente).
+        // El resto de trazos rectos reciben una curva simple; las curvas ya dibujadas a mano (no viento) se respetan tal cual.
         let dCurved = d;
         const isWindArrow = cls.includes('wind-flow');
-        const straightMatch = d.match(/^M\s*(-?[\d.]+)\s+(-?[\d.]+)\s*L\s*(-?[\d.]+)\s+(-?[\d.]+)\s*$/);
-        if (straightMatch) {
-            const x1 = parseFloat(straightMatch[1]), y1 = parseFloat(straightMatch[2]);
-            const x2 = parseFloat(straightMatch[3]), y2 = parseFloat(straightMatch[4]);
+        if (isWindArrow) {
+            const allNums = d.match(/-?[\d.]+/g).map(Number);
+            const x1 = allNums[0], y1 = allNums[1];
+            const x2 = allNums[allNums.length - 2], y2 = allNums[allNums.length - 1];
             const dx = x2 - x1, dy = y2 - y1;
             const len = Math.sqrt(dx * dx + dy * dy) || 1;
-            const px = -dy / len, py = dx / len; // perpendicular unitario
-            if (isWindArrow && len > 35) {
-                // Ondulación de brisa: se aplica a casi cualquier longitud, ajustando crestas y amplitud proporcionalmente
-                const segs = len > 260 ? 4 : (len > 120 ? 3 : 2);
-                const amp = Math.min(len * 0.11, 20);
-                let wavePath = `M ${x1.toFixed(1)} ${y1.toFixed(1)}`;
-                for (let i = 0; i < segs; i++) {
-                    const t1 = (i + 1) / segs;
-                    const tm = (i + 0.5) / segs;
-                    const ex = x1 + dx * t1, ey = y1 + dy * t1;
-                    const mx = x1 + dx * tm, my = y1 + dy * tm;
-                    const sign = (i % 2 === 0 ? 1 : -1) * (cls.includes('delayed') ? -1 : 1);
-                    const cx = mx + px * amp * sign, cy = my + py * amp * sign;
-                    wavePath += ` Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`;
-                }
-                dCurved = wavePath;
-            } else {
+            const px = -dy / len, py = dx / len;
+            const segs = len > 260 ? 4 : (len > 120 ? 3 : 2);
+            const amp = Math.min(len * 0.11, 20);
+            let wavePath = `M ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+            for (let i = 0; i < segs; i++) {
+                const t1 = (i + 1) / segs;
+                const tm = (i + 0.5) / segs;
+                const ex = x1 + dx * t1, ey = y1 + dy * t1;
+                const mx = x1 + dx * tm, my = y1 + dy * tm;
+                const sign = (i % 2 === 0 ? 1 : -1) * (cls.includes('delayed') ? -1 : 1);
+                const cx = mx + px * amp * sign, cy = my + py * amp * sign;
+                wavePath += ` Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+            }
+            dCurved = wavePath;
+        } else {
+            const straightMatch = d.match(/^M\s*(-?[\d.]+)\s+(-?[\d.]+)\s*L\s*(-?[\d.]+)\s+(-?[\d.]+)\s*$/);
+            if (straightMatch) {
+                const x1 = parseFloat(straightMatch[1]), y1 = parseFloat(straightMatch[2]);
+                const x2 = parseFloat(straightMatch[3]), y2 = parseFloat(straightMatch[4]);
+                const dx = x2 - x1, dy = y2 - y1;
+                const len = Math.sqrt(dx * dx + dy * dy) || 1;
+                const px = -dy / len, py = dx / len;
                 const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
                 const bend = Math.min(len * 0.12, 20) * (cls.includes('delayed') ? -1 : 1);
                 const cx = mx + px * bend, cy = my + py * bend;
@@ -2306,8 +2319,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             `;
         }
 
-        // ===== CALOR / RAYOS: mantiene punta y brasa, tiene sentido direccional real =====
-        // Calcula el punto final del trazo para colocar ahí un pulso de impacto (solo en rayos que "chocan" contra algo)
+        // ===== RAYOS DE SOL (amarillo): punta + brasa + pulso de impacto donde golpean una superficie =====
         let impactPulse = '';
         if (cls.includes('ray-bounce')) {
             const nums = dCurved.match(/-?[\d.]+/g).map(Number);
@@ -2316,45 +2328,80 @@ function renderDiagramaArquitectonico(t, index = 0) {
         }
         const particle = (r) => `<circle r="${r}" fill="${stroke}"/>`;
 
-        // ===== CALOR (ascendente o rayo de sol): remolinos naranja/rojo, análogos al sistema del viento =====
-        let heatSwirls = '';
-        if (cls.includes('float-up') || cls.includes('ray-bounce')) {
-            const hnums = dCurved.match(/-?[\d.]+/g).map(Number);
-            const hsx = hnums[0], hsy = hnums[1];
-            const hex = hnums[hnums.length - 2], hey = hnums[hnums.length - 1];
-            const hddx = hex - hsx, hddy = hey - hsy;
-            const hlen = Math.sqrt(hddx * hddx + hddy * hddy) || 1;
-            const hux = hddx / hlen, huy = hddy / hlen;
-            const hupx = -huy, hupy = hux;
-            const hpt = (tt, side) => [ (hsx + hux * hlen * tt + hupx * side).toFixed(1), (hsy + huy * hlen * tt + hupy * side).toFixed(1) ];
-            if (hlen > 60) {
-                const [hs1x, hs1y] = hpt(0.3, 13);
-                const [hs2x, hs2y] = hpt(0.68, -12);
-                const heatSwirl = (x, y, scale, color, op, spinDur) => `
-                    <g transform="translate(${x},${y}) scale(${scale})" opacity="${op}" filter="url(#soft-glow)">
-                        <g>
-                            <animateTransform attributeName="transform" type="rotate" from="0 5 4" to="360 5 4" dur="${spinDur}s" repeatCount="indefinite"/>
-                            <path d="M -8 5 Q -8 -8 5 -8 Q 18 -8 18 5 Q 18 16 8 16 Q 0 16 0 8" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="0" cy="8" r="1.4" fill="${color}"/>
-                        </g>
-                    </g>`;
-                heatSwirls = `
-                    <path d="${dCurved}" fill="none" stroke="#fdba74" stroke-width="2" opacity="0.9" pathLength="100" stroke-dasharray="2 6" filter="url(#soft-glow)">
-                        <animate attributeName="stroke-dashoffset" from="16" to="0" dur="0.9s" repeatCount="indefinite"/>
-                    </path>
-                    ${hlen > 110 ? heatSwirl(hs1x, hs1y, 0.85, '#fb923c', 0.5, 1.9) : ''}
-                    ${hlen > 110 ? heatSwirl(hs2x, hs2y, 0.7, '#ef4444', 0.4, 1.5) : ''}
-                `;
-            }
-        }
-        
-        return `<path ${cleanAttributes} stroke-width="${origStrokeWidth}" stroke-dasharray="${cls.includes('ray-bounce') ? '15 10' : '10 10'}" style="animation: ${cls.includes('ray-bounce') ? 'flow-ray 3.5s' : 'flow-heat 3s'} linear infinite;"/>
-                ${heatSwirls}
+        if (cls.includes('ray-bounce')) {
+            return `<path ${cleanAttributes} stroke-width="${origStrokeWidth}" stroke-dasharray="15 10" style="animation: flow-ray 3.5s linear infinite;"/>
                 <g filter="url(#soft-glow)">
                     <path d="M -11 -8 L 4 0 L -11 8" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" />
                 </g>
                 ${impactPulse}
+                <g opacity="0.55" filter="url(#soft-glow)">
+                    ${particle(3)}
+                    <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" keyPoints="0;0.6;0.6" keyTimes="0;0.85;1" calcMode="linear"/>
+                </g>
+                <g opacity="0.3">
+                    ${particle(1.8)}
+                    <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${(parseFloat(delay) + parseFloat(dur) * 0.4).toFixed(2)}s" keyPoints="0;0.35;0.35" keyTimes="0;0.85;1" calcMode="linear"/>
+                </g>`;
+        }
+
+        // ===== CALOR ASCENDENTE (float-up): flujo mágico igual al del viento, en paleta naranja/rojo =====
+        if (cls.includes('float-up')) {
+            const heatAttrs = cleanAttributes.replace(/\s*stroke="[^"]*"/, '');
+            const nums = dCurved.match(/-?[\d.]+/g).map(Number);
+            const sx = nums[0], sy = nums[1];
+            const ex = nums[nums.length - 2], ey = nums[nums.length - 1];
+            const ddx = ex - sx, ddy = ey - sy;
+            const dlen = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+            const ux = ddx / dlen, uy = ddy / dlen;
+            const upx = -uy, upy = ux;
+            const angleDeg = (Math.atan2(ddy, ddx) * 180 / Math.PI).toFixed(1);
+            const pt = (tt, side) => [ (sx + ux * dlen * tt + upx * side).toFixed(1), (sy + uy * dlen * tt + upy * side).toFixed(1) ];
+            const [s1x, s1y] = pt(0.3, 13);
+            const [s2x, s2y] = pt(0.66, -12);
+            const [t1x, t1y] = pt(0.16, -18);
+            const [t2x, t2y] = pt(0.82, 20);
+            const hasRoom = dlen > 110;
+
+            const baseDur = parseFloat(dur);
+            const baseDelay = parseFloat(delay);
+            let embers = '';
+            for (let i = 0; i < 5; i++) {
+                const off = i / 5;
+                embers += `<circle r="2" fill="${isDark ? '#fed7aa' : '#c2410c'}" opacity="0.9" filter="url(#soft-glow)"><animateMotion dur="${baseDur}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay - off * baseDur).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/></circle>`;
+            }
+            const heatSwirl = (x, y, scale, color, op, spinDur) => `
+                <g transform="translate(${x},${y}) scale(${scale})" opacity="${op}" filter="url(#soft-glow)">
+                    <g>
+                        <animateTransform attributeName="transform" type="rotate" from="0 5 4" to="360 5 4" dur="${spinDur}s" repeatCount="indefinite"/>
+                        <path d="M -8 5 Q -8 -8 5 -8 Q 18 -8 18 5 Q 18 16 8 16 Q 0 16 0 8" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="0" cy="8" r="1.4" fill="${color}"/>
+                    </g>
+                </g>`;
+            return `
+                <path ${heatAttrs} stroke="${isDark ? '#f97316' : '#c2410c'}" stroke-width="5" opacity="0.55"/>
+                <path ${heatAttrs} stroke="${isDark ? '#fed7aa' : '#9a3412'}" stroke-width="2" opacity="0.95" pathLength="100" stroke-dasharray="2 7" filter="url(#soft-glow)">
+                    <animate attributeName="stroke-dashoffset" from="18" to="0" dur="${(baseDur * 0.4).toFixed(2)}s" repeatCount="indefinite"/>
+                </path>
+                ${hasRoom ? heatSwirl(s1x, s1y, 1, isDark ? '#fb923c' : '#c2410c', 0.55, 1.7) : ''}
+                ${hasRoom ? heatSwirl(s2x, s2y, 0.8, isDark ? '#ef4444' : '#9a3412', 0.45, 1.3) : ''}
+                ${hasRoom ? `<path d="M ${t1x} ${t1y} q 10 8 4 18" fill="none" stroke="${isDark ? '#fdba74' : '#c2410c'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
+                ${hasRoom ? `<path d="M ${t2x} ${t2y} q -10 -8 -4 -18" fill="none" stroke="${isDark ? '#fb923c' : '#9a3412'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
+                <g transform="translate(${ex},${ey}) rotate(${angleDeg})" filter="url(#soft-glow)">
+                    <g>
+                        <animateTransform attributeName="transform" type="translate" values="-3 0; 4 0; -3 0" dur="0.8s" repeatCount="indefinite"/>
+                        <path d="M -14 -9 L 6 0 L -14 9" fill="none" stroke="${isDark ? '#fed7aa' : '#9a3412'}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                </g>
+                ${embers}
+            `;
+        }
+
+        return `<path ${cleanAttributes} stroke-width="${origStrokeWidth}" stroke-dasharray="10 10" style="animation: flow-heat 3s linear infinite;"/>
+                <g filter="url(#soft-glow)">
+                    <path d="M -11 -8 L 4 0 L -11 8" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" />
+                </g>
                 <g opacity="0.55" filter="url(#soft-glow)">
                     ${particle(3)}
                     <animateMotion dur="${dur}" repeatCount="indefinite" rotate="auto" path="${dCurved}" begin="${delay}" keyPoints="0;0.6;0.6" keyTimes="0;0.85;1" calcMode="linear"/>
