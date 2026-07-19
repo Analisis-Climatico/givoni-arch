@@ -1787,10 +1787,16 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(400, 180, 560, 80, "Muro de Masa (Acumulador)", "start");
     } else if (t === "Galería solar") {
         svgContent += `
+            ${groundLine}
             <rect x="150" y="80" width="500" height="240" fill="${isDark ? '#1e293b' : '#f1f5f9'}" stroke="#cbd5e1" stroke-width="4"/>
+            <line x1="140" y1="75" x2="660" y2="75" stroke="#cbd5e1" stroke-width="4"/>
+            <path d="M 140 75 L 160 55 M 300 75 L 320 55 M 480 75 L 500 55 M 640 75 L 660 55" stroke="#94a3b8" stroke-width="2" opacity="0.6"/>
             <rect x="150" y="80" width="20" height="240" fill="url(#glass-block)"/>
             <rect x="250" y="80" width="15" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="170" y="80" width="80" height="240" fill="#ea580c" opacity="0.1"/>
+            <rect x="145" y="316" width="115" height="10" fill="${isDark ? '#1e293b' : '#cbd5e1'}"/>
+            <rect x="470" y="300" width="22" height="26" rx="2" fill="#78350f" opacity="0.8"/>
+            <path d="M 481 300 L 481 275 M 481 288 Q 471 280 469 268 M 481 288 Q 491 280 493 268" stroke="#16a34a" stroke-width="2.3" fill="none" stroke-linecap="round"/>
             <circle cx="60" cy="200" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
             <path d="M 90 200 L 140 200" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 180 200 L 230 200" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
@@ -1801,7 +1807,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(257, 280, 560, 320, "Muro Divisorio Interior", "start");
     } else if (t === "Orientación solar estratégica") {
         svgContent += `
-            <rect x="100" y="50" width="600" height="300" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/>
+            ${groundLine}
+            <rect x="100" y="50" width="600" height="290" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/>
             <path d="M 150 280 A 250 150 0 0 1 650 280" fill="none" stroke="#fcd34d" stroke-width="3" class="svg-ray-bounce"/>
             <circle cx="200" cy="110" r="20" fill="#f59e0b" class="svg-sun-pulse"/>
             <g transform="translate(400, 200) rotate(-25)">
@@ -1810,6 +1817,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
             </g>
             <path d="M 220 110 L 330 140" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 335 150 L 300 180" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.6" class="svg-ray-bounce"/>
+            <g transform="translate(650, 70)" stroke="${isDark ? '#94a3b8' : '#475569'}" stroke-width="1.5" fill="none">
+                <circle r="28" opacity="0.5"/>
+                <path d="M 0 -22 L 0 22 M -22 0 L 22 0" opacity="0.5"/>
+                <path d="M 0 -22 L -5 -12 L 5 -12 Z" fill="${isDark ? '#94a3b8' : '#475569'}" stroke="none"/>
+                <text x="0" y="-30" text-anchor="middle" font-size="11" font-weight="700" fill="${isDark ? '#94a3b8' : '#475569'}" stroke="none">N</text>
+            </g>
         `;
         labelsContent += callout(400, 120, 560, 80, "Eje Rotado Óptimo", "start");
         labelsContent += callout(150, 280, 240, 330, "Trayectoria Solar Crítica", "end");
@@ -1819,8 +1832,13 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <g transform="translate(320, 115) rotate(-24)">
                 <rect x="0" y="0" width="80" height="10" fill="#111827" stroke="#cbd5e1"/>
                 <rect x="5" y="2" width="70" height="6" fill="#1e3a8a" stroke="#38bdf8"/>
+                <line x1="19" y1="2" x2="19" y2="8" stroke="#38bdf8" stroke-width="0.5" opacity="0.6"/>
+                <line x1="33" y1="2" x2="33" y2="8" stroke="#38bdf8" stroke-width="0.5" opacity="0.6"/>
+                <line x1="47" y1="2" x2="47" y2="8" stroke="#38bdf8" stroke-width="0.5" opacity="0.6"/>
+                <line x1="61" y1="2" x2="61" y2="8" stroke="#38bdf8" stroke-width="0.5" opacity="0.6"/>
             </g>
             <rect x="420" y="200" width="40" height="80" rx="3" fill="#cbd5e1" stroke="#94a3b8"/>
+            <rect x="424" y="204" width="32" height="10" rx="2" fill="#94a3b8" opacity="0.6"/>
             <path d="M 330 120 L 330 200 L 420 230" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
             <path d="M 390 100 L 440 100 L 440 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             ${sunObj}
@@ -1885,7 +1903,10 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Fuente evaporativa") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
-            <rect x="100" y="320" width="120" height="20" rx="2" fill="#3b82f6" stroke="#94a3b8" stroke-width="2"/>
+            <ellipse cx="160" cy="330" rx="65" ry="14" fill="#0369a1" opacity="0.3"/>
+            <rect x="100" y="316" width="120" height="20" rx="10" fill="#0ea5e9" stroke="#0369a1" stroke-width="2"/>
+            <path d="M 110 322 Q 120 318 130 322 T 150 322 T 170 322 T 190 322 T 210 322" fill="none" stroke="#7dd3fc" stroke-width="1.5" opacity="0.8"/>
+            <path d="M 110 328 Q 120 325 130 328 T 150 328 T 170 328 T 190 328 T 210 328" fill="none" stroke="#bae6fd" stroke-width="1.2" opacity="0.6"/>
             <circle cx="130" cy="300" r="15" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
             <circle cx="160" cy="280" r="20" fill="#06b6d4" opacity="0.2" class="animate-pulse" style="animation-delay: 0.5s"/>
             <circle cx="190" cy="260" r="25" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
@@ -1897,6 +1918,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Material higroscópico") {
         svgContent += `
             ${groundLine}
+            <rect x="318" y="330" width="74" height="12" fill="${isDark ? '#1e293b' : '#cbd5e1'}"/>
             <rect x="350" y="80" width="40" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="320" y="80" width="30" height="260" fill="url(#hygroscopic-dots)" stroke="#3b82f6" stroke-width="1.5"/>
             <path d="M 200 150 L 310 150" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-wind-flow"/>
@@ -1909,6 +1931,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Doble envolvente térmica") {
         svgContent += `
             ${groundLine}
+            <rect x="378" y="330" width="114" height="12" fill="${isDark ? '#1e293b' : '#cbd5e1'}"/>
             <rect x="450" y="80" width="40" height="260" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="420" y="80" width="30" height="260" fill="#ea580c" opacity="0.1"/>
             <rect x="410" y="80" width="10" height="260" fill="#94a3b8"/>
@@ -2368,7 +2391,20 @@ function renderDiagramaArquitectonico(t, index = 0) {
             let embers = '';
             for (let i = 0; i < 5; i++) {
                 const off = i / 5;
-                embers += `<circle r="2" fill="${isDark ? '#fed7aa' : '#c2410c'}" opacity="0.9" filter="url(#soft-glow)"><animateMotion dur="${baseDur}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay - off * baseDur).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/></circle>`;
+                embers += `<circle r="2" fill="${isDark ? '#fca5a5' : '#991b1b'}" opacity="0.9" filter="url(#soft-glow)"><animateMotion dur="${baseDur}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay - off * baseDur).toFixed(2)}s" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/></circle>`;
+            }
+            let smoke = '';
+            for (let i = 0; i < 3; i++) {
+                const off = i / 3;
+                const smokeDur = baseDur * 1.6;
+                smoke += `
+                    <g opacity="0" filter="url(#soft-glow)">
+                        <animate attributeName="opacity" values="0;0.35;0" keyTimes="0;0.4;1" dur="${smokeDur.toFixed(1)}s" begin="${(baseDelay - off * smokeDur).toFixed(2)}s" repeatCount="indefinite"/>
+                        <circle r="${5 + i * 2}" fill="${isDark ? '#78716c' : '#57534e'}">
+                            <animateMotion dur="${smokeDur.toFixed(1)}s" repeatCount="indefinite" path="${dCurved}" begin="${(baseDelay - off * smokeDur).toFixed(2)}s" keyPoints="0.1;1" keyTimes="0;1" calcMode="linear"/>
+                            <animate attributeName="r" values="${4 + i * 2};${11 + i * 3}" dur="${smokeDur.toFixed(1)}s" begin="${(baseDelay - off * smokeDur).toFixed(2)}s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>`;
             }
             const heatSwirl = (x, y, scale, color, op, spinDur) => `
                 <g transform="translate(${x},${y}) scale(${scale})" opacity="${op}" filter="url(#soft-glow)">
@@ -2379,18 +2415,19 @@ function renderDiagramaArquitectonico(t, index = 0) {
                     </g>
                 </g>`;
             return `
-                <path ${heatAttrs} stroke="${isDark ? '#f97316' : '#c2410c'}" stroke-width="5" opacity="0.55"/>
-                <path ${heatAttrs} stroke="${isDark ? '#fed7aa' : '#9a3412'}" stroke-width="2" opacity="0.95" pathLength="100" stroke-dasharray="2 7" filter="url(#soft-glow)">
+                ${smoke}
+                <path ${heatAttrs} stroke="${isDark ? '#ef4444' : '#991b1b'}" stroke-width="5" opacity="0.6"/>
+                <path ${heatAttrs} stroke="${isDark ? '#fca5a5' : '#7f1d1d'}" stroke-width="2" opacity="0.95" pathLength="100" stroke-dasharray="2 7" filter="url(#soft-glow)">
                     <animate attributeName="stroke-dashoffset" from="18" to="0" dur="${(baseDur * 0.4).toFixed(2)}s" repeatCount="indefinite"/>
                 </path>
-                ${hasRoom ? heatSwirl(s1x, s1y, 1, isDark ? '#fb923c' : '#c2410c', 0.55, 1.7) : ''}
-                ${hasRoom ? heatSwirl(s2x, s2y, 0.8, isDark ? '#ef4444' : '#9a3412', 0.45, 1.3) : ''}
-                ${hasRoom ? `<path d="M ${t1x} ${t1y} q 10 8 4 18" fill="none" stroke="${isDark ? '#fdba74' : '#c2410c'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
-                ${hasRoom ? `<path d="M ${t2x} ${t2y} q -10 -8 -4 -18" fill="none" stroke="${isDark ? '#fb923c' : '#9a3412'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
+                ${hasRoom ? heatSwirl(s1x, s1y, 1, isDark ? '#ef4444' : '#991b1b', 0.6, 1.7) : ''}
+                ${hasRoom ? heatSwirl(s2x, s2y, 0.8, isDark ? '#dc2626' : '#7f1d1d', 0.5, 1.3) : ''}
+                ${hasRoom ? `<path d="M ${t1x} ${t1y} q 10 8 4 18" fill="none" stroke="${isDark ? '#f87171' : '#991b1b'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
+                ${hasRoom ? `<path d="M ${t2x} ${t2y} q -10 -8 -4 -18" fill="none" stroke="${isDark ? '#ef4444' : '#7f1d1d'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
                 <g transform="translate(${ex},${ey}) rotate(${angleDeg})" filter="url(#soft-glow)">
                     <g>
                         <animateTransform attributeName="transform" type="translate" values="-3 0; 4 0; -3 0" dur="0.8s" repeatCount="indefinite"/>
-                        <path d="M -14 -9 L 6 0 L -14 9" fill="none" stroke="${isDark ? '#fed7aa' : '#9a3412'}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M -14 -9 L 6 0 L -14 9" fill="none" stroke="${isDark ? '#fca5a5' : '#7f1d1d'}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     </g>
                 </g>
                 ${embers}
