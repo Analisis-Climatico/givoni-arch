@@ -1400,6 +1400,9 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <stop offset="45%" stop-color="#94a3b8" stop-opacity="0.08"/>
                 <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.15"/>
             </linearGradient>
+            <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 Z" fill="#ef4444"/>
+            </marker>
             <linearGradient id="wall-gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#f8fafc" stop-opacity="0.9"/>
                 <stop offset="100%" stop-color="#e2e8f0" stop-opacity="0.95"/>
@@ -1654,14 +1657,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <line x1="150" y1="260" x2="650" y2="260" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="330" y1="60" x2="330" y2="340" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="470" y1="60" x2="470" y2="340" stroke="#cbd5e1" stroke-width="3"/>
-            <path d="M 348 170 L 285 138" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
-            <path d="M 400 160 L 400 138" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
-            <path d="M 452 170 L 520 138" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
-            <path d="M 330 210 L 285 210" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
-            <path d="M 470 210 L 520 210" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
-            <path d="M 348 250 L 285 285" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
-            <path d="M 400 260 L 400 285" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
-            <path d="M 452 250 L 520 285" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
+            <path d="M 285 138 L 348 170" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 400 138 L 400 160" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 520 138 L 452 170" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 285 210 L 330 210" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 520 210 L 470 210" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 285 285 L 348 250" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 400 285 L 400 260" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
+            <path d="M 520 285 L 452 250" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arrow-red)"/>
             <g stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <g transform="translate(230,108)">
                     <rect x="-35" y="-8" width="70" height="24" rx="4"/>
@@ -1787,42 +1790,44 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(400, 180, 560, 80, "Muro de Masa (Acumulador)", "start");
     } else if (t === "Galería solar") {
         svgContent += `
-            ${groundLine}
-            <rect x="150" y="80" width="500" height="240" fill="${isDark ? '#1e293b' : '#f1f5f9'}" stroke="#cbd5e1" stroke-width="4"/>
-            <line x1="140" y1="75" x2="660" y2="75" stroke="#cbd5e1" stroke-width="4"/>
-            <path d="M 140 75 L 160 55 M 300 75 L 320 55 M 480 75 L 500 55 M 640 75 L 660 55" stroke="#94a3b8" stroke-width="2" opacity="0.6"/>
-            <rect x="150" y="80" width="20" height="240" fill="url(#glass-block)"/>
-            <rect x="250" y="80" width="15" height="240" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="170" y="80" width="80" height="240" fill="#ea580c" opacity="0.1"/>
-            <rect x="145" y="316" width="115" height="10" fill="${isDark ? '#1e293b' : '#cbd5e1'}"/>
-            <rect x="470" y="300" width="22" height="26" rx="2" fill="#78350f" opacity="0.8"/>
-            <path d="M 481 300 L 481 275 M 481 288 Q 471 280 469 268 M 481 288 Q 491 280 493 268" stroke="#16a34a" stroke-width="2.3" fill="none" stroke-linecap="round"/>
-            <circle cx="60" cy="200" r="30" fill="#f59e0b" class="svg-sun-pulse"/>
-            <path d="M 90 200 L 140 200" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 180 200 L 230 200" fill="none" stroke="#ea580c" stroke-width="4" class="svg-float-up"/>
-            <path d="M 280 200 L 350 200" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
+            <rect x="150" y="100" width="500" height="220" fill="${isDark ? '#1e293b' : '#f1f5f9'}" stroke="#cbd5e1" stroke-width="4"/>
+            <rect x="150" y="100" width="170" height="220" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6 4"/>
+            <rect x="158" y="108" width="154" height="204" fill="url(#hatch-concrete)" opacity="0.4"/>
+            <line x1="320" y1="100" x2="320" y2="320" stroke="#cbd5e1" stroke-width="5"/>
+            <path d="M 480 100 L 480 175 L 560 175 L 560 100" fill="none" stroke="#cbd5e1" stroke-width="2.5"/>
+            <path d="M 500 175 A 20 20 0 0 1 480 195" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="440" y="270" width="20" height="26" rx="2" fill="#78350f" opacity="0.8"/>
+            <path d="M 450 270 L 450 248 M 450 260 Q 441 253 439 243 M 450 260 Q 459 253 461 243" stroke="#16a34a" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="195" cy="285" r="10" fill="#16a34a" opacity="0.75"/>
+            <circle cx="220" cy="290" r="13" fill="#15803d" opacity="0.8"/>
+            <circle cx="250" cy="283" r="9" fill="#16a34a" opacity="0.7"/>
+            <circle cx="275" cy="288" r="11" fill="#15803d" opacity="0.75"/>
+            <circle cx="450" cy="45" r="26" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 420 75 L 400 100" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
+            <path d="M 450 78 L 450 100" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
+            <path d="M 480 75 L 500 100" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="3 4" class="svg-ray-bounce"/>
+            <path d="M 300 200 L 340 200" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
+            <path d="M 350 200 C 400 200, 420 230, 470 230" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
+            <path d="M 480 230 L 560 230" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.7" class="svg-float-up"/>
         `;
-        labelsContent += callout(160, 150, 140, 50, "Envolvente Vidriada", "end");
-        labelsContent += callout(210, 200, 560, 50, "Galería (Efecto Invernadero)", "start");
-        labelsContent += callout(257, 280, 560, 320, "Muro Divisorio Interior", "start");
+        labelsContent += callout(230, 108, 160, 60, "Envolvente Vidriada", "end");
+        labelsContent += callout(450, 60, 400, 40, "Radiación Directa", "start");
+        labelsContent += callout(560, 130, 640, 90, "Galería (Efecto Invernadero)", "start");
+        labelsContent += callout(400, 210, 260, 250, "Conducción a través de Masa Térmica", "end");
+        labelsContent += callout(320, 300, 400, 340, "Convección Pasiva", "start");
+        labelsContent += callout(480, 195, 640, 250, "Muro Divisorio Interior", "start");
     } else if (t === "Orientación solar estratégica") {
         svgContent += `
-            ${groundLine}
-            <rect x="100" y="50" width="600" height="290" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 5"/>
-            <path d="M 150 280 A 250 150 0 0 1 650 280" fill="none" stroke="#fcd34d" stroke-width="3" class="svg-ray-bounce"/>
-            <circle cx="200" cy="110" r="20" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 150 280 A 250 150 0 0 1 650 280" fill="none" stroke="#fcd34d" stroke-width="3" stroke-dasharray="6 6" opacity="0.7"/>
             <g transform="translate(400, 200) rotate(-25)">
                 <rect x="-150" y="-80" width="300" height="160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="3"/>
                 <line x1="-150" y1="0" x2="150" y2="0" stroke="#cbd5e1" stroke-dasharray="5 5" stroke-width="2"/>
             </g>
+            <circle r="22" fill="#f59e0b" class="svg-sun-pulse">
+                <animateMotion dur="6s" repeatCount="indefinite" path="M 150 280 A 250 150 0 0 1 650 280" rotate="0"/>
+            </circle>
             <path d="M 220 110 L 330 140" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 335 150 L 300 180" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.6" class="svg-ray-bounce"/>
-            <g transform="translate(650, 70)" stroke="${isDark ? '#94a3b8' : '#475569'}" stroke-width="1.5" fill="none">
-                <circle r="28" opacity="0.5"/>
-                <path d="M 0 -22 L 0 22 M -22 0 L 22 0" opacity="0.5"/>
-                <path d="M 0 -22 L -5 -12 L 5 -12 Z" fill="${isDark ? '#94a3b8' : '#475569'}" stroke="none"/>
-                <text x="0" y="-30" text-anchor="middle" font-size="11" font-weight="700" fill="${isDark ? '#94a3b8' : '#475569'}" stroke="none">N</text>
-            </g>
         `;
         labelsContent += callout(400, 120, 560, 80, "Eje Rotado Óptimo", "start");
         labelsContent += callout(150, 280, 240, 330, "Trayectoria Solar Crítica", "end");
@@ -1839,7 +1844,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             </g>
             <rect x="420" y="200" width="40" height="80" rx="3" fill="#cbd5e1" stroke="#94a3b8"/>
             <rect x="424" y="204" width="32" height="10" rx="2" fill="#94a3b8" opacity="0.6"/>
-            <path d="M 330 120 L 330 200 L 420 230" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
+            <path d="M 330 120 L 330 200 L 420 230" fill="none" stroke="#94a3b8" stroke-width="3"/>
+            <path d="M 330 130 L 330 195 L 415 224" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.8" class="svg-float-up"/>
             <path d="M 390 100 L 440 100 L 440 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
             ${sunObj}
             <path d="M 120 90 L 280 130" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
@@ -1869,7 +1875,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <rect x="0" y="10" width="40" height="120" fill="#ea580c" opacity="0.2" class="svg-heat-radiate"/>
             </g>
             <path d="M 380 190 L 300 190" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
-            <path d="M 420 290 L 500 290" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
+            <path d="M 420 250 L 500 250" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.6" class="svg-float-up"/>
         `;
         labelsContent += callout(400, 200, 560, 150, "Volumen de Agua (Inercia)", "start");
         labelsContent += callout(380, 290, 240, 280, "Calor Radiante", "end");
@@ -1888,17 +1894,27 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <line x1="300" y1="170" x2="270" y2="170" stroke="#cbd5e1" stroke-width="3"/>
             <path d="M 500 230 A 30 30 0 0 0 530 200" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>
             <line x1="500" y1="230" x2="530" y2="230" stroke="#cbd5e1" stroke-width="3"/>
-            <rect x="300" y="100" width="200" height="200" fill="#0f172a" opacity="0.3" stroke="#cbd5e1" stroke-width="2"/>
-            <circle cx="340" cy="140" r="25" fill="#16a34a" opacity="0.85" class="svg-tree-sway"/>
-            <circle cx="450" cy="145" r="35" fill="#15803d" opacity="0.9" class="svg-tree-sway" style="animation-delay: -1s"/>
-            <circle cx="350" cy="255" r="40" fill="#16a34a" opacity="0.75" class="svg-tree-sway" style="animation-delay: -2s"/>
-            <circle cx="460" cy="260" r="20" fill="#15803d" opacity="0.8" class="svg-tree-sway" style="animation-delay: -3s"/>
-            <circle cx="400" cy="200" r="15" fill="#3b82f6" stroke="#60a5fa" stroke-width="2" class="animate-pulse"/>
+            <rect x="300" y="100" width="200" height="200" fill="${isDark ? '#0f172a' : '#e2e8f0'}" opacity="0.5" stroke="#cbd5e1" stroke-width="2"/>
+            <rect x="308" y="108" width="184" height="184" fill="none" stroke="#94a3b8" stroke-width="1" stroke-dasharray="10 6" opacity="0.4"/>
+            <rect x="320" y="118" width="8" height="34" fill="#713f12"/>
+            <circle cx="324" cy="112" r="20" fill="#16a34a" opacity="0.85" class="svg-tree-sway" style="transform-origin: 50% 100%;"/>
+            <rect x="455" y="122" width="10" height="40" fill="#78350f"/>
+            <circle cx="460" cy="115" r="26" fill="#15803d" opacity="0.9" class="svg-tree-sway" style="transform-origin: 50% 100%; animation-delay: -1s"/>
+            <rect x="335" y="255" width="9" height="42" fill="#713f12"/>
+            <circle cx="339" cy="248" r="28" fill="#16a34a" opacity="0.8" class="svg-tree-sway" style="transform-origin: 50% 100%; animation-delay: -2s"/>
+            <rect x="468" y="268" width="7" height="28" fill="#78350f"/>
+            <circle cx="471" cy="263" r="16" fill="#15803d" opacity="0.85" class="svg-tree-sway" style="transform-origin: 50% 100%; animation-delay: -3s"/>
+            <ellipse cx="400" cy="205" rx="30" ry="10" fill="#0369a1" opacity="0.25"/>
+            <ellipse cx="400" cy="200" rx="26" ry="17" fill="#0ea5e9" stroke="#0369a1" stroke-width="2"/>
+            <path d="M 382 196 Q 390 192 398 196 T 414 196" fill="none" stroke="#7dd3fc" stroke-width="1.3" opacity="0.8"/>
+            <path d="M 384 204 Q 392 201 400 204 T 416 204" fill="none" stroke="#bae6fd" stroke-width="1.1" opacity="0.6"/>
+            <circle cx="390" cy="185" r="6" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
+            <circle cx="405" cy="178" r="8" fill="#06b6d4" opacity="0.2" class="animate-pulse" style="animation-delay: 0.6s"/>
             <path d="M 80 250 C 200 250, 250 280, 320 250 C 370 230, 380 140, 450 120 C 520 100, 580 150, 700 150" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
             <path d="M 80 150 C 200 150, 250 120, 320 150 C 370 170, 380 260, 450 280 C 520 300, 580 250, 700 250" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(400, 200, 560, 200, "Espejo de Agua", "start");
-        labelsContent += callout(340, 140, 240, 80, "Vegetación Local", "end");
+        labelsContent += callout(400, 205, 560, 200, "Espejo de Agua", "start");
+        labelsContent += callout(339, 220, 240, 80, "Vegetación Local", "end");
         labelsContent += callout(350, 100, 240, 30, "Patio Central Abierto", "end");
     } else if (t === "Fuente evaporativa") {
         svgContent += `
