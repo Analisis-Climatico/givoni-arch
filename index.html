@@ -1788,24 +1788,25 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Galería solar") {
         svgContent += `
             ${groundLine}
-            <polygon points="250,340 250,280 430,158 430,340" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="3"/>
-            <rect x="245" y="336" width="10" height="4" fill="#38bdf8"/>
-            <path d="M 300 240 L 300 340" stroke="#7dd3fc" stroke-width="1" stroke-dasharray="2 6" opacity="0.6"/>
+            <polygon points="250,340 250,280 430,158 430,340" fill="#0ea5e9" opacity="0.08"/>
+            <line x1="250" y1="280" x2="430" y2="158" stroke="#38bdf8" stroke-width="3"/>
+            <line x1="250" y1="280" x2="250" y2="340" stroke="#38bdf8" stroke-width="3"/>
+            <path d="M 260 275 L 280 263 M 290 256 L 310 244 M 320 237 L 340 225 M 350 218 L 370 206 M 380 199 L 400 187 M 410 180 L 425 171" stroke="#38bdf8" stroke-width="1" opacity="0.4"/>
+            <rect x="250" y="322" width="180" height="18" fill="#c2843f" opacity="0.55"/>
             ${drawHouse(430, 160, 200, 180)}
-            <rect x="470" y="290" width="70" height="12" fill="#94a3b8" opacity="0.6"/>
-            <rect x="472" y="270" width="10" height="22" fill="#cbd5e1" opacity="0.7"/>
-            <circle cx="270" cy="310" r="9" fill="#16a34a" opacity="0.8"/>
-            <circle cx="285" cy="315" r="12" fill="#15803d" opacity="0.85"/>
-            <circle cx="90" cy="70" r="26" fill="#f59e0b" class="svg-sun-pulse"/>
-            <path d="M 118 90 L 200 190" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 130 75 L 250 210" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" class="svg-ray-bounce"/>
-            <path d="M 280 250 C 320 260, 360 260, 430 250" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
-            <path d="M 440 250 L 540 260" fill="none" stroke="#ef4444" stroke-width="3" opacity="0.75" class="svg-float-up"/>
+            <rect x="472" y="300" width="55" height="8" rx="2" fill="#94a3b8" opacity="0.6"/>
+            <circle cx="278" cy="316" r="10" fill="#16a34a" opacity="0.85"/>
+            <circle cx="295" cy="320" r="7" fill="#15803d" opacity="0.8"/>
+            <circle cx="365" cy="318" r="8" fill="#16a34a" opacity="0.8"/>
+            <circle cx="90" cy="70" r="24" fill="#f59e0b" class="svg-sun-pulse"/>
+            <path d="M 118 88 L 210 195" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
+            <path d="M 128 74 L 260 205" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.65" class="svg-ray-bounce"/>
+            <path d="M 290 240 C 330 250, 380 250, 430 245" fill="none" stroke="#ef4444" stroke-width="4" class="svg-float-up"/>
         `;
         labelsContent += callout(300, 210, 200, 130, "Envolvente Vidriada", "end");
         labelsContent += callout(90, 90, 220, 50, "Radiación Directa", "start");
-        labelsContent += callout(280, 300, 200, 340, "Galería (Efecto Invernadero)", "end");
-        labelsContent += callout(430, 250, 620, 200, "Conducción a través de Masa Térmica", "start");
+        labelsContent += callout(300, 330, 200, 370, "Galería (Efecto Invernadero)", "end");
+        labelsContent += callout(430, 245, 620, 200, "Conducción a través de Masa Térmica", "start");
         labelsContent += callout(430, 200, 620, 130, "Muro Divisorio Interior", "start");
     } else if (t === "Orientación solar estratégica") {
         svgContent += `
@@ -1910,16 +1911,16 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Fuente evaporativa") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
-            <rect x="100" y="306" width="120" height="34" rx="15" fill="#0ea5e9" stroke="#0369a1" stroke-width="2.5"/>
-            <path d="M 108 314 Q 118 310 128 314 T 148 314 T 168 314 T 188 314 T 208 314" fill="none" stroke="#7dd3fc" stroke-width="1.5" opacity="0.85"/>
-            <path d="M 108 321 Q 118 318 128 321 T 148 321 T 168 321 T 188 321 T 208 321" fill="none" stroke="#bae6fd" stroke-width="1.2" opacity="0.6"/>
-            <circle cx="130" cy="300" r="15" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
-            <circle cx="160" cy="280" r="20" fill="#06b6d4" opacity="0.2" class="animate-pulse" style="animation-delay: 0.5s"/>
-            <circle cx="190" cy="260" r="25" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
+            <rect x="100" y="340" width="120" height="32" rx="10" fill="#0ea5e9" stroke="#0369a1" stroke-width="2.5"/>
+            <path d="M 108 349 Q 118 345 128 349 T 148 349 T 168 349 T 188 349 T 208 349" fill="none" stroke="#7dd3fc" stroke-width="1.5" opacity="0.85"/>
+            <path d="M 108 357 Q 118 354 128 357 T 148 357 T 168 357 T 188 357 T 208 357" fill="none" stroke="#bae6fd" stroke-width="1.2" opacity="0.6"/>
+            <circle cx="130" cy="332" r="13" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
+            <circle cx="160" cy="310" r="18" fill="#06b6d4" opacity="0.2" class="animate-pulse" style="animation-delay: 0.5s"/>
+            <circle cx="190" cy="285" r="23" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
             <path d="M 50 300 Q 150 250 240 250" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 260 250 C 350 250, 400 280, 500 280" fill="none" stroke="#38bdf8" stroke-width="5" opacity="0.7" class="svg-wind-flow-delayed"/>
         `;
-        labelsContent += callout(160, 320, 240, 370, "Fuente de Agua", "end");
+        labelsContent += callout(160, 356, 240, 380, "Fuente de Agua", "end");
         labelsContent += callout(160, 280, 240, 200, "Enfriamiento Evaporativo", "end");
     } else if (t === "Material higroscópico") {
         svgContent += `
