@@ -2136,14 +2136,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Nebulización pasiva") {
         svgContent += `
             ${groundLine} ${drawHouse(350, 160, 250, 180)}
-            <rect x="390" y="220" width="24" height="60" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
+            <rect x="386" y="216" width="32" height="68" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#64748b" stroke-width="2"/>
+            <rect x="390" y="220" width="24" height="60" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
             <line x1="402" y1="220" x2="402" y2="280" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
             <line x1="390" y1="250" x2="414" y2="250" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-            <rect x="386" y="281" width="32" height="5" rx="1" fill="#cbd5e1" opacity="0.7"/>
-            <rect x="520" y="220" width="24" height="60" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
+            <rect x="516" y="216" width="32" height="68" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#64748b" stroke-width="2"/>
+            <rect x="520" y="220" width="24" height="60" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
             <line x1="532" y1="220" x2="532" y2="280" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
             <line x1="520" y1="250" x2="544" y2="250" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-            <rect x="516" y="281" width="32" height="5" rx="1" fill="#cbd5e1" opacity="0.7"/>
             <line x1="150" y1="340" x2="150" y2="280" stroke="#cbd5e1" stroke-width="3"/>
             <circle cx="150" cy="280" r="4" fill="#3b82f6"/>
             <circle r="2.4" fill="#7dd3fc" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" path="M 150 280 Q 115 260 100 232"/></circle>
@@ -2163,14 +2163,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Vegetación refrescante") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
-            <rect x="266" y="262" width="28" height="62" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
-            <line x1="280" y1="262" x2="280" y2="324" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
-            <line x1="266" y1="293" x2="294" y2="293" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
-            <rect x="262" y="326" width="36" height="5" rx="1" fill="#cbd5e1" opacity="0.7"/>
-            <rect x="496" y="262" width="28" height="62" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
-            <line x1="510" y1="262" x2="510" y2="324" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
-            <line x1="496" y1="293" x2="524" y2="293" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
-            <rect x="492" y="326" width="36" height="5" rx="1" fill="#cbd5e1" opacity="0.7"/>
+            <rect x="262" y="206" width="36" height="70" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#64748b" stroke-width="2"/>
+            <rect x="266" y="210" width="28" height="62" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
+            <line x1="280" y1="210" x2="280" y2="272" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
+            <line x1="266" y1="241" x2="294" y2="241" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
+            <rect x="492" y="206" width="36" height="70" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#64748b" stroke-width="2"/>
+            <rect x="496" y="210" width="28" height="62" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
+            <line x1="510" y1="210" x2="510" y2="272" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
+            <line x1="496" y1="241" x2="524" y2="241" stroke="#38bdf8" stroke-width="1.2" opacity="0.7"/>
             <rect x="140" y="240" width="15" height="100" fill="#713f12"/>
             <g class="svg-tree-sway-strong">
                 <circle cx="147" cy="200" r="50" fill="#16a34a" opacity="0.8"/>
@@ -2181,38 +2181,42 @@ function renderDiagramaArquitectonico(t, index = 0) {
             </g>
             ${sunObj}
             <path d="M 120 90 L 140 140" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 50 280 C 100 280, 150 285, 240 293" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 262 293 L 350 293" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow-delayed"/>
-            <path d="M 510 293 L 558 293" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
+            <path d="M 50 280 C 100 280, 150 255, 240 241" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
+            <path d="M 262 241 L 350 241" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow-delayed"/>
+            <path d="M 510 241 L 558 241" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
         `;
         labelsContent += callout(147, 150, 240, 100, "Vegetación Refrescante", "end");
-        labelsContent += callout(280, 293, 240, 350, "Ingreso de Aire", "end");
+        labelsContent += callout(280, 241, 240, 340, "Ingreso de Aire", "end");
     } else if (t === "Purgado nocturno") {
         svgContent += `
             <rect width="100%" height="100%" fill="#0f172a" opacity="0.9"/>
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
             <circle cx="100" cy="80" r="25" fill="#e2e8f0" class="svg-sun-pulse"/>
             <rect x="250" y="160" width="300" height="180" fill="#ea580c" opacity="0.15"/>
-            <rect x="250" y="180" width="130" height="140" fill="url(#fresh-air-gradient)"/>
-            <rect x="250" y="220" width="24" height="60" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
-            <line x1="262" y1="220" x2="262" y2="280" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-            <line x1="250" y1="250" x2="274" y2="250" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-            <rect x="246" y="281" width="32" height="5" rx="1" fill="#cbd5e1" opacity="0.7"/>
-            <rect x="530" y="180" width="24" height="40" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
-            <line x1="542" y1="180" x2="542" y2="220" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-            <line x1="530" y1="200" x2="554" y2="200" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-            <rect x="526" y="221" width="32" height="5" rx="1" fill="#cbd5e1" opacity="0.7"/>
+            <rect x="250" y="163" width="130" height="174" fill="url(#fresh-air-gradient)"/>
+            <rect x="246" y="163" width="34" height="174" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#64748b" stroke-width="2"/>
+            <rect x="250" y="167" width="26" height="166" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
+            <line x1="263" y1="167" x2="263" y2="333" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
+            <line x1="250" y1="212" x2="276" y2="212" stroke="#38bdf8" stroke-width="1" opacity="0.5"/>
+            <line x1="250" y1="250" x2="276" y2="250" stroke="#38bdf8" stroke-width="1" opacity="0.5"/>
+            <line x1="250" y1="288" x2="276" y2="288" stroke="#38bdf8" stroke-width="1" opacity="0.5"/>
+            <rect x="526" y="163" width="34" height="174" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#64748b" stroke-width="2"/>
+            <rect x="530" y="167" width="26" height="166" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
+            <line x1="543" y1="167" x2="543" y2="333" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
+            <line x1="530" y1="212" x2="556" y2="212" stroke="#38bdf8" stroke-width="1" opacity="0.5"/>
+            <line x1="530" y1="250" x2="556" y2="250" stroke="#38bdf8" stroke-width="1" opacity="0.5"/>
+            <line x1="530" y1="288" x2="556" y2="288" stroke="#38bdf8" stroke-width="1" opacity="0.5"/>
             <path d="M 150 250 Q 175 235 200 250 T 250 250 T 300 230" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8">
-                <animate attributeName="d" values="M 270 232 Q 288 250 270 268;M 270 210 Q 355 250 270 290;M 270 210 Q 355 250 270 290" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="d" values="M 270 220 Q 290 250 270 280;M 270 163 Q 358 250 270 337;M 270 163 Q 358 250 270 337" dur="2s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.8;0.4;0" dur="2s" repeatCount="indefinite"/>
             </path>
             <path fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8">
-                <animate attributeName="d" values="M 270 232 Q 288 250 270 268;M 270 210 Q 355 250 270 290;M 270 210 Q 355 250 270 290" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+                <animate attributeName="d" values="M 270 220 Q 290 250 270 280;M 270 163 Q 358 250 270 337;M 270 163 Q 358 250 270 337" dur="2s" begin="0.7s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.8;0.4;0" dur="2s" begin="0.7s" repeatCount="indefinite"/>
             </path>
             <path fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8">
-                <animate attributeName="d" values="M 270 232 Q 288 250 270 268;M 270 210 Q 355 250 270 290;M 270 210 Q 355 250 270 290" dur="2s" begin="1.4s" repeatCount="indefinite"/>
+                <animate attributeName="d" values="M 270 220 Q 290 250 270 280;M 270 163 Q 358 250 270 337;M 270 163 Q 358 250 270 337" dur="2s" begin="1.4s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.8;0.4;0" dur="2s" begin="1.4s" repeatCount="indefinite"/>
             </path>
             <path d="M 260 240 Q 340 210 420 220 Q 480 228 500 200" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up"/>
