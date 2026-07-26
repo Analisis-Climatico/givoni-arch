@@ -2019,25 +2019,26 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <polygon points="220,160 400,80 580,160" fill="none" stroke="#cbd5e1" stroke-width="3"/>
             <rect x="250" y="160" width="300" height="180" fill="${isDark ? '#1e293b' : '#f1f5f9'}" stroke="#cbd5e1" stroke-width="3"/>
             <rect x="530" y="160" width="20" height="180" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
-            <rect x="250" y="160" width="20" height="50" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
-            <rect x="250" y="290" width="20" height="50" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
-            <rect x="255" y="210" width="10" height="80" fill="url(#glass-lines)" stroke="#38bdf8"/>
+            <rect x="250" y="160" width="20" height="14" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="250" y="326" width="20" height="14" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1"/>
+            <rect x="253" y="176" width="14" height="148" fill="url(#glass-lines)" stroke="#38bdf8"/>
             <line x1="220" y1="160" x2="580" y2="160" stroke="#cbd5e1" stroke-width="3"/>
-            <g stroke="#94a3b8" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M 218 205 L 236 218 L 218 231"/>
-                <path d="M 218 236 L 236 249 L 218 262"/>
-                <path d="M 218 267 L 236 280 L 218 293"/>
-                <path d="M 218 298 L 236 311 L 218 324"/>
+            <g stroke="#94a3b8" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 210 172 L 236 187 L 210 202"/>
+                <path d="M 210 208 L 236 223 L 210 238"/>
+                <path d="M 210 244 L 236 259 L 210 274"/>
+                <path d="M 210 280 L 236 295 L 210 310"/>
+                <path d="M 210 316 L 236 331 L 210 336"/>
             </g>
             <circle cx="90" cy="42" r="92" fill="url(#sun-glow)" class="svg-sun-pulse"/>
             <circle cx="90" cy="42" r="34" fill="#fbbf24" filter="url(#soft-glow)" class="svg-sun-pulse"/>
             <circle cx="90" cy="42" r="34" fill="#fde68a"/>
             <circle cx="90" cy="42" r="43" fill="none" stroke="#fcd34d" stroke-width="1" stroke-dasharray="2 6" opacity="0.6" class="svg-sun-pulse"/>
-            <path d="M 106 86 L 236 218" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 236 218 L 170 165" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" class="svg-ray-bounce"/>
+            <path d="M 106 86 L 236 259" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
+            <path d="M 236 259 L 170 175" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" class="svg-ray-bounce"/>
         `;
-        labelsContent += callout(227, 249, 240, 280, "Lamas Orientables", "end");
-        labelsContent += callout(260, 250, 560, 300, "Ventana", "start");
+        labelsContent += callout(220, 259, 240, 280, "Lamas Orientables", "end");
+        labelsContent += callout(258, 250, 560, 300, "Ventana", "start");
     } else if (t === "Fachada de doble piel") {
         svgContent += `
             ${groundLine}
@@ -2278,12 +2279,16 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <line x1="525" y1="232" x2="525" y2="274" stroke="#94a3b8" stroke-width="1.2" opacity="0.6"/>
                 <line x1="565" y1="232" x2="565" y2="274" stroke="#94a3b8" stroke-width="1.2" opacity="0.6"/>
             </g>
+            <text x="220" y="168" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="12" font-weight="700" letter-spacing="1" fill="#ef4444" opacity="0.9">AMORTIGUADORA</text>
+            <text x="230" y="197" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="12" font-weight="700" letter-spacing="1" fill="#06b6d4" opacity="0.9">ZONA FRESCA</text>
+            <text x="520" y="195" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-size="12" font-weight="700" letter-spacing="1" fill="#f59e0b" opacity="0.9">CONTROLADA</text>
             <line x1="400" y1="150" x2="400" y2="180" stroke="${isDark ? '#1e293b' : '#f1f5f9'}" stroke-width="5"/>
             <line x1="400" y1="150" x2="380" y2="150" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
             <path d="M 380 150 A 24 24 0 0 1 400 174" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.7"/>
         `;
-        labelsContent += callout(220, 122, 240, 50, "Zona Controlada", "end");
-        labelsContent += callout(520, 127, 560, 100, "Zona de Amortiguamiento", "start");
+        labelsContent += callout(220, 122, 240, 50, "Zona de Amortiguamiento", "end");
+        labelsContent += callout(520, 127, 560, 100, "Zona Controlada", "start");
+        labelsContent += callout(230, 240, 150, 350, "Zona Fresca", "end");
     } else if (t === "Fachada aislada") {
         svgContent += `
             ${groundLine}
