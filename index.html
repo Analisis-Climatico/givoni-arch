@@ -2029,8 +2029,11 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <path d="M 218 267 L 236 280 L 218 293"/>
                 <path d="M 218 298 L 236 311 L 218 324"/>
             </g>
-            ${sunObj}
-            <path d="M 120 80 L 236 218" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
+            <circle cx="90" cy="42" r="92" fill="url(#sun-glow)" class="svg-sun-pulse"/>
+            <circle cx="90" cy="42" r="34" fill="#fbbf24" filter="url(#soft-glow)" class="svg-sun-pulse"/>
+            <circle cx="90" cy="42" r="34" fill="#fde68a"/>
+            <circle cx="90" cy="42" r="43" fill="none" stroke="#fcd34d" stroke-width="1" stroke-dasharray="2 6" opacity="0.6" class="svg-sun-pulse"/>
+            <path d="M 106 86 L 236 218" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
             <path d="M 236 218 L 170 165" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.7" class="svg-ray-bounce"/>
         `;
         labelsContent += callout(227, 249, 240, 280, "Lamas Orientables", "end");
@@ -2252,20 +2255,35 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="405" y="85" width="240" height="210" fill="#f59e0b" opacity="0.2"/>
             <path d="M 275 130 C 275 110, 250 110, 250 130 C 250 150, 275 150, 275 130" fill="none" stroke="#ef4444" stroke-width="3" class="svg-float-up"/>
             <path d="M 525 190 C 525 150, 450 150, 450 190 C 450 230, 525 230, 525 190" fill="none" stroke="#f59e0b" stroke-width="3" class="svg-float-up"/>
-            <rect x="180" y="100" width="45" height="24" rx="2" fill="none" stroke="#94a3b8" stroke-width="2"/>
-            <circle cx="202" cy="112" r="2" fill="#94a3b8"/>
-            <rect x="180" y="210" width="10" height="22" fill="#78350f" opacity="0.7"/>
-            <rect x="195" y="210" width="10" height="22" fill="#78350f" opacity="0.7"/>
-            <rect x="180" y="235" width="35" height="8" rx="2" fill="#78350f" opacity="0.5"/>
-            <rect x="440" y="110" width="14" height="30" rx="2" fill="#78350f" opacity="0.8"/>
-            <rect x="440" y="150" width="55" height="10" fill="#78350f" opacity="0.5"/>
-            <rect x="440" y="120" width="10" height="16" fill="#94a3b8" opacity="0.6"/>
+            <g>
+                <rect x="177" y="93" width="86" height="56" rx="6" fill="${isDark ? '#334155' : '#e2e8f0'}" stroke="#94a3b8" stroke-width="2"/>
+                <rect x="182" y="98" width="76" height="17" rx="4" fill="${isDark ? '#0f172a' : '#f8fafc'}" stroke="#cbd5e1" stroke-width="1.5"/>
+                <line x1="182" y1="128" x2="258" y2="128" stroke="#cbd5e1" stroke-width="1.5"/>
+                <line x1="182" y1="138" x2="258" y2="138" stroke="#cbd5e1" stroke-width="1.5" opacity="0.6"/>
+            </g>
+            <g>
+                <circle cx="230" cy="240" r="22" fill="${isDark ? '#334155' : '#e2e8f0'}" stroke="#94a3b8" stroke-width="2"/>
+                <rect x="204" y="209" width="22" height="12" rx="4" fill="#94a3b8" opacity="0.55"/>
+                <rect x="234" y="209" width="22" height="12" rx="4" fill="#94a3b8" opacity="0.55"/>
+                <rect x="204" y="259" width="22" height="12" rx="4" fill="#94a3b8" opacity="0.55"/>
+                <rect x="234" y="259" width="22" height="12" rx="4" fill="#94a3b8" opacity="0.55"/>
+            </g>
+            <g>
+                <rect x="445" y="108" width="150" height="38" rx="4" fill="${isDark ? '#334155' : '#e2e8f0'}" stroke="#94a3b8" stroke-width="2"/>
+                <line x1="520" y1="108" x2="520" y2="146" stroke="#94a3b8" stroke-width="1.5"/>
+                <circle cx="510" cy="127" r="2" fill="#94a3b8"/>
+                <circle cx="530" cy="127" r="2" fill="#94a3b8"/>
+                <rect x="445" y="232" width="150" height="42" rx="4" fill="${isDark ? '#334155' : '#e2e8f0'}" stroke="#94a3b8" stroke-width="2"/>
+                <line x1="485" y1="232" x2="485" y2="274" stroke="#94a3b8" stroke-width="1.2" opacity="0.6"/>
+                <line x1="525" y1="232" x2="525" y2="274" stroke="#94a3b8" stroke-width="1.2" opacity="0.6"/>
+                <line x1="565" y1="232" x2="565" y2="274" stroke="#94a3b8" stroke-width="1.2" opacity="0.6"/>
+            </g>
             <line x1="400" y1="150" x2="400" y2="180" stroke="${isDark ? '#1e293b' : '#f1f5f9'}" stroke-width="5"/>
             <line x1="400" y1="150" x2="380" y2="150" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
             <path d="M 380 150 A 24 24 0 0 1 400 174" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.7"/>
         `;
-        labelsContent += callout(275, 100, 240, 50, "Zona Controlada", "end");
-        labelsContent += callout(525, 150, 560, 100, "Zona de Amortiguamiento", "start");
+        labelsContent += callout(220, 122, 240, 50, "Zona Controlada", "end");
+        labelsContent += callout(520, 127, 560, 100, "Zona de Amortiguamiento", "start");
     } else if (t === "Fachada aislada") {
         svgContent += `
             ${groundLine}
