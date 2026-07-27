@@ -2093,7 +2093,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             </g>
             <g clip-path="url(#wall-night-clip)">
                 <rect x="390" y="80" width="40" height="260" fill="${isDark ? '#64748b' : '#94a3b8'}" opacity="0.32"/>
-                <rect x="390" y="80" width="40" height="260" fill="#f97316" opacity="0.55">
+                <rect x="390" y="80" width="40" height="260" fill="#c2410c" opacity="0.45">
                     <animate attributeName="y" values="80;340" dur="8s" repeatCount="indefinite"/>
                     <animate attributeName="height" values="260;0" dur="8s" repeatCount="indefinite"/>
                 </rect>
@@ -2168,10 +2168,10 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 60 341 Q 75 338 90 341 T 120 341 T 150 341 T 180 341 T 210 341 T 240 341" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.8"/>
             ${sunObj}
             <path d="M 100 90 L 150 335" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 20 95 Q 0 260 128 335" fill="none" stroke="#94a3b8" stroke-width="2" opacity="0.3" class="svg-wind-flow" style="animation-duration: 22s;"/>
-            <path d="M 45 120 Q 25 270 140 334" fill="none" stroke="#94a3b8" stroke-width="1.2" opacity="0.18" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
-            <path d="M 150 328 Q 200 120 345 205" fill="none" stroke="#0891b2" stroke-width="7" class="svg-wind-flow"/>
-            <path d="M 150 328 Q 200 120 345 205" fill="none" stroke="#22d3ee" stroke-width="3" opacity="0.9" class="svg-wind-flow-delayed"/>
+            <path d="M 20 95 Q 0 260 128 335" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.15" class="svg-wind-flow" style="animation-duration: 22s;"/>
+            <path d="M 45 120 Q 25 270 140 334" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.1" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
+            <path d="M 150 328 Q 230 195 345 205" fill="none" stroke="#0891b2" stroke-width="7" class="svg-wind-flow"/>
+            <path d="M 150 328 Q 230 195 345 205" fill="none" stroke="#22d3ee" stroke-width="3" opacity="0.9" class="svg-wind-flow-delayed"/>
         `;
         labelsContent += callout(150, 340, 250, 380, "Espejo de Agua", "start");
     } else if (t === "Nebulización pasiva") {
