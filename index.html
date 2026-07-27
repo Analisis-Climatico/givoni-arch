@@ -1392,6 +1392,13 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <circle cx="4" cy="4" r="1.5" fill="#7c5a3a" opacity="0.4"/>
                 <circle cx="10" cy="10" r="1" fill="#7c5a3a" opacity="0.25"/>
             </pattern>
+            <pattern id="polished-stone-hatch" patternUnits="userSpaceOnUse" width="20" height="10">
+                <rect width="20" height="10" fill="#cbd5e1"/>
+                <line x1="0" y1="0" x2="20" y2="0" stroke="#94a3b8" stroke-width="0.75" opacity="0.6"/>
+                <line x1="10" y1="0" x2="10" y2="10" stroke="#94a3b8" stroke-width="0.6" opacity="0.45"/>
+                <line x1="0" y1="5" x2="4" y2="5" stroke="#f8fafc" stroke-width="0.6" opacity="0.5"/>
+                <line x1="14" y1="5" x2="18" y2="5" stroke="#f8fafc" stroke-width="0.6" opacity="0.5"/>
+            </pattern>
             <linearGradient id="chip-gradient-dark" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#1e293b"/>
                 <stop offset="100%" stop-color="#0f172a"/>
@@ -2080,34 +2087,25 @@ function renderDiagramaArquitectonico(t, index = 0) {
         labelsContent += callout(120, 160, 170, 230, "Alero Extendido", "start");
     } else if (t === "Muro acumulador") {
         svgContent += `
-            <defs>
-                <linearGradient id="day-bg-fill" x1="0" y1="1" x2="0" y2="0">
-                    <stop offset="0%" stop-color="#f97316" stop-opacity="0.5"/>
-                    <stop offset="60%" stop-color="#fbbf24" stop-opacity="0.18"/>
-                    <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
-                </linearGradient>
-                <linearGradient id="night-bg-fill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#0f172a" stop-opacity="0"/>
-                    <stop offset="45%" stop-color="#1e293b" stop-opacity="0.4"/>
-                    <stop offset="100%" stop-color="#0f172a" stop-opacity="0.6"/>
-                </linearGradient>
-            </defs>
             <rect x="0" y="0" width="390" height="340" fill="${isDark ? '#1e293b' : '#f8fafc'}"/>
             <rect x="390" y="0" width="410" height="340" fill="${isDark ? '#0b1220' : '#e2e8f0'}"/>
-            <rect x="0" y="0" width="390" height="340" fill="url(#day-bg-fill)" class="svg-day-fill"/>
-            <rect x="390" y="0" width="410" height="340" fill="url(#night-bg-fill)" class="svg-night-drain"/>
-            <rect x="0" y="340" width="390" height="0" fill="url(#day-bg-fill)" opacity="0.75">
-                <animate attributeName="y" values="340;40;340" dur="6s" repeatCount="indefinite"/>
-                <animate attributeName="height" values="0;300;0" dur="6s" repeatCount="indefinite"/>
-            </rect>
-            <rect x="390" y="40" width="410" height="300" fill="url(#night-bg-fill)" opacity="0.75">
-                <animate attributeName="y" values="40;340;40" dur="8s" repeatCount="indefinite"/>
-                <animate attributeName="height" values="300;0;300" dur="8s" repeatCount="indefinite"/>
-            </rect>
             <line x1="390" y1="0" x2="390" y2="340" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.3"/>
             ${groundLine}
             <rect x="350" y="80" width="80" height="260" fill="url(#brick-pattern)" stroke="#5c2e0c" stroke-width="3"/>
-            <rect x="350" y="80" width="40" height="260" fill="#f97316" opacity="0.28" class="svg-heat-radiate"/>
+            <clipPath id="wall-day-clip"><rect x="350" y="80" width="40" height="260"/></clipPath>
+            <clipPath id="wall-night-clip"><rect x="390" y="80" width="40" height="260"/></clipPath>
+            <g clip-path="url(#wall-day-clip)">
+                <rect x="350" y="340" width="40" height="0" fill="#f97316" opacity="0.55">
+                    <animate attributeName="y" values="340;80;340" dur="6s" repeatCount="indefinite"/>
+                    <animate attributeName="height" values="0;260;0" dur="6s" repeatCount="indefinite"/>
+                </rect>
+            </g>
+            <g clip-path="url(#wall-night-clip)">
+                <rect x="390" y="80" width="40" height="260" fill="#0f172a" opacity="0.5">
+                    <animate attributeName="y" values="80;340;80" dur="8s" repeatCount="indefinite"/>
+                    <animate attributeName="height" values="260;0;260" dur="8s" repeatCount="indefinite"/>
+                </rect>
+            </g>
             <line x1="390" y1="70" x2="390" y2="350" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="5 5" opacity="0.6"/>
             <text x="370" y="65" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#fbbf24">DÍA</text>
             <text x="410" y="65" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#94a3b8">NOCHE</text>
@@ -2131,7 +2129,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="0" y="370" width="800" height="30" fill="url(#dots-soil)"/>
             <rect x="0" y="355" width="800" height="18" fill="#78716c" opacity="0.5"/>
             <rect x="0" y="340" width="125" height="18" fill="#eab308" opacity="0.45"/>
-            <rect x="125" y="340" width="125" height="18" fill="#cbd5e1" opacity="0.8"/>
+            <rect x="125" y="340" width="125" height="18" fill="url(#polished-stone-hatch)"/>
             <rect x="250" y="340" width="300" height="18" fill="#94a3b8"/>
             <path d="M 10 344 L 20 344 M 40 344 L 50 344 M 70 344 L 80 344 M 100 344 L 110 344" stroke="#a16207" stroke-width="2" opacity="0.5"/>
             <path d="M 135 348 L 155 348 M 168 348 L 188 348 M 201 348 L 221 348 M 234 348 L 244 348" stroke="#e2e8f0" stroke-width="1" opacity="0.7"/>
@@ -2143,12 +2141,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="250" y="310" width="300" height="30" fill="url(#fresh-air-gradient)" opacity="0.55"/>
             ${sunObj}
             <path d="M 120 90 L 60 340" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 300 305 L 300 205" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.85" class="svg-float-up"/>
-            <path d="M 290 222 L 300 202 L 310 222" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" class="svg-float-up"/>
-            <path d="M 385 305 L 385 195" fill="none" stroke="#7dd3fc" stroke-width="3" opacity="0.7" class="svg-float-up" style="animation-delay: 0.6s"/>
-            <path d="M 375 214 L 385 192 L 395 214" fill="none" stroke="#7dd3fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" class="svg-float-up" style="animation-delay: 0.6s"/>
-            <path d="M 470 305 L 470 210" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.6" class="svg-float-up" style="animation-delay: 1.2s"/>
-            <path d="M 460 228 L 470 208 L 480 228" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" class="svg-float-up" style="animation-delay: 1.2s"/>
+            <path d="M 300 285 L 300 225" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.85" class="svg-float-up"/>
+            <path d="M 292 238 L 300 222 L 308 238" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" class="svg-float-up"/>
+            <path d="M 385 285 L 385 215" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.7" class="svg-float-up" style="animation-delay: 0.6s"/>
+            <path d="M 377 230 L 385 212 L 393 230" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" class="svg-float-up" style="animation-delay: 0.6s"/>
+            <path d="M 470 285 L 470 230" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.6" class="svg-float-up" style="animation-delay: 1.2s"/>
+            <path d="M 462 244 L 470 228 L 478 244" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" class="svg-float-up" style="animation-delay: 1.2s"/>
         `;
         labelsContent += callout(60, 349, 20, 300, "Sendero Exterior (Calor Solar)", "end");
         labelsContent += callout(190, 349, 90, 380, "Piedra Pulida (Superficie Fresca)", "end");
@@ -2185,10 +2183,10 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <circle cx="165" cy="280" r="14" fill="#06b6d4" opacity="0.2" class="animate-pulse" style="animation-delay: 0.5s"/>
             ${sunObj}
             <path d="M 100 90 L 150 335" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 10 165 Q 55 225 90 272 T 148 333" fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.18" class="svg-wind-flow"/>
-            <path d="M 30 195 Q 65 245 100 285 T 152 336" fill="none" stroke="#94a3b8" stroke-width="2" opacity="0.12" class="svg-wind-flow-delayed"/>
-            <path d="M 150 328 Q 200 300 230 260 Q 260 220 300 210" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 300 210 L 345 204" fill="none" stroke="#38bdf8" stroke-width="5" opacity="0.8" class="svg-wind-flow-delayed"/>
+            <path d="M 20 150 Q 65 185 55 225 Q 48 258 85 280 Q 122 302 128 335" fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.2" class="svg-wind-flow" style="animation-duration: 7s;"/>
+            <path d="M 45 175 Q 82 202 74 235 Q 68 262 100 282 Q 128 300 140 334" fill="none" stroke="#94a3b8" stroke-width="2" opacity="0.14" class="svg-wind-flow-delayed" style="animation-duration: 7s;"/>
+            <path d="M 150 328 Q 188 300 188 265 Q 188 228 232 214 Q 268 202 300 210" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
+            <path d="M 300 210 Q 328 220 345 205" fill="none" stroke="#38bdf8" stroke-width="5" opacity="0.85" class="svg-wind-flow-delayed"/>
         `;
         labelsContent += callout(150, 340, 250, 380, "Espejo de Agua", "start");
     } else if (t === "Nebulización pasiva") {
