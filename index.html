@@ -2093,7 +2093,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             </g>
             <g clip-path="url(#wall-night-clip)">
                 <rect x="390" y="80" width="40" height="260" fill="${isDark ? '#64748b' : '#94a3b8'}" opacity="0.32"/>
-                <rect x="390" y="80" width="40" height="260" fill="#c2410c" opacity="0.45">
+                <rect x="390" y="80" width="40" height="260" fill="#f97316" opacity="0.55">
                     <animate attributeName="y" values="80;340" dur="8s" repeatCount="indefinite"/>
                     <animate attributeName="height" values="260;0" dur="8s" repeatCount="indefinite"/>
                 </rect>
@@ -2103,12 +2103,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <text x="410" y="65" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#94a3b8">NOCHE</text>
             ${sunObj}
             <g class="svg-sun-pulse" style="animation-delay: 1.5s;">
-                <circle cx="700" cy="65" r="34" fill="#e2e8f0" opacity="0.9"/>
+                <circle cx="700" cy="65" r="34" fill="${isDark ? '#e2e8f0' : '#64748b'}" opacity="0.9"/>
                 <circle cx="713" cy="55" r="30" fill="${isDark ? '#0b1220' : '#e2e8f0'}"/>
             </g>
-            <circle cx="655" cy="35" r="1.6" fill="#e2e8f0" opacity="0.7"/>
-            <circle cx="745" cy="40" r="1.2" fill="#e2e8f0" opacity="0.6"/>
-            <circle cx="760" cy="95" r="1.4" fill="#e2e8f0" opacity="0.6"/>
+            <circle cx="655" cy="35" r="1.6" fill="${isDark ? '#e2e8f0' : '#94a3b8'}" opacity="0.7"/>
+            <circle cx="745" cy="40" r="1.2" fill="${isDark ? '#e2e8f0' : '#94a3b8'}" opacity="0.6"/>
+            <circle cx="760" cy="95" r="1.4" fill="${isDark ? '#e2e8f0' : '#94a3b8'}" opacity="0.6"/>
             <path d="M 130 90 L 340 160" fill="none" stroke="#fcd34d" stroke-width="6" class="svg-ray-bounce"/>
             <path d="M 440 200 L 550 200" fill="none" stroke="#f97316" stroke-width="4" opacity="0.85" class="svg-float-up slow-release"/>
             <path d="M 440 260 L 550 260" fill="none" stroke="#f97316" stroke-width="4" opacity="0.65" class="svg-float-up slow-release"/>
@@ -2168,8 +2168,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 60 341 Q 75 338 90 341 T 120 341 T 150 341 T 180 341 T 210 341 T 240 341" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.8"/>
             ${sunObj}
             <path d="M 100 90 L 150 335" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 20 95 Q 0 260 128 335" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.15" class="svg-wind-flow" style="animation-duration: 22s;"/>
-            <path d="M 45 120 Q 25 270 140 334" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.1" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
+            <path d="M 20 195 Q -10 285 128 335" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.15" class="svg-wind-flow" style="animation-duration: 22s;"/>
+            <path d="M 45 210 Q 15 295 140 334" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.1" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
             <path d="M 150 328 Q 230 195 345 205" fill="none" stroke="#0891b2" stroke-width="7" class="svg-wind-flow"/>
             <path d="M 150 328 Q 230 195 345 205" fill="none" stroke="#22d3ee" stroke-width="3" opacity="0.9" class="svg-wind-flow-delayed"/>
         `;
