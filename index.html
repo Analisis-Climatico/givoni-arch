@@ -1523,8 +1523,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
         const paneW = (w - 6) / 2;
         const mid = x + w / 2;
         return `
-        <rect x="${x - 6}" y="${y - 6}" width="${w + 12}" height="${h + 12}" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#cbd5e1" stroke-width="2"/>
         <rect x="${x + 2}" y="${y + 2}" width="${paneW}" height="${h - 4}" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
         <rect x="${mid + 1}" y="${y + 2}" width="${paneW}" height="${h - 4}" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
     `;
