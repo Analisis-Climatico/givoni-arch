@@ -2120,8 +2120,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <circle cx="745" cy="40" r="1.2" fill="#e2e8f0" opacity="0.6"/>
             <circle cx="760" cy="95" r="1.4" fill="#e2e8f0" opacity="0.6"/>
             <path d="M 130 90 L 340 160" fill="none" stroke="#fcd34d" stroke-width="6" class="svg-ray-bounce"/>
-            <path d="M 440 200 L 550 200" fill="none" stroke="#ea580c" stroke-width="4" opacity="0.85" class="svg-float-up slow-release"/>
-            <path d="M 440 260 L 550 260" fill="none" stroke="#ea580c" stroke-width="4" opacity="0.65" class="svg-float-up slow-release"/>
+            <path d="M 440 200 L 550 200" fill="none" stroke="#f97316" stroke-width="4" opacity="0.85" class="svg-float-up slow-release"/>
+            <path d="M 440 260 L 550 260" fill="none" stroke="#f97316" stroke-width="4" opacity="0.65" class="svg-float-up slow-release"/>
         `;
         labelsContent += callout(370, 180, 240, 120, "Acumulación Diurna", "end");
         labelsContent += callout(410, 250, 560, 300, "Liberación Nocturna Lenta", "start");
@@ -2180,10 +2180,10 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 60 341 Q 75 338 90 341 T 120 341 T 150 341 T 180 341 T 210 341 T 240 341" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.8"/>
             ${sunObj}
             <path d="M 100 90 L 150 335" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 25 130 Q 5 235 128 335" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.5" class="svg-wind-flow" style="animation-duration: 22s;"/>
-            <path d="M 50 165 Q 32 245 140 330" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.3" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
-            <path d="M 150 325 Q 215 145 345 205" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 150 325 Q 215 145 345 205" fill="none" stroke="#38bdf8" stroke-width="5" opacity="0.5" class="svg-wind-flow-delayed"/>
+            <path d="M 20 150 Q 65 185 55 225 Q 48 258 85 280 Q 122 302 128 335" fill="none" stroke="#cbd5e1" stroke-width="2.5" opacity="0.4" class="svg-wind-flow" style="animation-duration: 22s;"/>
+            <path d="M 45 175 Q 82 202 74 235 Q 68 262 100 282 Q 128 300 140 334" fill="none" stroke="#cbd5e1" stroke-width="1.5" opacity="0.25" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
+            <path d="M 150 328 Q 188 300 188 265 Q 188 228 232 214 Q 268 202 300 210" fill="none" stroke="#0ea5e9" stroke-width="6" class="svg-wind-flow"/>
+            <path d="M 300 210 Q 328 220 345 205" fill="none" stroke="#0ea5e9" stroke-width="6" opacity="0.9" class="svg-wind-flow-delayed"/>
         `;
         labelsContent += callout(150, 340, 250, 380, "Espejo de Agua", "start");
     } else if (t === "Nebulización pasiva") {
