@@ -1521,7 +1521,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
 
     const drawWindow = (x, y, w, h) => `
         <rect x="${x}" y="${y - 16}" width="${w}" height="16" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/>
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#glass-lines)" stroke="#cbd5e1" stroke-width="2"/>
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
         <rect x="${x + 3}" y="${y + 3}" width="${w - 6}" height="${h - 6}" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
         <rect x="${x}" y="${y + h}" width="${w}" height="16" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/>
     `;
@@ -2146,8 +2146,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Nebulización pasiva") {
         svgContent += `
             ${groundLine} ${drawHouse(350, 160, 250, 180)}
-            ${drawWindow(390, 220, 24, 60)}
-            ${drawWindow(520, 220, 24, 60)}
+            ${drawWindow(350, 220, 24, 60)}
+            ${drawWindow(576, 220, 24, 60)}
             <line x1="150" y1="340" x2="150" y2="280" stroke="#cbd5e1" stroke-width="3"/>
             <circle cx="150" cy="280" r="4" fill="#3b82f6"/>
             <circle r="2.4" fill="#7dd3fc" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" path="M 150 280 Q 115 260 100 232"/></circle>
@@ -2167,8 +2167,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
     } else if (t === "Vegetación refrescante") {
         svgContent += `
             ${groundLine} ${drawHouse(250, 160, 300, 180)}
-            ${drawWindow(266, 210, 28, 62)}
-            ${drawWindow(496, 210, 28, 62)}
+            ${drawWindow(250, 210, 28, 62)}
+            ${drawWindow(522, 210, 28, 62)}
             <rect x="140" y="240" width="15" height="100" fill="#713f12"/>
             <g class="svg-tree-sway-strong">
                 <circle cx="147" cy="200" r="50" fill="#16a34a" opacity="0.8"/>
@@ -2179,12 +2179,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
             </g>
             ${sunObj}
             <path d="M 120 90 L 140 140" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 50 280 C 100 280, 150 255, 240 241" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 262 241 L 350 241" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow-delayed"/>
-            <path d="M 510 241 L 558 241" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
+            <path d="M 50 280 C 100 280, 150 255, 264 241" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
+            <path d="M 264 241 L 350 241" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow-delayed"/>
+            <path d="M 536 241 L 580 241" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow"/>
         `;
         labelsContent += callout(147, 150, 240, 100, "Vegetación Refrescante", "end");
-        labelsContent += callout(280, 241, 240, 340, "Ingreso de Aire", "end");
+        labelsContent += callout(264, 241, 240, 340, "Ingreso de Aire", "end");
     } else if (t === "Purgado nocturno") {
         svgContent += `
             <rect width="100%" height="100%" fill="#0f172a" opacity="0.9"/>
@@ -2193,18 +2193,18 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="250" y="160" width="300" height="180" fill="#ea580c" opacity="0.15"/>
             <rect x="250" y="163" width="130" height="174" fill="url(#fresh-air-gradient)"/>
             ${drawWindow(250, 195, 26, 110)}
-            ${drawWindow(530, 195, 26, 110)}
+            ${drawWindow(524, 195, 26, 110)}
             <path d="M 150 250 Q 175 235 200 250 T 250 250 T 300 230" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8">
-                <animate attributeName="d" values="M 270 220 Q 290 250 270 280;M 270 163 Q 358 250 270 337;M 270 163 Q 358 250 270 337" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="d" values="M 280 220 Q 300 250 280 280;M 280 163 Q 368 250 280 337;M 280 163 Q 368 250 280 337" dur="2s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.8;0.4;0" dur="2s" repeatCount="indefinite"/>
             </path>
             <path fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8">
-                <animate attributeName="d" values="M 270 220 Q 290 250 270 280;M 270 163 Q 358 250 270 337;M 270 163 Q 358 250 270 337" dur="2s" begin="0.7s" repeatCount="indefinite"/>
+                <animate attributeName="d" values="M 280 220 Q 300 250 280 280;M 280 163 Q 368 250 280 337;M 280 163 Q 368 250 280 337" dur="2s" begin="0.7s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.8;0.4;0" dur="2s" begin="0.7s" repeatCount="indefinite"/>
             </path>
             <path fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8">
-                <animate attributeName="d" values="M 270 220 Q 290 250 270 280;M 270 163 Q 358 250 270 337;M 270 163 Q 358 250 270 337" dur="2s" begin="1.4s" repeatCount="indefinite"/>
+                <animate attributeName="d" values="M 280 220 Q 300 250 280 280;M 280 163 Q 368 250 280 337;M 280 163 Q 368 250 280 337" dur="2s" begin="1.4s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.8;0.4;0" dur="2s" begin="1.4s" repeatCount="indefinite"/>
             </path>
             <path d="M 260 240 Q 340 210 420 220 Q 480 228 500 200" fill="none" stroke="#ef4444" stroke-width="6" class="svg-float-up"/>
@@ -2233,8 +2233,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <circle cx="100" cy="70" r="22" fill="#e2e8f0" opacity="0.85" class="svg-sun-pulse"/>
             <circle cx="88" cy="64" r="3" fill="#0f172a" opacity="0.3"/>
             <circle cx="105" cy="78" r="2" fill="#0f172a" opacity="0.25"/>
-            ${drawWindow(270, 250, 24, 60)}
-            ${drawWindow(490, 250, 24, 60)}
+            ${drawWindow(250, 250, 24, 60)}
+            ${drawWindow(526, 250, 24, 60)}
             <rect x="300" y="40" width="40" height="200" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#94a3b8" stroke-width="3"/>
             <rect x="300" y="40" width="40" height="200" fill="#ea580c" opacity="0.1"/>
             <line x1="300" y1="80" x2="340" y2="80" stroke="#64748b" stroke-width="1.5" opacity="0.6"/>
