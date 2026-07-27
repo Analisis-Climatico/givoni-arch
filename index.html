@@ -1519,16 +1519,13 @@ function renderDiagramaArquitectonico(t, index = 0) {
         <line x1="${x-20}" y1="${y+1.5}" x2="${x+w+20}" y2="${y+1.5}" stroke="#0f172a" stroke-width="1" opacity="0.12"/>
     `;
 
-    const drawWindow = (x, y, w, h) => {
-        const paneW = (w - 8) / 2;
-        const mid = x + w / 2;
-        return `
-        <rect x="${x - 5}" y="${y - 5}" width="${w + 10}" height="${h + 10}" fill="${isDark ? '#0f172a' : '#1e293b'}" opacity="0.4"/>
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#cbd5e1"/>
-        <rect x="${x + 3}" y="${y + 3}" width="${paneW}" height="${h - 6}" fill="url(#glass-lines)" stroke="#94a3b8" stroke-width="1"/>
-        <rect x="${mid + 2}" y="${y + 3}" width="${paneW}" height="${h - 6}" fill="url(#glass-lines)" stroke="#94a3b8" stroke-width="1"/>
+    const drawWindow = (x, y, w, h) => `
+        <rect x="${x}" y="${y - 16}" width="${w}" height="16" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/>
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#glass-lines)" stroke="#cbd5e1" stroke-width="2"/>
+        <rect x="${x + 3}" y="${y + 3}" width="${w - 6}" height="${h - 6}" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+        <rect x="${x}" y="${y + h}" width="${w}" height="16" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="1.5"/>
     `;
-    };
+
 
 
 
@@ -2195,8 +2192,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <circle cx="100" cy="80" r="25" fill="#e2e8f0" class="svg-sun-pulse"/>
             <rect x="250" y="160" width="300" height="180" fill="#ea580c" opacity="0.15"/>
             <rect x="250" y="163" width="130" height="174" fill="url(#fresh-air-gradient)"/>
-            ${drawWindow(250, 167, 26, 166)}
-            ${drawWindow(530, 167, 26, 166)}
+            ${drawWindow(250, 195, 26, 110)}
+            ${drawWindow(530, 195, 26, 110)}
             <path d="M 150 250 Q 175 235 200 250 T 250 250 T 300 230" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8">
                 <animate attributeName="d" values="M 270 220 Q 290 250 270 280;M 270 163 Q 358 250 270 337;M 270 163 Q 358 250 270 337" dur="2s" repeatCount="indefinite"/>
