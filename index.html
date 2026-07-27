@@ -1665,9 +1665,9 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${drawWindow(530, 180, 20, 56)}
             <line x1="270" y1="160" x2="270" y2="340" stroke="#94a3b8" stroke-width="1.5" opacity="0.8"/>
             <line x1="530" y1="160" x2="530" y2="340" stroke="#94a3b8" stroke-width="1.5" opacity="0.8"/>
-            <path d="M 400 320 L 400 210" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" opacity="0.7" class="svg-float-up"/>
-            <path d="M 400 205 L 262 208" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" class="svg-float-up"/>
-            <path d="M 400 205 L 538 208" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" class="svg-float-up"/>
+            <path d="M 400 320 L 400 210" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" opacity="0.7" class="svg-float-up"/>
+            <path d="M 400 205 L 262 208" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" class="svg-float-up"/>
+            <path d="M 400 205 L 538 208" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" class="svg-float-up"/>
         `;
         labelsContent += callout(260, 208, 240, 100, "Ventana Alta (Salida de Aire)", "end");
         labelsContent += callout(400, 260, 560, 280, "Aire Caliente Acumulado", "start");
@@ -1678,14 +1678,14 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <line x1="150" y1="260" x2="650" y2="260" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="330" y1="60" x2="330" y2="340" stroke="#cbd5e1" stroke-width="3"/>
             <line x1="470" y1="60" x2="470" y2="340" stroke="#cbd5e1" stroke-width="3"/>
-            <path d="M 348 170 L 285 138" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
-            <path d="M 400 160 L 400 138" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
-            <path d="M 452 170 L 520 138" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
-            <path d="M 330 210 L 285 210" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
-            <path d="M 470 210 L 520 210" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
-            <path d="M 348 250 L 285 285" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
-            <path d="M 400 260 L 400 285" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
-            <path d="M 452 250 L 520 285" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 348 170 L 285 138" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 400 160 L 400 138" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 452 170 L 520 138" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 330 210 L 285 210" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 470 210 L 520 210" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 348 250 L 285 285" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 400 260 L 400 285" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 452 250 L 520 285" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
             <g stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <g transform="translate(230,108)">
                     <rect x="-35" y="-8" width="70" height="24" rx="4"/>
@@ -1751,7 +1751,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
                     <path d="M -10 9 Q -11 -9 0 -9 Q 11 -9 10 9 Z" fill="${isDark ? '#1e293b' : '#fff7ed'}"/>
                 </g>
             </g>
-            <path d="M 400 260 L 400 305" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" class="svg-float-up"/>
+            <path d="M 400 260 L 400 305" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" class="svg-float-up"/>
         `;
         labelsContent += callout(400, 210, 560, 340, "Núcleo Central Generador", "start");
         labelsContent += callout(233, 99, 240, 40, "Habitaciones Alrededor", "end");
@@ -1760,7 +1760,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine} ${drawHouse(300, 160, 250, 180)}
             <rect x="290" y="160" width="10" height="180" fill="url(#hatch-insulation)"/>
             <rect x="285" y="160" width="5" height="180" fill="#64748b"/>
-            <rect x="150" y="200" width="16" height="50" rx="8" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="2"/>
+            <rect x="150" y="200" width="16" height="50" rx="8" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="2"/>
             <rect x="154" y="225" width="8" height="21" rx="4" fill="#ef4444"/>
             <circle cx="158" cy="248" r="7" fill="#ef4444"/>
             <text x="158" y="196" fill="#ef4444" font-family="'Inter', sans-serif" font-size="13" font-weight="700" text-anchor="middle">32°</text>
@@ -1778,7 +1778,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine}
             <rect x="350" y="50" width="100" height="80" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <rect x="350" y="270" width="100" height="70" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="376" y="126" width="48" height="148" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" rx="2"/>
+            <rect x="376" y="126" width="48" height="148" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" rx="2"/>
             <rect x="380" y="130" width="40" height="140" fill="#d1d5db" stroke="#71717a" stroke-width="2"/>
             <rect x="390" y="135" width="6" height="130" fill="url(#glass-lines)" stroke="#38bdf8" opacity="0.9"/>
             <rect x="398" y="135" width="4" height="130" fill="#bae6fd" opacity="0.3"/>
@@ -1827,8 +1827,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <circle cx="120" cy="65" r="24" fill="#f59e0b" class="svg-sun-pulse"/>
             <path d="M 145 82 L 205 130" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
             <path d="M 150 68 L 245 105" fill="none" stroke="#fcd34d" stroke-width="3" opacity="0.65" class="svg-ray-bounce"/>
-            <path d="M 245 215 C 260 215, 275 215, 292 215" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" class="svg-float-up"/>
-            <path d="M 300 215 L 460 215" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" opacity="0.7" class="svg-float-up"/>
+            <path d="M 245 215 C 260 215, 275 215, 292 215" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" class="svg-float-up"/>
+            <path d="M 300 215 L 460 215" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" opacity="0.7" class="svg-float-up"/>
         `;
         labelsContent += callout(120, 85, 260, 50, "Radiación Directa", "start");
         labelsContent += callout(245, 312, 200, 360, "Galería (Efecto Invernadero)", "end");
@@ -1860,8 +1860,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="420" y="200" width="40" height="80" rx="3" fill="#cbd5e1" stroke="#94a3b8"/>
             <rect x="424" y="204" width="32" height="10" rx="2" fill="#94a3b8" opacity="0.6"/>
             <path d="M 330 120 L 330 200 L 420 230" fill="none" stroke="#94a3b8" stroke-width="3"/>
-            <path d="M 330 130 L 330 195 L 415 224" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" opacity="0.8" class="svg-float-up"/>
-            <path d="M 390 100 L 440 100 L 440 190" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" class="svg-float-up"/>
+            <path d="M 330 130 L 330 195 L 415 224" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" opacity="0.8" class="svg-float-up"/>
+            <path d="M 390 100 L 440 100 L 440 190" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" class="svg-float-up"/>
             ${sunObj}
             <path d="M 120 90 L 280 130" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
         `;
@@ -1889,8 +1889,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <ellipse cx="20" cy="130" rx="20" ry="8" fill="#a1a1aa" stroke="#94a3b8"/>
                 <rect x="0" y="10" width="40" height="120" fill="#ea580c" opacity="0.2" class="svg-heat-radiate"/>
             </g>
-            <path d="M 380 190 L 300 190" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" class="svg-float-up"/>
-            <path d="M 420 250 L 500 250" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" opacity="0.6" class="svg-float-up"/>
+            <path d="M 380 190 L 300 190" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" class="svg-float-up"/>
+            <path d="M 420 250 L 500 250" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" opacity="0.6" class="svg-float-up"/>
         `;
         labelsContent += callout(400, 200, 560, 150, "Volumen de Agua (Inercia)", "start");
         labelsContent += callout(380, 290, 240, 280, "Calor Radiante", "end");
@@ -1986,8 +1986,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="380" y="120" width="30" height="220" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/>
             ${sunObj}
             <path d="M 120 90 L 380 155" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 570 245 L 495 240" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" opacity="0.6" class="svg-float-up"/>
-            <path d="M 495 240 Q 535 205 580 190" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="3" class="svg-float-up"/>
+            <path d="M 570 245 L 495 240" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" opacity="0.6" class="svg-float-up"/>
+            <path d="M 495 240 Q 535 205 580 190" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="3" class="svg-float-up"/>
         `;
         labelsContent += callout(380, 240, 240, 280, "Piel Exterior (Fachada Ligera)", "end");
         labelsContent += callout(435, 250, 560, 280, "Cámara y Aislamiento", "start");
@@ -2168,10 +2168,10 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 60 341 Q 75 338 90 341 T 120 341 T 150 341 T 180 341 T 210 341 T 240 341" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.8"/>
             ${sunObj}
             <path d="M 100 90 L 150 335" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 20 195 Q -10 285 128 335" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.15" class="svg-wind-flow" style="animation-duration: 22s;"/>
-            <path d="M 45 210 Q 15 295 140 334" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.1" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
-            <path d="M 150 328 Q 230 270 345 275" fill="none" stroke="#0891b2" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 150 328 Q 230 270 345 275" fill="none" stroke="#7dd3fc" stroke-width="2.5" opacity="0.85" class="svg-wind-flow-delayed"/>
+            <path d="M 20 260 Q -10 310 128 335" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.15" class="svg-wind-flow" style="animation-duration: 22s;"/>
+            <path d="M 45 270 Q 15 315 140 334" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.1" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
+            <path d="M 150 328 Q 220 210 345 215" fill="none" stroke="#0891b2" stroke-width="6" class="svg-wind-flow"/>
+            <path d="M 150 328 Q 220 210 345 215" fill="none" stroke="#7dd3fc" stroke-width="2.5" opacity="0.85" class="svg-wind-flow-delayed"/>
         `;
         labelsContent += callout(150, 340, 250, 380, "Espejo de Agua", "start");
     } else if (t === "Nebulización pasiva") {
@@ -2193,7 +2193,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <circle r="2" fill="#bae6fd" opacity="0.7"><animateMotion dur="1.7s" repeatCount="indefinite" begin="0.7s" path="M 700 280 Q 675 265 665 238"/></circle>
             <circle r="2.4" fill="#7dd3fc" opacity="0.85"><animateMotion dur="1.6s" repeatCount="indefinite" begin="0.5s" path="M 700 280 Q 735 260 750 232"/></circle>
             <circle r="2" fill="#bae6fd" opacity="0.7"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0.9s" path="M 700 280 Q 725 265 735 238"/></circle>
-            <path d="M 50 290 L 130 290" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="5" class="svg-wind-flow"/>
+            <path d="M 50 290 L 130 290" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="5" class="svg-wind-flow"/>
             <path d="M 160 290 C 200 290, 250 280, 330 260" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-wind-flow-delayed"/>
         `;
         labelsContent += callout(150, 280, 240, 200, "Sistema Nebulizador", "end");
@@ -2244,8 +2244,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 <animate attributeName="d" values="M 280 220 Q 300 250 280 280;M 280 163 Q 368 250 280 337;M 280 163 Q 368 250 280 337" dur="2s" begin="1.4s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.8;0.4;0" dur="2s" begin="1.4s" repeatCount="indefinite"/>
             </path>
-            <path d="M 260 240 Q 340 210 420 220 Q 480 228 500 200" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="6" class="svg-float-up"/>
-            <path d="M 540 200 L 620 180" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="6" class="svg-float-up"/>
+            <path d="M 260 240 Q 340 210 420 220 Q 480 228 500 200" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="6" class="svg-float-up"/>
+            <path d="M 540 200 L 620 180" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="6" class="svg-float-up"/>
         `;
         labelsContent += callout(400, 120, 560, 80, "Liberación de Calor Acumulado", "start");
     } else if (t === "Lucernario térmico") {
@@ -2255,8 +2255,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <polygon points="220,160 380,80 420,80 580,160" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2"/>
             <line x1="220" y1="160" x2="580" y2="160" stroke="#cbd5e1" stroke-width="3"/>
             <rect x="380" y="60" width="40" height="20" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="2"/>
-            <path d="M 350 250 Q 400 150 395 70" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="5" class="svg-float-up"/>
-            <path d="M 450 250 Q 400 150 405 70" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="5" class="svg-float-up" style="animation-delay: 0.5s"/>
+            <path d="M 350 250 Q 400 150 395 70" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="5" class="svg-float-up"/>
+            <path d="M 450 250 Q 400 150 405 70" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="5" class="svg-float-up" style="animation-delay: 0.5s"/>
         `;
         labelsContent += callout(420, 60, 560, 40, "Lucernario Extractor", "start");
     } else if (t === "Chimenea solar invertida") {
@@ -2282,7 +2282,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <line x1="300" y1="200" x2="340" y2="200" stroke="#64748b" stroke-width="1.5" opacity="0.6"/>
             <rect x="295" y="236" width="50" height="10" rx="2" fill="${isDark ? '#1e293b' : '#334155'}" stroke="#94a3b8" stroke-width="2"/>
             <path d="M 292 32 L 348 32 L 340 40 L 300 40 Z" fill="#57534e" stroke="#c2410c" stroke-width="2"/>
-            <path d="M 320 205 L 320 55" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="4" class="svg-float-up"/>
+            <path d="M 320 205 L 320 55" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="4" class="svg-float-up"/>
         `;
         labelsContent += callout(320, 100, 560, 60, "Conducto Salida de Aire", "start");
     } else if (t === "Elevación palafítica") {
@@ -2311,7 +2311,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <circle cx="510" cy="210" r="6" fill="#3b82f6" class="animate-spin"/>
             <path d="M 180 230 L 260 230" fill="none" stroke="#38bdf8" stroke-width="5" class="svg-wind-flow"/>
             <path d="M 280 230 C 350 230, 450 210, 490 210" fill="none" stroke="#38bdf8" stroke-width="4" class="svg-wind-flow-delayed"/>
-            <path d="M 530 210 L 600 210" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="5" class="svg-float-up"/>
+            <path d="M 530 210 L 600 210" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="5" class="svg-float-up"/>
         `;
         labelsContent += callout(525, 210, 560, 120, "Extractor Mecánico", "start");
     } else if (t === "Sectorización térmica") {
@@ -2359,8 +2359,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="410" y="80" width="30" height="260" fill="url(#hatch-insulation)"/>
             <rect x="440" y="80" width="15" height="260" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/>
             ${sunObj}
-            <path d="M 130 100 L 345 195" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 345 195 L 385 215" fill="none" stroke="${isDark ? '#ef4444' : '#f87171'}" stroke-width="2" opacity="0.35" class="svg-ray-bounce"/>
+            <path d="M 130 100 L 345 195" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="5" class="svg-ray-bounce"/>
+            <path d="M 345 195 L 385 215" fill="none" stroke="${isDark ? '#ef4444' : '#fca5a5'}" stroke-width="2" opacity="0.35" class="svg-ray-bounce"/>
         `;
         labelsContent += callout(425, 200, 560, 260, "Material Aislante", "start");
         labelsContent += callout(380, 240, 240, 280, "Muro Estructural", "end");
@@ -2616,7 +2616,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
                 </path>
                 ${hasRoom ? heatSwirl(s1x, s1y, 1, isDark ? '#ef4444' : '#991b1b', 0.6, 1.7) : ''}
                 ${hasRoom ? heatSwirl(s2x, s2y, 0.8, isDark ? '#dc2626' : '#7f1d1d', 0.5, 1.3) : ''}
-                ${hasRoom ? `<path d="M ${t1x} ${t1y} q 10 8 4 18" fill="none" stroke="${isDark ? '#f87171' : '#991b1b'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
+                ${hasRoom ? `<path d="M ${t1x} ${t1y} q 10 8 4 18" fill="none" stroke="${isDark ? '#fca5a5' : '#991b1b'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
                 ${hasRoom ? `<path d="M ${t2x} ${t2y} q -10 -8 -4 -18" fill="none" stroke="${isDark ? '#ef4444' : '#7f1d1d'}" stroke-width="1.3" stroke-dasharray="1 4" stroke-linecap="round" opacity="0.5"/>` : ''}
                 <g transform="translate(${ex},${ey}) rotate(${angleDeg})" filter="url(#soft-glow)">
                     <g>
