@@ -2095,15 +2095,16 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <clipPath id="wall-day-clip"><rect x="350" y="80" width="40" height="260"/></clipPath>
             <clipPath id="wall-night-clip"><rect x="390" y="80" width="40" height="260"/></clipPath>
             <g clip-path="url(#wall-day-clip)">
+                <rect x="350" y="80" width="40" height="260" fill="${isDark ? '#94a3b8' : '#cbd5e1'}" opacity="0.3"/>
                 <rect x="350" y="340" width="40" height="0" fill="#f97316" opacity="0.55">
-                    <animate attributeName="y" values="340;80;340" dur="6s" repeatCount="indefinite"/>
-                    <animate attributeName="height" values="0;260;0" dur="6s" repeatCount="indefinite"/>
+                    <animate attributeName="y" values="340;80" dur="6s" repeatCount="indefinite"/>
+                    <animate attributeName="height" values="0;260" dur="6s" repeatCount="indefinite"/>
                 </rect>
             </g>
             <g clip-path="url(#wall-night-clip)">
                 <rect x="390" y="80" width="40" height="260" fill="#0f172a" opacity="0.5">
-                    <animate attributeName="y" values="80;340;80" dur="8s" repeatCount="indefinite"/>
-                    <animate attributeName="height" values="260;0;260" dur="8s" repeatCount="indefinite"/>
+                    <animate attributeName="y" values="80;340" dur="8s" repeatCount="indefinite"/>
+                    <animate attributeName="height" values="260;0" dur="8s" repeatCount="indefinite"/>
                 </rect>
             </g>
             <line x1="390" y1="70" x2="390" y2="350" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="5 5" opacity="0.6"/>
@@ -2141,12 +2142,12 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="250" y="310" width="300" height="30" fill="url(#fresh-air-gradient)" opacity="0.55"/>
             ${sunObj}
             <path d="M 120 90 L 60 340" fill="none" stroke="#fcd34d" stroke-width="5" class="svg-ray-bounce"/>
-            <path d="M 300 285 L 300 225" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.85" class="svg-float-up"/>
-            <path d="M 292 238 L 300 222 L 308 238" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" class="svg-float-up"/>
-            <path d="M 385 285 L 385 215" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.7" class="svg-float-up" style="animation-delay: 0.6s"/>
-            <path d="M 377 230 L 385 212 L 393 230" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" class="svg-float-up" style="animation-delay: 0.6s"/>
-            <path d="M 470 285 L 470 230" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.6" class="svg-float-up" style="animation-delay: 1.2s"/>
-            <path d="M 462 244 L 470 228 L 478 244" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" class="svg-float-up" style="animation-delay: 1.2s"/>
+            <path d="M 300 285 L 300 225" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.85" class="svg-wind-flow"/>
+            <path d="M 292 238 L 300 222 L 308 238" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" class="svg-wind-flow"/>
+            <path d="M 385 285 L 385 215" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.7" class="svg-wind-flow" style="animation-delay: 0.6s"/>
+            <path d="M 377 230 L 385 212 L 393 230" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" class="svg-wind-flow" style="animation-delay: 0.6s"/>
+            <path d="M 470 285 L 470 230" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.6" class="svg-wind-flow" style="animation-delay: 1.2s"/>
+            <path d="M 462 244 L 470 228 L 478 244" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" class="svg-wind-flow" style="animation-delay: 1.2s"/>
         `;
         labelsContent += callout(60, 349, 20, 300, "Sendero Exterior (Calor Solar)", "end");
         labelsContent += callout(190, 349, 90, 380, "Piedra Pulida (Superficie Fresca)", "end");
@@ -2179,12 +2180,10 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <rect x="312" y="260" width="8" height="42" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
             <rect x="50" y="336" width="200" height="10" rx="4" fill="url(#hatch-water)" stroke="#0369a1" stroke-width="2"/>
             <path d="M 60 341 Q 75 338 90 341 T 120 341 T 150 341 T 180 341 T 210 341 T 240 341" fill="none" stroke="#7dd3fc" stroke-width="1" opacity="0.8"/>
-            <circle cx="140" cy="300" r="10" fill="#06b6d4" opacity="0.2" class="animate-pulse"/>
-            <circle cx="165" cy="280" r="14" fill="#06b6d4" opacity="0.2" class="animate-pulse" style="animation-delay: 0.5s"/>
             ${sunObj}
             <path d="M 100 90 L 150 335" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
-            <path d="M 20 150 Q 65 185 55 225 Q 48 258 85 280 Q 122 302 128 335" fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.2" class="svg-wind-flow" style="animation-duration: 7s;"/>
-            <path d="M 45 175 Q 82 202 74 235 Q 68 262 100 282 Q 128 300 140 334" fill="none" stroke="#94a3b8" stroke-width="2" opacity="0.14" class="svg-wind-flow-delayed" style="animation-duration: 7s;"/>
+            <path d="M 20 150 Q 65 185 55 225 Q 48 258 85 280 Q 122 302 128 335" fill="none" stroke="#94a3b8" stroke-width="3" opacity="0.2" class="svg-wind-flow" style="animation-duration: 18s;"/>
+            <path d="M 45 175 Q 82 202 74 235 Q 68 262 100 282 Q 128 300 140 334" fill="none" stroke="#94a3b8" stroke-width="2" opacity="0.14" class="svg-wind-flow-delayed" style="animation-duration: 18s;"/>
             <path d="M 150 328 Q 188 300 188 265 Q 188 228 232 214 Q 268 202 300 210" fill="none" stroke="#38bdf8" stroke-width="6" class="svg-wind-flow"/>
             <path d="M 300 210 Q 328 220 345 205" fill="none" stroke="#38bdf8" stroke-width="5" opacity="0.85" class="svg-wind-flow-delayed"/>
         `;
