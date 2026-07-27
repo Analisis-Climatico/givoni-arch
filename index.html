@@ -2159,7 +2159,7 @@ function renderDiagramaArquitectonico(t, index = 0) {
             ${groundLine}
             <polygon points="270,140 425,60 580,140" fill="none" stroke="#cbd5e1" stroke-width="2" opacity="0.6"/>
             <rect x="330" y="140" width="250" height="200" fill="${isDark ? '#1e293b' : '#f1f5f9'}" stroke="#cbd5e1" stroke-width="1.5" opacity="0.5"/>
-            <rect x="300" y="140" width="32" height="200" fill="url(#hatch-concrete)" stroke="#0f172a" stroke-width="2.5"/>
+            <rect x="300" y="140" width="32" height="200" fill="url(#hatch-concrete)" stroke="#cbd5e1" stroke-width="2.5"/>
             <rect x="300" y="140" width="5" height="200" fill="#0f172a" opacity="0.55"/>
             <line x1="332" y1="140" x2="332" y2="340" stroke="#94a3b8" stroke-width="1.5" opacity="0.8"/>
             ${drawWindow(300, 195, 32, 42)}
@@ -2170,8 +2170,8 @@ function renderDiagramaArquitectonico(t, index = 0) {
             <path d="M 100 90 L 150 335" fill="none" stroke="#fcd34d" stroke-width="4" class="svg-ray-bounce"/>
             <path d="M 20 195 Q -10 285 128 335" fill="none" stroke="#94a3b8" stroke-width="1.5" opacity="0.15" class="svg-wind-flow" style="animation-duration: 22s;"/>
             <path d="M 45 210 Q 15 295 140 334" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.1" class="svg-wind-flow-delayed" style="animation-duration: 22s;"/>
-            <path d="M 150 328 Q 230 230 345 225" fill="none" stroke="#0891b2" stroke-width="6" class="svg-wind-flow"/>
-            <path d="M 150 328 Q 230 230 345 225" fill="none" stroke="#7dd3fc" stroke-width="2.5" opacity="0.85" class="svg-wind-flow-delayed"/>
+            <path d="M 150 328 Q 230 270 345 275" fill="none" stroke="#0891b2" stroke-width="6" class="svg-wind-flow"/>
+            <path d="M 150 328 Q 230 270 345 275" fill="none" stroke="#7dd3fc" stroke-width="2.5" opacity="0.85" class="svg-wind-flow-delayed"/>
         `;
         labelsContent += callout(150, 340, 250, 380, "Espejo de Agua", "start");
     } else if (t === "Nebulización pasiva") {
