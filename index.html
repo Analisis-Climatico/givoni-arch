@@ -14,6 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -569,6 +570,38 @@
         </div>
     </div>
 
+    <!-- MODAL DE QR DE ANÁLISIS GUARDADO -->
+    <div id="qr-modal-overlay" class="hidden fixed inset-0 z-[220] items-center justify-center p-4" onclick="if(event.target===this) toggleQRModal(false)">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+        <div class="glass-panel modal-solid-panel relative w-full max-w-sm rounded-[28px] shadow-2xl overflow-hidden border border-white/20 dark:border-white/10">
+            <div class="relative px-6 pt-6 pb-5 overflow-hidden bg-gradient-to-r from-cyan-500/10 via-blue-400/5 to-transparent border-b border-slate-200/60 dark:border-slate-800/60">
+                <div class="flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-600/30 flex-shrink-0">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h4v4H4V4zm0 12h4v4H4v-4zM16 4h4v4h-4V4zm0 4h-2v4h2V8zm2 4h2v2h-2v-2zm-6 0h2v2h-2v-2zm4 4h2v4h-2v-4zm-4 0h2v2h-2v-2z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-space font-bold text-base uppercase tracking-[0.12em] text-slate-800 dark:text-slate-100 leading-none">QR del Análisis</h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1.5">Escanéalo para abrir este análisis</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleQRModal(false)" class="p-2 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400 transition-all active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 flex flex-col items-center">
+                <p id="qr-modal-name" class="font-space font-bold text-sm text-slate-800 dark:text-slate-100 text-center mb-4 truncate w-full"></p>
+                <div id="qr-code-canvas" class="bg-white p-4 rounded-2xl shadow-inner border border-slate-200"></div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 text-center mt-4 leading-relaxed">Al escanear, este mismo análisis se abrirá con todos sus datos cargados en el otro dispositivo.</p>
+                <button onclick="downloadCurrentQR()" class="mt-5 w-full py-3 rounded-xl font-space font-bold text-xs uppercase tracking-wider bg-cyan-600 hover:bg-cyan-500 text-white shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+                    Descargar QR (imagen)
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE COMENTARIOS / SUGERENCIAS -->
     <div id="comments-modal-overlay" class="hidden fixed inset-0 z-[200] items-center justify-center p-4 md:p-8" onclick="if(event.target===this) toggleCommentsModal(false)">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
@@ -945,6 +978,50 @@
                 { t: "Deshumidificación material", d: "Utilizar materiales transpirables e higroscópicos como madera natural, morteros de cal o arcilla que regulen la humedad ambiental." },
                 { t: "Cámara ventilada", d: "Incorporar separaciones de aire en cubiertas y muros para evitar condensación y acumulación de humedad interior." }
             ]
+        };
+
+        // Información complementaria por estrategia: consecuencias de NO aplicarla
+        // y materiales recomendados. Se muestran en las tarjetas de resultados.
+        const STRATEGY_EXTRA_INFO = {
+            "Ventilación regulable": { c: "El calor y el aire viciado se acumulan en el interior, elevando la sensación térmica y el consumo de climatización artificial.", m: "Ventanas correderas o abatibles, louvers regulables, celosías de aluminio o madera." },
+            "Cubierta ventilada": { c: "El calor irradiado por la cubierta se transmite directamente al interior, sobrecalentando los ambientes en las horas de más sol.", m: "Chapa metálica sobre estructura separada, tejas ventiladas, cámara de aire con aislante reflectivo." },
+            "Protección solar ligera": { c: "La radiación solar directa incide sobre fachadas y vanos, aumentando la carga térmica y el deslumbramiento interior.", m: "Aleros de madera o metal, parasoles perforados, láminas de policarbonato." },
+            "Espacios de transición": { c: "El cambio térmico entre exterior e interior es brusco, generando incomodidad al entrar o salir de la edificación.", m: "Pórticos, terrazas cubiertas, madera tratada, piso de hormigón pulido o piedra." },
+            "Fachada permeable": { c: "La fachada se comporta como barrera cerrada, reteniendo calor y reduciendo la renovación de aire interior.", m: "Celosías cerámicas o de hormigón, paneles perforados metálicos, listones de madera." },
+            "Ventilación elevada": { c: "El aire caliente queda atrapado en la parte superior de los espacios, sin vía de escape natural.", m: "Rejillas altas, claraboyas operables, lucarnas con persiana." },
+            "Núcleo compacto": { c: "El calor generado por ocupación y equipos se dispersa rápido, obligando a un mayor uso de calefacción.", m: "Muros de mampostería densa, hormigón armado, aislantes internos de lana mineral." },
+            "Envolvente térmica": { c: "Las pérdidas de calor hacia el exterior aumentan la demanda de calefacción y el gasto energético.", m: "Poliestireno expandido, lana de vidrio, paneles de fibra de madera." },
+            "Carpintería hermética": { c: "Las infiltraciones de aire frío reducen el confort interior y elevan el consumo de calefacción.", m: "Perfilería de PVC o aluminio con rotura de puente térmico, burletes, vidrio doble." },
+            "Muro Trombe": { c: "Se pierde una fuente de calentamiento pasivo, dependiendo más de sistemas de calefacción activos.", m: "Muro de hormigón o ladrillo pintado de negro, vidrio simple o doble exterior." },
+            "Galería solar": { c: "No se aprovecha la radiación solar disponible como fuente de calor gratuita durante el día.", m: "Estructura metálica, vidrio templado, piso de alta inercia térmica (piedra u hormigón)." },
+            "Orientación solar estratégica": { c: "Los espacios principales reciben poca radiación solar, prolongando la sensación de frío interior.", m: "No requiere materiales específicos: es una decisión de emplazamiento y diseño arquitectónico." },
+            "Panel solar térmico": { c: "Se desaprovecha la energía solar disponible, aumentando la dependencia de calefacción o agua caliente convencional.", m: "Colectores solares planos o de tubos al vacío, tanque acumulador aislado." },
+            "Cubierta captadora": { c: "La cubierta no aporta ganancia energética, perdiendo eficiencia frente al potencial solar del sitio.", m: "Estructura de cubierta inclinada, tejas o chapa oscura, aislante térmico bajo cubierta." },
+            "Acumulación térmica hidráulica": { c: "El calor captado durante el día se disipa rápido en la noche, sin reserva térmica para las horas frías.", m: "Tanques o bidones de agua pintados de oscuro, tuberías aisladas." },
+            "Patio húmedo": { c: "El ambiente interior permanece con humedad relativa muy baja, generando resequedad e incomodidad.", m: "Vegetación de sombra, estanques bajos, piso permeable o adoquín." },
+            "Fuente evaporativa": { c: "No se aprovecha el enfriamiento evaporativo, manteniendo el aire seco y más caliente de lo necesario.", m: "Fuentes de agua superficiales, bombas de recirculación, piedra o cerámica porosa." },
+            "Material higroscópico": { c: "Los acabados no regulan la humedad ambiental, favoreciendo ambientes resecos o con cambios bruscos de confort.", m: "Arcilla, adobe, barro cocido, madera natural sin sellador impermeable." },
+            "Doble envolvente térmica": { c: "El calor interior se pierde con facilidad a través de la fachada, aumentando la demanda de calefacción.", m: "Doble muro con cámara de aire, aislante de fibra de vidrio o poliuretano." },
+            "Acceso amortiguador": { c: "El aire frío ingresa directamente al abrir puertas exteriores, enfriando bruscamente los espacios interiores.", m: "Puertas dobles, vestíbulos cerrados, cortinas térmicas." },
+            "Aislamiento continuo": { c: "Existen puentes térmicos que dejan escapar calor de forma constante, encareciendo la climatización.", m: "Poliuretano proyectado, lana mineral continua, membranas aislantes." },
+            "Parasoles móviles": { c: "La radiación solar incide sin control durante todo el día, sobrecalentando fachadas y vanos.", m: "Lamas orientables de aluminio o madera, mecanismos de accionamiento manual o motorizado." },
+            "Fachada de doble piel": { c: "La envolvente recibe la radiación solar de forma directa, elevando la temperatura superficial e interior.", m: "Vidrio de control solar, estructura metálica secundaria, malla perforada." },
+            "Cubierta extendida": { c: "Fachadas y aberturas quedan expuestas a la radiación directa gran parte del día.", m: "Estructura de volado en madera o acero, cubierta ligera, canaletas de desagüe." },
+            "Muro acumulador": { c: "No se aprovecha la inercia térmica disponible, dejando pasar el calor exterior sin retraso hacia el interior.", m: "Adobe, piedra natural, hormigón macizo de gran espesor." },
+            "Piso de inercia térmica": { c: "El piso no retiene frescor, permitiendo que la temperatura interior suba más rápido durante el día.", m: "Piedra natural, concreto pulido, cerámica de gran formato." },
+            "Protección de masa térmica": { c: "La masa térmica se satura de calor directo, perdiendo su capacidad de regular la temperatura interior.", m: "Aleros, pérgolas o vegetación que generen sombra permanente sobre los muros acumuladores." },
+            "Espejo de agua climático": { c: "No se genera enfriamiento evaporativo cercano a la edificación, dejando el entorno más caluroso.", m: "Láminas de agua poco profundas, impermeabilizante, bordes de piedra o concreto." },
+            "Nebulización pasiva": { c: "Las áreas exteriores permanecen calurosas, reduciendo su uso en las horas de mayor temperatura.", m: "Sistema de microaspersión, tubería de PVC o cobre, boquillas nebulizadoras." },
+            "Vegetación refrescante": { c: "Se pierde el efecto de sombra y evapotranspiración que ayuda a bajar la temperatura del entorno inmediato.", m: "Especies de copa densa y raíz profunda, sustrato con buen drenaje, riego por goteo." },
+            "Purgado nocturno": { c: "El calor acumulado durante el día permanece atrapado en la noche, impidiendo que el edificio se enfríe.", m: "Aperturas automatizadas o manuales de fácil operación nocturna." },
+            "Lucernario térmico": { c: "El aire caliente se estanca en la parte alta de los espacios sin posibilidad de extracción natural.", m: "Claraboyas operables, estructura metálica, vidrio o policarbonato resistente a UV." },
+            "Chimenea solar invertida": { c: "No se genera tiro térmico nocturno, reduciendo la renovación de aire y el enfriamiento pasivo.", m: "Ducto vertical de mampostería o metal, remate superior ventilado." },
+            "Ventilación mecánica asistida": { c: "La ventilación natural resulta insuficiente en condiciones críticas, afectando el confort y la calidad del aire.", m: "Extractores eólicos o eléctricos, ductos de ventilación, rejillas de retorno." },
+            "Sectorización térmica": { c: "Se climatizan por igual zonas con demandas distintas, generando un gasto energético innecesario.", m: "Tabiquería interior liviana, puertas correderas, aislamiento entre sectores." },
+            "Fachada aislada": { c: "La envolvente transmite calor exterior con facilidad, incrementando la carga de enfriamiento artificial.", m: "Paneles aislantes de baja transmitancia, revestimiento ventilado, EIFS." },
+            "Elevación palafítica": { c: "La humedad del suelo asciende por capilaridad, deteriorando materiales y afectando el confort interior.", m: "Pilotes de hormigón o madera tratada, entrepiso ventilado." },
+            "Deshumidificación material": { c: "Los acabados retienen humedad, favoreciendo hongos, malos olores y deterioro de materiales.", m: "Madera natural transpirable, morteros de cal, arcilla, pinturas permeables al vapor." },
+            "Cámara ventilada": { c: "La humedad se condensa dentro de muros y cubiertas, deteriorando la construcción con el tiempo.", m: "Perfiles separadores para cámara de aire, membranas transpirables, rejillas de ventilación." }
         };
 
         const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat,lon], 11);
@@ -3267,10 +3344,29 @@ async function updateAnalysis(data) {
     const sl = document.getElementById('strategy-list');
     sl.innerHTML = '';
     recs.forEach((r, i) => {
+        const extra = STRATEGY_EXTRA_INFO[r.t] || null;
+        const consecuenciasHTML = extra ? `
+                <div class="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-700/40">
+                    <p class="text-[10px] font-space font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-1 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                        Consecuencias de no aplicarla
+                    </p>
+                    <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">${extra.c}</p>
+                </div>` : '';
+        const materialesHTML = extra ? `
+                <div class="mt-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/40">
+                    <p class="text-[10px] font-space font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
+                        Material recomendado
+                    </p>
+                    <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">${extra.m}</p>
+                </div>` : '';
         sl.innerHTML += `
             <div class="card-fade-in p-6 rounded-2xl border border-white/60 dark:border-white/10 bg-white/50 dark:bg-white/[0.04] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] transition-transform hover:-translate-y-1.5 duration-300" style="animation-delay:${i * 60}ms">
                 <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
                 <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
+                ${consecuenciasHTML}
+                ${materialesHTML}
             </div>`;
     });
 
@@ -4022,6 +4118,9 @@ async function exportZIP() {
                         <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">${buildPeriodLabel(entry.mode, entry.selectedYears, entry.selectedMonths)} · Guardado ${formatSavedDate(entry.savedAt)}</p>
                     </div>
                     <div class="flex gap-2 flex-shrink-0">
+                        <button onclick="generateAnalysisQR('${entry.id}')" class="history-action-btn" style="background: rgba(6, 182, 212, 0.1); color: #06b6d4;" title="Generar QR">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h4v4H4V4zm0 12h4v4H4v-4zM16 4h4v4h-4V4zm0 4h-2v4h2V8zm2 4h2v2h-2v-2zm-6 0h2v2h-2v-2zm4 4h2v4h-2v-4zm-4 0h2v2h-2v-2z"/></svg>
+                        </button>
                         <button onclick="loadHistoryEntry('${entry.id}')" class="history-action-btn history-load-btn" title="Cargar análisis">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </button>
@@ -4047,10 +4146,7 @@ async function exportZIP() {
             renderHistoryList();
         }
 
-        function loadHistoryEntry(id) {
-            const entry = getHistoryList().find(e => e.id === id);
-            if (!entry) return;
-
+        function applyAnalysisEntry(entry) {
             lat = entry.lat; lon = entry.lon;
             currentLocationName = entry.locationName;
             mode = entry.mode;
@@ -4067,8 +4163,88 @@ async function exportZIP() {
             document.getElementById('year-label').innerText = mode === 'mes' ? 'Año Base' : 'Años a Comparar';
 
             renderSelectors();
-            toggleHistoryModal(false);
             runClimateAnalysis();
+        }
+
+        function loadHistoryEntry(id) {
+            const entry = getHistoryList().find(e => e.id === id);
+            if (!entry) return;
+            applyAnalysisEntry(entry);
+            toggleHistoryModal(false);
+        }
+
+        // --- QR DE ANÁLISIS GUARDADO ---
+        let currentQRDataUrl = null;
+        let currentQREntryName = '';
+
+        function buildShareURL(entry) {
+            const payload = {
+                lat: entry.lat, lon: entry.lon, locationName: entry.locationName,
+                mode: entry.mode, selectedYears: entry.selectedYears, selectedMonths: entry.selectedMonths,
+                name: entry.name
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+            const url = new URL(window.location.href);
+            url.search = '';
+            url.hash = '';
+            url.searchParams.set('a', encoded);
+            return url.toString();
+        }
+
+        function generateAnalysisQR(id) {
+            const entry = getHistoryList().find(e => e.id === id);
+            if (!entry) return;
+            const shareUrl = buildShareURL(entry);
+            currentQREntryName = entry.name;
+
+            const canvasHolder = document.getElementById('qr-code-canvas');
+            canvasHolder.innerHTML = '';
+            new QRCode(canvasHolder, {
+                text: shareUrl,
+                width: 220,
+                height: 220,
+                colorDark: '#0f172a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            document.getElementById('qr-modal-name').textContent = entry.name;
+            setTimeout(() => {
+                const img = canvasHolder.querySelector('img') || canvasHolder.querySelector('canvas');
+                if (img) currentQRDataUrl = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+            }, 150);
+
+            toggleQRModal(true);
+        }
+
+        function toggleQRModal(show) {
+            const overlay = document.getElementById('qr-modal-overlay');
+            if (show) { overlay.classList.remove('hidden'); overlay.classList.add('flex-shown'); }
+            else { overlay.classList.add('hidden'); overlay.classList.remove('flex-shown'); }
+        }
+
+        function downloadCurrentQR() {
+            if (!currentQRDataUrl) return;
+            const a = document.createElement('a');
+            a.href = currentQRDataUrl;
+            const safeName = (currentQREntryName || 'analisis-clovina').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+            a.download = `qr-${safeName}.png`;
+            a.click();
+        }
+
+        // Si la página se abre desde un QR escaneado (parámetro ?a=...), carga ese análisis automáticamente
+        function tryLoadAnalysisFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const encoded = params.get('a');
+            if (!encoded) return false;
+            try {
+                const payload = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+                applyAnalysisEntry(payload);
+                return true;
+            } catch (e) {
+                console.error('No se pudo leer el análisis del QR:', e);
+                return false;
+            }
         }
 
         function toggleHistoryModal(show) {
@@ -4240,8 +4416,10 @@ async function exportZIP() {
 
         updateHistoryBadge();
         
-        setMode('mes'); 
-        updateLocation(lat, lon);
+        setMode('mes');
+        if (!tryLoadAnalysisFromURL()) {
+            updateLocation(lat, lon);
+        }
     </script>
 </body>
 </html>
