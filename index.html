@@ -1520,14 +1520,16 @@ function renderDiagramaArquitectonico(t, index = 0) {
     `;
 
     const drawWindow = (x, y, w, h) => {
-        const paneW = (w - 6) / 2;
+        const paneW = (w - 8) / 2;
         const mid = x + w / 2;
         return `
-        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#cbd5e1" stroke-width="2"/>
-        <rect x="${x + 2}" y="${y + 2}" width="${paneW}" height="${h - 4}" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
-        <rect x="${mid + 1}" y="${y + 2}" width="${paneW}" height="${h - 4}" fill="url(#glass-lines)" stroke="#38bdf8" stroke-width="1.5"/>
+        <rect x="${x - 5}" y="${y - 5}" width="${w + 10}" height="${h + 10}" fill="${isDark ? '#0f172a' : '#1e293b'}" opacity="0.4"/>
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#cbd5e1"/>
+        <rect x="${x + 3}" y="${y + 3}" width="${paneW}" height="${h - 6}" fill="url(#glass-lines)" stroke="#94a3b8" stroke-width="1"/>
+        <rect x="${mid + 2}" y="${y + 3}" width="${paneW}" height="${h - 6}" fill="url(#glass-lines)" stroke="#94a3b8" stroke-width="1"/>
     `;
     };
+
 
 
     // 3. LÓGICAS CONDICIONALES DE DIBUJO ESTRATÉGICO
