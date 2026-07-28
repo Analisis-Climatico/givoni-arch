@@ -440,7 +440,7 @@
 
                 <section class="space-y-4 w-full">
                     <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-violet"><span class="text-violet-600 dark:text-violet-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m6.364.636l-1.414 1.414M21 12h-2M17.364 17.364l-1.414-1.414M12 19v2M7.05 17.364l1.414-1.414M5 12H3m2.05-6.364L6.464 6.05M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>04</span> / Estrategias Arquitectónicas</h2>
-                    <div id="strategy-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    <div id="strategy-list" class="flex flex-col gap-4"></div>
                 </section>
 
                 <section class="space-y-6 w-full pt-4">
@@ -3365,34 +3365,38 @@ async function updateAnalysis(data) {
     sl.innerHTML = '';
     recs.forEach((r, i) => {
         const extra = STRATEGY_EXTRA_INFO[r.t] || null;
-        // Insignias circulares con degradado, el mismo lenguaje visual que ya usan
-        // los íconos de los modales de la app (Guardar, Historial, QR): con color,
-        // sombra y peso propio, pero sin encerrar el texto en un bloque cuadrado.
+        // Flujo horizontal en 3 columnas (Estrategia -> Si no se aplica -> Material),
+        // separadas por flechas para guiar la lectura, en vez de una tarjeta angosta
+        // en grilla (evita el espacio vacío cuando el texto de una tarjeta es corto).
+        const arrowRight = `<div class="hidden md:flex items-center justify-center px-2 flex-shrink-0"><svg class="w-5 h-5 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>`;
+        const arrowDown = `<div class="flex md:hidden items-center justify-center py-1"><svg class="w-5 h-5 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17l4 4m0 0l4-4m-4 4V3"/></svg></div>`;
         const extraHTML = extra ? `
-                <div class="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-700/40 space-y-3.5">
-                    <div class="flex items-start gap-3">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-rose-600 to-orange-500 flex items-center justify-center shadow-lg shadow-rose-600/30 flex-shrink-0">
-                            <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                ${arrowDown}${arrowRight}
+                <div class="md:w-[32%] md:pl-2">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <div class="w-6 h-6 rounded-full bg-gradient-to-br from-rose-600 to-orange-500 flex items-center justify-center shadow-md shadow-rose-600/30 flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
                         </div>
-                        <div class="min-w-0 pt-1">
-                            <p class="font-space font-bold text-[11px] uppercase tracking-wider text-rose-600 dark:text-rose-400 leading-none">Si no se aplica</p>
-                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-1.5">${extra.c}</p>
-                        </div>
+                        <p class="font-space font-bold text-[11px] uppercase tracking-wider text-rose-600 dark:text-rose-400">Si no se aplica</p>
                     </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-600/30 flex-shrink-0">
-                            <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${extra.c}</p>
+                </div>
+                ${arrowDown}${arrowRight}
+                <div class="md:w-[32%] md:pl-2">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <div class="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-600/30 flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375"/></svg>
                         </div>
-                        <div class="min-w-0 pt-1">
-                            <p class="font-space font-bold text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 leading-none">Material recomendado</p>
-                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-1.5">${extra.m}</p>
-                        </div>
+                        <p class="font-space font-bold text-[11px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Material recomendado</p>
                     </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${extra.m}</p>
                 </div>` : '';
         sl.innerHTML += `
-            <div class="card-fade-in p-6 rounded-2xl border border-white/60 dark:border-white/10 bg-white/50 dark:bg-white/[0.04] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] transition-transform hover:-translate-y-1.5 duration-300" style="animation-delay:${i * 60}ms">
-                <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
-                <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
+            <div class="card-fade-in p-6 rounded-2xl border border-white/60 dark:border-white/10 bg-white/50 dark:bg-white/[0.04] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] transition-transform hover:-translate-y-1.5 duration-300 flex flex-col md:flex-row md:items-start" style="animation-delay:${i * 60}ms">
+                <div class="md:w-[32%] md:pr-2 flex-shrink-0">
+                    <p class="text-blue-600 dark:text-cyan-400 font-bold font-space text-sm uppercase tracking-wider mb-2">${r.t}</p>
+                    <p class="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">${r.d}</p>
+                </div>
                 ${extraHTML}
             </div>`;
     });
