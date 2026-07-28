@@ -44,11 +44,43 @@
         .section-title-accent.accent-violet::before { background: linear-gradient(180deg, #a78bfa, #7c3aed); }
         .section-title-accent.accent-rose::before { background: linear-gradient(180deg, #fb7185, #e11d48); }
         .section-title-accent.accent-sky::before { background: linear-gradient(180deg, #38bdf8, #0369a1); }
-        .palette-swatch { transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease; cursor: pointer; position: relative; }
-        .palette-swatch:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 16px 30px -8px rgba(0,0,0,0.35); }
-        .palette-swatch .copy-hint { opacity: 0; transition: opacity 0.2s ease; }
-        .palette-swatch:hover .copy-hint { opacity: 1; }
-        .palette-swatch.copied .copy-hint { opacity: 1; }
+
+        /* ---- Moodboard cromático (paleta tipo collage) ---- */
+        .moodboard-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-auto-rows: 58px;
+            grid-auto-flow: dense;
+            gap: 12px;
+        }
+        @media (max-width: 640px) {
+            .moodboard-grid { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 64px; gap: 9px; }
+        }
+        .moodboard-tile {
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 12px 26px -10px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.28), inset 0 -12px 18px -10px rgba(0,0,0,0.18);
+            transform: rotate(var(--rot, 0deg));
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
+        }
+        .moodboard-tile:hover {
+            transform: rotate(var(--rot, 0deg)) scale(1.045) translateY(-5px);
+            box-shadow: 0 22px 40px -10px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.3);
+            z-index: 5;
+        }
+        .moodboard-tile .tile-hex {
+            position: absolute; left: 11px; bottom: 9px;
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 10.5px;
+            letter-spacing: 0.04em; opacity: 0.92; transition: opacity 0.2s ease;
+        }
+        .moodboard-tile .tile-copied {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.08em;
+            text-transform: uppercase; background: rgba(15,23,42,0.6); color: #fff; opacity: 0; transition: opacity 0.2s ease;
+        }
+        .moodboard-tile.copied .tile-copied { opacity: 1; }
         /* Los modales llevan mucho texto: usamos un fondo más opaco para que
            el texto gris sea legible incluso con contenido de color detrás. */
         .modal-solid-panel { background: rgba(255, 255, 255, 0.94) !important; }
@@ -3183,11 +3215,22 @@ function getKoppenPalette(koppen) {
 function copyPaletteColor(hex, el) {
     navigator.clipboard.writeText(hex).catch(() => {});
     el.classList.add('copied');
-    const hint = el.querySelector('.copy-hint');
-    const original = hint ? hint.textContent : '';
-    if (hint) hint.textContent = '¡Copiado!';
-    setTimeout(() => { el.classList.remove('copied'); if (hint) hint.textContent = original; }, 1200);
+    setTimeout(() => el.classList.remove('copied'), 1000);
 }
+
+// Tamaños de tile (en celdas de la grilla de 6 columnas) que se van
+// repitiendo para que el resultado se vea como un collage armado a mano,
+// no como una grilla uniforme de muestras de color.
+const MOODBOARD_TILE_SIZES = [
+    { col: 3, row: 3 }, // pieza grande
+    { col: 3, row: 2 },
+    { col: 2, row: 3 }, // pieza vertical
+    { col: 2, row: 2 },
+    { col: 2, row: 2 },
+    { col: 3, row: 2 }
+];
+// Pequeñas rotaciones alternadas (grados) para el efecto "recorte pegado"
+const MOODBOARD_ROTATIONS = [-2, 1.5, -1, 2, -1.5, 1];
 
 function renderKoppenPalette(koppen) {
     const container = document.getElementById('palette-content');
@@ -3206,35 +3249,24 @@ function renderKoppenPalette(koppen) {
         tag.classList.remove('hidden');
     }
 
-    const swatch = (c, tam) => `
-        <div class="palette-swatch rounded-2xl ${tam} flex flex-col justify-end p-3 shadow-lg border border-black/5"
-             style="background:${c.hex};" onclick="copyPaletteColor('${c.hex}', this)">
-            <span class="copy-hint text-[10px] font-space font-bold uppercase tracking-wider drop-shadow" style="color:${isLightHex(c.hex) ? '#1e293b' : '#f8fafc'}">Copiar hex</span>
-            <span class="font-space font-bold text-xs drop-shadow" style="color:${isLightHex(c.hex) ? '#1e293b' : '#f8fafc'}">${c.nombre}</span>
-            <span class="text-[11px] font-mono opacity-90 drop-shadow" style="color:${isLightHex(c.hex) ? '#1e293b' : '#f8fafc'}">${c.hex}</span>
-        </div>`;
+    // Se mezclan dominantes y acentos en un mismo tablero: un moodboard real
+    // no separa "colores principales" de "colores secundarios" en bloques
+    // distintos, los combina como un collage único.
+    const colores = [...paleta.dominante, ...paleta.acento];
 
-    container.innerHTML = `
-        <p class="text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 mb-3">Colores dominantes (fachadas y cubiertas)</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            ${paleta.dominante.map(c => swatch(c, 'h-24')).join('')}
-        </div>
-        <p class="text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 mb-3">Colores de acento (carpintería y detalles)</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            ${paleta.acento.map(c => swatch(c, 'h-16')).join('')}
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="rounded-xl border border-rose-500/20 bg-rose-500/5 p-4">
-                <p class="font-space font-bold text-xs uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-1.5">Evitar</p>
-                <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">${paleta.evitar}</p>
-            </div>
-            <div class="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
-                <p class="font-space font-bold text-xs uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-1.5">Por qué</p>
-                <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">${paleta.justificacion}</p>
-            </div>
-        </div>
-        <p class="text-[10.5px] text-slate-400 dark:text-slate-500 mt-4 leading-relaxed">Paleta derivada del grupo climático <strong>${koppen.grupo}</strong> de la clasificación Köppen-Geiger (código <strong>${koppen.codigo}</strong>), en función de la absortancia solar recomendada para cada régimen térmico. Es un punto de partida de diseño, no una norma técnica vinculante.</p>
-    `;
+    const tiles = colores.map((c, i) => {
+        const size = MOODBOARD_TILE_SIZES[i % MOODBOARD_TILE_SIZES.length];
+        const rot = MOODBOARD_ROTATIONS[i % MOODBOARD_ROTATIONS.length];
+        const textColor = isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
+        return `
+            <div class="moodboard-tile" style="background:${c.hex}; grid-column: span ${size.col}; grid-row: span ${size.row}; --rot:${rot}deg;"
+                 onclick="copyPaletteColor('${c.hex}', this)">
+                <span class="tile-hex" style="color:${textColor}">${c.hex}</span>
+                <span class="tile-copied">Copiado</span>
+            </div>`;
+    }).join('');
+
+    container.innerHTML = `<div class="moodboard-grid">${tiles}</div>`;
 }
 
 // Determina si un color hex es "claro" (para decidir si el texto sobre el
