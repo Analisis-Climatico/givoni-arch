@@ -43,6 +43,12 @@
         .section-title-accent.accent-amber::before { background: linear-gradient(180deg, #fbbf24, #d97706); }
         .section-title-accent.accent-violet::before { background: linear-gradient(180deg, #a78bfa, #7c3aed); }
         .section-title-accent.accent-rose::before { background: linear-gradient(180deg, #fb7185, #e11d48); }
+        .section-title-accent.accent-sky::before { background: linear-gradient(180deg, #38bdf8, #0369a1); }
+        .palette-swatch { transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease; cursor: pointer; position: relative; }
+        .palette-swatch:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 16px 30px -8px rgba(0,0,0,0.35); }
+        .palette-swatch .copy-hint { opacity: 0; transition: opacity 0.2s ease; }
+        .palette-swatch:hover .copy-hint { opacity: 1; }
+        .palette-swatch.copied .copy-hint { opacity: 1; }
         /* Los modales llevan mucho texto: usamos un fondo más opaco para que
            el texto gris sea legible incluso con contenido de color detrás. */
         .modal-solid-panel { background: rgba(255, 255, 255, 0.94) !important; }
@@ -448,6 +454,18 @@
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-rose"><span class="text-rose-600 dark:text-rose-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>05</span> / Imagen Arquitectónica Referencial</h2>
                     </div>
                     <div id="interactive-visualizer" class="rounded-[24px] overflow-hidden border border-white/60 dark:border-white/[0.12] shadow-2xl flex flex-col lg:flex-row min-h-[500px] bg-white/30 dark:bg-slate-900/30 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.4)]">
+                    </div>
+                </section>
+
+                <section class="space-y-4 w-full">
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-sky"><span class="text-sky-600 dark:text-sky-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h2a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-2a2 2 0 00-2-2h-2.5M7 21V9a2 2 0 012-2h2"/></svg>06</span> / Paleta Cromática Bioclimática</h2>
+                        <span id="palette-koppen-tag" class="hidden text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 bg-sky-500/10 border border-sky-500/20 rounded-full px-3 py-1"></span>
+                    </div>
+                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 glass-panel p-6 md:p-8 shadow-2xl relative overflow-hidden">
+                        <div id="palette-content">
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-space tracking-wide">Ejecuta un análisis para generar la paleta cromática recomendada según la clasificación climática de Köppen-Geiger del lugar.</p>
+                        </div>
                     </div>
                 </section>
 
@@ -2987,6 +3005,248 @@ function classifyKoppen(profile12, latitude) {
     };
 }
 
+// =========================================================================
+// GENERADOR DE PALETA CROMÁTICA BIOCLIMÁTICA (basado en Köppen-Geiger)
+// =========================================================================
+// Lógica: el color de una envolvente arquitectónica no es solo estética,
+// tiene comportamiento térmico real (absortancia solar). Un color oscuro
+// absorbe más radiación y eleva la temperatura superficial; un color claro
+// la refleja. Esta paleta prioriza esa lógica según el grupo climático:
+//   A (tropical)    -> evitar oscuros: ya hay exceso de calor + humedad.
+//   B (árido)       -> evitar blanco puro (deslumbramiento) y negro puro
+//                       (sobrecalentamiento); tonos tierra intermedios.
+//   C (templado)    -> rango medio, sin extremos, salvo variantes cálidas.
+//   D (continental) -> se permiten tonos más oscuros y cálidos: ayudan a
+//                       captar calor en inviernos largos y fríos.
+//   E (polar)       -> se busca lo opuesto al trópico: máxima captación,
+//                       tonos oscuros cálidos como color dominante posible.
+//
+// Cada paleta trae "dominante" (para grandes superficies: fachadas,
+// cubiertas) y "acento" (para carpintería, marcos, detalles puntuales),
+// más el texto de qué evitar y por qué, coherente con classifyKoppen().
+
+const KOPPEN_PALETTE_BASE = {
+    A: {
+        dominante: [
+            { hex: "#F6F2E7", nombre: "Blanco cálido" },
+            { hex: "#E4EFD9", nombre: "Verde pálido" },
+            { hex: "#B9D3AE", nombre: "Verde salvia" },
+            { hex: "#7FA98C", nombre: "Verde eucalipto" }
+        ],
+        acento: [
+            { hex: "#4F7358", nombre: "Verde bosque" },
+            { hex: "#C98A4B", nombre: "Madera clara" }
+        ],
+        evitar: "Negros, grises muy oscuros y tonos saturados oscuros en fachadas y cubiertas: en un clima cálido-húmedo absorben radiación solar y elevan la temperatura superficial, agravando un confort ya exigido por la humedad ambiental.",
+        justificacion: "Los tonos claros y de baja absortancia reflejan la radiación solar y ayudan a disipar calor en un entorno donde la humedad ya limita la evaporación natural."
+    },
+    B: {
+        dominante: [
+            { hex: "#F0E4CB", nombre: "Arena clara" },
+            { hex: "#D9BD87", nombre: "Ocre suave" },
+            { hex: "#C08A4E", nombre: "Terracota" },
+            { hex: "#8B5E34", nombre: "Tierra tostada" }
+        ],
+        acento: [
+            { hex: "#5C4033", nombre: "Marrón tierra" }
+        ],
+        evitar: "Blancos puros, que generan deslumbramiento excesivo por la fuerte radiación directa; y negros o tonos muy oscuros en grandes superficies expuestas, que sobrecalientan la envolvente durante el día.",
+        justificacion: "Los tonos tierra intermedios reflejan lo suficiente para evitar el deslumbramiento sin llegar al sobrecalentamiento del blanco puro, además de integrarse visualmente al entorno árido."
+    },
+    C: {
+        dominante: [
+            { hex: "#EFE9DC", nombre: "Blanco roto" },
+            { hex: "#D9CBAE", nombre: "Arena templada" },
+            { hex: "#A8977A", nombre: "Tierra media" },
+            { hex: "#6E7D63", nombre: "Verde grisáceo" }
+        ],
+        acento: [
+            { hex: "#4A4032", nombre: "Marrón oscuro" }
+        ],
+        evitar: "Los extremos: blancos puros (deslumbramiento estacional) y negros absolutos (sobrecalentamiento en veranos cálidos) como color dominante de grandes superficies.",
+        justificacion: "Un rango medio de tonalidades responde bien a la variabilidad estacional propia del clima templado, sin comprometer el confort en ninguna época del año."
+    },
+    D: {
+        dominante: [
+            { hex: "#E4DCC9", nombre: "Hueso frío" },
+            { hex: "#B9A583", nombre: "Piedra cálida" },
+            { hex: "#8A7052", nombre: "Madera oscura" },
+            { hex: "#5C4A34", nombre: "Tierra profunda" }
+        ],
+        acento: [
+            { hex: "#2F2B28", nombre: "Casi negro cálido" }
+        ],
+        evitar: "En veranos cálidos, moderar el negro en grandes superficies para no sobrecalentar; en inviernos largos y fríos —condición dominante del año— sí se recomiendan tonos oscuros y cálidos.",
+        justificacion: "El fuerte contraste estacional permite tonalidades más oscuras que en climas tropicales o áridos: ayudan a captar y retener calor durante el invierno, que es la condición predominante del año."
+    },
+    E: {
+        dominante: [
+            { hex: "#E9EDEF", nombre: "Blanco hielo" },
+            { hex: "#C3CDD1", nombre: "Gris frío claro" },
+            { hex: "#8A9AA1", nombre: "Gris azulado" },
+            { hex: "#4A5A63", nombre: "Gris oscuro cálido" }
+        ],
+        acento: [
+            { hex: "#2E2420", nombre: "Marrón casi negro" }
+        ],
+        evitar: "El blanco puro como color dominante de fachada: aunque el entorno sea nevado, su baja absortancia implica perder la escasa radiación solar disponible. Se prioriza el oscuro cálido en superficies con exposición solar directa.",
+        justificacion: "En climas polares el objetivo es el opuesto al tropical: captar y retener la mayor cantidad de calor posible, por lo que los tonos oscuros y cálidos son deseables en las superficies expuestas al sol."
+    }
+};
+
+// Ajustes puntuales por código específico, cuando la intensidad térmica
+// del subtipo se aleja lo suficiente del promedio de su grupo como para
+// justificar una paleta distinta (ej: un desierto frío no es igual a uno
+// cálido; un subártico extremo no es igual a un continental templado).
+const KOPPEN_PALETTE_OVERRIDES = {
+    Af: {
+        dominante: [
+            { hex: "#F3EFE2", nombre: "Blanco hueso" },
+            { hex: "#D8E8D2", nombre: "Verde muy pálido" },
+            { hex: "#9FC79A", nombre: "Verde selva" },
+            { hex: "#5E8F68", nombre: "Verde húmedo" }
+        ],
+        acento: [{ hex: "#3F6B49", nombre: "Verde profundo" }, { hex: "#B97A3E", nombre: "Madera húmeda" }],
+        evitar: "Igual que el grupo tropical: evitar oscuros que retienen calor donde la humedad constante ya limita la disipación natural.",
+        justificacion: "La luz filtrada por la vegetación densa permite tonos algo más saturados que en sabana, siempre dentro del rango claro."
+    },
+    Aw: { evitarNombre: "sabana" }, As: { evitarNombre: "sabana" },
+    BWh: {}, // usa base B directamente (desierto cálido de referencia)
+    BWk: {
+        dominante: [
+            { hex: "#EDE6D6", nombre: "Arena fría" },
+            { hex: "#D3C39D", nombre: "Ocre grisáceo" },
+            { hex: "#B08252", nombre: "Terracota fría" },
+            { hex: "#7A5A3A", nombre: "Tierra oscura" }
+        ],
+        acento: [{ hex: "#4A3527", nombre: "Marrón noche" }],
+        evitar: "Blanco puro por el deslumbramiento diurno. A diferencia del desierto cálido, aquí sí se permite un acento oscuro cálido moderado: las noches frías se benefician de mayor captación térmica.",
+        justificacion: "Desierto frío: fuerte oscilación térmica día/noche. La paleta base se mantiene clara para el día, con un acento oscuro reservado a superficies de baja exposición solar directa."
+    },
+    Csa: {
+        dominante: [
+            { hex: "#F2ECDD", nombre: "Blanco cal" },
+            { hex: "#E3C9A0", nombre: "Arena mediterránea" },
+            { hex: "#C88B4E", nombre: "Terracota" },
+            { hex: "#7A8B6F", nombre: "Olivo" }
+        ],
+        acento: [{ hex: "#4A3B2A", nombre: "Marrón mediterráneo" }],
+        evitar: "Negros y tonos muy oscuros en fachadas: el verano seco y muy soleado exige superficies reflectantes que reduzcan la ganancia solar directa.",
+        justificacion: "Paleta mediterránea clásica: veranos calurosos y secos priorizan la reflexión solar por sobre la captación."
+    },
+    Cfa: {
+        dominante: [
+            { hex: "#F1EDE0", nombre: "Blanco cálido" },
+            { hex: "#D8DFC9", nombre: "Verde muy pálido" },
+            { hex: "#A9BDA0", nombre: "Verde neutro" },
+            { hex: "#708C74", nombre: "Verde grisáceo" }
+        ],
+        acento: [{ hex: "#45604A", nombre: "Verde oscuro" }],
+        evitar: "Tonos oscuros en fachada: el verano húmedo y caluroso se comporta térmicamente como un tropical, aunque el invierno sea más templado.",
+        justificacion: "Subtropical húmedo: el verano cálido-húmedo domina el diseño térmico de la envolvente, priorizando reflexión sobre captación."
+    },
+    Cfc: {
+        dominante: [
+            { hex: "#E7E1D3", nombre: "Hueso" },
+            { hex: "#C7B79C", nombre: "Piedra clara" },
+            { hex: "#8F7A5E", nombre: "Madera media" },
+            { hex: "#5C4E3C", nombre: "Tierra oscura" }
+        ],
+        acento: [{ hex: "#7C8B74", nombre: "Verde apagado" }],
+        evitar: "Aquí no hay riesgo real de sobrecalentamiento estival, por lo que sí pueden usarse tonos oscuros con moderación en fachadas.",
+        justificacion: "Oceánico subpolar: veranos frescos permiten priorizar confort visual y una leve captación solar de invierno, sin la restricción térmica de climas más cálidos."
+    },
+    EF: {
+        dominante: [
+            { hex: "#D8DEE1", nombre: "Blanco hielo frío" },
+            { hex: "#93A3AA", nombre: "Gris azulado" },
+            { hex: "#5C6B70", nombre: "Gris profundo" },
+            { hex: "#33261F", nombre: "Marrón casi negro" }
+        ],
+        acento: [{ hex: "#1A1512", nombre: "Negro cálido" }],
+        evitar: "El blanco como color dominante de superficies con exposición solar directa: sin verano térmico real, cada grado de captación solar cuenta.",
+        justificacion: "Casquete polar: la prioridad absoluta es captar y retener la escasa radiación solar disponible durante todo el año."
+    }
+};
+
+function getKoppenPalette(koppen) {
+    if (!koppen) return null;
+    const override = KOPPEN_PALETTE_OVERRIDES[koppen.codigo];
+    const base = KOPPEN_PALETTE_BASE[koppen.grupo];
+    if (!base) return null;
+    if (override && override.dominante) {
+        return { ...base, ...override };
+    }
+    return base;
+}
+
+function copyPaletteColor(hex, el) {
+    navigator.clipboard.writeText(hex).catch(() => {});
+    el.classList.add('copied');
+    const hint = el.querySelector('.copy-hint');
+    const original = hint ? hint.textContent : '';
+    if (hint) hint.textContent = '¡Copiado!';
+    setTimeout(() => { el.classList.remove('copied'); if (hint) hint.textContent = original; }, 1200);
+}
+
+function renderKoppenPalette(koppen) {
+    const container = document.getElementById('palette-content');
+    const tag = document.getElementById('palette-koppen-tag');
+    if (!container) return;
+
+    const paleta = getKoppenPalette(koppen);
+    if (!paleta || !koppen) {
+        container.innerHTML = `<p class="text-slate-500 dark:text-slate-400 text-sm font-space tracking-wide">No fue posible generar una paleta: datos climáticos insuficientes para clasificar según Köppen-Geiger.</p>`;
+        if (tag) tag.classList.add('hidden');
+        return;
+    }
+
+    if (tag) {
+        tag.textContent = `${koppen.nombre} · ${koppen.codigo}`;
+        tag.classList.remove('hidden');
+    }
+
+    const swatch = (c, tam) => `
+        <div class="palette-swatch rounded-2xl ${tam} flex flex-col justify-end p-3 shadow-lg border border-black/5"
+             style="background:${c.hex};" onclick="copyPaletteColor('${c.hex}', this)">
+            <span class="copy-hint text-[10px] font-space font-bold uppercase tracking-wider drop-shadow" style="color:${isLightHex(c.hex) ? '#1e293b' : '#f8fafc'}">Copiar hex</span>
+            <span class="font-space font-bold text-xs drop-shadow" style="color:${isLightHex(c.hex) ? '#1e293b' : '#f8fafc'}">${c.nombre}</span>
+            <span class="text-[11px] font-mono opacity-90 drop-shadow" style="color:${isLightHex(c.hex) ? '#1e293b' : '#f8fafc'}">${c.hex}</span>
+        </div>`;
+
+    container.innerHTML = `
+        <p class="text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 mb-3">Colores dominantes (fachadas y cubiertas)</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            ${paleta.dominante.map(c => swatch(c, 'h-24')).join('')}
+        </div>
+        <p class="text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 mb-3">Colores de acento (carpintería y detalles)</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            ${paleta.acento.map(c => swatch(c, 'h-16')).join('')}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-xl border border-rose-500/20 bg-rose-500/5 p-4">
+                <p class="font-space font-bold text-xs uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-1.5">Evitar</p>
+                <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">${paleta.evitar}</p>
+            </div>
+            <div class="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
+                <p class="font-space font-bold text-xs uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-1.5">Por qué</p>
+                <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">${paleta.justificacion}</p>
+            </div>
+        </div>
+        <p class="text-[10.5px] text-slate-400 dark:text-slate-500 mt-4 leading-relaxed">Paleta derivada del grupo climático <strong>${koppen.grupo}</strong> de la clasificación Köppen-Geiger (código <strong>${koppen.codigo}</strong>), en función de la absortancia solar recomendada para cada régimen térmico. Es un punto de partida de diseño, no una norma técnica vinculante.</p>
+    `;
+}
+
+// Determina si un color hex es "claro" (para decidir si el texto sobre el
+// swatch debe ser oscuro o claro y mantenerse legible)
+function isLightHex(hex) {
+    const c = hex.replace('#', '');
+    const r = parseInt(c.substr(0, 2), 16);
+    const g = parseInt(c.substr(2, 2), 16);
+    const b = parseInt(c.substr(4, 2), 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 150;
+}
+
 function staggerReveal(container, selector, delayStep = 40) {
     if (!container) return;
     const items = container.querySelectorAll(selector);
@@ -3354,6 +3614,11 @@ async function updateAnalysis(data) {
         tMin: +tMinAbsoluta.toFixed(1),
         altitud: Math.round(altitud)
     };
+
+    // Genera la paleta cromática recomendada a partir del mismo objeto
+    // `koppen` ya clasificado arriba, para que nunca contradiga el
+    // diagnóstico climático mostrado en el resumen general.
+    renderKoppenPalette(koppen);
 
     // Filtros de limpieza
     const sinSVG = ["Ventilación cruzada profunda", "Cubierta extractora", "Vidrio de control solar"];
