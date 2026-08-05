@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLÓVINA — Análisis Bioclimático</title>
+    <script>
+        // Detección temprana de móvil vs escritorio (antes de pintar) para no chocar ambas interfaces.
+        (function() {
+            function applyDeviceClass() {
+                var isMobile = window.innerWidth <= 860;
+                document.documentElement.classList.toggle('is-mobile', isMobile);
+                document.documentElement.classList.toggle('is-desktop', !isMobile);
+            }
+            applyDeviceClass();
+            window.addEventListener('resize', applyDeviceClass);
+            window.addEventListener('orientationchange', applyDeviceClass);
+            window.__applyDeviceClass = applyDeviceClass;
+        })();
+    </script>
     <link rel="icon" type="image/png" sizes="256x256" href="Tipo1.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
@@ -130,6 +144,99 @@
         .dark .strat-btn.active { background: rgba(6, 182, 212, 0.15); border-left: 4px solid #06b6d4; box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05); }
 
         .climate-line {transition: stroke-width 0.2s, opacity 0.2s; }
+
+        /* ============================================================
+           INTERFAZ MÓVIL — activada solo cuando <html> lleva .is-mobile
+           No afecta en absoluto a la interfaz de escritorio (.is-desktop)
+           ============================================================ */
+        .is-mobile #floating-open-btn { display: block !important; }
+        .is-mobile .desktop-only { display: none !important; }
+        .is-desktop .mobile-only { display: none !important; }
+
+        .is-mobile #sidebar {
+            position: fixed !important;
+            top: 0; left: 0;
+            width: 86vw !important;
+            max-width: 340px;
+            height: 100dvh !important;
+            padding: 1.1rem !important;
+            transform: translateX(-100%);
+            transition: transform 0.35s cubic-bezier(0.25,1,0.5,1);
+            z-index: 100;
+        }
+        .is-mobile #sidebar.mobile-open { transform: translateX(0); }
+        .is-mobile #sidebar-mini-content { display: none !important; }
+        .is-mobile #sidebar-full-content { display: flex !important; }
+
+        #mobile-sidebar-backdrop {
+            display: none;
+            position: fixed; inset: 0; z-index: 90;
+            background: rgba(15,23,42,0.55);
+            backdrop-filter: blur(2px);
+        }
+        .is-mobile #mobile-sidebar-backdrop.show { display: block; }
+
+        .is-mobile #main-content {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            padding-top: 4.2rem !important;
+            row-gap: 2rem !important;
+        }
+
+        .is-mobile #header-container {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+        .is-mobile #header-container > div:first-child {
+            justify-content: center;
+            gap: 0.75rem !important;
+        }
+        .is-mobile #header-container > div:first-child span {
+            font-size: 10px !important;
+            letter-spacing: 0.25em !important;
+            white-space: normal;
+        }
+        .is-mobile #header-container img { height: 42px !important; }
+
+        .is-mobile #header-container > div:last-child {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem !important;
+            width: 100%;
+        }
+        .is-mobile #header-container > div:last-child > .w-\[180px\],
+        .is-mobile #header-container > div:last-child > .relative.w-\[180px\] {
+            width: calc(50% - 0.35rem) !important;
+        }
+        .is-mobile #mode-switch { flex-shrink: 0; }
+
+        .is-mobile section h2 { font-size: 12px !important; letter-spacing: 0.15em !important; }
+        .is-mobile #chart { min-width: 640px !important; }
+        .is-mobile #chart div[style*="height: 760px"] { height: 520px !important; }
+
+        .is-mobile .glass-panel { border-radius: 18px !important; }
+
+        /* Modales a pantalla completa en móvil, para no perder legibilidad */
+        .is-mobile #help-modal-overlay, .is-mobile #save-modal-overlay,
+        .is-mobile #history-modal-overlay, .is-mobile #comments-modal-overlay,
+        .is-mobile #qr-modal-overlay {
+            padding: 0 !important;
+        }
+        .is-mobile #help-modal-overlay > div, .is-mobile #save-modal-overlay > div,
+        .is-mobile #history-modal-overlay > div, .is-mobile #comments-modal-overlay > div,
+        .is-mobile #qr-modal-overlay > div {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100dvh !important;
+            max-height: 100dvh !important;
+            border-radius: 0 !important;
+        }
+        .is-mobile #help-modal-overlay nav.md\:w-\[230px\] { width: 100% !important; }
+
+        .is-mobile #interactive-visualizer { min-height: 380px !important; }
+        .is-mobile #strategy-menu { max-height: 260px !important; }
 
         @keyframes flow-wind { 0% { stroke-dashoffset: 150; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { stroke-dashoffset: -150; opacity: 0; } }
         @keyframes pulse-sun { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
@@ -302,6 +409,8 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
     </div>
+
+    <div id="mobile-sidebar-backdrop" onclick="toggleSidebar()"></div>
 
     <div class="flex min-h-screen w-full relative z-10">
         <aside id="sidebar" class="w-[380px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-5 overflow-hidden">
@@ -1209,7 +1318,17 @@
             const sidebar = document.getElementById('sidebar');
             const fullContent = document.getElementById('sidebar-full-content');
             const miniContent = document.getElementById('sidebar-mini-content');
-            
+            const backdrop = document.getElementById('mobile-sidebar-backdrop');
+
+            if (document.documentElement.classList.contains('is-mobile')) {
+                // En móvil el sidebar es un drawer a pantalla completa, sin modo "mini".
+                const opening = !sidebar.classList.contains('mobile-open');
+                sidebar.classList.toggle('mobile-open', opening);
+                backdrop.classList.toggle('show', opening);
+                document.body.style.overflow = opening ? 'hidden' : '';
+                return;
+            }
+
             if(isSidebarVisible) {
                 sidebar.classList.remove('w-[380px]', 'p-5');
                 sidebar.classList.add('w-[75px]', 'p-2');
