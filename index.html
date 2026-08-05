@@ -190,15 +190,17 @@
             padding-bottom: 1rem !important;
         }
         .is-mobile #header-container > div:first-child {
+            flex-direction: column;
             justify-content: center;
-            gap: 0.75rem !important;
+            gap: 0.4rem !important;
         }
         .is-mobile #header-container > div:first-child span {
-            font-size: 10px !important;
-            letter-spacing: 0.25em !important;
+            font-size: 15px !important;
+            letter-spacing: 0.3em !important;
             white-space: normal;
+            text-align: center;
         }
-        .is-mobile #header-container img { height: 42px !important; }
+        .is-mobile #header-container img { height: 64px !important; }
 
         .is-mobile #header-container > div:last-child {
             flex-wrap: wrap;
@@ -213,8 +215,26 @@
         .is-mobile #mode-switch { flex-shrink: 0; }
 
         .is-mobile section h2 { font-size: 12px !important; letter-spacing: 0.15em !important; }
-        .is-mobile #chart { min-width: 640px !important; }
-        .is-mobile #chart div[style*="height: 760px"] { height: 520px !important; }
+
+        /* El climograma se dibuja siempre a 900x760 (así lo espera el script D3,
+           no tocamos eso para no romper la estructura). En móvil lo mostramos
+           reducido con un transform visual puro (no cambia lo que D3 mide/dibuja).
+           Se deja scroll horizontal por si el teléfono es muy angosto, así nunca
+           se recorta nada, solo se ve más pequeño de entrada. */
+        .is-mobile #chart-scroll-wrap {
+            --chart-scale: 0.68;
+            display: flex !important;
+            justify-content: flex-start;
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+            height: calc(760px * var(--chart-scale));
+        }
+        .is-mobile #chart {
+            transform: scale(var(--chart-scale));
+            transform-origin: top left;
+            flex-shrink: 0;
+        }
 
         .is-mobile .glass-panel { border-radius: 18px !important; }
 
@@ -410,9 +430,8 @@
         </button>
     </div>
 
-    <div id="mobile-sidebar-backdrop" onclick="toggleSidebar()"></div>
-
     <div class="flex min-h-screen w-full relative z-10">
+        <div id="mobile-sidebar-backdrop" onclick="toggleSidebar()"></div>
         <aside id="sidebar" class="w-[380px] h-screen glass-panel flex flex-col justify-between shadow-2xl sticky top-0 sidebar-transition z-40 p-5 overflow-hidden">
             <div id="sidebar-full-content" class="flex-1 flex flex-col justify-between h-full overflow-hidden">
                 <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/50 pb-3 mb-4 mt-1">
@@ -574,7 +593,7 @@
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-cyan"><span class="text-cyan-600 dark:text-cyan-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V9m4 8V5m4 12v-4M4 21h16"/></svg>01</span> / Climograma de Givoni</h2>
                     </div>
                     <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 bg-transparent p-5 shadow-2xl glass-panel relative overflow-hidden flex items-center justify-center">
-                        <div class="w-full overflow-x-auto overflow-y-hidden">
+                        <div id="chart-scroll-wrap" class="w-full overflow-x-auto overflow-y-hidden">
                             <div id="chart" class="relative min-w-[900px] w-full" style="height: 760px;">
                             <div id="chart-canvas-inside" class="w-full h-full absolute inset-0"></div>
                         </div>
