@@ -235,6 +235,31 @@
         }
         .is-mobile #mode-switch { flex-shrink: 0; }
 
+        /* Controles del header más pequeños en móvil (mode-switch, meses/años,
+           guardar, descargar) — se veían demasiado grandes. */
+        .is-mobile #mode-switch { width: 50px !important; height: 26px !important; padding: 3px !important; }
+        .is-mobile #mode-indicator { width: 20px !important; height: 20px !important; top: 3px !important; left: 3px !important; }
+        .is-mobile #mode-indicator[style*="34px"] { transform: translateX(22px) !important; }
+        .is-mobile #mode-switch svg { width: 12px !important; height: 12px !important; }
+        .is-mobile #btn-mes, .is-mobile #btn-año {
+            padding: 0.4rem 0.7rem !important;
+            font-size: 10.5px !important;
+        }
+        .is-mobile #save-btn, .is-mobile #download-menu-btn {
+            padding: 0.55rem 0.7rem !important;
+            font-size: 10.5px !important;
+            gap: 0.3rem !important;
+        }
+        .is-mobile #save-btn svg, .is-mobile #download-menu-btn svg { width: 12px !important; height: 12px !important; }
+
+        /* Evita el corte abrupto al final de listas con scroll (menú de
+           estrategias y pestañas de ayuda): se difumina en vez de cortar en seco. */
+        .is-mobile #strategy-menu,
+        .is-mobile #help-modal-overlay nav {
+            -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 26px), transparent 100%);
+            mask-image: linear-gradient(to bottom, black calc(100% - 26px), transparent 100%);
+        }
+
         .is-mobile section h2 { font-size: 12px !important; letter-spacing: 0.15em !important; }
 
         /* El climograma se dibuja siempre a 900x760 (así lo espera el script D3,
