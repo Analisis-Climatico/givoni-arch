@@ -224,14 +224,16 @@
         .is-mobile #header-container img { height: 74px !important; }
 
         .is-mobile #header-container > div:last-child {
-            flex-wrap: wrap;
+            flex-wrap: nowrap !important;
             justify-content: center;
-            gap: 0.6rem !important;
+            gap: 0.35rem !important;
             width: 100%;
         }
         .is-mobile #header-container > div:last-child > .w-\[180px\],
         .is-mobile #header-container > div:last-child > .relative.w-\[180px\] {
-            width: calc(50% - 0.35rem) !important;
+            width: auto !important;
+            flex: 1 1 0%;
+            min-width: 0;
         }
         .is-mobile #mode-switch { flex-shrink: 0; }
 
@@ -242,20 +244,21 @@
         .is-mobile #mode-indicator[style*="34px"] { transform: translateX(22px) !important; }
         .is-mobile #mode-switch svg { width: 12px !important; height: 12px !important; }
         .is-mobile #btn-mes, .is-mobile #btn-año {
-            padding: 0.4rem 0.7rem !important;
-            font-size: 10.5px !important;
+            padding: 0.4rem 0.6rem !important;
+            font-size: 10px !important;
         }
         .is-mobile #save-btn, .is-mobile #download-menu-btn {
-            padding: 0.55rem 0.7rem !important;
-            font-size: 10.5px !important;
-            gap: 0.3rem !important;
+            padding: 0.5rem 0.35rem !important;
+            font-size: 9px !important;
+            gap: 0.2rem !important;
+            letter-spacing: 0.02em !important;
+            white-space: nowrap;
         }
-        .is-mobile #save-btn svg, .is-mobile #download-menu-btn svg { width: 12px !important; height: 12px !important; }
+        .is-mobile #save-btn svg, .is-mobile #download-menu-btn svg { width: 11px !important; height: 11px !important; }
+        .is-mobile #download-menu-chevron { display: none !important; }
 
-        /* Evita el corte abrupto al final de listas con scroll (menú de
-           estrategias y pestañas de ayuda): se difumina en vez de cortar en seco. */
-        .is-mobile #strategy-menu,
-        .is-mobile #help-modal-overlay nav {
+        /* Evita el corte abrupto al final del menú de estrategias con scroll. */
+        .is-mobile #strategy-menu {
             -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 26px), transparent 100%);
             mask-image: linear-gradient(to bottom, black calc(100% - 26px), transparent 100%);
         }
@@ -297,27 +300,52 @@
             max-height: 100dvh !important;
             border-radius: 0 !important;
         }
-        /* Pestañas del Centro de Ayuda en columna (no franja horizontal ancha) */
+        /* Pestañas del Centro de Ayuda: grilla horizontal compacta, todas visibles
+           a la vez, sin necesidad de barra para deslizar. */
         .is-mobile #help-modal-overlay nav {
-            flex-direction: column !important;
+            display: grid !important;
+            grid-template-columns: repeat(5, 1fr) !important;
+            flex-direction: unset !important;
             width: 100% !important;
-            overflow-x: hidden !important;
-            overflow-y: auto !important;
-            max-height: 30vh;
-            gap: 0.35rem !important;
-            padding: 0.6rem !important;
+            overflow: visible !important;
+            max-height: none !important;
+            gap: 0.25rem !important;
+            padding: 0.5rem !important;
         }
         .is-mobile #help-modal-overlay .help-tab-btn {
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            text-align: center !important;
             min-width: 0 !important;
             width: 100% !important;
-            padding: 0.55rem 0.65rem !important;
-            gap: 0.6rem !important;
+            padding: 0.4rem 0.1rem !important;
+            gap: 0.3rem !important;
+            border-left: none !important;
+            border-radius: 10px !important;
+        }
+        .is-mobile #help-modal-overlay .help-tab-btn.active {
+            box-shadow: inset 0 0 0 1.5px currentColor;
         }
         .is-mobile #help-modal-overlay .help-tab-icon {
-            width: 30px !important;
-            height: 30px !important;
+            width: 28px !important;
+            height: 28px !important;
         }
-        .is-mobile #help-modal-overlay .help-tab-icon svg { width: 15px !important; height: 15px !important; }
+        .is-mobile #help-modal-overlay .help-tab-icon svg { width: 14px !important; height: 14px !important; }
+        .is-mobile #help-modal-overlay .help-tab-btn > span:last-child {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+        }
+        .is-mobile #help-modal-overlay .help-tab-btn > span:last-child > span:first-child {
+            font-size: 7.5px !important;
+            letter-spacing: 0.01em !important;
+            white-space: normal !important;
+            line-height: 1.15 !important;
+        }
+        .is-mobile #help-modal-overlay .help-tab-btn > span:last-child > span:last-child {
+            display: none !important;
+        }
         /* Cabecera del modal (icono + título) más compacta */
         .is-mobile #help-modal-overlay > .glass-panel > div:first-child {
             padding: 0.9rem 1rem !important;
