@@ -217,11 +217,11 @@
             gap: 0.6rem !important;
         }
         .is-mobile #header-container > div:first-child span {
-            font-size: 10px !important;
-            letter-spacing: 0.22em !important;
+            font-size: 9px !important;
+            letter-spacing: 0.16em !important;
             white-space: nowrap;
         }
-        .is-mobile #header-container img { height: 56px !important; }
+        .is-mobile #header-container img { height: 74px !important; }
 
         .is-mobile #header-container > div:last-child {
             flex-wrap: wrap;
@@ -303,21 +303,39 @@
             width: 100% !important;
             overflow-x: hidden !important;
             overflow-y: auto !important;
-            max-height: 34vh;
-            gap: 0.4rem !important;
+            max-height: 30vh;
+            gap: 0.35rem !important;
+            padding: 0.6rem !important;
         }
         .is-mobile #help-modal-overlay .help-tab-btn {
             min-width: 0 !important;
             width: 100% !important;
+            padding: 0.55rem 0.65rem !important;
+            gap: 0.6rem !important;
         }
+        .is-mobile #help-modal-overlay .help-tab-icon {
+            width: 30px !important;
+            height: 30px !important;
+        }
+        .is-mobile #help-modal-overlay .help-tab-icon svg { width: 15px !important; height: 15px !important; }
+        /* Cabecera del modal (icono + título) más compacta */
+        .is-mobile #help-modal-overlay > .glass-panel > div:first-child {
+            padding: 0.9rem 1rem !important;
+        }
+        .is-mobile #help-modal-overlay > .glass-panel > div:first-child .w-11 {
+            width: 38px !important; height: 38px !important;
+        }
+        .is-mobile #help-modal-overlay h2 { font-size: 14px !important; }
+        .is-mobile #help-modal-overlay > .glass-panel > div:first-child p { font-size: 11px !important; margin-top: 0.15rem !important; }
 
         /* Sección 05 (estrategias + imagen referencial) más compacta en móvil */
         .is-mobile #interactive-visualizer { min-height: unset !important; }
         .is-mobile #interactive-visualizer > div { flex-direction: column !important; }
-        .is-mobile #strategy-menu { max-height: 210px !important; padding: 0.65rem !important; }
-        .is-mobile #strategy-menu button { padding: 0.6rem 0.7rem !important; gap: 0.6rem !important; }
-        .is-mobile #strategy-menu button p { font-size: 12.5px !important; }
-        .is-mobile #interactive-visualizer > div > div:last-child { min-height: 260px !important; }
+        .is-mobile #strategy-menu { max-height: 190px !important; padding: 0.55rem !important; }
+        .is-mobile #strategy-menu button { padding: 0.5rem 0.65rem !important; gap: 0.5rem !important; }
+        .is-mobile #strategy-menu button svg { width: 17px !important; height: 17px !important; }
+        .is-mobile #strategy-menu button p { font-size: 12px !important; }
+        .is-mobile #interactive-visualizer > div > div:last-child { min-height: 240px !important; }
 
         /* El mapa (Leaflet) no debe heredar la transición global: eso causaba
            el trabajo/lag al arrastrarlo con el dedo. */
