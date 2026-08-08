@@ -135,11 +135,15 @@
         .moodboard-canvas-wrap svg { display: block; width: 100%; height: auto; }
         .moodboard-shape { cursor: pointer; transition: filter 0.2s ease, opacity 0.2s ease; }
         .moodboard-shape:hover { filter: brightness(1.07); }
-        .moodboard-shape-label {
-            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 12px;
-            letter-spacing: 0.04em; opacity: 0; transition: opacity 0.2s ease; pointer-events: none;
+        .moodboard-label-fo { opacity: 0; transition: opacity 0.2s ease; pointer-events: none; }
+        .moodboard-shape-group:hover .moodboard-label-fo { opacity: 1; }
+        .moodboard-label-box {
+            font-family: 'Space Grotesk', sans-serif; text-align: center; line-height: 1.35;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
         }
-        .moodboard-shape-group:hover .moodboard-shape-label { opacity: 0.95; }
+        .moodboard-label-box .mlb-name { font-weight: 700; font-size: 13px; }
+        .moodboard-label-box .mlb-rgb { font-weight: 500; font-size: 11px; opacity: 0.9; }
+        .moodboard-label-box .mlb-hex { font-weight: 600; font-size: 11px; opacity: 0.85; }
         .moodboard-shape-group.copied .moodboard-copied-label { opacity: 1 !important; }
         .moodboard-copied-label {
             font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.06em;
@@ -3443,6 +3447,37 @@ const KOPPEN_PALETTE_BASE = {
     }
 };
 
+// Paletas alternas por grupo: colores realmente distintos entre sí
+// (no variaciones de brillo de la misma paleta), cada una respetando
+// la misma lógica climática (qué evitar/priorizar) que la paleta base.
+const KOPPEN_GROUP_VARIANTS = {
+    A: [
+        { label: 'Coral', dominante: [{hex:'#F7F1E4',nombre:'Blanco arena'},{hex:'#EAD9C4',nombre:'Beige cálido'},{hex:'#F0B79A',nombre:'Coral suave'},{hex:'#8FC9BD',nombre:'Turquesa pálido'}], acento: [{hex:'#C97B63',nombre:'Terracota coral'},{hex:'#3E7C74',nombre:'Verde azulado'}] },
+        { label: 'Laguna', dominante: [{hex:'#F4F7F2',nombre:'Blanco niebla'},{hex:'#D7ECE4',nombre:'Menta pálida'},{hex:'#9FD8C9',nombre:'Aguamarina'},{hex:'#5FA89D',nombre:'Turquesa medio'}], acento: [{hex:'#E8B04B',nombre:'Mostaza suave'},{hex:'#2F6B63',nombre:'Verde turquesa'}] },
+        { label: 'Arena', dominante: [{hex:'#F5EEDD',nombre:'Arena clara'},{hex:'#E3D2AE',nombre:'Arena dorada'},{hex:'#C9B27E',nombre:'Ocre suave'},{hex:'#9AB98F',nombre:'Verde oliva pálido'}], acento: [{hex:'#B5651D',nombre:'Tierra cocida'},{hex:'#4B6B4F',nombre:'Verde bosque'}] }
+    ],
+    B: [
+        { label: 'Rosada', dominante: [{hex:'#F2E3D5',nombre:'Arena rosada'},{hex:'#E8C8AE',nombre:'Durazno pálido'},{hex:'#D19875',nombre:'Terracota rosa'},{hex:'#A8664A',nombre:'Ladrillo'}], acento: [{hex:'#6B4226',nombre:'Tierra oscura'},{hex:'#8C5B7A',nombre:'Malva'}] },
+        { label: 'Salvia', dominante: [{hex:'#EFE6D2',nombre:'Arena pálida'},{hex:'#D8C8A0',nombre:'Ocre pálido'},{hex:'#B8A97E',nombre:'Verde salvia tierra'},{hex:'#8C8A5E',nombre:'Oliva seco'}], acento: [{hex:'#6B5A34',nombre:'Marrón oliva'}] },
+        { label: 'Cobre', dominante: [{hex:'#F3E9D6',nombre:'Marfil'},{hex:'#E0BE93',nombre:'Arena cobriza'},{hex:'#C77F45',nombre:'Cobre'},{hex:'#96552E',nombre:'Terracota oscura'}], acento: [{hex:'#5C3A20',nombre:'Marrón cobrizo'}] }
+    ],
+    C: [
+        { label: 'Mediterránea', dominante: [{hex:'#F2ECDD',nombre:'Blanco cal'},{hex:'#E3C9A0',nombre:'Arena mediterránea'},{hex:'#C88B4E',nombre:'Terracota'},{hex:'#7A8B6F',nombre:'Olivo'}], acento: [{hex:'#4A3B2A',nombre:'Marrón mediterráneo'}] },
+        { label: 'Bosque', dominante: [{hex:'#EDE9DD',nombre:'Blanco hueso'},{hex:'#C7D2C0',nombre:'Verde niebla'},{hex:'#8FA487',nombre:'Verde bosque claro'},{hex:'#5C6E56',nombre:'Verde musgo'}], acento: [{hex:'#3E4A38',nombre:'Verde oscuro'}] },
+        { label: 'Piedra', dominante: [{hex:'#EFEDE7',nombre:'Blanco piedra'},{hex:'#D6D0C4',nombre:'Gris piedra'},{hex:'#ADA492',nombre:'Taupe'},{hex:'#79705F',nombre:'Marrón grisáceo'}], acento: [{hex:'#3F382C',nombre:'Marrón carbón'}] }
+    ],
+    D: [
+        { label: 'Vino', dominante: [{hex:'#E8DFD2',nombre:'Hueso'},{hex:'#C9A98E',nombre:'Terracota apagada'},{hex:'#8C5A4A',nombre:'Vino tierra'},{hex:'#5A3A32',nombre:'Marrón vino'}], acento: [{hex:'#2A211D',nombre:'Café oscuro'}] },
+        { label: 'Bosque nórdico', dominante: [{hex:'#E2DCCB',nombre:'Hueso frío'},{hex:'#A9B08C',nombre:'Verde musgo'},{hex:'#6E7A52',nombre:'Verde bosque'},{hex:'#3F4A30',nombre:'Verde oscuro'}], acento: [{hex:'#261F17',nombre:'Marrón negro'}] },
+        { label: 'Pizarra', dominante: [{hex:'#DED9CE',nombre:'Gris hueso'},{hex:'#B8AFA0',nombre:'Gris cálido'},{hex:'#7A6F60',nombre:'Piedra oscura'},{hex:'#463F35',nombre:'Marrón pizarra'}], acento: [{hex:'#1E1A16',nombre:'Negro cálido'}] }
+    ],
+    E: [
+        { label: 'Aurora', dominante: [{hex:'#E6EEF0',nombre:'Blanco hielo'},{hex:'#B9D6D9',nombre:'Azul hielo'},{hex:'#6E9AA0',nombre:'Azul gris'},{hex:'#3E5C62',nombre:'Azul profundo'}], acento: [{hex:'#24211E',nombre:'Negro cálido'}] },
+        { label: 'Musgo ártico', dominante: [{hex:'#E7EBE4',nombre:'Blanco musgo'},{hex:'#C6D0BE',nombre:'Verde gris pálido'},{hex:'#8A9578',nombre:'Verde musgo'},{hex:'#4F5B41',nombre:'Verde oscuro'}], acento: [{hex:'#231F1A',nombre:'Café negro'}] },
+        { label: 'Basalto', dominante: [{hex:'#DDE1E2',nombre:'Gris hielo'},{hex:'#B4B9BA',nombre:'Gris basalto'},{hex:'#787D7E',nombre:'Gris piedra'},{hex:'#45494A',nombre:'Gris carbón'}], acento: [{hex:'#1C1A19',nombre:'Negro puro'}] }
+    ]
+};
+
 // Ajustes puntuales por código específico, cuando la intensidad térmica
 // del subtipo se aleja lo suficiente del promedio de su grupo como para
 // justificar una paleta distinta (ej: un desierto frío no es igual a uno
@@ -3550,24 +3585,13 @@ function shadeHex(hex, percent) {
 
 // A partir de la paleta curada de un clima, genera varias variantes
 // (más clara, más profunda, más contrastada) desplazando la luminosidad
-// de cada color dentro de la MISMA familia de tono. Nunca se inventan
-// colores fuera de lo recomendado para el clima: solo se exploran distintos
-// puntos dentro del rango ya definido por el grupo/código Köppen.
-function generatePaletteVariants(paleta) {
-    const shift = (dom, acc) => ({
-        dominante: paleta.dominante.map(c => ({ ...c, hex: shadeHex(c.hex, dom) })),
-        acento: paleta.acento.map(c => ({ ...c, hex: shadeHex(c.hex, acc) }))
-    });
-    return [
-        { label: 'Clásica', ...shift(0, 0) },
-        { label: 'Clara', ...shift(0.12, 0.06) },
-        { label: 'Profunda', ...shift(-0.08, -0.16) },
-        {
-            label: 'Contraste',
-            dominante: paleta.dominante.map((c, i) => ({ ...c, hex: shadeHex(c.hex, i < 2 ? 0.15 : 0.02) })),
-            acento: paleta.acento.map(c => ({ ...c, hex: shadeHex(c.hex, -0.22) }))
-        }
-    ];
+// Variantes con colores REALMENTE distintos entre sí (no sombras de la
+// misma paleta): la "Clásica" es la paleta curada del código/grupo, y las
+// otras 3 vienen de KOPPEN_GROUP_VARIANTS, cada una respetando la misma
+// lógica climática pero con otra familia de color.
+function generatePaletteVariants(paleta, grupo) {
+    const alternas = KOPPEN_GROUP_VARIANTS[grupo] || [];
+    return [{ label: 'Clásica', dominante: paleta.dominante, acento: paleta.acento }, ...alternas];
 }
 
 // Siempre 4 dominantes + 2 acentos (rellena un segundo acento si la
@@ -3578,6 +3602,12 @@ function buildSixColors(variant) {
     if (acentos.length < 2) acentos.push({ hex: shadeHex(acentos[0].hex, -0.18), nombre: 'Acento oscuro' });
     return [...variant.dominante.slice(0, 4), ...acentos.slice(0, 2)];
 }
+
+function hexToRgb(hex) {
+    const c = hex.replace('#', '');
+    return { r: parseInt(c.substr(0, 2), 16), g: parseInt(c.substr(2, 2), 16), b: parseInt(c.substr(4, 2), 16) };
+}
+
 
 // Estado de la sección: qué clima está activo y qué variante de paleta
 // tiene seleccionada el usuario en la barra horizontal.
@@ -3602,7 +3632,7 @@ function renderKoppenPalette(koppen) {
         tag.classList.remove('hidden');
     }
 
-    __paletteState = { koppen, variants: generatePaletteVariants(paleta), activeIndex: 0 };
+    __paletteState = { koppen, variants: generatePaletteVariants(paleta, koppen.grupo), activeIndex: 0 };
     if (bar) bar.classList.remove('hidden');
     renderPaletteVariantBar();
     renderActiveMoodboard();
@@ -3640,10 +3670,10 @@ function renderActiveMoodboard() {
 // de rectángulos): un círculo, un corte diagonal, bloques y una franja,
 // como un tablero armado a mano, con el nombre del clima superpuesto.
 function buildMoodboardSVG(koppen, colores) {
-    const label = (c) => isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
+    const textColorFor = (c) => isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
     const shapes = [
         { tag: 'circle', attrs: `cx="210" cy="290" r="210"`, color: colores[0], lx: 210, ly: 290 },
-        { tag: 'path', attrs: `d="M260,20 L880,20 L880,240 L460,240 Z"`, color: colores[3], lx: 556, ly: 134, isTitle: true },
+        { tag: 'path', attrs: `d="M260,20 L880,20 L880,240 L460,240 Z"`, color: colores[3], lx: 700, ly: 170, isTitle: true },
         { tag: 'path', attrs: `d="M300,250 L650,250 L650,420 L335,420 Z"`, color: colores[4], lx: 447, ly: 336 },
         { tag: 'rect', attrs: `x="650" y="250" width="240" height="180"`, color: colores[1], lx: 770, ly: 340 },
         { tag: 'rect', attrs: `x="650" y="400" width="240" height="160"`, color: colores[5], lx: 770, ly: 480 },
@@ -3651,15 +3681,25 @@ function buildMoodboardSVG(koppen, colores) {
     ];
 
     const shapeMarkup = shapes.map(s => {
-        const textColor = label(s.color);
-        const labelEl = s.isTitle
-            ? `<text x="${s.lx}" y="${s.ly}" class="moodboard-title-text" style="fill:${textColor}" font-size="30">${koppen.nombre}</text>`
-            : `<text x="${s.lx}" y="${s.ly}" text-anchor="middle" class="moodboard-shape-label" style="fill:${textColor}">${s.color.hex}</text>`;
-        const copiedEl = `<text x="${s.lx}" y="${s.ly + (s.isTitle ? 26 : 16)}" text-anchor="middle" class="moodboard-copied-label" style="fill:${textColor}">Copiado</text>`;
+        const rgb = hexToRgb(s.color.hex);
+        const textColor = textColorFor(s.color);
+        const titleText = s.isTitle
+            ? `<text x="556" y="134" class="moodboard-title-text" style="fill:${textColor}" font-size="30">${koppen.nombre}</text>`
+            : '';
+        const labelBox = `
+            <foreignObject x="${s.lx - 80}" y="${s.ly - 28}" width="160" height="56" class="moodboard-label-fo">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="moodboard-label-box" style="color:${textColor}">
+                    <div class="mlb-name">${s.color.nombre || ''}</div>
+                    <div class="mlb-rgb">R:${rgb.r} G:${rgb.g} B:${rgb.b}</div>
+                    <div class="mlb-hex">${s.color.hex}</div>
+                </div>
+            </foreignObject>`;
+        const copiedEl = `<text x="${s.lx}" y="${s.ly + 34}" text-anchor="middle" class="moodboard-copied-label" style="fill:${textColor}">Copiado</text>`;
         return `
             <g class="moodboard-shape-group" onclick="copyPaletteColor('${s.color.hex}', this)">
                 <${s.tag} class="moodboard-shape" ${s.attrs} fill="${s.color.hex}"></${s.tag}>
-                ${labelEl}
+                ${titleText}
+                ${labelBox}
                 ${copiedEl}
             </g>`;
     }).join('');
