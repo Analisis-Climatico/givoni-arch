@@ -114,73 +114,64 @@
         .section-title-accent.accent-violet::before { background: linear-gradient(180deg, #a78bfa, #7c3aed); }
         .section-title-accent.accent-rose::before { background: linear-gradient(180deg, #fb7185, #e11d48); }
         .section-title-accent.accent-sky::before { background: linear-gradient(180deg, #38bdf8, #0369a1); }
-        .palette-swatch { display: none; } /* legado, ya no se usa */
+        .palette-swatch, .moodboard-grid, .moodboard-tile { display: none; } /* legado, ya no se usa */
 
-        /* ---- Moodboard cromático (collage editorial, piezas a filo) ---- */
-        .moodboard-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(6, 68px);
-            grid-template-areas:
-                "hero hero hero tall tall tall"
-                "hero hero hero tall tall tall"
-                "circle circle mid tall tall tall"
-                "circle circle mid tall tall tall"
-                "title title title title extra extra"
-                "title title title title extra extra";
-            gap: 4px;
-            border-radius: 18px;
+        /* ---- Moodboard cromático orgánico (formas libres tipo collage) ---- */
+        .moodboard-canvas-wrap {
+            border-radius: 20px;
             overflow: hidden;
+            background-color: #eef1f4;
+            background-image:
+                linear-gradient(rgba(15,23,42,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15,23,42,0.06) 1px, transparent 1px);
+            background-size: 22px 22px;
         }
-        @media (max-width: 640px) {
-            .moodboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(9, 62px);
-                grid-template-areas:
-                    "hero hero" "hero hero"
-                    "tall tall" "tall tall"
-                    "circle mid" "circle mid"
-                    "title title" "title title"
-                    "extra extra";
-            }
+        .dark .moodboard-canvas-wrap {
+            background-color: #0b1220;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
         }
-        .moodboard-tile.role-hero { grid-area: hero; }
-        .moodboard-tile.role-tall { grid-area: tall; }
-        .moodboard-tile.role-mid { grid-area: mid; }
-        .moodboard-tile.role-title { grid-area: title; }
-        .moodboard-tile.role-circle { grid-area: circle; }
-        .moodboard-tile.role-extra { grid-area: extra; }
-        .moodboard-tile {
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: filter 0.2s ease;
+        .moodboard-canvas-wrap svg { display: block; width: 100%; height: auto; }
+        .moodboard-shape { cursor: pointer; transition: filter 0.2s ease, opacity 0.2s ease; }
+        .moodboard-shape:hover { filter: brightness(1.07); }
+        .moodboard-shape-label {
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 12px;
+            letter-spacing: 0.04em; opacity: 0; transition: opacity 0.2s ease; pointer-events: none;
         }
-        .moodboard-tile:hover { filter: brightness(1.08); }
-        .moodboard-tile.circle-tile {
-            border-radius: 50%;
-            width: 104px; height: 104px;
-            align-self: center; justify-self: center;
-            outline: 5px solid rgba(255,255,255,0.9); outline-offset: -5px;
+        .moodboard-shape-group:hover .moodboard-shape-label { opacity: 0.95; }
+        .moodboard-shape-group.copied .moodboard-copied-label { opacity: 1 !important; }
+        .moodboard-copied-label {
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.06em;
+            opacity: 0; transition: opacity 0.2s ease; pointer-events: none;
         }
-        .moodboard-tile .tile-hex {
-            position: absolute; left: 10px; bottom: 8px;
-            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 10px;
-            letter-spacing: 0.04em; opacity: 0; transition: opacity 0.2s ease;
-        }
-        .moodboard-tile:hover .tile-hex { opacity: 0.95; }
-        .moodboard-tile.circle-tile .tile-hex { left: 50%; bottom: -18px; transform: translateX(-50%); text-align: center; }
-        .moodboard-tile .tile-copied {
-            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 10.5px; letter-spacing: 0.08em;
-            text-transform: uppercase; background: rgba(15,23,42,0.55); color: #fff; opacity: 0; transition: opacity 0.2s ease;
-        }
-        .moodboard-tile.copied .tile-copied { opacity: 1; }
-        .moodboard-tile.title-tile .tile-name {
-            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        .moodboard-title-text {
             font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600;
-            font-size: clamp(20px, 2.6vw, 32px); color: #fff; text-shadow: 0 3px 14px rgba(0,0,0,0.45);
-            text-align: center; padding: 0 12px; letter-spacing: 0.01em;
+            fill: #fff; text-anchor: middle; dominant-baseline: middle;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.45));
+        }
+
+        /* ---- Barra horizontal de variantes de paleta ---- */
+        .palette-variant-row {
+            display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 10px;
+            scrollbar-width: thin;
+        }
+        .palette-variant-chip {
+            flex: 0 0 auto; display: flex; flex-direction: column; gap: 5px;
+            padding: 5px; border-radius: 12px; cursor: pointer; width: 92px;
+            border: 2px solid transparent; background: rgba(120,120,120,0.08);
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .palette-variant-chip:hover { background: rgba(120,120,120,0.16); }
+        .palette-variant-chip.active { border-color: #38bdf8; background: rgba(56,189,248,0.12); }
+        .palette-variant-chip .chip-swatches {
+            display: flex; height: 22px; border-radius: 7px; overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+        }
+        .palette-variant-chip .chip-swatches span { flex: 1 1 0; }
+        .palette-variant-chip .chip-label {
+            font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 10px;
+            letter-spacing: 0.02em; text-align: center; color: inherit; opacity: 0.85;
         }
         /* Los modales llevan mucho texto: usamos un fondo más opaco para que
            el texto gris sea legible incluso con contenido de color detrás. */
@@ -806,6 +797,10 @@
                         <span id="palette-koppen-tag" class="hidden text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 bg-sky-500/10 border border-sky-500/20 rounded-full px-3 py-1"></span>
                     </div>
                     <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 glass-panel p-6 md:p-8 shadow-2xl relative overflow-hidden">
+                        <div id="palette-variant-bar" class="hidden mb-4">
+                            <p class="text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 mb-2">Variantes recomendadas para este clima</p>
+                            <div id="palette-variant-row" class="palette-variant-row"></div>
+                        </div>
                         <div id="palette-content">
                             <p class="text-slate-500 dark:text-slate-400 text-sm font-space tracking-wide">Ejecuta un análisis para generar la paleta cromática recomendada según la clasificación climática de Köppen-Geiger del lugar.</p>
                         </div>
@@ -3541,8 +3536,6 @@ function copyPaletteColor(hex, el) {
 }
 
 // Oscurece o aclara un hex un porcentaje dado (negativo = oscurece).
-// Se usa para generar un segundo acento cuando la paleta solo trae uno,
-// sin tener que codificar a mano un color extra por cada clima.
 function shadeHex(hex, percent) {
     const c = hex.replace('#', '');
     const num = parseInt(c, 16);
@@ -3555,20 +3548,52 @@ function shadeHex(hex, percent) {
     return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
 }
 
-// Roles fijos por posición dentro del collage: cada uno corresponde a un
-// área nombrada del grid (ver CSS .moodboard-grid), de modo que las piezas
-// siempre teselan sin dejar huecos, sin depender de un acomodo automático.
-const MOODBOARD_LAYOUT = ['hero', 'tall', 'mid', 'title', 'circle', 'extra'];
+// A partir de la paleta curada de un clima, genera varias variantes
+// (más clara, más profunda, más contrastada) desplazando la luminosidad
+// de cada color dentro de la MISMA familia de tono. Nunca se inventan
+// colores fuera de lo recomendado para el clima: solo se exploran distintos
+// puntos dentro del rango ya definido por el grupo/código Köppen.
+function generatePaletteVariants(paleta) {
+    const shift = (dom, acc) => ({
+        dominante: paleta.dominante.map(c => ({ ...c, hex: shadeHex(c.hex, dom) })),
+        acento: paleta.acento.map(c => ({ ...c, hex: shadeHex(c.hex, acc) }))
+    });
+    return [
+        { label: 'Clásica', ...shift(0, 0) },
+        { label: 'Clara', ...shift(0.12, 0.06) },
+        { label: 'Profunda', ...shift(-0.08, -0.16) },
+        {
+            label: 'Contraste',
+            dominante: paleta.dominante.map((c, i) => ({ ...c, hex: shadeHex(c.hex, i < 2 ? 0.15 : 0.02) })),
+            acento: paleta.acento.map(c => ({ ...c, hex: shadeHex(c.hex, -0.22) }))
+        }
+    ];
+}
+
+// Siempre 4 dominantes + 2 acentos (rellena un segundo acento si la
+// paleta curada solo trae uno), para que el collage tenga exactamente
+// 6 piezas en un layout fijo y predecible.
+function buildSixColors(variant) {
+    const acentos = [...variant.acento];
+    if (acentos.length < 2) acentos.push({ hex: shadeHex(acentos[0].hex, -0.18), nombre: 'Acento oscuro' });
+    return [...variant.dominante.slice(0, 4), ...acentos.slice(0, 2)];
+}
+
+// Estado de la sección: qué clima está activo y qué variante de paleta
+// tiene seleccionada el usuario en la barra horizontal.
+let __paletteState = { koppen: null, variants: [], activeIndex: 0 };
 
 function renderKoppenPalette(koppen) {
     const container = document.getElementById('palette-content');
     const tag = document.getElementById('palette-koppen-tag');
+    const bar = document.getElementById('palette-variant-bar');
     if (!container) return;
 
     const paleta = getKoppenPalette(koppen);
     if (!paleta || !koppen) {
         container.innerHTML = `<p class="text-slate-500 dark:text-slate-400 text-sm font-space tracking-wide">No fue posible generar una paleta: datos climáticos insuficientes para clasificar según Köppen-Geiger.</p>`;
         if (tag) tag.classList.add('hidden');
+        if (bar) bar.classList.add('hidden');
         return;
     }
 
@@ -3577,28 +3602,74 @@ function renderKoppenPalette(koppen) {
         tag.classList.remove('hidden');
     }
 
-    // Aseguramos siempre 4 dominantes + 2 acentos para que el collage
-    // tenga un layout fijo y predecible, sin huecos ni piezas de sobra.
-    const acentos = [...paleta.acento];
-    if (acentos.length < 2) acentos.push({ hex: shadeHex(acentos[0].hex, -0.18), nombre: 'Acento oscuro' });
-    const colores = [...paleta.dominante.slice(0, 4), ...acentos.slice(0, 2)];
+    __paletteState = { koppen, variants: generatePaletteVariants(paleta), activeIndex: 0 };
+    if (bar) bar.classList.remove('hidden');
+    renderPaletteVariantBar();
+    renderActiveMoodboard();
+}
 
-    const tiles = colores.map((c, i) => {
-        const role = MOODBOARD_LAYOUT[i % MOODBOARD_LAYOUT.length];
-        const textColor = isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
-        const extraClass = role === 'circle' ? 'circle-tile' : (role === 'title' ? 'title-tile' : '');
-        const overlay = role === 'title'
-            ? `<span class="tile-name">${koppen.nombre}</span>`
-            : `<span class="tile-hex" style="color:${textColor}">${c.hex}</span>`;
+function renderPaletteVariantBar() {
+    const row = document.getElementById('palette-variant-row');
+    if (!row) return;
+    row.innerHTML = __paletteState.variants.map((v, i) => {
+        const colores = buildSixColors(v);
+        const swatches = colores.map(c => `<span style="background:${c.hex}"></span>`).join('');
         return `
-            <div class="moodboard-tile role-${role} ${extraClass}" style="background:${c.hex};"
-                 onclick="copyPaletteColor('${c.hex}', this)">
-                ${overlay}
-                <span class="tile-copied">Copiado</span>
-            </div>`;
+            <button type="button" class="palette-variant-chip ${i === __paletteState.activeIndex ? 'active' : ''}" onclick="selectPaletteVariant(${i})">
+                <div class="chip-swatches">${swatches}</div>
+                <span class="chip-label">${v.label}</span>
+            </button>`;
+    }).join('');
+}
+
+function selectPaletteVariant(i) {
+    __paletteState.activeIndex = i;
+    renderPaletteVariantBar();
+    renderActiveMoodboard();
+}
+
+function renderActiveMoodboard() {
+    const container = document.getElementById('palette-content');
+    if (!container || !__paletteState.koppen) return;
+    const variant = __paletteState.variants[__paletteState.activeIndex];
+    const colores = buildSixColors(variant);
+    container.innerHTML = buildMoodboardSVG(__paletteState.koppen, colores);
+}
+
+// Construye el moodboard como un collage de formas libres (no una grilla
+// de rectángulos): un círculo, un corte diagonal, bloques y una franja,
+// como un tablero armado a mano, con el nombre del clima superpuesto.
+function buildMoodboardSVG(koppen, colores) {
+    const label = (c) => isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
+    const shapes = [
+        { tag: 'circle', attrs: `cx="210" cy="290" r="210"`, color: colores[0], lx: 210, ly: 290 },
+        { tag: 'path', attrs: `d="M260,20 L880,20 L880,240 L460,240 Z"`, color: colores[3], lx: 556, ly: 134, isTitle: true },
+        { tag: 'path', attrs: `d="M300,250 L650,250 L650,420 L335,420 Z"`, color: colores[4], lx: 447, ly: 336 },
+        { tag: 'rect', attrs: `x="650" y="250" width="240" height="180"`, color: colores[1], lx: 770, ly: 340 },
+        { tag: 'rect', attrs: `x="650" y="400" width="240" height="160"`, color: colores[5], lx: 770, ly: 480 },
+        { tag: 'path', attrs: `d="M0,420 L300,330 L300,560 L0,560 Z"`, color: colores[2], lx: 150, ly: 480 }
+    ];
+
+    const shapeMarkup = shapes.map(s => {
+        const textColor = label(s.color);
+        const labelEl = s.isTitle
+            ? `<text x="${s.lx}" y="${s.ly}" class="moodboard-title-text" style="fill:${textColor}" font-size="30">${koppen.nombre}</text>`
+            : `<text x="${s.lx}" y="${s.ly}" text-anchor="middle" class="moodboard-shape-label" style="fill:${textColor}">${s.color.hex}</text>`;
+        const copiedEl = `<text x="${s.lx}" y="${s.ly + (s.isTitle ? 26 : 16)}" text-anchor="middle" class="moodboard-copied-label" style="fill:${textColor}">Copiado</text>`;
+        return `
+            <g class="moodboard-shape-group" onclick="copyPaletteColor('${s.color.hex}', this)">
+                <${s.tag} class="moodboard-shape" ${s.attrs} fill="${s.color.hex}"></${s.tag}>
+                ${labelEl}
+                ${copiedEl}
+            </g>`;
     }).join('');
 
-    container.innerHTML = `<div class="moodboard-grid">${tiles}</div>`;
+    return `
+        <div class="moodboard-canvas-wrap">
+            <svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg">
+                ${shapeMarkup}
+            </svg>
+        </div>`;
 }
 
 // Determina si un color hex es "claro" (para decidir si el texto sobre el
