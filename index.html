@@ -120,17 +120,6 @@
         .moodboard-canvas-wrap {
             border-radius: 20px;
             overflow: hidden;
-            background-color: #eef1f4;
-            background-image:
-                linear-gradient(rgba(15,23,42,0.06) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(15,23,42,0.06) 1px, transparent 1px);
-            background-size: 22px 22px;
-        }
-        .dark .moodboard-canvas-wrap {
-            background-color: #0b1220;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
         }
         .moodboard-canvas-wrap svg { display: block; width: 100%; height: auto; }
         .moodboard-shape { cursor: pointer; transition: filter 0.2s ease, opacity 0.2s ease; }
@@ -157,12 +146,11 @@
 
         /* ---- Barra horizontal de variantes de paleta ---- */
         .palette-variant-row {
-            display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 10px;
-            scrollbar-width: thin;
+            display: flex; gap: 10px; width: 100%; padding: 4px 2px 10px;
         }
         .palette-variant-chip {
-            flex: 0 0 auto; display: flex; flex-direction: column; gap: 5px;
-            padding: 5px; border-radius: 12px; cursor: pointer; width: 92px;
+            flex: 1 1 0; display: flex; flex-direction: column; gap: 5px;
+            padding: 5px; border-radius: 12px; cursor: pointer; min-width: 0;
             border: 2px solid transparent; background: rgba(120,120,120,0.08);
             transition: border-color 0.2s ease, background 0.2s ease;
         }
@@ -3671,9 +3659,11 @@ function renderActiveMoodboard() {
 // como un tablero armado a mano, con el nombre del clima superpuesto.
 function buildMoodboardSVG(koppen, colores) {
     const textColorFor = (c) => isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
+    const insetHex = shadeHex(colores[3].hex, 0.55);
     const shapes = [
         { tag: 'circle', attrs: `cx="210" cy="290" r="210"`, color: colores[0], lx: 210, ly: 290 },
         { tag: 'path', attrs: `d="M260,20 L880,20 L880,240 L460,240 Z"`, color: colores[3], lx: 700, ly: 170, isTitle: true },
+        { tag: 'rect', attrs: `x="470" y="90" width="150" height="150"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 545, ly: 165 },
         { tag: 'path', attrs: `d="M300,250 L650,250 L650,420 L335,420 Z"`, color: colores[4], lx: 447, ly: 336 },
         { tag: 'rect', attrs: `x="650" y="250" width="240" height="180"`, color: colores[1], lx: 770, ly: 340 },
         { tag: 'rect', attrs: `x="650" y="400" width="240" height="160"`, color: colores[5], lx: 770, ly: 480 },
@@ -3684,7 +3674,7 @@ function buildMoodboardSVG(koppen, colores) {
         const rgb = hexToRgb(s.color.hex);
         const textColor = textColorFor(s.color);
         const titleText = s.isTitle
-            ? `<text x="556" y="134" class="moodboard-title-text" style="fill:${textColor}" font-size="30">${koppen.nombre}</text>`
+            ? `<text x="670" y="55" class="moodboard-title-text" style="fill:${textColor}" font-size="26">${koppen.nombre}</text>`
             : '';
         const labelBox = `
             <foreignObject x="${s.lx - 80}" y="${s.ly - 28}" width="160" height="56" class="moodboard-label-fo">
