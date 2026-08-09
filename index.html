@@ -118,7 +118,7 @@
 
         /* ---- Moodboard cromático orgánico (formas libres tipo collage) ---- */
         .moodboard-canvas-wrap {
-            border-radius: 20px;
+            border-radius: 30px;
             overflow: hidden;
         }
         .moodboard-canvas-wrap svg { display: block; width: 100%; height: auto; }
@@ -3664,7 +3664,7 @@ function buildMoodboardSVG(koppen, colores) {
     // (adelante), para que el borde redondo del círculo muerda el rectángulo
     // en vez de que una línea recta corte al círculo — se ve más collage.
     const shapes = [
-        { tag: 'rect', attrs: `x="260" y="15" width="620" height="170"`, color: colores[3], lx: 420, ly: 155, bw: 150, bh: 50 },
+        { tag: 'path', attrs: `d="M260,15 L880,15 L880,185 L290,185 Q260,185 260,155 Z"`, color: colores[3], lx: 420, ly: 155, bw: 150, bh: 50 },
         { tag: 'circle', attrs: `cx="175" cy="210" r="175"`, color: colores[0], lx: 175, ly: 230, bw: 170, bh: 56 },
         { tag: 'rect', attrs: `x="740" y="15" width="140" height="170"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 810, ly: 100, bw: 120, bh: 70 },
         { tag: 'path', attrs: `d="M650,185 L348,185 Q360,260 300,332 L300,420 L650,420 Z"`, color: colores[4], lx: 500, ly: 320, bw: 140, bh: 50 },
