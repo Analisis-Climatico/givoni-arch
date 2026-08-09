@@ -141,7 +141,7 @@
         }
         .moodboard-title-text {
             font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600;
-            fill: #fff; text-anchor: middle; dominant-baseline: middle;
+            fill: #fff; text-anchor: middle; dominant-baseline: middle; pointer-events: none;
             filter: drop-shadow(0 2px 8px rgba(0,0,0,0.45));
         }
 
@@ -3660,10 +3660,13 @@ function renderActiveMoodboard() {
 function buildMoodboardSVG(koppen, colores) {
     const textColorFor = (c) => isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
     const insetHex = shadeHex(colores[3].hex, 0.55);
+    // Orden de capas: el rectángulo va PRIMERO (atrás) y el círculo después
+    // (adelante), para que el borde redondo del círculo muerda el rectángulo
+    // en vez de que una línea recta corte al círculo — se ve más collage.
     const shapes = [
+        { tag: 'rect', attrs: `x="260" y="15" width="620" height="170"`, color: colores[3], lx: 420, ly: 155, bw: 150, bh: 50 },
         { tag: 'circle', attrs: `cx="175" cy="210" r="175"`, color: colores[0], lx: 175, ly: 230, bw: 170, bh: 56 },
-        { tag: 'rect', attrs: `x="260" y="15" width="620" height="170"`, color: colores[3], lx: 800, ly: 140, bw: 150, bh: 50, isTitle: true },
-        { tag: 'rect', attrs: `x="460" y="40" width="140" height="110"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 530, ly: 95, bw: 122, bh: 80 },
+        { tag: 'rect', attrs: `x="740" y="15" width="140" height="170"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 810, ly: 100, bw: 120, bh: 70 },
         { tag: 'path', attrs: `d="M650,185 L348,185 Q360,260 300,332 L300,420 L650,420 Z"`, color: colores[4], lx: 500, ly: 320, bw: 140, bh: 50 },
         { tag: 'rect', attrs: `x="650" y="185" width="240" height="140"`, color: colores[1], lx: 770, ly: 255, bw: 160, bh: 50 },
         { tag: 'rect', attrs: `x="610" y="280" width="280" height="140"`, color: colores[5], lx: 780, ly: 355, bw: 160, bh: 50 },
@@ -3673,9 +3676,6 @@ function buildMoodboardSVG(koppen, colores) {
     const shapeMarkup = shapes.map(s => {
         const rgb = hexToRgb(s.color.hex);
         const textColor = textColorFor(s.color);
-        const titleText = s.isTitle
-            ? `<text x="670" y="65" class="moodboard-title-text" style="fill:${textColor}" font-size="22">${koppen.nombre}</text>`
-            : '';
         const bw = s.bw || 150, bh = s.bh || 54;
         const labelBox = `
             <foreignObject x="${s.lx - bw / 2}" y="${s.ly - bh / 2}" width="${bw}" height="${bh}" class="moodboard-label-fo">
@@ -3689,16 +3689,21 @@ function buildMoodboardSVG(koppen, colores) {
         return `
             <g class="moodboard-shape-group" onclick="copyPaletteColor('${s.color.hex}', this)">
                 <${s.tag} class="moodboard-shape" ${s.attrs} fill="${s.color.hex}"></${s.tag}>
-                ${titleText}
                 ${labelBox}
                 ${copiedEl}
             </g>`;
     }).join('');
 
+    // El nombre del clima se dibuja AL FINAL, fuera de cualquier grupo, para
+    // garantizar que quede siempre por encima de todas las piezas.
+    const titleTextColor = textColorFor(colores[3]);
+    const titleMarkup = `<text x="555" y="105" text-anchor="middle" class="moodboard-title-text" style="fill:${titleTextColor}" font-size="23">${koppen.nombre}</text>`;
+
     return `
         <div class="moodboard-canvas-wrap">
             <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
                 ${shapeMarkup}
+                ${titleMarkup}
             </svg>
         </div>`;
 }
