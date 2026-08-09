@@ -3601,7 +3601,7 @@ function hexToRgb(hex) {
 // tiene seleccionada el usuario en la barra horizontal.
 let __paletteState = { koppen: null, variants: [], activeIndex: 0 };
 
-function renderKoppenPalette(koppen) {
+function renderKoppenPalette(koppen, entorno) {
     const container = document.getElementById('palette-content');
     const tag = document.getElementById('palette-koppen-tag');
     const bar = document.getElementById('palette-variant-bar');
@@ -3615,12 +3615,13 @@ function renderKoppenPalette(koppen) {
         return;
     }
 
+    const nombreMostrado = entorno || `${koppen.nombre} (${koppen.codigo})`;
     if (tag) {
-        tag.textContent = `${koppen.nombre} · ${koppen.codigo}`;
+        tag.textContent = nombreMostrado;
         tag.classList.remove('hidden');
     }
 
-    __paletteState = { koppen, variants: generatePaletteVariants(paleta, koppen.grupo), activeIndex: 0 };
+    __paletteState = { koppen, nombreMostrado, variants: generatePaletteVariants(paleta, koppen.grupo), activeIndex: 0 };
     if (bar) bar.classList.remove('hidden');
     renderPaletteVariantBar();
     renderActiveMoodboard();
@@ -3651,13 +3652,13 @@ function renderActiveMoodboard() {
     if (!container || !__paletteState.koppen) return;
     const variant = __paletteState.variants[__paletteState.activeIndex];
     const colores = buildSixColors(variant);
-    container.innerHTML = buildMoodboardSVG(__paletteState.koppen, colores);
+    container.innerHTML = buildMoodboardSVG(__paletteState.nombreMostrado, colores);
 }
 
 // Construye el moodboard como un collage de formas libres (no una grilla
 // de rectángulos): un círculo, un corte diagonal, bloques y una franja,
 // como un tablero armado a mano, con el nombre del clima superpuesto.
-function buildMoodboardSVG(koppen, colores) {
+function buildMoodboardSVG(nombreClima, colores) {
     const textColorFor = (c) => isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
     const insetHex = shadeHex(colores[3].hex, 0.55);
     // Orden de capas: el rectángulo va PRIMERO (atrás) y el círculo después
@@ -3697,7 +3698,7 @@ function buildMoodboardSVG(koppen, colores) {
     // El nombre del clima se dibuja AL FINAL, fuera de cualquier grupo, para
     // garantizar que quede siempre por encima de todas las piezas.
     const titleTextColor = textColorFor(colores[3]);
-    const titleMarkup = `<text x="555" y="55" text-anchor="middle" class="moodboard-title-text" style="fill:${titleTextColor}" font-size="23">${koppen.nombre}</text>`;
+    const titleMarkup = `<text x="555" y="55" text-anchor="middle" class="moodboard-title-text" style="fill:${titleTextColor}" font-size="23">${nombreClima}</text>`;
 
     return `
         <div class="moodboard-canvas-wrap">
@@ -4089,7 +4090,7 @@ async function updateAnalysis(data) {
     // Genera la paleta cromática recomendada a partir del mismo objeto
     // `koppen` ya clasificado arriba, para que nunca contradiga el
     // diagnóstico climático mostrado en el resumen general.
-    renderKoppenPalette(koppen);
+    renderKoppenPalette(koppen, entorno);
 
     // Filtros de limpieza
     const sinSVG = ["Ventilación cruzada profunda", "Cubierta extractora", "Vidrio de control solar"];
