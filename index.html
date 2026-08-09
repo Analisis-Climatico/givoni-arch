@@ -3664,7 +3664,7 @@ function buildMoodboardSVG(koppen, colores) {
     // (adelante), para que el borde redondo del círculo muerda el rectángulo
     // en vez de que una línea recta corte al círculo — se ve más collage.
     const shapes = [
-        { tag: 'path', attrs: `d="M60,15 L850,15 Q880,15 880,45 L880,185 L60,185 Z"`, color: colores[3], lx: 460, ly: 155, bw: 150, bh: 50 },
+        { tag: 'path', attrs: `d="M60,50 L95,15 L850,15 Q880,15 880,45 L880,185 L60,185 Z"`, color: colores[3], lx: 460, ly: 155, bw: 150, bh: 50 },
         { tag: 'circle', attrs: `cx="175" cy="210" r="175"`, color: colores[0], lx: 175, ly: 230, bw: 170, bh: 56 },
         { tag: 'path', attrs: `d="M740,15 L850,15 Q880,15 880,45 L880,185 L740,185 Z"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 800, ly: 110, bw: 120, bh: 70 },
         { tag: 'path', attrs: `d="M650,185 L348,185 Q360,260 300,332 L300,420 L650,420 Z"`, color: colores[4], lx: 500, ly: 320, bw: 140, bh: 50 },
