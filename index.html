@@ -157,7 +157,7 @@
         .palette-variant-chip:hover { background: rgba(120,120,120,0.16); }
         .palette-variant-chip.active { border-color: #38bdf8; background: rgba(56,189,248,0.12); }
         .palette-variant-chip .chip-swatches {
-            display: flex; height: 22px; border-radius: 7px; overflow: hidden;
+            display: flex; height: 42px; border-radius: 7px; overflow: hidden;
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
         }
         .palette-variant-chip .chip-swatches span { flex: 1 1 0; }
@@ -3558,17 +3558,16 @@ function copyPaletteColor(hex, el) {
     setTimeout(() => el.classList.remove('copied'), 1000);
 }
 
-// Oscurece o aclara un hex un porcentaje dado (negativo = oscurece).
+// Mezcla un hex hacia blanco (percent>0) o negro (percent<0) un porcentaje
+// proporcional a la distancia restante, para nunca sobrepasar a blanco/negro puro.
 function shadeHex(hex, percent) {
     const c = hex.replace('#', '');
     const num = parseInt(c, 16);
-    let r = (num >> 16) + Math.round(255 * percent);
-    let g = ((num >> 8) & 0x00FF) + Math.round(255 * percent);
-    let b = (num & 0x0000FF) + Math.round(255 * percent);
-    r = Math.max(0, Math.min(255, r));
-    g = Math.max(0, Math.min(255, g));
-    b = Math.max(0, Math.min(255, b));
-    return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+    const r = (num >> 16) & 0xFF, g = (num >> 8) & 0xFF, b = num & 0xFF;
+    const target = percent >= 0 ? 255 : 0;
+    const p = Math.abs(percent);
+    const mix = (ch) => Math.max(0, Math.min(255, Math.round(ch + (target - ch) * p)));
+    return '#' + [mix(r), mix(g), mix(b)].map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
 // A partir de la paleta curada de un clima, genera varias variantes
@@ -3664,10 +3663,10 @@ function buildMoodboardSVG(koppen, colores) {
         { tag: 'circle', attrs: `cx="210" cy="290" r="210"`, color: colores[0], lx: 210, ly: 290 },
         { tag: 'path', attrs: `d="M260,20 L880,20 L880,240 L460,240 Z"`, color: colores[3], lx: 700, ly: 170, isTitle: true },
         { tag: 'rect', attrs: `x="470" y="90" width="150" height="150"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 545, ly: 165 },
-        { tag: 'path', attrs: `d="M300,250 L650,250 L650,420 L335,420 Z"`, color: colores[4], lx: 447, ly: 336 },
-        { tag: 'rect', attrs: `x="650" y="250" width="240" height="180"`, color: colores[1], lx: 770, ly: 340 },
-        { tag: 'rect', attrs: `x="650" y="400" width="240" height="160"`, color: colores[5], lx: 770, ly: 480 },
-        { tag: 'path', attrs: `d="M0,420 L300,330 L300,560 L0,560 Z"`, color: colores[2], lx: 150, ly: 480 }
+        { tag: 'path', attrs: `d="M650,240 L414,240 A210,210 0 0 1 300,480 L300,560 L650,560 Z"`, color: colores[4], lx: 520, ly: 420 },
+        { tag: 'rect', attrs: `x="650" y="240" width="240" height="260"`, color: colores[1], lx: 770, ly: 340 },
+        { tag: 'rect', attrs: `x="610" y="360" width="280" height="200"`, color: colores[5], lx: 780, ly: 470 },
+        { tag: 'path', attrs: `d="M0,290 A210,210 0 0 1 300,480 L300,560 L0,560 Z"`, color: colores[2], lx: 150, ly: 500 }
     ];
 
     const shapeMarkup = shapes.map(s => {
