@@ -3698,7 +3698,7 @@ function buildMoodboardSVG(nombreClima, colores) {
     // El nombre del clima se dibuja AL FINAL, fuera de cualquier grupo, para
     // garantizar que quede siempre por encima de todas las piezas.
     const titleTextColor = textColorFor(colores[3]);
-    const titleMarkup = `<text x="555" y="55" text-anchor="middle" class="moodboard-title-text" style="fill:${titleTextColor}" font-size="23">${nombreClima}</text>`;
+    const titleMarkup = `<text x="490" y="55" text-anchor="middle" textLength="400" lengthAdjust="spacingAndGlyphs" class="moodboard-title-text" style="fill:${titleTextColor}" font-size="23">${nombreClima}</text>`;
 
     return `
         <div class="moodboard-canvas-wrap">
