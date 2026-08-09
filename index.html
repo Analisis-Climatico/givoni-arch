@@ -147,10 +147,10 @@
 
         /* ---- Barra horizontal de variantes de paleta ---- */
         .palette-variant-row {
-            display: flex; gap: 10px; width: 100%; padding: 4px 2px 10px;
+            display: flex; flex-wrap: wrap; gap: 10px; width: 100%; padding: 4px 2px 10px;
         }
         .palette-variant-chip {
-            flex: 1 1 0; display: flex; flex-direction: column; gap: 5px;
+            flex: 1 1 130px; display: flex; flex-direction: column; gap: 5px;
             padding: 5px; border-radius: 12px; cursor: pointer; min-width: 0;
             border: 2px solid transparent; background: rgba(120,120,120,0.08);
             transition: border-color 0.2s ease, background 0.2s ease;
@@ -3443,27 +3443,47 @@ const KOPPEN_GROUP_VARIANTS = {
     A: [
         { label: 'Coral', dominante: [{hex:'#F7F1E4',nombre:'Blanco arena'},{hex:'#EAD9C4',nombre:'Beige cálido'},{hex:'#F0B79A',nombre:'Coral suave'},{hex:'#8FC9BD',nombre:'Turquesa pálido'}], acento: [{hex:'#C97B63',nombre:'Terracota coral'},{hex:'#3E7C74',nombre:'Verde azulado'}] },
         { label: 'Laguna', dominante: [{hex:'#F4F7F2',nombre:'Blanco niebla'},{hex:'#D7ECE4',nombre:'Menta pálida'},{hex:'#9FD8C9',nombre:'Aguamarina'},{hex:'#5FA89D',nombre:'Turquesa medio'}], acento: [{hex:'#E8B04B',nombre:'Mostaza suave'},{hex:'#2F6B63',nombre:'Verde turquesa'}] },
-        { label: 'Arena', dominante: [{hex:'#F5EEDD',nombre:'Arena clara'},{hex:'#E3D2AE',nombre:'Arena dorada'},{hex:'#C9B27E',nombre:'Ocre suave'},{hex:'#9AB98F',nombre:'Verde oliva pálido'}], acento: [{hex:'#B5651D',nombre:'Tierra cocida'},{hex:'#4B6B4F',nombre:'Verde bosque'}] }
+        { label: 'Arena', dominante: [{hex:'#F5EEDD',nombre:'Arena clara'},{hex:'#E3D2AE',nombre:'Arena dorada'},{hex:'#C9B27E',nombre:'Ocre suave'},{hex:'#9AB98F',nombre:'Verde oliva pálido'}], acento: [{hex:'#B5651D',nombre:'Tierra cocida'},{hex:'#4B6B4F',nombre:'Verde bosque'}] },
+        { label: 'Floral', dominante: [{hex:'#F8EDF0',nombre:'Blanco rosado'},{hex:'#EBD3D9',nombre:'Rosa pálido'},{hex:'#D9A0AC',nombre:'Rosa coral'},{hex:'#8FB39E',nombre:'Verde salvia'}], acento: [{hex:'#B85C72',nombre:'Rosa profundo'},{hex:'#3E6B5C',nombre:'Verde bosque'}] },
+        { label: 'Violeta', dominante: [{hex:'#F3F0F7',nombre:'Blanco lavanda'},{hex:'#DCD3EA',nombre:'Lavanda pálida'},{hex:'#A6C9C2',nombre:'Verde agua'},{hex:'#8E93C4',nombre:'Violeta azulado'}], acento: [{hex:'#5C4A8C',nombre:'Violeta profundo'},{hex:'#2F6B63',nombre:'Verde turquesa'}] },
+        { label: 'Cielo', dominante: [{hex:'#F0F6F8',nombre:'Blanco celeste'},{hex:'#D3E8F0',nombre:'Celeste pálido'},{hex:'#8EC3DC',nombre:'Celeste'},{hex:'#4A90B8',nombre:'Azul cielo'}], acento: [{hex:'#2E5F7A',nombre:'Azul profundo'},{hex:'#E8A94B',nombre:'Naranja suave'}] },
+        { label: 'Cítrica', dominante: [{hex:'#FBF3DC',nombre:'Blanco crema'},{hex:'#F5DFA0',nombre:'Amarillo pálido'},{hex:'#F0B84E',nombre:'Amarillo dorado'},{hex:'#E8834A',nombre:'Naranja cítrico'}], acento: [{hex:'#5C8F6E',nombre:'Verde tropical'}] }
     ],
     B: [
         { label: 'Rosada', dominante: [{hex:'#F2E3D5',nombre:'Arena rosada'},{hex:'#E8C8AE',nombre:'Durazno pálido'},{hex:'#D19875',nombre:'Terracota rosa'},{hex:'#A8664A',nombre:'Ladrillo'}], acento: [{hex:'#6B4226',nombre:'Tierra oscura'},{hex:'#8C5B7A',nombre:'Malva'}] },
         { label: 'Salvia', dominante: [{hex:'#EFE6D2',nombre:'Arena pálida'},{hex:'#D8C8A0',nombre:'Ocre pálido'},{hex:'#B8A97E',nombre:'Verde salvia tierra'},{hex:'#8C8A5E',nombre:'Oliva seco'}], acento: [{hex:'#6B5A34',nombre:'Marrón oliva'}] },
-        { label: 'Cobre', dominante: [{hex:'#F3E9D6',nombre:'Marfil'},{hex:'#E0BE93',nombre:'Arena cobriza'},{hex:'#C77F45',nombre:'Cobre'},{hex:'#96552E',nombre:'Terracota oscura'}], acento: [{hex:'#5C3A20',nombre:'Marrón cobrizo'}] }
+        { label: 'Cobre', dominante: [{hex:'#F3E9D6',nombre:'Marfil'},{hex:'#E0BE93',nombre:'Arena cobriza'},{hex:'#C77F45',nombre:'Cobre'},{hex:'#96552E',nombre:'Terracota oscura'}], acento: [{hex:'#5C3A20',nombre:'Marrón cobrizo'}] },
+        { label: 'Ocaso', dominante: [{hex:'#F7E9DD',nombre:'Crema cálido'},{hex:'#EFC9A8',nombre:'Durazno'},{hex:'#E0916B',nombre:'Coral tierra'},{hex:'#C97B9E',nombre:'Rosa mauve'}], acento: [{hex:'#7A4A6B',nombre:'Ciruela'},{hex:'#8C4A2E',nombre:'Terracota oscura'}] },
+        { label: 'Dorado', dominante: [{hex:'#F5EAD2',nombre:'Marfil dorado'},{hex:'#E8CE8E',nombre:'Trigo'},{hex:'#D1A63E',nombre:'Dorado'},{hex:'#A67C3E',nombre:'Ocre dorado'}], acento: [{hex:'#6B4E1E',nombre:'Bronce'}] },
+        { label: 'Turquesa', dominante: [{hex:'#F2E9D6',nombre:'Arena'},{hex:'#E3C79A',nombre:'Ocre claro'},{hex:'#8FBFC4',nombre:'Turquesa desértico'},{hex:'#4E8A94',nombre:'Azul turquesa'}], acento: [{hex:'#8C4A2E',nombre:'Terracota'}] },
+        { label: 'Amanecer', dominante: [{hex:'#F7ECD2',nombre:'Crema'},{hex:'#F0CE7E',nombre:'Amarillo arena'},{hex:'#E89A4E',nombre:'Naranja arena'},{hex:'#C9622E',nombre:'Naranja quemado'}], acento: [{hex:'#5C3A20',nombre:'Marrón'}] }
     ],
     C: [
         { label: 'Mediterránea', dominante: [{hex:'#F2ECDD',nombre:'Blanco cal'},{hex:'#E3C9A0',nombre:'Arena mediterránea'},{hex:'#C88B4E',nombre:'Terracota'},{hex:'#7A8B6F',nombre:'Olivo'}], acento: [{hex:'#4A3B2A',nombre:'Marrón mediterráneo'}] },
         { label: 'Bosque', dominante: [{hex:'#EDE9DD',nombre:'Blanco hueso'},{hex:'#C7D2C0',nombre:'Verde niebla'},{hex:'#8FA487',nombre:'Verde bosque claro'},{hex:'#5C6E56',nombre:'Verde musgo'}], acento: [{hex:'#3E4A38',nombre:'Verde oscuro'}] },
-        { label: 'Piedra', dominante: [{hex:'#EFEDE7',nombre:'Blanco piedra'},{hex:'#D6D0C4',nombre:'Gris piedra'},{hex:'#ADA492',nombre:'Taupe'},{hex:'#79705F',nombre:'Marrón grisáceo'}], acento: [{hex:'#3F382C',nombre:'Marrón carbón'}] }
+        { label: 'Piedra', dominante: [{hex:'#EFEDE7',nombre:'Blanco piedra'},{hex:'#D6D0C4',nombre:'Gris piedra'},{hex:'#ADA492',nombre:'Taupe'},{hex:'#79705F',nombre:'Marrón grisáceo'}], acento: [{hex:'#3F382C',nombre:'Marrón carbón'}] },
+        { label: 'Otoño', dominante: [{hex:'#F3E7DA',nombre:'Crema'},{hex:'#E3B98A',nombre:'Calabaza pálida'},{hex:'#C97C4E',nombre:'Calabaza'},{hex:'#8C5A3E',nombre:'Canela'}], acento: [{hex:'#5C3826',nombre:'Marrón otoño'}] },
+        { label: 'Lavanda', dominante: [{hex:'#F0EEF2',nombre:'Blanco grisáceo'},{hex:'#D7D2DE',nombre:'Lavanda gris'},{hex:'#A9A0B8',nombre:'Malva'},{hex:'#6F6680',nombre:'Violeta grisáceo'}], acento: [{hex:'#433A52',nombre:'Violeta oscuro'}] },
+        { label: 'Azul cielo', dominante: [{hex:'#F0F3F0',nombre:'Blanco'},{hex:'#D6E3E8',nombre:'Celeste niebla'},{hex:'#9DBFCC',nombre:'Azul grisáceo'},{hex:'#5E88A0',nombre:'Azul templado'}], acento: [{hex:'#3E5A6B',nombre:'Azul oscuro'}] },
+        { label: 'Girasol', dominante: [{hex:'#F5EFDD',nombre:'Crema'},{hex:'#EAD98E',nombre:'Amarillo suave'},{hex:'#D9A94E',nombre:'Amarillo mostaza'},{hex:'#B87A3E',nombre:'Naranja tierra'}], acento: [{hex:'#6B4E2A',nombre:'Marrón'}] }
     ],
     D: [
         { label: 'Vino', dominante: [{hex:'#E8DFD2',nombre:'Hueso'},{hex:'#C9A98E',nombre:'Terracota apagada'},{hex:'#8C5A4A',nombre:'Vino tierra'},{hex:'#5A3A32',nombre:'Marrón vino'}], acento: [{hex:'#2A211D',nombre:'Café oscuro'}] },
         { label: 'Bosque nórdico', dominante: [{hex:'#E2DCCB',nombre:'Hueso frío'},{hex:'#A9B08C',nombre:'Verde musgo'},{hex:'#6E7A52',nombre:'Verde bosque'},{hex:'#3F4A30',nombre:'Verde oscuro'}], acento: [{hex:'#261F17',nombre:'Marrón negro'}] },
-        { label: 'Pizarra', dominante: [{hex:'#DED9CE',nombre:'Gris hueso'},{hex:'#B8AFA0',nombre:'Gris cálido'},{hex:'#7A6F60',nombre:'Piedra oscura'},{hex:'#463F35',nombre:'Marrón pizarra'}], acento: [{hex:'#1E1A16',nombre:'Negro cálido'}] }
+        { label: 'Pizarra', dominante: [{hex:'#DED9CE',nombre:'Gris hueso'},{hex:'#B8AFA0',nombre:'Gris cálido'},{hex:'#7A6F60',nombre:'Piedra oscura'},{hex:'#463F35',nombre:'Marrón pizarra'}], acento: [{hex:'#1E1A16',nombre:'Negro cálido'}] },
+        { label: 'Bordó', dominante: [{hex:'#E9DED8',nombre:'Hueso rosado'},{hex:'#C9A398',nombre:'Terracota rosada'},{hex:'#8C4B45',nombre:'Bordó'},{hex:'#5A2E2A',nombre:'Vino oscuro'}], acento: [{hex:'#2A1815',nombre:'Café casi negro'}] },
+        { label: 'Ámbar', dominante: [{hex:'#E8DEC7',nombre:'Marfil'},{hex:'#C9A968',nombre:'Ámbar claro'},{hex:'#A97D3E',nombre:'Ámbar'},{hex:'#6B4E24',nombre:'Ámbar oscuro'}], acento: [{hex:'#2E2114',nombre:'Café negro'}] },
+        { label: 'Azul invierno', dominante: [{hex:'#E6E9E4',nombre:'Hueso frío'},{hex:'#B8C4CC',nombre:'Azul grisáceo'},{hex:'#6E8496',nombre:'Azul acero'},{hex:'#3E5468',nombre:'Azul profundo'}], acento: [{hex:'#1E2A34',nombre:'Azul negro'}] },
+        { label: 'Calabaza', dominante: [{hex:'#E8DCC8',nombre:'Marfil'},{hex:'#D1A468',nombre:'Naranja tostado'},{hex:'#B87A3E',nombre:'Calabaza'},{hex:'#8C5424',nombre:'Naranja oscuro'}], acento: [{hex:'#2E1F14',nombre:'Café negro'}] }
     ],
     E: [
         { label: 'Aurora', dominante: [{hex:'#E6EEF0',nombre:'Blanco hielo'},{hex:'#B9D6D9',nombre:'Azul hielo'},{hex:'#6E9AA0',nombre:'Azul gris'},{hex:'#3E5C62',nombre:'Azul profundo'}], acento: [{hex:'#24211E',nombre:'Negro cálido'}] },
         { label: 'Musgo ártico', dominante: [{hex:'#E7EBE4',nombre:'Blanco musgo'},{hex:'#C6D0BE',nombre:'Verde gris pálido'},{hex:'#8A9578',nombre:'Verde musgo'},{hex:'#4F5B41',nombre:'Verde oscuro'}], acento: [{hex:'#231F1A',nombre:'Café negro'}] },
-        { label: 'Basalto', dominante: [{hex:'#DDE1E2',nombre:'Gris hielo'},{hex:'#B4B9BA',nombre:'Gris basalto'},{hex:'#787D7E',nombre:'Gris piedra'},{hex:'#45494A',nombre:'Gris carbón'}], acento: [{hex:'#1C1A19',nombre:'Negro puro'}] }
+        { label: 'Basalto', dominante: [{hex:'#DDE1E2',nombre:'Gris hielo'},{hex:'#B4B9BA',nombre:'Gris basalto'},{hex:'#787D7E',nombre:'Gris piedra'},{hex:'#45494A',nombre:'Gris carbón'}], acento: [{hex:'#1C1A19',nombre:'Negro puro'}] },
+        { label: 'Violeta glaciar', dominante: [{hex:'#E9EBF0',nombre:'Blanco azulado'},{hex:'#C7CBDE',nombre:'Azul lavanda'},{hex:'#8E96B8',nombre:'Violeta glaciar'},{hex:'#545C7E',nombre:'Azul violeta'}], acento: [{hex:'#262B3E',nombre:'Azul casi negro'}] },
+        { label: 'Verde hielo', dominante: [{hex:'#EBEDE6',nombre:'Blanco frío'},{hex:'#C9D6C0',nombre:'Verde hielo'},{hex:'#9EB8A0',nombre:'Verde salvia fría'},{hex:'#6E8C82',nombre:'Verde azulado'}], acento: [{hex:'#2A332E',nombre:'Verde negro'}] },
+        { label: 'Celeste ártico', dominante: [{hex:'#EAF0F2',nombre:'Blanco hielo'},{hex:'#C4DCE2',nombre:'Celeste hielo'},{hex:'#7EA8B4',nombre:'Azul glaciar'},{hex:'#44677A',nombre:'Azul profundo'}], acento: [{hex:'#1E2C36',nombre:'Azul negro'}] },
+        { label: 'Amanecer polar', dominante: [{hex:'#E9E6E2',nombre:'Blanco cálido'},{hex:'#D4B98E',nombre:'Amarillo pálido'},{hex:'#B8824E',nombre:'Naranja tenue'},{hex:'#8C5A2E',nombre:'Naranja tierra'}], acento: [{hex:'#2A2016',nombre:'Café negro'}] }
     ]
 };
 
