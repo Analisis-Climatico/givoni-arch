@@ -3664,13 +3664,13 @@ function buildMoodboardSVG(koppen, colores) {
     // (adelante), para que el borde redondo del círculo muerda el rectángulo
     // en vez de que una línea recta corte al círculo — se ve más collage.
     const shapes = [
-        { tag: 'path', attrs: `d="M260,15 L880,15 L880,185 L290,185 Q260,185 260,155 Z"`, color: colores[3], lx: 420, ly: 155, bw: 150, bh: 50 },
+        { tag: 'path', attrs: `d="M175,15 L880,15 L880,185 L348,185 Q360,95 175,15 Z"`, color: colores[3], lx: 460, ly: 155, bw: 150, bh: 50 },
         { tag: 'circle', attrs: `cx="175" cy="210" r="175"`, color: colores[0], lx: 175, ly: 230, bw: 170, bh: 56 },
-        { tag: 'rect', attrs: `x="740" y="15" width="140" height="170"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 810, ly: 100, bw: 120, bh: 70 },
+        { tag: 'path', attrs: `d="M740,15 L850,15 Q880,15 880,45 L880,185 L740,185 Z"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 800, ly: 110, bw: 120, bh: 70 },
         { tag: 'path', attrs: `d="M650,185 L348,185 Q360,260 300,332 L300,420 L650,420 Z"`, color: colores[4], lx: 500, ly: 320, bw: 140, bh: 50 },
         { tag: 'rect', attrs: `x="650" y="185" width="240" height="140"`, color: colores[1], lx: 770, ly: 255, bw: 160, bh: 50 },
-        { tag: 'path', attrs: `d="M610,340 L750,280 L890,280 L890,420 L610,420 Z"`, color: colores[5], lx: 760, ly: 375, bw: 160, bh: 50 },
-        { tag: 'path', attrs: `d="M0,210 Q140,350 300,332 L300,420 L0,420 Z"`, color: colores[2], lx: 150, ly: 380, bw: 140, bh: 50 }
+        { tag: 'path', attrs: `d="M610,340 L750,280 L890,280 L890,395 Q890,420 865,420 L610,420 Z"`, color: colores[5], lx: 760, ly: 375, bw: 160, bh: 50 },
+        { tag: 'path', attrs: `d="M0,210 Q140,350 300,332 L300,420 L25,420 Q0,420 0,395 Z"`, color: colores[2], lx: 150, ly: 380, bw: 140, bh: 50 }
     ];
 
     const shapeMarkup = shapes.map(s => {
