@@ -3669,7 +3669,7 @@ function buildMoodboardSVG(koppen, colores) {
         { tag: 'rect', attrs: `x="740" y="15" width="140" height="170"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 810, ly: 100, bw: 120, bh: 70 },
         { tag: 'path', attrs: `d="M650,185 L348,185 Q360,260 300,332 L300,420 L650,420 Z"`, color: colores[4], lx: 500, ly: 320, bw: 140, bh: 50 },
         { tag: 'rect', attrs: `x="650" y="185" width="240" height="140"`, color: colores[1], lx: 770, ly: 255, bw: 160, bh: 50 },
-        { tag: 'rect', attrs: `x="610" y="280" width="280" height="140"`, color: colores[5], lx: 780, ly: 355, bw: 160, bh: 50 },
+        { tag: 'path', attrs: `d="M610,340 L750,280 L890,280 L890,420 L610,420 Z"`, color: colores[5], lx: 760, ly: 375, bw: 160, bh: 50 },
         { tag: 'path', attrs: `d="M0,210 Q140,350 300,332 L300,420 L0,420 Z"`, color: colores[2], lx: 150, ly: 380, bw: 140, bh: 50 }
     ];
 
@@ -3697,7 +3697,7 @@ function buildMoodboardSVG(koppen, colores) {
     // El nombre del clima se dibuja AL FINAL, fuera de cualquier grupo, para
     // garantizar que quede siempre por encima de todas las piezas.
     const titleTextColor = textColorFor(colores[3]);
-    const titleMarkup = `<text x="555" y="105" text-anchor="middle" class="moodboard-title-text" style="fill:${titleTextColor}" font-size="23">${koppen.nombre}</text>`;
+    const titleMarkup = `<text x="555" y="55" text-anchor="middle" class="moodboard-title-text" style="fill:${titleTextColor}" font-size="23">${koppen.nombre}</text>`;
 
     return `
         <div class="moodboard-canvas-wrap">
