@@ -127,8 +127,9 @@
         .moodboard-label-fo { opacity: 0; transition: opacity 0.2s ease; pointer-events: none; }
         .moodboard-shape-group:hover .moodboard-label-fo { opacity: 1; }
         .moodboard-label-box {
-            font-family: 'Space Grotesk', sans-serif; text-align: center; line-height: 1.35;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
+            font-family: 'Space Grotesk', sans-serif; text-align: center; line-height: 1.3;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%;
+            background: none; box-shadow: none; border: none; backdrop-filter: none; overflow: hidden;
         }
         .moodboard-label-box .mlb-name { font-weight: 700; font-size: 13px; }
         .moodboard-label-box .mlb-rgb { font-weight: 500; font-size: 11px; opacity: 0.9; }
@@ -3660,30 +3661,31 @@ function buildMoodboardSVG(koppen, colores) {
     const textColorFor = (c) => isLightHex(c.hex) ? '#1e293b' : '#f8fafc';
     const insetHex = shadeHex(colores[3].hex, 0.55);
     const shapes = [
-        { tag: 'circle', attrs: `cx="175" cy="210" r="175"`, color: colores[0], lx: 175, ly: 210 },
-        { tag: 'rect', attrs: `x="260" y="15" width="620" height="170"`, color: colores[3], lx: 670, ly: 60, isTitle: true },
-        { tag: 'rect', attrs: `x="460" y="40" width="140" height="110"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 530, ly: 95 },
-        { tag: 'path', attrs: `d="M650,185 L348,185 Q360,260 300,332 L300,420 L650,420 Z"`, color: colores[4], lx: 500, ly: 320 },
-        { tag: 'rect', attrs: `x="650" y="185" width="240" height="140"`, color: colores[1], lx: 770, ly: 255 },
-        { tag: 'rect', attrs: `x="610" y="280" width="280" height="140"`, color: colores[5], lx: 780, ly: 355 },
-        { tag: 'path', attrs: `d="M0,210 Q140,350 300,332 L300,420 L0,420 Z"`, color: colores[2], lx: 150, ly: 330 }
+        { tag: 'circle', attrs: `cx="175" cy="210" r="175"`, color: colores[0], lx: 175, ly: 230, bw: 170, bh: 56 },
+        { tag: 'rect', attrs: `x="260" y="15" width="620" height="170"`, color: colores[3], lx: 800, ly: 140, bw: 150, bh: 50, isTitle: true },
+        { tag: 'rect', attrs: `x="460" y="40" width="140" height="110"`, color: { hex: insetHex, nombre: colores[3].nombre + ' claro' }, lx: 530, ly: 95, bw: 122, bh: 80 },
+        { tag: 'path', attrs: `d="M650,185 L348,185 Q360,260 300,332 L300,420 L650,420 Z"`, color: colores[4], lx: 500, ly: 320, bw: 140, bh: 50 },
+        { tag: 'rect', attrs: `x="650" y="185" width="240" height="140"`, color: colores[1], lx: 770, ly: 255, bw: 160, bh: 50 },
+        { tag: 'rect', attrs: `x="610" y="280" width="280" height="140"`, color: colores[5], lx: 780, ly: 355, bw: 160, bh: 50 },
+        { tag: 'path', attrs: `d="M0,210 Q140,350 300,332 L300,420 L0,420 Z"`, color: colores[2], lx: 150, ly: 380, bw: 140, bh: 50 }
     ];
 
     const shapeMarkup = shapes.map(s => {
         const rgb = hexToRgb(s.color.hex);
         const textColor = textColorFor(s.color);
         const titleText = s.isTitle
-            ? `<text x="670" y="45" class="moodboard-title-text" style="fill:${textColor}" font-size="22">${koppen.nombre}</text>`
+            ? `<text x="670" y="65" class="moodboard-title-text" style="fill:${textColor}" font-size="22">${koppen.nombre}</text>`
             : '';
+        const bw = s.bw || 150, bh = s.bh || 54;
         const labelBox = `
-            <foreignObject x="${s.lx - 80}" y="${s.ly - 28}" width="160" height="56" class="moodboard-label-fo">
+            <foreignObject x="${s.lx - bw / 2}" y="${s.ly - bh / 2}" width="${bw}" height="${bh}" class="moodboard-label-fo">
                 <div xmlns="http://www.w3.org/1999/xhtml" class="moodboard-label-box" style="color:${textColor}">
                     <div class="mlb-name">${s.color.nombre || ''}</div>
                     <div class="mlb-rgb">R:${rgb.r} G:${rgb.g} B:${rgb.b}</div>
                     <div class="mlb-hex">${s.color.hex}</div>
                 </div>
             </foreignObject>`;
-        const copiedEl = `<text x="${s.lx}" y="${s.ly + 34}" text-anchor="middle" class="moodboard-copied-label" style="fill:${textColor}">Copiado</text>`;
+        const copiedEl = `<text x="${s.lx}" y="${s.ly + bh / 2 + 14}" text-anchor="middle" class="moodboard-copied-label" style="fill:${textColor}">Copiado</text>`;
         return `
             <g class="moodboard-shape-group" onclick="copyPaletteColor('${s.color.hex}', this)">
                 <${s.tag} class="moodboard-shape" ${s.attrs} fill="${s.color.hex}"></${s.tag}>
