@@ -145,6 +145,33 @@
             filter: drop-shadow(0 2px 8px rgba(0,0,0,0.45));
         }
 
+        /* Leyenda de colores solo para móvil: en el dibujo los nombres solo
+           aparecen con :hover, que no existe en pantallas táctiles. */
+        .moodboard-legend-mobile {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;
+        }
+        .moodboard-legend-chip {
+            display: flex; align-items: center; gap: 8px; padding: 7px 9px;
+            border-radius: 10px; background: rgba(120,120,120,0.08);
+            border: 1px solid rgba(120,120,120,0.14); text-align: left;
+        }
+        .moodboard-legend-chip:active { background: rgba(56,189,248,0.16); }
+        .moodboard-legend-chip.copied { background: rgba(16,185,129,0.18); border-color: rgba(16,185,129,0.4); }
+        .legend-swatch {
+            width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+        }
+        .legend-text { display: flex; flex-direction: column; min-width: 0; }
+        .legend-name {
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 10.5px;
+            color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .dark .legend-name { color: #cbd5e1; }
+        .legend-hex {
+            font-family: monospace; font-size: 9.5px; color: #64748b; letter-spacing: 0.03em;
+        }
+        .dark .legend-hex { color: #94a3b8; }
+
         /* ---- Barra horizontal de variantes de paleta ---- */
         .palette-variant-row {
             display: flex; flex-wrap: wrap; gap: 10px; width: 100%; padding: 4px 2px 10px;
@@ -384,6 +411,18 @@
         .is-mobile #strategy-menu button svg { width: 17px !important; height: 17px !important; }
         .is-mobile #strategy-menu button p { font-size: 12px !important; }
         .is-mobile #interactive-visualizer > div > div:last-child { min-height: 240px !important; }
+
+        /* Sección 06 (paleta cromática) más compacta y ordenada en móvil */
+        .is-mobile #palette-panel { padding: 1rem !important; }
+        .is-mobile #palette-variant-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px !important;
+        }
+        .is-mobile .palette-variant-chip { flex: unset !important; padding: 4px !important; }
+        .is-mobile .palette-variant-chip .chip-swatches { height: 32px !important; }
+        .is-mobile .palette-variant-chip .chip-label { font-size: 9.5px !important; }
+        .is-mobile #palette-koppen-tag { font-size: 9px !important; padding: 0.3rem 0.6rem !important; text-align: center; }
 
         /* El mapa (Leaflet) no debe heredar la transición global: eso causaba
            el trabajo/lag al arrastrarlo con el dedo. */
@@ -789,7 +828,7 @@
                         <h2 class="font-space font-bold text-base uppercase tracking-[0.25em] text-slate-600 dark:text-slate-400 section-title-accent accent-sky"><span class="text-sky-600 dark:text-sky-400"><svg class="w-4 h-4 inline -mt-1 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h2a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-2a2 2 0 00-2-2h-2.5M7 21V9a2 2 0 012-2h2"/></svg>06</span> / Paleta Cromática Bioclimática</h2>
                         <span id="palette-koppen-tag" class="hidden text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 bg-sky-500/10 border border-sky-500/20 rounded-full px-3 py-1"></span>
                     </div>
-                    <div class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 glass-panel p-6 md:p-8 shadow-2xl relative overflow-hidden">
+                    <div id="palette-panel" class="w-full rounded-[24px] border border-slate-200 dark:border-white/5 glass-panel p-6 md:p-8 shadow-2xl relative overflow-hidden">
                         <div id="palette-variant-bar" class="hidden mb-4">
                             <p class="text-[11px] font-space font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 mb-2">Variantes recomendadas para este clima</p>
                             <div id="palette-variant-row" class="palette-variant-row"></div>
@@ -3726,6 +3765,16 @@ function buildMoodboardSVG(nombreClima, colores) {
                 ${shapeMarkup}
                 ${titleMarkup}
             </svg>
+        </div>
+        <div class="mobile-only moodboard-legend-mobile">
+            ${colores.map(c => `
+                <button type="button" class="moodboard-legend-chip" onclick="copyPaletteColor('${c.hex}', this)">
+                    <span class="legend-swatch" style="background:${c.hex}"></span>
+                    <span class="legend-text">
+                        <span class="legend-name">${c.nombre || ''}</span>
+                        <span class="legend-hex">${c.hex}</span>
+                    </span>
+                </button>`).join('')}
         </div>`;
 }
 
