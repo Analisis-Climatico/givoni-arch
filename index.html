@@ -64,15 +64,119 @@ body.light{--bg:#e9f4ff;--panel:rgba(234,247,255,.87);--panel2:rgba(217,236,249,
  .viewer-utilities#viewerUtilities{left:12px!important;right:12px!important;bottom:132px!important;max-height:none!important;}
  .viewbuttons{bottom:80px!important;}
 }
+
+/* V17 — barra inferior realmente compacta, sin fondo extendido */
+.viewport .viewbuttons{left:14px!important;bottom:75px!important;height:48px!important;display:flex!important;align-items:center!important;gap:2px!important;padding:5px!important;background:rgba(10,30,50,.87)!important;border-radius:11px!important;box-shadow:0 8px 24px #0003!important;white-space:nowrap!important}
+.viewport .viewbuttons button{padding:8px 10px!important;font-size:11px!important}
+.viewer-utilities#viewerUtilities{left:242px!important;right:auto!important;bottom:75px!important;top:auto!important;transform:none!important;width:max-content!important;max-width:calc(100% - 258px)!important;min-height:48px!important;max-height:50px!important;display:flex!important;flex-flow:row nowrap!important;justify-content:flex-start!important;align-items:center!important;gap:6px!important;padding:5px 7px!important;overflow-x:auto!important;overflow-y:hidden!important;background:rgba(10,30,50,.87)!important;border-radius:11px!important;box-shadow:0 8px 24px #0003!important;scrollbar-width:thin}
+.viewer-utilities#viewerUtilities .viewer-advanced{display:contents!important}
+.viewer-utilities#viewerUtilities .field{min-height:0!important;margin:0!important;flex:0 0 auto!important;padding:3px 7px!important}
+.viewer-utilities#viewerUtilities .field label{font-size:9px!important;line-height:1.2!important;white-space:nowrap!important}
+.viewer-utilities#viewerUtilities #upAxis{width:112px!important;max-width:112px!important;font-size:10px!important;padding:3px!important}
+.viewer-utilities#viewerUtilities #elevationOffset{width:54px!important;height:24px!important;padding:3px 5px!important}
+.viewer-utilities#viewerUtilities #snapGround,.viewer-utilities#viewerUtilities #viewerOrient{padding:8px 9px!important;white-space:nowrap!important;font-size:10px!important}
+.viewer-utilities#viewerUtilities >label{display:flex!important;align-items:center!important;gap:4px!important;font-size:10px!important;white-space:nowrap!important}
+.viewer-utilities#viewerUtilities >label input{width:auto!important}
+@media(max-width:950px){
+ .viewport .viewbuttons{left:12px!important;bottom:75px!important}
+ .viewer-utilities#viewerUtilities{left:230px!important;right:auto!important;bottom:75px!important;width:max-content!important;max-width:calc(100% - 244px)!important}
+}
+@media(max-width:650px){
+ .viewport .viewbuttons{left:10px!important;bottom:128px!important}
+ .viewer-utilities#viewerUtilities{left:10px!important;bottom:75px!important;max-width:calc(100% - 20px)!important;width:max-content!important}
+}
+
+/* V18 — franja inferior adaptativa: sin recorte ni desplazamiento horizontal. */
+.viewport .viewbuttons {
+ left:12px!important;bottom:75px!important;height:46px!important;
+ width:185px!important;box-sizing:border-box!important;
+ flex-wrap:nowrap!important;justify-content:space-between!important;
+ padding:4px!important;gap:1px!important;
+}
+.viewport .viewbuttons button {font-size:10px!important;padding:7px 7px!important;min-width:0!important;flex:1 1 auto!important}
+.viewer-utilities#viewerUtilities {
+ position:absolute!important;left:205px!important;right:12px!important;
+ bottom:75px!important;top:auto!important;transform:none!important;
+ width:auto!important;max-width:none!important;min-width:0!important;
+ min-height:46px!important;max-height:46px!important;
+ display:flex!important;flex-wrap:nowrap!important;align-items:center!important;
+ gap:5px!important;justify-content:flex-start!important;
+ padding:4px 6px!important;box-sizing:border-box!important;
+ overflow:visible!important;white-space:nowrap!important;
+}
+.viewer-utilities#viewerUtilities .viewer-advanced{display:flex!important;flex:0 1 auto!important;min-width:0!important;align-items:center!important;gap:5px!important;flex-wrap:nowrap!important}
+.viewer-utilities#viewerUtilities .field {margin:0!important;min-width:0!important;max-width:none!important;flex:0 1 auto!important;padding:2px 5px!important;min-height:37px!important}
+.viewer-utilities#viewerUtilities .field:first-child{width:94px!important;flex:0 1 94px!important}
+.viewer-utilities#viewerUtilities .field:nth-child(3){width:75px!important;flex:0 1 75px!important}
+.viewer-utilities#viewerUtilities .field label{font-size:9px!important;line-height:1!important}
+.viewer-utilities#viewerUtilities #upAxis{width:100%!important;max-width:none!important;font-size:10px!important;padding:1px!important;height:22px!important}
+.viewer-utilities#viewerUtilities #elevationOffset{width:100%!important;max-width:none!important;height:21px!important;font-size:10px!important;padding:2px 4px!important}
+.viewer-utilities#viewerUtilities #snapGround,.viewer-utilities#viewerUtilities #viewerOrient{flex:0 1 auto!important;padding:7px 7px!important;font-size:10px!important;min-width:0!important}
+.viewer-utilities#viewerUtilities>label {font-size:10px!important;flex:0 1 auto!important;white-space:nowrap!important;gap:3px!important}
+.viewer-utilities#viewerUtilities>label input {margin:0!important;width:13px!important;height:13px!important}
+@media(max-width:780px){
+ .viewport .viewbuttons{width:169px!important}
+ .viewer-utilities#viewerUtilities{left:188px!important;gap:3px!important;padding:3px 4px!important}
+ .viewer-utilities#viewerUtilities .viewer-advanced{gap:3px!important}
+ .viewer-utilities#viewerUtilities .field:first-child{width:82px!important;flex-basis:82px!important}
+ .viewer-utilities#viewerUtilities .field:nth-child(3){width:63px!important;flex-basis:63px!important}
+ .viewer-utilities#viewerUtilities #snapGround,.viewer-utilities#viewerUtilities #viewerOrient{font-size:9px!important;padding:6px 5px!important}
+ .viewer-utilities#viewerUtilities>label{font-size:9px!important}
+}
+@media(max-width:640px){
+ /* Dos filas ordenadas cuando no cabe, nunca barra cortada ni scroll lateral. */
+ .viewport .viewbuttons{bottom:128px!important;left:10px!important;height:42px!important;width:185px!important}
+ .viewer-utilities#viewerUtilities{left:10px!important;right:10px!important;bottom:75px!important;max-width:none!important;height:46px!important;max-height:46px!important;justify-content:space-between!important}
+ .viewer-utilities#viewerUtilities .viewer-advanced{flex:1 1 auto!important}
+}
+@media(max-width:440px){
+ .viewer-utilities#viewerUtilities{bottom:74px!important;height:auto!important;min-height:46px!important;max-height:none!important;flex-wrap:wrap!important;row-gap:3px!important}
+ .viewer-utilities#viewerUtilities .viewer-advanced{width:100%!important;flex:1 1 100%!important}
+ .viewport .viewbuttons{bottom:160px!important}
+ .viewer-utilities#viewerUtilities>label{margin-left:auto!important}
+}
+
+
+/* V19 — Centrado del grupo de ajustes en el área libre del visor. */
+@media (min-width: 641px){
+  .viewer-utilities#viewerUtilities{
+    left:calc(185px + (100% - 185px)/2)!important;
+    right:auto!important;
+    transform:translateX(-50%)!important;
+    width:max-content!important;
+    max-width:calc(100% - 204px)!important;
+    justify-content:center!important;
+    gap:8px!important;
+    padding:4px 10px!important;
+    box-sizing:border-box!important;
+  }
+  .viewer-utilities#viewerUtilities .viewer-advanced{
+    flex:0 0 auto!important;
+    width:auto!important;
+    justify-content:center!important;
+  }
+}
+@media (min-width:641px) and (max-width:950px){
+  .viewer-utilities#viewerUtilities{gap:4px!important;padding:4px 5px!important;}
+  .viewer-utilities#viewerUtilities .viewer-advanced{gap:4px!important;}
+}
+@media (max-width:640px){
+  .viewer-utilities#viewerUtilities{
+    left:50%!important;right:auto!important;
+    transform:translateX(-50%)!important;
+    width:calc(100% - 20px)!important;max-width:calc(100% - 20px)!important;
+    justify-content:center!important;
+  }
+}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 </head>
 <body>
 <div class="app">
 <header class="top"><div class="brand"><img class="brand-image" src="Tipo1.png" alt="Isotipo CLÓVINA" onerror="this.style.display='none'"><div><img class="brand-wordmark" src="Tipo3.png" alt="CLÓVINA" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><strong class="brand-fallback" style="display:none">CLÓVINA</strong><small>Estudio Solar 3D</small></div></div><div class="top-fields"><div class="field location glass" id="locationField"><label for="city">Ubicación / búsqueda · seleccionar del mapa</label><div class="location-row"><input id="city" value="Guayaquil, Ecuador" autocomplete="off" placeholder="Ciudad, dirección o lugar"><button type="button" id="mapToggle" title="Seleccionar lugar en mapa mundial">◉ Mapa</button></div><div id="suggestions" class="suggestions" hidden></div></div><button class="iconbtn" id="search" title="Buscar coordenadas">⌕</button><div class="field glass"><label for="date">Fecha</label><input id="date" type="date" value="2026-10-15"></div><div class="field glass"><label for="hour">Hora local</label><input id="hour" type="time" value="12:00"></div><div class="field glass" style="max-width:105px"><label for="north">Norte (°)</label><input type="number" id="north" min="0" max="359" step="1" value="0"></div><div class="field glass" style="max-width:120px"><label for="latitude">Latitud</label><input id="latitude" type="number" step="any" value="-2.17"></div><div class="field glass" style="max-width:120px"><label for="longitude">Longitud</label><input id="longitude" type="number" step="any" value="-79.92"></div><div class="field glass" style="max-width:94px"><label for="utcOffset">UTC ± horas</label><input id="utcOffset" type="number" min="-12" max="14" step="0.5" value="-5" title="Ajusta zona horaria local del lugar seleccionado"></div></div><div class="top-actions"><button class="iconbtn" id="theme" title="Modo claro / oscuro">☀</button><button class="iconbtn" id="loadbtn" title="Importar modelo 3D">⇧</button><input id="file" type="file" accept=".ifc,.glb,.gltf,.stl,.obj" hidden></div></header>
-<div id="mapOverlay" class="map-overlay" hidden><div class="map-head"><b>Seleccionar ubicación en el mapa</b><button id="mapClose" class="smallbtn">✕ Cerrar</button></div><div id="worldMap"></div><div id="mapError" class="map-error" hidden></div><p>Haz clic en cualquier punto del mapa para usar sus coordenadas o selecciona una sugerencia de búsqueda.</p></div><div class="workspace"><section class="viewport glass" id="viewport"><div id="scene"></div><div class="mode-trigger" id="modeTrigger"><nav class="modebar" aria-label="Modo de estudio"><button class="active" data-mode="solar">☀ &nbsp; Recorrido solar</button><button data-mode="interior">⌂ &nbsp; Sol interior</button><button data-mode="radiation">▥ &nbsp; Sol en fachadas</button><button data-mode="thermal">♧ &nbsp; Confort térmico</button></nav></div><div class="tools"><button class="tool active" id="select" title="Seleccionar elemento">↖</button><button class="tool" id="fit" title="Centrar modelo">⬡</button><button class="tool" id="tree" title="Mostrar / ocultar vegetación">♧</button><button class="tool" id="plant" title="Añadir árbol o arbusto: elige tipo y coloca sobre el terreno">✚🌳</button><select id="plantType" title="Tipo de vegetación" aria-label="Tipo de vegetación"><option value="tree">🌳 Árbol</option><option value="shrub">🌿 Arbusto</option></select></div><div class="compass" title="Arrastra la brújula para orientar el norte geográfico del proyecto"><span class="cardinal n">N</span><span class="cardinal s">S</span><span class="cardinal e">E</span><span class="cardinal o">O</span><div class="needle" id="needle">▲</div><span class="compass-label">Ajustar norte</span></div><div class="viewer-utilities glass" id="viewerUtilities"><div class="viewer-advanced"><div class="field glass" style="max-width:150px"><label for="upAxis">Eje vertical IFC</label><select id="upAxis" title="Corrige la orientación sin reimportar"><option value="z">Z arriba (IFC)</option><option value="y">Y arriba</option><option value="minusz">Z invertido</option></select></div><button class="smallbtn" id="snapGround" title="Alinear la base geométrica con el terreno">↓ Apoyar en terreno</button><div class="field glass" style="max-width:120px"><label for="elevationOffset">Altura modelo (m)</label><input id="elevationOffset" type="number" value="0" step="0.1" title="Ajuste de altura respecto al terreno"></div></div><button id="viewerOrient" type="button">⟳ Girar modelo</button><label title="Desactiva sombras de elementos IFC no clasificados para diagnosticar sombras rectangulares"><input type="checkbox" id="auxShadow" checked> Sombras auxiliares</label></div><div id="sunPresets" class="sun-presets"><select id="sunEvent" title="Fechas solares de referencia"><option value="day">Día seleccionado</option><option value="march">Equinoccio de marzo</option><option value="june">Solsticio de junio</option><option value="september">Equinoccio de septiembre</option><option value="december">Solsticio de diciembre</option></select><label><input id="sunPathVisible" type="checkbox" checked> Trayectoria solar y horas</label></div><div id="visualLegend" class="visual-legend">Sombras 3D · trayectoria solar</div><button type="button" id="assignFloor" class="assign-floor" title="Selecciona un elemento 3D que sea un piso y pulsa aquí">▦ Definir piso interior</button><div class="viewer-hint">Arrastra el modelo para orbitar · Rueda para acercar · Pulsa la brújula para ajustar el norte</div><div class="viewbuttons"><button class="active" data-view="perspective">Perspectiva</button><button data-view="top">Planta</button><button data-view="front">Alzado</button></div><div class="floatnote" id="notification">Modelo de demostración · Arrastra para orbitar · Rueda para acercar</div><div class="timeline"><button class="iconbtn" id="play" title="Reproducir día">▶</button><span style="font-size:11px;color:#9db6cb">06:00</span><input type="range" id="slider" min="0" max="1439" step="10" value="720" aria-label="Hora del análisis"><span style="font-size:11px;color:#9db6cb">23:59</span><span class="timeval" id="clocklabel">12:00</span></div></section>
+<div id="mapOverlay" class="map-overlay" hidden><div class="map-head"><b>Seleccionar ubicación en el mapa</b><button id="mapClose" class="smallbtn">✕ Cerrar</button></div><div id="worldMap"></div><div id="mapError" class="map-error" hidden></div><p>Haz clic en cualquier punto del mapa para usar sus coordenadas o selecciona una sugerencia de búsqueda.</p></div><div class="workspace"><section class="viewport glass" id="viewport"><div id="scene"></div><div class="mode-trigger" id="modeTrigger"><nav class="modebar" aria-label="Modo de estudio"><button class="active" data-mode="solar">☀ &nbsp; Recorrido solar</button><button data-mode="interior">⌂ &nbsp; Sol interior</button><button data-mode="radiation">▥ &nbsp; Sol en fachadas</button><button data-mode="thermal">♧ &nbsp; Confort térmico</button></nav></div><div class="tools"><button class="tool active" id="select" title="Seleccionar elemento">↖</button><button class="tool" id="fit" title="Centrar modelo">⬡</button><button class="tool" id="tree" title="Mostrar / ocultar vegetación">♧</button><button class="tool" id="plant" title="Añadir árbol o arbusto: elige tipo y coloca sobre el terreno">✚🌳</button><select id="plantType" title="Tipo de vegetación" aria-label="Tipo de vegetación"><option value="tree">🌳 Árbol</option><option value="shrub">🌿 Arbusto</option></select></div><div class="compass" title="Arrastra la brújula para orientar el norte geográfico del proyecto"><span class="cardinal n">N</span><span class="cardinal s">S</span><span class="cardinal e">E</span><span class="cardinal o">O</span><div class="needle" id="needle">▲</div><span class="compass-label">Ajustar norte</span></div><div class="viewer-utilities glass" id="viewerUtilities"><div class="viewer-advanced"><div class="field glass" style="max-width:150px"><label for="upAxis">Eje IFC</label><select id="upAxis" title="Corrige la orientación sin reimportar"><option value="z">Z arriba (IFC)</option><option value="y">Y arriba</option><option value="minusz">Z invertido</option></select></div><button class="smallbtn" id="snapGround" title="Alinear la base geométrica con el terreno">↓ Apoyar</button><div class="field glass" style="max-width:120px"><label for="elevationOffset">Altura (m)</label><input id="elevationOffset" type="number" value="0" step="0.1" title="Ajuste de altura respecto al terreno"></div></div><button id="viewerOrient" type="button">⟳ Girar</button><label title="Desactiva sombras de elementos IFC no clasificados para diagnosticar sombras rectangulares"><input type="checkbox" id="auxShadow" checked> Sombras extra</label></div><div id="sunPresets" class="sun-presets"><select id="sunEvent" title="Fechas solares de referencia"><option value="day">Día seleccionado</option><option value="march">Equinoccio de marzo</option><option value="june">Solsticio de junio</option><option value="september">Equinoccio de septiembre</option><option value="december">Solsticio de diciembre</option></select><label><input id="sunPathVisible" type="checkbox" checked> Trayectoria solar y horas</label></div><div id="visualLegend" class="visual-legend">Sombras 3D · trayectoria solar</div><button type="button" id="assignFloor" class="assign-floor" title="Selecciona un elemento 3D que sea un piso y pulsa aquí">▦ Definir piso interior</button><div class="viewer-hint">Arrastra el modelo para orbitar · Rueda para acercar · Pulsa la brújula para ajustar el norte</div><div class="viewbuttons"><button class="active" data-view="perspective">Perspectiva</button><button data-view="top">Planta</button><button data-view="front">Alzado</button></div><div class="floatnote" id="notification">Modelo de demostración · Arrastra para orbitar · Rueda para acercar</div><div class="timeline"><button class="iconbtn" id="play" title="Reproducir día">▶</button><span style="font-size:11px;color:#9db6cb">06:00</span><input type="range" id="slider" min="0" max="1439" step="10" value="720" aria-label="Hora del análisis"><span style="font-size:11px;color:#9db6cb">23:59</span><span class="timeval" id="clocklabel">12:00</span></div></section>
 <aside class="results glass"><div class="result-head">▥ &nbsp; RESULTADOS <button id="weather" class="iconbtn" title="Consultar clima histórico" style="font-size:13px">↻</button></div><div id="metricList"></div><div class="chart"><h3 id="chartTitle">Análisis del día</h3><svg id="graph" viewBox="0 0 300 135" role="img" aria-label="Gráfica ilustrativa o de datos disponibles"></svg></div><div class="result-foot" id="info">Las cifras térmicas necesitan datos meteorológicos y un modelo de simulación. No se inventan resultados.</div></aside></div>
-<section class="materials glass"><div class="materials-top"><div class="section-title">▤ &nbsp; MATERIALES DEL PROYECTO <button class="smallbtn" id="fold">⌄</button></div><span class="materials-help">Selecciona un elemento y edita aquí su composición y datos térmicos</span><span class="status" id="selection">Selecciona un objeto 3D para editar su material</span></div><div id="materialsContent"><div class="matgrid" id="matgrid"></div><div class="optional-row"><label for="addOptional">Componentes opcionales</label><select id="addOptional"><option value="">+ Añadir celosía o envolvente…</option><option value="Celosía">Celosía</option><option value="Envolvente">Envolvente</option></select><span id="optionalStatus" class="status"></span><div id="componentInventory" class="status" style="flex-basis:100%"></div></div></div></section><footer class="footer"><span>CLÓVINA · Sol y sombras geométricas; mapas visuales de radiación/temperatura NO equivalen a cálculos energéticos.</span><span id="fileStatus">V9 · IFC/GLB/GLTF/STL/OBJ</span></footer></div>
+<section class="materials glass"><div class="materials-top"><div class="section-title">▤ &nbsp; MATERIALES DEL PROYECTO <button class="smallbtn" id="fold">⌄</button></div><span class="materials-help">Selecciona un elemento y edita aquí su composición y datos térmicos</span><span class="status" id="selection">Selecciona un objeto 3D para editar su material</span></div><div id="materialsContent"><div class="matgrid" id="matgrid"></div><div class="optional-row"><label for="addOptional">Componentes opcionales</label><select id="addOptional"><option value="">+ Añadir celosía o envolvente…</option><option value="Celosía">Celosía</option><option value="Envolvente">Envolvente</option></select><span id="optionalStatus" class="status"></span><div id="componentInventory" class="status" style="flex-basis:100%"></div></div></div></section><footer class="footer"><span>CLÓVINA · Sol y sombras geométricas; mapas visuales de radiación/temperatura NO equivalen a cálculos energéticos.</span><span id="fileStatus">V17 · IFC/GLB/GLTF/STL/OBJ</span></footer></div>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
