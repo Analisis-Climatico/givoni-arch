@@ -1100,6 +1100,66 @@ html:not(.dark) .help-card, html:not(.dark) .help-source, html:not(.dark) .help-
 }
 @media print { html.cv-ready .cv-reveal, html.cv-ready #strategy-list > .cv-card { opacity: 1 !important; transform: none !important; } }
 
+
+/* =====================================================================
+   MODO CLARO — PALETA VIBRANTE (v2). El oscuro no cambia.
+   ===================================================================== */
+:root {
+  --cv-bg: #d5f0f6; --cv-sunken: #cfeaee;
+  --cv-ink: #06161b; --cv-ink2: #1f424b; --cv-ink3: #45646f;
+  --cv-line2: rgba(6,90,100,.24);
+  --cv-accent-soft: rgba(20,184,166,.16);
+  --cv-wash1: rgba(20,200,170,.42); --cv-wash2: rgba(255,150,60,.34); --cv-wash3: rgba(56,170,255,.40);
+  --cv-shadow: 0 1px 0 rgba(255,255,255,1) inset, 0 2px 4px rgba(6,90,100,.08), 0 22px 40px -18px rgba(6,160,150,.50);
+}
+html:not(.dark) body {
+  background-image:
+    radial-gradient(1100px 700px at 4% -6%, var(--cv-wash1), transparent 68%),
+    radial-gradient(900px 640px at 100% 104%, var(--cv-wash2), transparent 68%),
+    radial-gradient(900px 600px at 98% 6%, var(--cv-wash3), transparent 68%),
+    linear-gradient(135deg,#cdeff7 0%,#def6ee 48%,#ffeadb 100%) !important;
+}
+html:not(.dark) #sidebar { background: linear-gradient(180deg,#ffffff 0%,#d3f3ef 100%) !important; }
+html:not(.dark) .glass-panel { border-color: rgba(8,150,140,.34) !important; }
+
+/* Títulos de sección: etiqueta sólida */
+html:not(.dark) #export-container h2.section-title-accent > span {
+  background: var(--cv-grad); color: #fff !important; border-color: transparent; box-shadow: 0 8px 14px -8px rgba(13,148,136,.8);
+}
+
+/* Tabla */
+html:not(.dark) #data-table thead { background: linear-gradient(135deg,#12a89a,#0a6a63) !important; color: #fff !important; border-bottom: 0 !important; }
+html:not(.dark) #data-table thead th { color: #fff !important; }
+html:not(.dark) #table-body tr:nth-child(even) { background: rgba(20,184,166,.11); }
+html:not(.dark) #table-body tr:hover { background: rgba(20,184,166,.22) !important; }
+
+/* Resumen: tarjetas con color */
+html:not(.dark) #analysis-text > div.grid > div:nth-child(1) { background: linear-gradient(180deg,#ffe9d2,#ffffff 80%) !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(2) { background: linear-gradient(180deg,#dceaff,#ffffff 80%) !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(3) { background: linear-gradient(180deg,#d3f6ef,#ffffff 80%) !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(1) p:last-child { color: #c2410c !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(2) p:last-child { color: #1d4ed8 !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(3) p:last-child { color: #0f766e !important; }
+
+/* Estrategias: tres tonos que rotan por columna */
+html:not(.dark) #strategy-list > div:nth-child(3n+1) { background: linear-gradient(180deg,#d6f6f0 0%,#ffffff 62%) !important; }
+html:not(.dark) #strategy-list > div:nth-child(3n+2) { background: linear-gradient(180deg,#dbe9ff 0%,#ffffff 62%) !important; }
+html:not(.dark) #strategy-list > div:nth-child(3n)   { background: linear-gradient(180deg,#ffe8cf 0%,#ffffff 62%) !important; }
+html:not(.dark) #strategy-list > div:nth-child(3n+2) > p:first-child { color: #1d4ed8 !important; }
+html:not(.dark) #strategy-list > div:nth-child(3n)   > p:first-child { color: #c2410c !important; }
+html:not(.dark) #strategy-list > div:nth-child(3n+2)::after { background: linear-gradient(90deg,#3b82f6,#8b5cf6); }
+html:not(.dark) #strategy-list > div:nth-child(3n)::after   { background: linear-gradient(90deg,#f97316,#f43f5e); }
+html:not(.dark) #strategy-list > div::after { transform: scaleX(.45); height: 4px; }
+
+html:not(.dark) #strategy-menu { background: linear-gradient(180deg,#d5f1f1,#e6f7f7); }
+html:not(.dark) #interactive-visualizer { background: linear-gradient(135deg,#ffffff 0%,#effafa 100%) !important; }
+html:not(.dark) #header-container > div:last-child > div.flex.gap-1 { background: #c6e8e8 !important; }
+html:not(.dark) #year-selector > button:not(.text-white), html:not(.dark) #month-selector > button:not(.text-white),
+html:not(.dark) #sidebar .grid.grid-cols-3 > button, html:not(.dark) .palette-variant-chip { background: #ffffff !important; border-color: rgba(8,150,140,.40) !important; }
+
+/* Climograma: más viveza solo en pantalla (contenedor externo; el SVG y las exportaciones no cambian) */
+html:not(.dark) #chart-scroll-wrap { filter: saturate(1.35); }
+
 /* ---------- Movimiento reducido (solo cromo de interfaz; no toca D3/Leaflet/SVG) ---------- */
 @media (prefers-reduced-motion: reduce) {
   .cta-breathe, .logo-glow-pulse, .card-fade-in, .section-refresh-anim, .table-row-anim, #header-container, #sidebar-full-content > *, #download-menu-panel, #search-results, .help-panel, [id$="-modal-overlay"], [id$="-modal-overlay"] > .glass-panel { animation: none !important; }
