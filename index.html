@@ -580,17 +580,17 @@
    numerales tabulares, un acento teal (datos) y uno ámbar (acción).
    ===================================================================== */
 :root {
-  --cv-bg: #eaf5f6; --cv-sidebar: #ffffff; --cv-surface: #ffffff; --cv-surface2: #ffffff; --cv-sunken: #e1f0f2;
-  --cv-ink: #0a1d22; --cv-ink2: #2c4a52; --cv-ink3: #4d6a74;
-  --cv-line: rgba(8,62,72,.10); --cv-line2: rgba(8,62,72,.18); --cv-grid: rgba(8,62,72,.04);
-  --cv-accent: #0f766e; --cv-accent-soft: rgba(20,184,166,.12); --cv-accent-line: rgba(13,148,136,.40);
+  --cv-bg: #f3f8f9; --cv-sidebar: #ffffff; --cv-surface: #ffffff; --cv-surface2: #ffffff; --cv-sunken: #e9f1f2;
+  --cv-ink: #0b1d22; --cv-ink2: #30484f; --cv-ink3: #55707a;
+  --cv-line: rgba(8,62,72,.09); --cv-line2: rgba(8,62,72,.15); --cv-grid: rgba(8,62,72,.04);
+  --cv-accent: #0b7f75; --cv-accent-soft: rgba(13,148,136,.09); --cv-accent-line: rgba(13,148,136,.32);
   --cv-amber: #c2570c; --cv-amber-hover: #a2460a;
-  --cv-grad: linear-gradient(135deg,#14b8a6 0%,#0b7a71 100%);
-  --cv-grad-amber: linear-gradient(135deg,#ec8a12 0%,#bd4a0a 100%);
-  --cv-shadow: 0 1px 0 rgba(255,255,255,.95) inset, 0 1px 2px rgba(8,62,72,.07), 0 16px 34px -18px rgba(13,148,136,.38);
-  --cv-shadow-lg: 0 28px 64px -22px rgba(8,62,72,.45);
+  --cv-grad: linear-gradient(180deg,#10978b 0%,#0b7a71 100%);
+  --cv-grad-amber: linear-gradient(180deg,#e8820e 0%,#c95f0a 100%);
+  --cv-shadow: 0 1px 0 rgba(255,255,255,1) inset, 0 1px 2px rgba(8,62,72,.05), 0 14px 30px -18px rgba(8,62,72,.24);
+  --cv-shadow-lg: 0 28px 60px -24px rgba(8,62,72,.42);
   --cv-overlay: rgba(10,29,34,.50);
-  --cv-wash1: rgba(20,184,166,.22); --cv-wash2: rgba(251,146,60,.17); --cv-wash3: rgba(56,189,248,.18);
+  --cv-wash1: rgba(20,184,166,.12); --cv-wash2: rgba(251,146,60,.08); --cv-wash3: rgba(56,189,248,.10);
   --cv-ease: cubic-bezier(.22,1,.36,1); --cv-spring: cubic-bezier(.34,1.4,.64,1);
 }
 html.dark {
@@ -996,64 +996,6 @@ html #comments-modal-overlay.flex-shown > .glass-panel, html #qr-modal-overlay.f
 
 
 /* =====================================================================
-   MODO CLARO MÁS VIVO (el oscuro no cambia)
-   ===================================================================== */
-html:not(.dark) #sidebar { background: linear-gradient(180deg,#ffffff 0%,#effafa 100%) !important; }
-html:not(.dark) .glass-panel { border-color: rgba(13,148,136,.20) !important; }
-html:not(.dark) #year-selector > button.text-white, html:not(.dark) #month-selector > button.text-white,
-html:not(.dark) #btn-mes.text-white, html:not(.dark) #btn-año.text-white {
-  background: var(--cv-grad) !important; border-color: #0b7a71 !important; color: #fff !important;
-  box-shadow: 0 8px 16px -8px rgba(13,148,136,.75), 0 1px 0 rgba(255,255,255,.35) inset !important;
-}
-html:not(.dark) #year-selector > button:not(.text-white), html:not(.dark) #month-selector > button:not(.text-white) { background: #f4fbfb !important; border-color: rgba(13,148,136,.25) !important; color: #1f4b52 !important; }
-html:not(.dark) #mode-indicator { background: linear-gradient(135deg,#14b8a6,#22c55e) !important; box-shadow: 0 4px 10px -2px rgba(20,184,166,.7) !important; }
-html:not(.dark) #mode-switch svg:first-of-type { color: #f97316; }
-html:not(.dark) button[onclick="runClimateAnalysis()"] {
-  background: var(--cv-grad-amber) !important; border-color: rgba(120,40,0,.25) !important;
-  box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 14px 24px -12px rgba(217,119,6,.85) !important;
-}
-html:not(.dark) button[onclick="runClimateAnalysis()"]:hover { filter: brightness(1.08) saturate(1.1); background: var(--cv-grad-amber) !important; }
-html:not(.dark) #download-menu-btn {
-  background: var(--cv-grad) !important; border-color: rgba(4,70,64,.35) !important;
-  box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 14px 24px -12px rgba(13,148,136,.85) !important;
-}
-html:not(.dark) #download-menu-btn:hover { filter: brightness(1.08) saturate(1.1); }
-html:not(.dark) #save-btn { color: #c2570c !important; border-color: #ea7a0c !important; background: rgba(251,146,60,.08) !important; }
-html:not(.dark) #save-btn:hover { background: rgba(251,146,60,.20) !important; }
-html:not(.dark) #sidebar .grid.grid-cols-3 > button { background: #f4fbfb !important; border-color: rgba(13,148,136,.25) !important; }
-html:not(.dark) #header-container > div:last-child > div.flex.gap-1 { background: #dcefef !important; }
-html:not(.dark) #mode-switch { background: #ffffff !important; border-color: rgba(13,148,136,.30) !important; }
-html:not(.dark) #export-container h2.section-title-accent > span { background: rgba(20,184,166,.14); border-color: rgba(13,148,136,.45); color: #0b6e66 !important; }
-html:not(.dark) #export-container > section:first-child > div.glass-panel::before { background: linear-gradient(90deg,#14b8a6,#38bdf8 45%,#f59e0b 80%,transparent); height: 4px; }
-html:not(.dark) #data-table thead { background: linear-gradient(180deg,#e6f6f6,#d9efef) !important; color: #2c4a52 !important; }
-html:not(.dark) #table-body tr:nth-child(even) { background: rgba(20,184,166,.07); }
-html:not(.dark) #table-body tr:hover { background: rgba(20,184,166,.14) !important; }
-html:not(.dark) #table-body td:nth-child(5) { color: #0b6e66 !important; }
-html:not(.dark) #analysis-text > div.grid > div { background: #ffffff !important; box-shadow: 0 12px 22px -16px rgba(8,62,72,.5) !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(1) { border-top-color: #f97316 !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(2) { border-top-color: #3b82f6 !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(3) { border-top-color: #14b8a6 !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(1) p:first-child { color: #c2410c !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(2) p:first-child { color: #1d4ed8 !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(3) p:first-child { color: #0f766e !important; }
-html:not(.dark) #strategy-list > div { overflow: hidden; }
-html:not(.dark) #strategy-list > div::after {
-  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; pointer-events: none;
-  background: linear-gradient(90deg,#14b8a6,#38bdf8 60%,#f59e0b); transform-origin: left; transform: scaleX(.28); transition: transform .7s var(--cv-ease);
-}
-html:not(.dark) #strategy-list > div:hover::after { transform: scaleX(1); }
-html:not(.dark) #strategy-list > div > p:first-child { color: #0b6e66 !important; }
-html:not(.dark) #strategy-list > div:hover { border-color: rgba(13,148,136,.5) !important; box-shadow: 0 26px 50px -24px rgba(13,148,136,.55) !important; }
-html:not(.dark) #strategy-menu { background: linear-gradient(180deg,#eaf7f7,#e1f0f2); }
-html:not(.dark) html #strategy-menu .strat-btn.active, html:not(.dark) #strategy-menu .strat-btn.active { background: rgba(20,184,166,.16) !important; box-shadow: inset 3px 0 0 #0f9488; }
-html:not(.dark) .palette-variant-chip { background: #f4fbfb; border-color: rgba(13,148,136,.22); }
-html:not(.dark) .palette-variant-chip.active { border-color: #0f9488; background: rgba(20,184,166,.14); }
-html:not(.dark) [id$="-modal-overlay"] .w-11.h-11, html:not(.dark) .help-step-num { background: var(--cv-grad) !important; box-shadow: 0 8px 16px -8px rgba(13,148,136,.7) !important; }
-html:not(.dark) #save-modal-overlay button.bg-indigo-600, html:not(.dark) #qr-modal-overlay button.bg-cyan-600, html:not(.dark) #comments-modal-overlay button.bg-gradient-to-r { background: var(--cv-grad) !important; }
-html:not(.dark) [id$="-modal-overlay"] div.bg-gradient-to-r { background: linear-gradient(90deg,#e6f6f6,#ffffff) !important; }
-html:not(.dark) .help-card, html:not(.dark) .help-source, html:not(.dark) .help-chip { background: #f7fcfc; border-color: rgba(13,148,136,.18); }
-
-/* =====================================================================
    APARICIÓN PREMIUM AL DESPLAZAR
    (clases y retardos los añade un pequeño script aditivo; sin él, todo se ve normal)
    ===================================================================== */
@@ -1101,64 +1043,76 @@ html:not(.dark) .help-card, html:not(.dark) .help-source, html:not(.dark) .help-
 @media print { html.cv-ready .cv-reveal, html.cv-ready #strategy-list > .cv-card { opacity: 1 !important; transform: none !important; } }
 
 
+
 /* =====================================================================
-   MODO CLARO — PALETA VIBRANTE (v2). El oscuro no cambia.
+   MODO CLARO PREMIUM — sobrio, aireado, un solo acento (el oscuro no cambia)
    ===================================================================== */
-:root {
-  --cv-bg: #d5f0f6; --cv-sunken: #cfeaee;
-  --cv-ink: #06161b; --cv-ink2: #1f424b; --cv-ink3: #45646f;
-  --cv-line2: rgba(6,90,100,.24);
-  --cv-accent-soft: rgba(20,184,166,.16);
-  --cv-wash1: rgba(20,200,170,.42); --cv-wash2: rgba(255,150,60,.34); --cv-wash3: rgba(56,170,255,.40);
-  --cv-shadow: 0 1px 0 rgba(255,255,255,1) inset, 0 2px 4px rgba(6,90,100,.08), 0 22px 40px -18px rgba(6,160,150,.50);
-}
-html:not(.dark) body {
-  background-image:
-    radial-gradient(1100px 700px at 4% -6%, var(--cv-wash1), transparent 68%),
-    radial-gradient(900px 640px at 100% 104%, var(--cv-wash2), transparent 68%),
-    radial-gradient(900px 600px at 98% 6%, var(--cv-wash3), transparent 68%),
-    linear-gradient(135deg,#cdeff7 0%,#def6ee 48%,#ffeadb 100%) !important;
-}
-html:not(.dark) #sidebar { background: linear-gradient(180deg,#ffffff 0%,#d3f3ef 100%) !important; }
-html:not(.dark) .glass-panel { border-color: rgba(8,150,140,.34) !important; }
+html:not(.dark) #sidebar { background: linear-gradient(180deg,#ffffff 0%,#f5fafa 100%) !important; }
 
-/* Títulos de sección: etiqueta sólida */
+/* Chips de año y mes: tinte suave + filete (mismo lenguaje que el modo oscuro) */
+html:not(.dark) #year-selector > button:not(.text-white), html:not(.dark) #month-selector > button:not(.text-white) {
+  background: #ffffff !important; border-color: var(--cv-line2) !important; color: var(--cv-ink2) !important;
+}
+html:not(.dark) #year-selector > button.text-white, html:not(.dark) #month-selector > button.text-white {
+  background: rgba(13,148,136,.09) !important; border-color: rgba(13,148,136,.55) !important; color: #0a6a62 !important;
+  box-shadow: none !important; font-weight: 700 !important;
+}
+html:not(.dark) #year-selector > button:hover, html:not(.dark) #month-selector > button:hover { background: rgba(13,148,136,.07) !important; }
+
+/* Selector Meses/Años: pastilla blanca sobre riel */
+html:not(.dark) #header-container > div:last-child > div.flex.gap-1 { background: #e6eff0 !important; border-color: var(--cv-line) !important; }
+html:not(.dark) #btn-mes.text-white, html:not(.dark) #btn-año.text-white {
+  background: #ffffff !important; color: #0a6a62 !important;
+  box-shadow: 0 1px 2px rgba(8,62,72,.14), 0 6px 14px -8px rgba(8,62,72,.30) !important;
+}
+html:not(.dark) #mode-switch { background: #ffffff !important; border-color: var(--cv-line2) !important; }
+html:not(.dark) #mode-indicator { background: linear-gradient(180deg,#14a698,#0b7a71) !important; box-shadow: 0 2px 6px -2px rgba(8,62,72,.45) !important; }
+
+/* Botones de acción: relieve fino, sombra corta */
+html:not(.dark) button[onclick="runClimateAnalysis()"] {
+  background: var(--cv-grad-amber) !important; border: 1px solid rgba(120,50,0,.22) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.28) inset, 0 8px 16px -10px rgba(194,87,12,.65) !important;
+}
+html:not(.dark) button[onclick="runClimateAnalysis()"]:hover { background: var(--cv-grad-amber) !important; filter: brightness(1.06); }
+html:not(.dark) #download-menu-btn {
+  background: var(--cv-grad) !important; border: 1px solid rgba(4,70,64,.28) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.26) inset, 0 8px 16px -10px rgba(11,122,113,.7) !important;
+}
+html:not(.dark) #download-menu-btn:hover { filter: brightness(1.06); }
+html:not(.dark) #save-btn { background: transparent !important; color: #b4530b !important; border-color: rgba(194,87,12,.55) !important; }
+html:not(.dark) #save-btn:hover { background: rgba(194,87,12,.07) !important; }
+html:not(.dark) #sidebar .grid.grid-cols-3 > button { background: #ffffff !important; }
+
+/* Títulos de sección: etiqueta tintada, no sólida */
 html:not(.dark) #export-container h2.section-title-accent > span {
-  background: var(--cv-grad); color: #fff !important; border-color: transparent; box-shadow: 0 8px 14px -8px rgba(13,148,136,.8);
+  background: rgba(13,148,136,.08); border-color: rgba(13,148,136,.30); color: #0a6a62 !important; box-shadow: none;
 }
+html:not(.dark) #export-container > section:first-child > div.glass-panel::before { background: linear-gradient(90deg,#0b7f75,#38a8c9 55%,transparent); height: 3px; }
 
-/* Tabla */
-html:not(.dark) #data-table thead { background: linear-gradient(135deg,#12a89a,#0a6a63) !important; color: #fff !important; border-bottom: 0 !important; }
-html:not(.dark) #data-table thead th { color: #fff !important; }
-html:not(.dark) #table-body tr:nth-child(even) { background: rgba(20,184,166,.11); }
-html:not(.dark) #table-body tr:hover { background: rgba(20,184,166,.22) !important; }
+/* Tabla: cabecera clara, cebra casi imperceptible */
+html:not(.dark) #data-table thead { background: #eef5f6 !important; color: var(--cv-ink3) !important; }
+html:not(.dark) #table-body tr:nth-child(even) { background: rgba(13,148,136,.04); }
+html:not(.dark) #table-body tr:hover { background: rgba(13,148,136,.09) !important; }
 
-/* Resumen: tarjetas con color */
-html:not(.dark) #analysis-text > div.grid > div:nth-child(1) { background: linear-gradient(180deg,#ffe9d2,#ffffff 80%) !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(2) { background: linear-gradient(180deg,#dceaff,#ffffff 80%) !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(3) { background: linear-gradient(180deg,#d3f6ef,#ffffff 80%) !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(1) p:last-child { color: #c2410c !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(2) p:last-child { color: #1d4ed8 !important; }
-html:not(.dark) #analysis-text > div.grid > div:nth-child(3) p:last-child { color: #0f766e !important; }
-
-/* Estrategias: tres tonos que rotan por columna */
-html:not(.dark) #strategy-list > div:nth-child(3n+1) { background: linear-gradient(180deg,#d6f6f0 0%,#ffffff 62%) !important; }
-html:not(.dark) #strategy-list > div:nth-child(3n+2) { background: linear-gradient(180deg,#dbe9ff 0%,#ffffff 62%) !important; }
-html:not(.dark) #strategy-list > div:nth-child(3n)   { background: linear-gradient(180deg,#ffe8cf 0%,#ffffff 62%) !important; }
-html:not(.dark) #strategy-list > div:nth-child(3n+2) > p:first-child { color: #1d4ed8 !important; }
-html:not(.dark) #strategy-list > div:nth-child(3n)   > p:first-child { color: #c2410c !important; }
-html:not(.dark) #strategy-list > div:nth-child(3n+2)::after { background: linear-gradient(90deg,#3b82f6,#8b5cf6); }
-html:not(.dark) #strategy-list > div:nth-child(3n)::after   { background: linear-gradient(90deg,#f97316,#f43f5e); }
-html:not(.dark) #strategy-list > div::after { transform: scaleX(.45); height: 4px; }
-
-html:not(.dark) #strategy-menu { background: linear-gradient(180deg,#d5f1f1,#e6f7f7); }
-html:not(.dark) #interactive-visualizer { background: linear-gradient(135deg,#ffffff 0%,#effafa 100%) !important; }
-html:not(.dark) #header-container > div:last-child > div.flex.gap-1 { background: #c6e8e8 !important; }
-html:not(.dark) #year-selector > button:not(.text-white), html:not(.dark) #month-selector > button:not(.text-white),
-html:not(.dark) #sidebar .grid.grid-cols-3 > button, html:not(.dark) .palette-variant-chip { background: #ffffff !important; border-color: rgba(8,150,140,.40) !important; }
-
-/* Climograma: más viveza solo en pantalla (contenedor externo; el SVG y las exportaciones no cambian) */
-html:not(.dark) #chart-scroll-wrap { filter: saturate(1.35); }
+/* Resumen y estrategias: superficies blancas, acento fino */
+html:not(.dark) #analysis-text > div.grid > div { background: #ffffff !important; box-shadow: 0 10px 20px -16px rgba(8,62,72,.45) !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(1) { border-top-color: #e8820e !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(2) { border-top-color: #3b82c4 !important; }
+html:not(.dark) #analysis-text > div.grid > div:nth-child(3) { border-top-color: #0b8a7f !important; }
+html:not(.dark) #strategy-list > div { overflow: hidden; background: #ffffff !important; }
+html:not(.dark) #strategy-list > div::after {
+  content: ''; position: absolute; left: 0; top: 0; height: 2px; width: 100%; pointer-events: none;
+  background: linear-gradient(90deg,#0b7f75,#38a8c9); transform-origin: left; transform: scaleX(.18); transition: transform .8s var(--cv-ease);
+}
+html:not(.dark) #strategy-list > div:hover::after { transform: scaleX(1); }
+html:not(.dark) #strategy-list > div:hover { border-color: rgba(13,148,136,.40) !important; box-shadow: 0 24px 44px -26px rgba(8,62,72,.45) !important; }
+html:not(.dark) #strategy-menu { background: #f1f7f8; }
+html:not(.dark) #strategy-menu .strat-btn.active { background: rgba(13,148,136,.09) !important; box-shadow: inset 3px 0 0 #0b7f75; }
+html:not(.dark) .palette-variant-chip { background: #ffffff; }
+html:not(.dark) .palette-variant-chip.active { border-color: #0b7f75; background: rgba(13,148,136,.07); }
+html:not(.dark) [id$="-modal-overlay"] .w-11.h-11, html:not(.dark) .help-step-num { background: var(--cv-grad) !important; box-shadow: none !important; }
+html:not(.dark) #save-modal-overlay button.bg-indigo-600, html:not(.dark) #qr-modal-overlay button.bg-cyan-600, html:not(.dark) #comments-modal-overlay button.bg-gradient-to-r { background: var(--cv-grad) !important; }
+html:not(.dark) [id$="-modal-overlay"] div.bg-gradient-to-r { background: #f5fafa !important; }
 
 /* ---------- Movimiento reducido (solo cromo de interfaz; no toca D3/Leaflet/SVG) ---------- */
 @media (prefers-reduced-motion: reduce) {
