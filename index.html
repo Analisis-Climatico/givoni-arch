@@ -1114,6 +1114,27 @@ html:not(.dark) [id$="-modal-overlay"] .w-11.h-11, html:not(.dark) .help-step-nu
 html:not(.dark) #save-modal-overlay button.bg-indigo-600, html:not(.dark) #qr-modal-overlay button.bg-cyan-600, html:not(.dark) #comments-modal-overlay button.bg-gradient-to-r { background: var(--cv-grad) !important; }
 html:not(.dark) [id$="-modal-overlay"] div.bg-gradient-to-r { background: #f5fafa !important; }
 
+
+/* ---- Ajuste fino modo claro: botones apagados (bronce / teal profundo) y chips con presencia media ---- */
+html:not(.dark) button[onclick="runClimateAnalysis()"] {
+  background: linear-gradient(180deg,#b9702f 0%,#9d5622 100%) !important; border: 1px solid rgba(70,35,8,.30) !important; color: #fff !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 6px 12px -9px rgba(120,64,20,.55) !important;
+}
+html:not(.dark) button[onclick="runClimateAnalysis()"]:hover { background: linear-gradient(180deg,#c27a38 0%,#a55d27 100%) !important; filter: none; }
+html:not(.dark) #download-menu-btn {
+  background: linear-gradient(180deg,#2f847c 0%,#246d67 100%) !important; border: 1px solid rgba(2,50,46,.30) !important; color: #fff !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.16) inset, 0 6px 12px -9px rgba(20,80,74,.55) !important;
+}
+html:not(.dark) #download-menu-btn:hover { background: linear-gradient(180deg,#378d85 0%,#2a7771 100%) !important; filter: none; }
+html:not(.dark) #save-btn { color: #9d5622 !important; border-color: rgba(157,86,34,.55) !important; }
+
+html:not(.dark) #year-selector > button.text-white, html:not(.dark) #month-selector > button.text-white {
+  background: linear-gradient(180deg,#c3e9e3 0%,#aedfd7 100%) !important; border-color: #4aa79c !important; color: #05524b !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 2px 4px -2px rgba(8,90,84,.35) !important; font-weight: 700 !important;
+}
+html:not(.dark) #year-selector > button.text-white:hover, html:not(.dark) #month-selector > button.text-white:hover { background: linear-gradient(180deg,#cbede8 0%,#b7e3dc 100%) !important; }
+html:not(.dark) #year-selector > button:not(.text-white), html:not(.dark) #month-selector > button:not(.text-white) { border-color: rgba(8,62,72,.22) !important; }
+
 /* ---------- Movimiento reducido (solo cromo de interfaz; no toca D3/Leaflet/SVG) ---------- */
 @media (prefers-reduced-motion: reduce) {
   .cta-breathe, .logo-glow-pulse, .card-fade-in, .section-refresh-anim, .table-row-anim, #header-container, #sidebar-full-content > *, #download-menu-panel, #search-results, .help-panel, [id$="-modal-overlay"], [id$="-modal-overlay"] > .glass-panel { animation: none !important; }
