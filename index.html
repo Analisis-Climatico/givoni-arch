@@ -688,7 +688,7 @@ function weatherCards(){const t=weatherAt('temperature_2m'),rh=weatherAt('relati
 function updateResults(){const s=state.sun||{alt:0,az:0};let content='';if(state.mode==='solar'){content+=metric('Elevación solar',fmt(s.alt),'°','☀','#ffbf4f','rgba(114,68,10,.30)','rgba(255,189,65,.45)','Ángulo astronómico calculado');content+=metric('Azimut solar',fmt(s.az),'°','◈','#46ddf9','rgba(6,75,107,.35)','rgba(54,204,242,.43)','Respecto al norte verdadero');content+=weatherCards();$('chartTitle').textContent='Elevación solar durante el día';drawChart(Array.from({length:24},(_,i)=>Math.max(0,solarPosition(currentDate(),i*60,state.lat,state.lon,state.offset).alt)),'#ffc14d')}
 else if(state.mode==='interior'){content+=metric('Temperatura interior','—','°C','⌂','#44cfff','rgba(12,77,121,.35)','rgba(63,196,250,.42)','Pendiente: motor térmico y datos del espacio');content+=metric('Humedad relativa interior','—','%','◉','#4fe2d6','rgba(13,94,83,.3)','rgba(65,221,190,.42)','Pendiente: balance higrotérmico y ventilación');content+=weatherCards();content+=metric('Suelo con sol directo',fmt(illuminatedPercent,0),'%','☀','#ffbe54','rgba(105,64,15,.26)','rgba(255,190,70,.40)',state.sun?.alt>0?'Luz geométrica sobre pisos BIM (requiere piso y huecos correctos)':'Sin sol directo: el sol está bajo el horizonte');$('chartTitle').textContent=state.weather?'Temperatura exterior horaria (real)':'Datos horarios exteriores';drawChart(state.weatherDate===currentDate()?state.weather?.temperature_2m:[])}
 else if(state.mode==='radiation'){content+=metric('Irradiancia exterior horizontal',fmt(weatherAt('shortwave_radiation'),0),'W/m²','☀','#ffb94b','rgba(112,67,9,.27)','rgba(255,185,75,.4)','Dato meteorológico; NO radiación sobre el modelo');content+=metric('Radiación de fachadas','—','W/m²','▥','#41e8ca','rgba(13,90,82,.27)','rgba(65,225,193,.4)','Pendiente: orientación y sombreado por superficies');content+=weatherCards();$('chartTitle').textContent='Radiación exterior horaria (real)';drawChart(state.weatherDate===currentDate()?state.weather?.shortwave_radiation:[],'#ffbc56')}
-else if(state.mode==='wind'){content+=metric('Velocidad del viento exterior',fmt(weatherAt('wind_speed_10m'),1),'km/h','≈','#64e9f6','rgba(7,77,93,.32)','rgba(91,232,245,.43)','Histórico Open-Meteo cuando esté disponible');content+=metric('Dirección del viento',fmt(state.windDirectionDeg,0),'° desde N','➜','#5eead4','rgba(8,90,75,.25)','rgba(67,212,184,.4)','Dato horario de la ubicación elegida; dirección desde la que sopla');content+=metric('Aberturas habilitadas',String(windPorts.filter(p=>p.open).length),'','▣','#ffce6b','rgba(108,74,12,.25)','rgba(255,194,65,.42)','Ventanas y puertas habilitadas automáticamente para el estudio');content+=metric('Recorridos posibles',String(Math.floor(windRoutes.length/7)),'','↝','#76b7ff','rgba(18,65,119,.25)','rgba(109,169,255,.42)','Rutas geométricas orientativas, no CFD');content+=weatherCards();$('chartTitle').textContent='Velocidad exterior horaria (km/h)';drawChart(state.weatherDate===currentDate()?state.weather?.wind_speed_10m:[],'#64e9f6')}
+else if(state.mode==='wind'){content+=metric('Velocidad del viento exterior',fmt(weatherAt('wind_speed_10m'),1),'km/h','≈','#64e9f6','rgba(7,77,93,.32)','rgba(91,232,245,.43)','Histórico Open-Meteo cuando esté disponible');content+=metric('Dirección del viento',fmt(state.windDirectionDeg,0),'° desde N','➜','#5eead4','rgba(8,90,75,.25)','rgba(67,212,184,.4)','Dato horario de la ubicación elegida; dirección desde la que sopla');content+=metric('Aberturas habilitadas',String(windPorts.filter(p=>p.open).length),'','▣','#ffce6b','rgba(108,74,12,.25)','rgba(255,194,65,.42)','Ventanas y puertas habilitadas automáticamente para el estudio');content+=metric('Recorridos posibles',String(windPorts.filter(p=>p.exterior).length>1?Math.floor(windRoutes.length/7):0),'','↝','#76b7ff','rgba(18,65,119,.25)','rgba(109,169,255,.42)','Rutas geométricas orientativas, no CFD');content+=weatherCards();$('chartTitle').textContent='Velocidad exterior horaria (km/h)';drawChart(state.weatherDate===currentDate()?state.weather?.wind_speed_10m:[],'#64e9f6')}
 else{content+=metric('Temperatura interior','—','°C','⌂','#44cfff','rgba(12,77,121,.35)','rgba(63,196,250,.42)','No estimada: falta cálculo por zonas');content+=metric('Humedad relativa interior','—','%','◉','#4fe2d6','rgba(13,94,83,.3)','rgba(65,221,190,.42)','No estimada: falta balance de humedad');content+=weatherCards();content+=metric('Diferencia interior / exterior','—','°C','↕','#53efbe','rgba(8,94,77,.28)','rgba(62,215,179,.40)','Disponible al calcular interior');$('chartTitle').textContent='Temperatura exterior horaria';drawChart(state.weatherDate===currentDate()?state.weather?.temperature_2m:[])}
 $('metricList').innerHTML=content;$('info').textContent=state.mode==='wind'?'Viento y dirección exterior: Open-Meteo para ubicación, fecha y hora seleccionadas. Aberturas abiertas automáticamente. Trayectorias ilustrativas, no CFD.':'Datos exteriores: Open-Meteo (solo tras consulta ↻). Valores interiores: requieren definir zonas y motor higrotérmico; la vista 3D es ilustrativa, no un mapa físico validado.'}
 // Open-Meteo archive: public weather data, availability depends on date and station/grid.
@@ -782,23 +782,36 @@ function detectWindPorts(){
   if(prior){if((p.size.x*p.size.y+p.size.z*p.size.y)>(prior.size.x*prior.size.y+prior.size.z*prior.size.y))Object.assign(prior,p);continue;}
   windPorts.push({...p,open:true});
  }
- const bb=new THREE.Box3().setFromObject(state.root),lo=bb.min,hi=bb.max;
+ // Fachadas: usar envolvente de muros, no muebles, tabiques o cubiertas salientes.
+ const envelope=new THREE.Box3(),walls=[];
+ state.root.traverse(o=>{if(o.isMesh&&categoryOf(o)==='muro'){
+  const bb=new THREE.Box3().setFromObject(o),sz=bb.getSize(new THREE.Vector3());
+  if(sz.y>.55&&Math.max(sz.x,sz.z)>.5){walls.push({bb,sz});envelope.union(bb)}
+ }});
+ if(envelope.isEmpty())envelope.setFromObject(state.root);
+ const lo=envelope.min,hi=envelope.max;
+ const sides=[new THREE.Vector3(-1,0,0),new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,1)];
  for(const p of windPorts){
-  const d=[Math.abs(p.center.x-lo.x),Math.abs(hi.x-p.center.x),Math.abs(p.center.z-lo.z),Math.abs(hi.z-p.center.z)];
-  let i=d.indexOf(Math.min(...d));
-  // Tomar la normal geométrica dominante de la abertura cuando no es ambigua.
-  const xThin=p.size.x<p.size.z*.48,zThin=p.size.z<p.size.x*.48;
-  if(xThin&&!zThin)i=p.center.x<(lo.x+hi.x)/2?0:1;
-  if(zThin&&!xThin)i=p.center.z<(lo.z+hi.z)/2?2:3;
-  p.outward=[new THREE.Vector3(-1,0,0),new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,1)][i];
-  p.exterior=d[i]<Math.max(.8,Math.min(2.5,Math.max(hi.x-lo.x,hi.z-lo.z)*.20));
+  const distance=[Math.abs(p.center.x-lo.x),Math.abs(hi.x-p.center.x),Math.abs(p.center.z-lo.z),Math.abs(hi.z-p.center.z)];
+  // Las cuatro fachadas de la envolvente tienen preferencia frente a tabiques.
+  let i=distance.indexOf(Math.min(...distance));
+  const span=Math.max(hi.x-lo.x,hi.z-lo.z);
+  const threshold=Math.max(.35,Math.min(1.05,span*.065));
+  const xThin=p.size.x<p.size.z*.42,zThin=p.size.z<p.size.x*.42;
+  if(xThin&&!zThin){const candidates=[0,1];i=candidates.reduce((best,k)=>distance[k]<distance[best]?k:best,candidates[0])}
+  if(zThin&&!xThin){const candidates=[2,3];i=candidates.reduce((best,k)=>distance[k]<distance[best]?k:best,candidates[0])}
+  // Verificar el perímetro de manera independiente: no atribuir puertas interiores a una fachada.
+  p.outward=sides[i].clone();
+  p.exterior=distance[i]<=threshold;
+  p.facade=i;
+  p.distanceToFacade=distance[i];
  }
  renderWindPorts();
 }
 function renderWindPorts(){
  const note=$('windNote');if(!note)return;
  const windows=windPorts.filter(p=>p.cat==='ventana').length,doors=windPorts.filter(p=>p.cat==='puerta').length;
- note.textContent=windPorts.length?`${windows} ventanas y ${doors} puertas detectadas; abiertas automáticamente. Las corrientes se originan fuera del edificio y atraviesan las aberturas exteriores reconocidas.`:'No se identificaron ventanas o puertas utilizables. Revisa la clasificación IFC.';
+ note.textContent=windPorts.length?`${windows} ventanas y ${doors} puertas detectadas, ${windPorts.filter(p=>p.exterior).length} aberturas exteriores; abiertas automáticamente. Solo se trazan cruces por aberturas exteriores.`:'No se identificaron ventanas o puertas utilizables. Revisa la clasificación IFC.';
 }
 state.windDirectionDeg=null;state.windSpeedMs=null;
 function syncWindWithWeather(){
@@ -853,24 +866,18 @@ function rebuildWindRoutes(){
  // En ese caso mostrar aire EXTERIOR; nunca ocultar toda la visualización.
  if(!routeEntries.length||!routeExits.length){
   sampleOnly=true;
-  if(mainPorts.length>=2){
-   // Trayectoria ilustrativa entre los dos vanos más separados, no flujo calculado.
-   const first=mainPorts[0];
-   const second=mainPorts.reduce((best,p)=>p.center.distanceTo(first.center)>best.center.distanceTo(first.center)?p:best,mainPorts[1]);
-   routeEntries=[first];routeExits=[second];
-  }else{
-   routeEntries=[];routeExits=[];
-  }
+  // No unir puertas interiores ni inventar pares de ventanas de fachadas incorrectas.
+  routeEntries=[];routeExits=[];
  }
  if(!routeEntries.length||!routeExits.length){
   // Representar corriente exterior cercana a la fachada para diagnosticar la animación.
   const bb=new THREE.Box3().setFromObject(state.root),c=bb.getCenter(new THREE.Vector3());
   const sz=bb.getSize(new THREE.Vector3());
-  const length=Math.max(7,Math.max(sz.x,sz.z)*1.5);
+  const length=Math.max(12,Math.max(sz.x,sz.z)*2.1);
   const across=new THREE.Vector3(-w.z,0,w.x);
-  const local=mainPorts[0]?.center.clone()||c.clone();
-  const side=mainPorts[0]?.outward.clone()||across.clone();
-  const anchor=local.addScaledVector(side,Math.max(2,Math.min(4,sz.length()*.14)));
+  const nearWindward=c.clone().addScaledVector(w,-Math.max(sz.x,sz.z)*.65-1.4);
+  nearWindward.y=c.y;
+  const anchor=nearWindward;
   for(let lane=0;lane<10;lane++){
    const lateral=across.clone().multiplyScalar((lane-4.5)*.24);
    const p0=anchor.clone().addScaledVector(w,-length*.6).add(lateral);
@@ -882,8 +889,8 @@ function rebuildWindRoutes(){
    const streak=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xc7ffff,transparent:true,opacity:.95,depthTest:false}));streak.frustumCulled=false;streak.renderOrder=17;windLines.add(streak);
    windParticles.push({streak,curve,phase:lane/10,steps,span:.11});
   }
-  for(const p of mainPorts)markWindPort(p,'entry');
-  $('windNote').textContent='VISTA ILUSTRATIVA: corriente exterior visible, sin recorrido interior confirmado. '+mainPorts.length+' aberturas detectadas. '+(hasWeather?'No hay pareja de entrada/salida según dirección del viento.':'Sin datos meteorológicos: dirección y velocidad no son reales.');
+  for(const p of ports)markWindPort(p,'entry');
+  $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO: ':'VISTA ILUSTRATIVA SIN DATOS: ')+'corrientes EXTERIORES a barlovento; '+ports.length+' aberturas exteriores reconocidas, '+(allPorts.length-ports.length)+' interiores excluidas. Sin recorrido cruzado comprobable, no se dibuja un cruce ficticio.';
   return;
  }
  const extent=new THREE.Box3().setFromObject(state.root).getSize(new THREE.Vector3());
