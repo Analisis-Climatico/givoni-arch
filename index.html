@@ -588,6 +588,8 @@
   --cv-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 1px 2px rgba(18,33,31,.06), 0 10px 28px -14px rgba(18,33,31,.18);
   --cv-shadow-lg: 0 24px 60px -20px rgba(18,33,31,.35);
   --cv-overlay: rgba(14,22,21,.50);
+  --cv-wash1: rgba(15,118,110,.09); --cv-wash2: rgba(180,83,9,.07);
+  --cv-ease: cubic-bezier(.22,1,.36,1); --cv-spring: cubic-bezier(.34,1.4,.64,1);
 }
 html.dark {
   --cv-bg: #090f11; --cv-sidebar: #0c1417; --cv-surface: #111b1e; --cv-surface2: #152227; --cv-sunken: #0d1518;
@@ -597,15 +599,16 @@ html.dark {
   --cv-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 12px 30px -16px rgba(0,0,0,.6);
   --cv-shadow-lg: 0 28px 70px -20px rgba(0,0,0,.75);
   --cv-overlay: rgba(2,6,7,.62);
+  --cv-wash1: rgba(45,212,191,.07); --cv-wash2: rgba(245,158,11,.04);
 }
 
 /* ---------- Fondo de lámina ---------- */
 html body {
   background-color: var(--cv-bg) !important;
   background-image:
-    linear-gradient(var(--cv-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--cv-grid) 1px, transparent 1px) !important;
-  background-size: 56px 56px !important;
+    radial-gradient(900px 600px at 8% -10%, var(--cv-wash1), transparent 70%),
+    radial-gradient(800px 600px at 100% 110%, var(--cv-wash2), transparent 70%) !important;
+  background-repeat: no-repeat !important;
   background-attachment: fixed !important;
   color: var(--cv-ink);
 }
@@ -934,9 +937,61 @@ html #chart-tooltip, html.dark #chart-tooltip {
 .is-mobile #analysis-text > div.grid { gap: .5rem; }
 .is-mobile .glass-panel.glass-panel-variant { padding: 1.2rem !important; }
 
+
+/* =====================================================================
+   ANIMACIONES FLUIDAS (solo cromo de interfaz; no tocan D3/Leaflet/SVG)
+   ===================================================================== */
+@keyframes cvRise { from { opacity: 0; transform: translate3d(0,22px,0); } to { opacity: 1; transform: translate3d(0,0,0); } }
+@keyframes cvPop  { from { opacity: 0; transform: translate3d(0,-8px,0) scale(.97); } to { opacity: 1; transform: translate3d(0,0,0) scale(1); } }
+@keyframes cvModalIn { from { opacity: 0; transform: translate3d(0,26px,0) scale(.96); } to { opacity: 1; transform: translate3d(0,0,0) scale(1); } }
+@keyframes cvFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cvSlideIn { from { opacity: 0; transform: translate3d(-14px,0,0); } to { opacity: 1; transform: translate3d(0,0,0); } }
+
+/* Entrada de página */
+#header-container { animation: cvRise .8s var(--cv-ease) backwards; }
+#sidebar-full-content > * { animation: cvSlideIn .7s var(--cv-ease) backwards; }
+#sidebar-full-content > *:nth-child(1) { animation-delay: .05s; } #sidebar-full-content > *:nth-child(2) { animation-delay: .10s; }
+#sidebar-full-content > *:nth-child(3) { animation-delay: .15s; } #sidebar-full-content > *:nth-child(4) { animation-delay: .20s; }
+#sidebar-full-content > *:nth-child(5) { animation-delay: .25s; }
+
+/* Secciones al actualizar (las dispara el JS con .section-refresh-anim) */
+html .section-refresh-anim { animation: cvRise .85s var(--cv-ease) both; }
+html .reveal-item { transition: opacity .7s var(--cv-ease), transform .7s var(--cv-ease), background-color .25s ease; }
+html .card-fade-in { animation-duration: .8s; animation-timing-function: var(--cv-ease); }
+
+/* Botones y controles: respuesta suave con ligero rebote */
+html button, html .palette-variant-chip, html .download-menu-item, html .help-tab-btn {
+  transition: transform .35s var(--cv-spring), background-color .25s ease, border-color .25s ease, color .25s ease, box-shadow .3s ease, filter .25s ease !important;
+}
+html button:active:not(:disabled) { transform: scale(.965) !important; transition-duration: .12s !important; }
+#year-selector > button:hover, #month-selector > button:hover { transform: translateY(-1px) !important; }
+html .palette-variant-chip:hover { transform: translateY(-2px); }
+html .palette-variant-chip:active { transform: scale(.97); }
+html .help-card, html .help-source { transition: transform .4s var(--cv-ease), background-color .25s ease, border-color .25s ease, box-shadow .4s ease !important; }
+
+/* Tarjetas, filas y paneles */
+#strategy-list > div { transition: transform .5s var(--cv-ease), border-color .3s ease, box-shadow .5s var(--cv-ease), opacity .6s ease !important; }
+#analysis-text > div.grid > div { transition: transform .4s var(--cv-spring), background-color .25s ease !important; }
+#table-body tr { transition: background-color .25s ease, opacity .7s var(--cv-ease), transform .7s var(--cv-ease) !important; }
+html #strategy-menu .strat-btn { transition: background-color .3s ease, box-shadow .4s var(--cv-ease), transform .3s var(--cv-spring) !important; }
+
+/* Interruptor de tema y panel lateral */
+#mode-indicator { transition: transform .5s var(--cv-spring), background-color .3s ease !important; }
+html .sidebar-transition { transition: width .55s var(--cv-ease), padding .55s var(--cv-ease) !important; }
+.is-mobile #sidebar { transition: transform .5s var(--cv-ease) !important; }
+
+/* Menús desplegables y ventanas */
+#download-menu-panel:not(.hidden) { animation: cvPop .35s var(--cv-ease) both; transform-origin: top right; }
+#search-results:not(.hidden) { animation: cvPop .3s var(--cv-ease) both; transform-origin: top center; }
+html #help-modal-overlay.flex-shown, html #save-modal-overlay.flex-shown, html #history-modal-overlay.flex-shown,
+html #comments-modal-overlay.flex-shown, html #qr-modal-overlay.flex-shown { animation: cvFade .3s ease both; }
+html #help-modal-overlay.flex-shown > .glass-panel, html #save-modal-overlay.flex-shown > .glass-panel, html #history-modal-overlay.flex-shown > .glass-panel,
+html #comments-modal-overlay.flex-shown > .glass-panel, html #qr-modal-overlay.flex-shown > .glass-panel { animation: cvModalIn .55s var(--cv-ease) both; }
+.help-panel:not(.hidden) { animation: cvRise .5s var(--cv-ease) both; }
+
 /* ---------- Movimiento reducido (solo cromo de interfaz; no toca D3/Leaflet/SVG) ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .cta-breathe, .logo-glow-pulse, .card-fade-in, .section-refresh-anim, .table-row-anim { animation: none !important; }
+  .cta-breathe, .logo-glow-pulse, .card-fade-in, .section-refresh-anim, .table-row-anim, #header-container, #sidebar-full-content > *, #download-menu-panel, #search-results, .help-panel, [id$="-modal-overlay"], [id$="-modal-overlay"] > .glass-panel { animation: none !important; }
   html body *:not(svg):not(svg *) { transition-duration: .01ms !important; }
 }
     </style>
