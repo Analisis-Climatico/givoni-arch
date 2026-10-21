@@ -177,7 +177,7 @@ body.light{--bg:#e9f4ff;--panel:rgba(234,247,255,.87);--panel2:rgba(217,236,249,
 <body>
 <div class="app">
 <header class="top"><div class="brand"><img class="brand-image" src="Tipo1.png" alt="Isotipo CLÓVINA" onerror="this.style.display='none'"><div><img class="brand-wordmark" src="Tipo3.png" alt="CLÓVINA" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><strong class="brand-fallback" style="display:none">CLÓVINA</strong><small>Análisis solar y ventilación 3D</small></div></div><div class="top-fields"><div class="field location glass" id="locationField"><label for="city">Ubicación / búsqueda · seleccionar del mapa</label><div class="location-row"><input id="city" value="Guayaquil, Ecuador" autocomplete="off" placeholder="Ciudad, dirección o lugar"><button type="button" id="mapToggle" title="Seleccionar lugar en mapa mundial">◉ Mapa</button></div><div id="suggestions" class="suggestions" hidden></div></div><button class="iconbtn" id="search" title="Buscar coordenadas">⌕</button><div class="field glass"><label for="date">Fecha</label><input id="date" type="date" value="2026-10-15"></div><div class="field glass"><label for="hour">Hora local</label><input id="hour" type="time" value="12:00"></div><div class="field glass" style="max-width:105px"><label for="north">Norte (°)</label><input type="number" id="north" min="0" max="359" step="1" value="0"></div><div class="field glass" style="max-width:120px"><label for="latitude">Latitud</label><input id="latitude" type="number" step="any" value="-2.17"></div><div class="field glass" style="max-width:120px"><label for="longitude">Longitud</label><input id="longitude" type="number" step="any" value="-79.92"></div><div class="field glass" style="max-width:94px"><label for="utcOffset">UTC ± horas</label><input id="utcOffset" type="number" min="-12" max="14" step="0.5" value="-5" title="Ajusta zona horaria local del lugar seleccionado"></div></div><div class="top-actions"><button class="iconbtn" id="theme" title="Modo claro / oscuro">☀</button><button class="iconbtn" id="loadbtn" title="Importar modelo 3D">⇧</button><input id="file" type="file" accept=".ifc,.glb,.gltf,.stl,.obj" hidden></div></header>
-<div id="mapOverlay" class="map-overlay" hidden><div class="map-head"><b>Seleccionar ubicación en el mapa</b><button id="mapClose" class="smallbtn">✕ Cerrar</button></div><div id="worldMap"></div><div id="mapError" class="map-error" hidden></div><p>Haz clic en cualquier punto del mapa para usar sus coordenadas o selecciona una sugerencia de búsqueda.</p></div><div class="workspace"><section class="viewport glass" id="viewport"><div id="scene"></div><div class="mode-trigger" id="modeTrigger"><nav class="modebar" aria-label="Modo de estudio"><button class="active" data-mode="solar">☀ &nbsp; Recorrido solar</button><button data-mode="interior">⌂ &nbsp; Sol interior</button><button data-mode="radiation">▥ &nbsp; Sol en fachadas</button><button data-mode="wind">≈ &nbsp; Ventilación natural</button></nav></div><div class="tools"><button class="tool active" id="select" title="Seleccionar elemento">↖</button><button class="tool" id="fit" title="Centrar modelo">⬡</button><button class="tool" id="tree" title="Mostrar / ocultar vegetación">♧</button><button class="tool" id="plant" title="Añadir árbol o arbusto: elige tipo y coloca sobre el terreno">✚🌳</button><select id="plantType" title="Tipo de vegetación" aria-label="Tipo de vegetación"><option value="tree">🌳 Árbol</option><option value="shrub">🌿 Arbusto</option></select></div><div class="compass" title="Arrastra la brújula para orientar el norte geográfico del proyecto"><span class="cardinal n">N</span><span class="cardinal s">S</span><span class="cardinal e">E</span><span class="cardinal o">O</span><div class="needle" id="needle">▲</div><span class="compass-label">Ajustar norte</span></div><div class="viewer-utilities glass" id="viewerUtilities"><div class="viewer-advanced"><div class="field glass" style="max-width:150px"><label for="upAxis">Eje IFC</label><select id="upAxis" title="Corrige la orientación sin reimportar"><option value="z">Z arriba (IFC)</option><option value="y">Y arriba</option><option value="minusz">Z invertido</option></select></div><button class="smallbtn" id="snapGround" title="Alinear la base geométrica con el terreno">↓ Apoyar</button><div class="field glass" style="max-width:120px"><label for="elevationOffset">Altura (m)</label><input id="elevationOffset" type="number" value="0" step="0.1" title="Ajuste de altura respecto al terreno"></div></div><button id="viewerOrient" type="button">⟳ Girar</button><label title="Desactiva sombras de elementos IFC no clasificados para diagnosticar sombras rectangulares"><input type="checkbox" id="auxShadow" checked> Sombras extra</label></div><div id="sunPresets" class="sun-presets"><select id="sunEvent" title="Fechas solares de referencia"><option value="day">Día seleccionado</option><option value="march">Equinoccio de marzo</option><option value="june">Solsticio de junio</option><option value="september">Equinoccio de septiembre</option><option value="december">Solsticio de diciembre</option></select><label><input id="sunPathVisible" type="checkbox" checked> Trayectoria solar y horas</label></div><div id="windPanel" class="wind-panel glass" hidden><div class="wind-panel-title">≈ Ventilación natural <span>Visualización de flujo potencial</span></div><div class="wind-line"><label>Dirección meteorológica (desde °) <input id="windDirection" type="number" min="0" max="359" value="" placeholder="Sin datos" readonly></label><label>Velocidad exterior (m/s) <input id="windSpeed" type="number" min="0" max="40" value="" placeholder="Sin datos" readonly></label></div><div class="wind-note" id="windSource">El viento se obtiene automáticamente según ubicación, fecha y hora.</div><div class="wind-line"><label><input id="windTransparent" type="checkbox" checked> Ver muros translúcidos</label><label><input id="windAnimate" type="checkbox" checked> Animar partículas</label></div><div class="wind-note" id="windNote">Se necesita cargar un modelo para detectar aberturas.</div></div><div id="visualLegend" class="visual-legend">Sombras 3D · trayectoria solar</div><button type="button" id="assignFloor" class="assign-floor" title="Selecciona un elemento 3D que sea un piso y pulsa aquí">▦ Definir piso interior</button><div class="viewer-hint">Arrastra el modelo para orbitar · Rueda para acercar · Pulsa la brújula para ajustar el norte</div><div class="viewbuttons"><button class="active" data-view="perspective">Perspectiva</button><button data-view="top">Planta</button><button data-view="front">Alzado</button></div><div class="floatnote" id="notification">Modelo de demostración · Arrastra para orbitar · Rueda para acercar</div><div class="timeline"><button class="iconbtn" id="play" title="Reproducir día">▶</button><span style="font-size:11px;color:#9db6cb">06:00</span><input type="range" id="slider" min="0" max="1439" step="10" value="720" aria-label="Hora del análisis"><span style="font-size:11px;color:#9db6cb">23:59</span><span class="timeval" id="clocklabel">12:00</span></div></section>
+<div id="mapOverlay" class="map-overlay" hidden><div class="map-head"><b>Seleccionar ubicación en el mapa</b><button id="mapClose" class="smallbtn">✕ Cerrar</button></div><div id="worldMap"></div><div id="mapError" class="map-error" hidden></div><p>Haz clic en cualquier punto del mapa para usar sus coordenadas o selecciona una sugerencia de búsqueda.</p></div><div class="workspace"><section class="viewport glass" id="viewport"><div id="scene"></div><div class="mode-trigger" id="modeTrigger"><nav class="modebar" aria-label="Modo de estudio"><button class="active" data-mode="solar">☀ &nbsp; Recorrido solar</button><button data-mode="interior">⌂ &nbsp; Sol interior</button><button data-mode="radiation">▥ &nbsp; Sol en fachadas</button><button data-mode="wind">≈ &nbsp; Ventilación natural</button></nav></div><div class="tools"><button class="tool active" id="select" title="Seleccionar elemento">↖</button><button class="tool" id="fit" title="Centrar modelo">⬡</button><button class="tool" id="tree" title="Mostrar / ocultar vegetación">♧</button><button class="tool" id="plant" title="Añadir árbol o arbusto: elige tipo y coloca sobre el terreno">✚🌳</button><select id="plantType" title="Tipo de vegetación" aria-label="Tipo de vegetación"><option value="tree">🌳 Árbol</option><option value="shrub">🌿 Arbusto</option></select></div><div class="compass" title="Arrastra la brújula para orientar el norte geográfico del proyecto"><span class="cardinal n">N</span><span class="cardinal s">S</span><span class="cardinal e">E</span><span class="cardinal o">O</span><div class="needle" id="needle">▲</div><span class="compass-label">Ajustar norte</span></div><div class="viewer-utilities glass" id="viewerUtilities"><div class="viewer-advanced"><div class="field glass" style="max-width:150px"><label for="upAxis">Eje IFC</label><select id="upAxis" title="Corrige la orientación sin reimportar"><option value="z">Z arriba (IFC)</option><option value="y">Y arriba</option><option value="minusz">Z invertido</option></select></div><button class="smallbtn" id="snapGround" title="Alinear la base geométrica con el terreno">↓ Apoyar</button><div class="field glass" style="max-width:120px"><label for="elevationOffset">Altura (m)</label><input id="elevationOffset" type="number" value="0" step="0.1" title="Ajuste de altura respecto al terreno"></div></div><button id="viewerOrient" type="button">⟳ Girar</button><label title="Desactiva sombras de elementos IFC no clasificados para diagnosticar sombras rectangulares"><input type="checkbox" id="auxShadow" checked> Sombras extra</label></div><div id="sunPresets" class="sun-presets"><select id="sunEvent" title="Fechas solares de referencia"><option value="day">Día seleccionado</option><option value="march">Equinoccio de marzo</option><option value="june">Solsticio de junio</option><option value="september">Equinoccio de septiembre</option><option value="december">Solsticio de diciembre</option></select><label><input id="sunPathVisible" type="checkbox" checked> Trayectoria solar y horas</label></div><div id="windPanel" class="wind-panel glass" hidden><div class="wind-panel-title">≈ Ventilación natural <span>Entrada desde exterior · salida por aberturas</span></div><div class="wind-line"><label>Dirección meteorológica (desde °) <input id="windDirection" type="number" min="0" max="359" value="" placeholder="Sin datos" readonly></label><label>Velocidad exterior (m/s) <input id="windSpeed" type="number" min="0" max="40" value="" placeholder="Sin datos" readonly></label></div><div class="wind-note" id="windSource">El viento se obtiene automáticamente según ubicación, fecha y hora.</div><div class="wind-line"><label><input id="windTransparent" type="checkbox" checked> Ver muros translúcidos</label><label><input id="windAnimate" type="checkbox" checked> Animar corrientes de aire</label></div><div class="wind-note" id="windNote">Se necesita cargar un modelo para detectar aberturas.</div></div><div id="visualLegend" class="visual-legend">Sombras 3D · trayectoria solar</div><button type="button" id="assignFloor" class="assign-floor" title="Selecciona un elemento 3D que sea un piso y pulsa aquí">▦ Definir piso interior</button><div class="viewer-hint">Arrastra el modelo para orbitar · Rueda para acercar · Pulsa la brújula para ajustar el norte</div><div class="viewbuttons"><button class="active" data-view="perspective">Perspectiva</button><button data-view="top">Planta</button><button data-view="front">Alzado</button></div><div class="floatnote" id="notification">Modelo de demostración · Arrastra para orbitar · Rueda para acercar</div><div class="timeline"><button class="iconbtn" id="play" title="Reproducir día">▶</button><span style="font-size:11px;color:#9db6cb">06:00</span><input type="range" id="slider" min="0" max="1439" step="10" value="720" aria-label="Hora del análisis"><span style="font-size:11px;color:#9db6cb">23:59</span><span class="timeval" id="clocklabel">12:00</span></div></section>
 <aside class="results glass"><div class="result-head">▥ &nbsp; RESULTADOS <button id="weather" class="iconbtn" title="Consultar clima histórico" style="font-size:13px">↻</button></div><div id="metricList"></div><div class="chart"><h3 id="chartTitle">Análisis del día</h3><svg id="graph" viewBox="0 0 300 135" role="img" aria-label="Gráfica ilustrativa o de datos disponibles"></svg></div><div class="result-foot" id="info">Las cifras térmicas necesitan datos meteorológicos y un modelo de simulación. No se inventan resultados.</div></aside></div>
 <section class="materials glass"><div class="materials-top"><div class="section-title">▤ &nbsp; MATERIALES DEL PROYECTO <button class="smallbtn" id="fold">⌄</button></div><span class="materials-help">Selecciona un elemento y edita aquí su composición y datos térmicos</span><span class="status" id="selection">Selecciona un objeto 3D para editar su material</span></div><div id="materialsContent"><div class="matgrid" id="matgrid"></div><div class="optional-row"><label for="addOptional">Componentes opcionales</label><select id="addOptional"><option value="">+ Añadir celosía o envolvente…</option><option value="Celosía">Celosía</option><option value="Envolvente">Envolvente</option></select><span id="optionalStatus" class="status"></span><div id="componentInventory" class="status" style="flex-basis:100%"></div></div></div></section><footer class="footer"><span>CLÓVINA · Sol y sombras geométricas; mapas visuales de radiación/temperatura NO equivalen a cálculos energéticos.</span><span id="fileStatus">V31 · IFC/GLB/GLTF/STL/OBJ</span></footer></div>
 <script type="module">
@@ -496,7 +496,7 @@ function applyVisualization(){
  }
  batch();
 }
-function modeSet(mode){state.mode=mode;document.getElementById("windPanel").hidden=mode!=="wind";if(mode!=="wind")windLines.visible=false;sunOrb.visible=state.sun?.alt>0;sunGlow.visible=sunOrb.visible;sunTrack.visible=$('sunPathVisible').checked;$all('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));applyVisualization();if(state.mode==='interior')scheduleInteriorMap();updateResults();notify(mode==='solar'?'Sombras solares activas':mode==='interior'?'Cubiertas transparentes para inspección, pero opacas al cálculo geométrico de rayos':mode==='radiation'?'Estudio de fachadas activo: incidencia solar con sombras de obstáculos visibles, como árboles.':'Ventilación: activa ventanas y puertas para animar recorridos de aire orientativos.')}
+function modeSet(mode){state.mode=mode;document.getElementById("windPanel").hidden=mode!=="wind";if(mode!=="wind")windLines.visible=false;sunOrb.visible=state.sun?.alt>0;sunGlow.visible=sunOrb.visible;sunTrack.visible=$('sunPathVisible').checked;$all('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));applyVisualization();if(state.mode==='interior')scheduleInteriorMap();updateResults();notify(mode==='solar'?'Sombras solares activas':mode==='interior'?'Cubiertas transparentes para inspección, pero opacas al cálculo geométrico de rayos':mode==='radiation'?'Estudio de fachadas activo: incidencia solar con sombras de obstáculos visibles, como árboles.':'Ventilación: trayectoria animada exterior → ventanas abiertas → interior → salida exterior.')}
 $all('[data-mode]').forEach(b=>b.onclick=()=>modeSet(b.dataset.mode));const trigger=$('modeTrigger');let hoverDelay;trigger.onmouseenter=()=>{clearTimeout(hoverDelay);trigger.classList.add('show')};trigger.onmouseleave=()=>{hoverDelay=setTimeout(()=>trigger.classList.remove('show'),550)};trigger.addEventListener('click',()=>trigger.classList.toggle('show'));
 $('theme').onclick=()=>document.body.classList.toggle('light');$('loadbtn').onclick=()=>$('file').click();$('fit').onclick=fitCamera;$('tree').onclick=()=>{state.trees=!state.trees;vegetation.visible=state.trees;state.vegetationMeshes.forEach(o=>o.visible=state.trees);$('tree').classList.toggle('active',state.trees);if(['radiation','thermal'].includes(state.mode))applyVisualization()};$('plant').onclick=()=>{state.planting=!state.planting;controls.enabled=!state.planting;$('plant').classList.toggle('active',state.planting);plantPreview.visible=false;syncPlantPreview();notify(state.planting?'Mueve el cursor para previsualizar y haz clic para colocar':'Colocación desactivada')};
 $all('[data-view]').forEach(b=>b.onclick=()=>{$all('[data-view]').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.view==='top')camera.position.set(0,30,.001);else if(b.dataset.view==='front')camera.position.set(0,5,28);else camera.position.set(21,16,24);controls.target.set(0,2,0);controls.update()});
@@ -688,7 +688,7 @@ function weatherCards(){const t=weatherAt('temperature_2m'),rh=weatherAt('relati
 function updateResults(){const s=state.sun||{alt:0,az:0};let content='';if(state.mode==='solar'){content+=metric('Elevación solar',fmt(s.alt),'°','☀','#ffbf4f','rgba(114,68,10,.30)','rgba(255,189,65,.45)','Ángulo astronómico calculado');content+=metric('Azimut solar',fmt(s.az),'°','◈','#46ddf9','rgba(6,75,107,.35)','rgba(54,204,242,.43)','Respecto al norte verdadero');content+=weatherCards();$('chartTitle').textContent='Elevación solar durante el día';drawChart(Array.from({length:24},(_,i)=>Math.max(0,solarPosition(currentDate(),i*60,state.lat,state.lon,state.offset).alt)),'#ffc14d')}
 else if(state.mode==='interior'){content+=metric('Temperatura interior','—','°C','⌂','#44cfff','rgba(12,77,121,.35)','rgba(63,196,250,.42)','Pendiente: motor térmico y datos del espacio');content+=metric('Humedad relativa interior','—','%','◉','#4fe2d6','rgba(13,94,83,.3)','rgba(65,221,190,.42)','Pendiente: balance higrotérmico y ventilación');content+=weatherCards();content+=metric('Suelo con sol directo',fmt(illuminatedPercent,0),'%','☀','#ffbe54','rgba(105,64,15,.26)','rgba(255,190,70,.40)',state.sun?.alt>0?'Luz geométrica sobre pisos BIM (requiere piso y huecos correctos)':'Sin sol directo: el sol está bajo el horizonte');$('chartTitle').textContent=state.weather?'Temperatura exterior horaria (real)':'Datos horarios exteriores';drawChart(state.weatherDate===currentDate()?state.weather?.temperature_2m:[])}
 else if(state.mode==='radiation'){content+=metric('Irradiancia exterior horizontal',fmt(weatherAt('shortwave_radiation'),0),'W/m²','☀','#ffb94b','rgba(112,67,9,.27)','rgba(255,185,75,.4)','Dato meteorológico; NO radiación sobre el modelo');content+=metric('Radiación de fachadas','—','W/m²','▥','#41e8ca','rgba(13,90,82,.27)','rgba(65,225,193,.4)','Pendiente: orientación y sombreado por superficies');content+=weatherCards();$('chartTitle').textContent='Radiación exterior horaria (real)';drawChart(state.weatherDate===currentDate()?state.weather?.shortwave_radiation:[],'#ffbc56')}
-else if(state.mode==='wind'){content+=metric('Velocidad del viento exterior',fmt(weatherAt('wind_speed_10m'),1),'km/h','≈','#64e9f6','rgba(7,77,93,.32)','rgba(91,232,245,.43)','Histórico Open-Meteo cuando esté disponible');content+=metric('Dirección del viento',fmt(state.windDirectionDeg,0),'° desde N','➜','#5eead4','rgba(8,90,75,.25)','rgba(67,212,184,.4)','Dato horario de la ubicación elegida; dirección desde la que sopla');content+=metric('Aberturas habilitadas',String(windPorts.filter(p=>p.open).length),'','▣','#ffce6b','rgba(108,74,12,.25)','rgba(255,194,65,.42)','Ventanas y puertas habilitadas automáticamente para el estudio');content+=metric('Recorridos posibles',String(windRoutes.length),'','↝','#76b7ff','rgba(18,65,119,.25)','rgba(109,169,255,.42)','Rutas geométricas orientativas, no CFD');content+=weatherCards();$('chartTitle').textContent='Velocidad exterior horaria (km/h)';drawChart(state.weatherDate===currentDate()?state.weather?.wind_speed_10m:[],'#64e9f6')}
+else if(state.mode==='wind'){content+=metric('Velocidad del viento exterior',fmt(weatherAt('wind_speed_10m'),1),'km/h','≈','#64e9f6','rgba(7,77,93,.32)','rgba(91,232,245,.43)','Histórico Open-Meteo cuando esté disponible');content+=metric('Dirección del viento',fmt(state.windDirectionDeg,0),'° desde N','➜','#5eead4','rgba(8,90,75,.25)','rgba(67,212,184,.4)','Dato horario de la ubicación elegida; dirección desde la que sopla');content+=metric('Aberturas habilitadas',String(windPorts.filter(p=>p.open).length),'','▣','#ffce6b','rgba(108,74,12,.25)','rgba(255,194,65,.42)','Ventanas y puertas habilitadas automáticamente para el estudio');content+=metric('Recorridos posibles',String(Math.floor(windRoutes.length/7)),'','↝','#76b7ff','rgba(18,65,119,.25)','rgba(109,169,255,.42)','Rutas geométricas orientativas, no CFD');content+=weatherCards();$('chartTitle').textContent='Velocidad exterior horaria (km/h)';drawChart(state.weatherDate===currentDate()?state.weather?.wind_speed_10m:[],'#64e9f6')}
 else{content+=metric('Temperatura interior','—','°C','⌂','#44cfff','rgba(12,77,121,.35)','rgba(63,196,250,.42)','No estimada: falta cálculo por zonas');content+=metric('Humedad relativa interior','—','%','◉','#4fe2d6','rgba(13,94,83,.3)','rgba(65,221,190,.42)','No estimada: falta balance de humedad');content+=weatherCards();content+=metric('Diferencia interior / exterior','—','°C','↕','#53efbe','rgba(8,94,77,.28)','rgba(62,215,179,.40)','Disponible al calcular interior');$('chartTitle').textContent='Temperatura exterior horaria';drawChart(state.weatherDate===currentDate()?state.weather?.temperature_2m:[])}
 $('metricList').innerHTML=content;$('info').textContent=state.mode==='wind'?'Viento y dirección exterior: Open-Meteo para ubicación, fecha y hora seleccionadas. Aberturas abiertas automáticamente. Trayectorias ilustrativas, no CFD.':'Datos exteriores: Open-Meteo (solo tras consulta ↻). Valores interiores: requieren definir zonas y motor higrotérmico; la vista 3D es ilustrativa, no un mapa físico validado.'}
 // Open-Meteo archive: public weather data, availability depends on date and station/grid.
@@ -700,42 +700,58 @@ async function searchPlaces(query){if(query.trim().length<3){suggestionBox.hidde
 $('city').addEventListener('input',()=>{clearTimeout(queryTimer);queryTimer=setTimeout(()=>searchPlaces($('city').value),500)});$('city').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchPlaces($('city').value)}});$('search').onclick=()=>searchPlaces($('city').value);document.addEventListener('pointerdown',e=>{if(!$('locationField').contains(e.target))suggestionBox.hidden=true});
 $('mapToggle').onclick=()=>{const overlay=$('mapOverlay');overlay.hidden=false;const err=$('mapError');err.hidden=true;if(typeof L==='undefined'){err.hidden=false;err.textContent='No se cargó Leaflet (revisa conexión/CDN). Puedes usar búsqueda o coordenadas manualmente.';return}try{if(!worldMap){worldMap=L.map('worldMap',{worldCopyJump:true,zoomControl:true}).setView([state.lat,state.lon],4);const layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(worldMap);layer.on('tileerror',()=>{err.hidden=false;err.textContent='No se han podido descargar los mosaicos del mapa. Comprueba conexión, bloqueadores o abre mediante Live Server.'});marker=L.marker([state.lat,state.lon]).addTo(worldMap);worldMap.on('click',ev=>{applyPlace({lat:ev.latlng.lat,lon:ev.latlng.lng,display_name:`Punto seleccionado: ${ev.latlng.lat.toFixed(5)}, ${ev.latlng.lng.toFixed(5)}`});overlay.hidden=true})}requestAnimationFrame(()=>{worldMap.invalidateSize(true);worldMap.setView([state.lat,state.lon],Math.max(worldMap.getZoom(),4))});setTimeout(()=>worldMap.invalidateSize(true),350)}catch(ex){err.hidden=false;err.textContent='Error al iniciar mapa: '+ex.message;console.error(ex)}};$('mapClose').onclick=()=>{$('mapOverlay').hidden=true};
 
-// V31 — flujo visual POTENCIAL, basado en geometría BIM y aperturas habilitadas; no CFD.
+// V35 — filamentos animados de viento: exterior -> abertura -> interior -> abertura -> exterior.
+// Son trayectorias ilustrativas, no una solución CFD ni una medida de caudal interior.
 const windLines=new THREE.Group();scene.add(windLines);windLines.visible=false;
 let windPorts=[],windRoutes=[],windParticles=[];
 const windPanel=$('windPanel');
 function detectWindPorts(){
  windPorts=[];
- const seen=new Set();
- state.root?.updateWorldMatrix(true,true);
- state.root?.traverse(o=>{
-  if(!o.isMesh)return;const cat=categoryOf(o);if(cat!=='ventana'&&cat!=='puerta')return;
+ if(!state.root){renderWindPorts();return;}
+ state.root.updateWorldMatrix(true,true);
+ const raw=[],seen=new Set();
+ state.root.traverse(o=>{
+  if(!o.isMesh)return;
+  const cat=categoryOf(o);if(cat!=='ventana'&&cat!=='puerta')return;
   const name=(o.name||'').toLowerCase();
-  if(/marco superior|frame only|mullion|montante|manija|tirador/.test(name))return;
+  if(/marco|frame|mullion|montante|manija|tirador|jamb|sill|threshold/.test(name))return;
   const id=String(o.userData.expressID??o.uuid);
   if(seen.has(id))return;seen.add(id);
-  const box=new THREE.Box3().setFromObject(o);if(box.isEmpty())return;
-  const size=box.getSize(new THREE.Vector3());
+  const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;
+  const size=bb.getSize(new THREE.Vector3());
   if(size.y<.35||Math.max(size.x,size.z)<.3)return;
-  const center=box.getCenter(new THREE.Vector3());
-  windPorts.push({id,o,cat,name:(o.name||cat).slice(0,42),center,size,open:true});
+  raw.push({id,o,cat,center:bb.getCenter(new THREE.Vector3()),size,bb});
  });
+ // Agrupar componentes BIM que representen la misma abertura (vidrio, panel y marco).
+ for(const p of raw){
+  const prior=windPorts.find(q=>q.cat===p.cat&&q.center.distanceTo(p.center)<Math.max(.38,Math.min(p.size.x+p.size.z,.85))&&Math.abs(q.center.y-p.center.y)<.55);
+  if(prior){if((p.size.x*p.size.y+p.size.z*p.size.y)>(prior.size.x*prior.size.y+prior.size.z*prior.size.y))Object.assign(prior,p);continue;}
+  windPorts.push({...p,open:true});
+ }
+ const bb=new THREE.Box3().setFromObject(state.root),lo=bb.min,hi=bb.max;
+ for(const p of windPorts){
+  const d=[Math.abs(p.center.x-lo.x),Math.abs(hi.x-p.center.x),Math.abs(p.center.z-lo.z),Math.abs(hi.z-p.center.z)];
+  let i=d.indexOf(Math.min(...d));
+  // Tomar la normal geométrica dominante de la abertura cuando no es ambigua.
+  const xThin=p.size.x<p.size.z*.48,zThin=p.size.z<p.size.x*.48;
+  if(xThin&&!zThin)i=p.center.x<(lo.x+hi.x)/2?0:1;
+  if(zThin&&!xThin)i=p.center.z<(lo.z+hi.z)/2?2:3;
+  p.outward=[new THREE.Vector3(-1,0,0),new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,1)][i];
+  p.exterior=d[i]<Math.max(.8,Math.min(2.5,Math.max(hi.x-lo.x,hi.z-lo.z)*.20));
+ }
  renderWindPorts();
 }
 function renderWindPorts(){
  const note=$('windNote');if(!note)return;
- const windows=windPorts.filter(p=>p.cat==='ventana').length;
- const doors=windPorts.filter(p=>p.cat==='puerta').length;
- note.textContent=windPorts.length?`${windows} ventanas y ${doors} puertas reconocidas. Todas las aberturas se consideran abiertas automáticamente para representar el flujo potencial (no CFD).`:'No se identificaron ventanas o puertas utilizables. Revisa la clasificación IFC.';
+ const windows=windPorts.filter(p=>p.cat==='ventana').length,doors=windPorts.filter(p=>p.cat==='puerta').length;
+ note.textContent=windPorts.length?`${windows} ventanas y ${doors} puertas detectadas; abiertas automáticamente. Las corrientes se originan fuera del edificio y atraviesan las aberturas exteriores reconocidas.`:'No se identificaron ventanas o puertas utilizables. Revisa la clasificación IFC.';
 }
 state.windDirectionDeg=null;state.windSpeedMs=null;
 function syncWindWithWeather(){
- const direction=weatherAt('wind_direction_10m');
- const kmh=weatherAt('wind_speed_10m');
+ const direction=weatherAt('wind_direction_10m'),kmh=weatherAt('wind_speed_10m');
  const valid=direction!==null&&kmh!==null;
- const newDir=valid?((direction%360)+360)%360:null;
- const newSpeed=valid?kmh/3.6:null;
- const changed=newDir!==state.windDirectionDeg || (newSpeed!==null&&Math.abs(newSpeed-(state.windSpeedMs??-1))>.001) || (!valid&&state.windSpeedMs!==null);
+ const newDir=valid?((direction%360)+360)%360:null,newSpeed=valid?kmh/3.6:null;
+ const changed=newDir!==state.windDirectionDeg||(newSpeed!==null&&Math.abs(newSpeed-(state.windSpeedMs??-1))>.001)||(!valid&&state.windSpeedMs!==null);
  state.windDirectionDeg=newDir;state.windSpeedMs=newSpeed;
  const d=$('windDirection'),v=$('windSpeed'),src=$('windSource');
  if(d)d.value=valid?newDir.toFixed(0):'';
@@ -743,51 +759,126 @@ function syncWindWithWeather(){
  if(src)src.textContent=valid?'Datos meteorológicos horarios de Open-Meteo · '+currentDate()+' · '+$('hour').value+' · dirección desde el norte geográfico.':'No hay datos horarios para la ubicación, fecha y hora elegidas. Sin animación hasta obtenerlos.';
  if(state.mode==='wind'&&changed){rebuildWindRoutes();updateResults();}
 }
-const windFlowMaterial=new THREE.MeshBasicMaterial({color:0x5be5ef,transparent:true,opacity:.92,depthWrite:false});
-function clearWindRoutes(){for(const o of windLines.children){o.geometry?.dispose();if(o.material!==windFlowMaterial)o.material?.dispose()}windLines.clear();windRoutes=[];windParticles=[]}
-function windVector(){const deg=state.windDirectionDeg??0;const a=THREE.MathUtils.degToRad(deg);return new THREE.Vector3(-Math.sin(a),0,Math.cos(a)).normalize()}
+const windFlowMaterial=new THREE.MeshBasicMaterial({color:0x6beef5,transparent:true,opacity:.96,depthWrite:false,depthTest:false});
+const windEntryMaterial=new THREE.MeshBasicMaterial({color:0x28f0cb,transparent:true,opacity:.82,side:THREE.DoubleSide,depthWrite:false,depthTest:false});
+const windExitMaterial=new THREE.MeshBasicMaterial({color:0xf9c96d,transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false,depthTest:false});
+function clearWindRoutes(){
+ for(const o of [...windLines.children]){
+  o.traverse(n=>{if(n.geometry)n.geometry.dispose();if(n.material&&!([windFlowMaterial,windEntryMaterial,windExitMaterial].includes(n.material)))n.material.dispose()});
+ }
+ windLines.clear();windRoutes=[];windParticles=[];
+}
+function windVector(){const a=THREE.MathUtils.degToRad(state.windDirectionDeg??0);return new THREE.Vector3(-Math.sin(a),0,Math.cos(a)).normalize()}
+function markWindPort(p,role){
+ const marker=new THREE.Mesh(new THREE.RingGeometry(.19,.27,32),role==='entry'?windEntryMaterial:windExitMaterial);
+ marker.position.copy(p.center).addScaledVector(p.outward,.11);
+ marker.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),p.outward);
+ marker.renderOrder=17;windLines.add(marker);
+}
 function rebuildWindRoutes(){
  clearWindRoutes();if(state.mode!=='wind')return;
- if(!Number.isFinite(state.windDirectionDeg)||!Number.isFinite(state.windSpeedMs)){if($('windNote'))$('windNote').textContent='Esperando datos de viento para la ubicación, fecha y hora seleccionadas.';return;}
- const w=windVector();const open=windPorts.filter(p=>p.open);
- const bounds=new THREE.Box3().setFromObject(state.root||rootWrap);const mid=bounds.getCenter(new THREE.Vector3());
- const size=bounds.getSize(new THREE.Vector3());
- const scored=open.map(p=>({...p, projection:p.center.dot(w)})).sort((a,b)=>b.projection-a.projection);
- if(scored.length<2){$('windNote').textContent='Se requieren al menos dos aberturas IFC reconocidas para representar recorridos potenciales.';return}
- const limit=Math.min(7,Math.floor(scored.length/2));
- const upstream=scored.slice(0,limit),downstream=scored.slice(-limit).reverse();
- for(let j=0;j<limit;j++){
-  const entry=upstream[j],exit=downstream[j];if(entry.id===exit.id||entry.center.distanceTo(exit.center)<1)continue;
-  const inward=w.clone().multiplyScalar(Math.min(1.8,entry.center.distanceTo(exit.center)*.15));
-  const bend=entry.center.clone().lerp(exit.center,.5);
-  const curve=new THREE.CatmullRomCurve3([entry.center.clone().addScaledVector(w,-1.2),entry.center.clone(),entry.center.clone().add(inward),bend,exit.center.clone().addScaledVector(w,-.55),exit.center.clone(),exit.center.clone().addScaledVector(w,1.2)]);
-  const pts=curve.getPoints(65);const geo=new THREE.BufferGeometry().setFromPoints(pts);
-  const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0x53d8ec,transparent:true,opacity:.38}));windLines.add(line);
-  windRoutes.push(curve);
-  for(let k=0;k<7;k++){
-   const dot=new THREE.Mesh(new THREE.SphereGeometry(.055,7,6),windFlowMaterial);windLines.add(dot);
-   windParticles.push({dot,curve,phase:(k/7+j*.13)%1});
-  }
+ if(!Number.isFinite(state.windDirectionDeg)||!Number.isFinite(state.windSpeedMs)){
+  $('windNote').textContent='Esperando datos meteorológicos para esta ubicación, fecha y hora. Las trayectorias no se inventarán.';return;
  }
- $('windNote').textContent=`${windRoutes.length} recorridos potenciales. Las trayectorias conectan aberturas activas según el viento meteorológico, pero no verifican presión, tabiques ni turbulencia.`;
+ const w=windVector(),ports=windPorts.filter(p=>p.open&&p.exterior);
+ const incoming=ports.filter(p=>p.outward.dot(w)<-.22).sort((a,b)=>a.center.dot(w)-b.center.dot(w));
+ const outgoing=ports.filter(p=>p.outward.dot(w)>.22).sort((a,b)=>b.center.dot(w)-a.center.dot(w));
+ // El viento va DE la fachada de barlovento HACIA la de sotavento.
+ const entries=incoming.sort((a,b)=>b.center.dot(w)-a.center.dot(w));
+ const exits=outgoing.sort((a,b)=>a.center.dot(w)-b.center.dot(w));
+ if(!entries.length||!exits.length){
+  for(const p of ports)markWindPort(p,'entry');
+  $('windNote').textContent=`${ports.length} aberturas exteriores reconocidas, pero no existe un par claro entrada/salida para el viento actual. Se señalan las aberturas sin inventar ventilación cruzada.`;
+  return;
+ }
+ const extent=new THREE.Box3().setFromObject(state.root).getSize(new THREE.Vector3());
+ const lead=Math.max(2.5,Math.min(6,Math.max(extent.x,extent.z)*.25));
+ const maxRoutes=Math.min(9,Math.max(entries.length,exits.length));
+ const usedIn=new Set(),usedOut=new Set();
+ for(let j=0;j<maxRoutes;j++){
+  const entry=entries[j%entries.length],exit=exits[j%exits.length];
+  if(entry.center.distanceTo(exit.center)<1.1)continue;
+  usedIn.add(entry.id);usedOut.add(exit.id);
+  const gap=entry.center.distanceTo(exit.center);
+  const start=entry.center.clone().addScaledVector(entry.outward,lead);
+  const inside=entry.center.clone().addScaledVector(entry.outward,-Math.min(1.4,gap*.2));
+  const insideExit=exit.center.clone().addScaledVector(exit.outward,-Math.min(1.4,gap*.2));
+  const end=exit.center.clone().addScaledVector(exit.outward,lead);
+  // El tramo exterior está delante de las ventanas, nunca comienza dentro del edificio.
+  const halfway=inside.clone().lerp(insideExit,.5);
+  const path=[start,entry.center.clone(),inside,halfway,insideExit,exit.center.clone(),end];
+  // V35: filamentos translúcidos de viento que convergen al vano, recorren
+  // el espacio y vuelven a abrirse después de salir. Los colores no representan CFD.
+  const cross=new THREE.Vector3(-w.z,0,w.x);
+  for(let lane=0;lane<7;lane++){
+   const spread=(lane-3)*.11;
+   const lift=Math.sin(lane*2.17)*.13;
+   const pts=path.map((p,i)=>{
+    const spreadFactor=(i===0||i===6)?2.8:(i===1||i===5)?.38:.9;
+    const turbulence=(i===3?Math.sin(j*1.9+lane*2.4)*.16:0);
+    return p.clone().addScaledVector(cross,spread*spreadFactor+turbulence)
+      .add(new THREE.Vector3(0,lift*spreadFactor+Math.sin(i*.9+lane*.8)*.065,0));
+   });
+   const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',.35);
+   const spine=new THREE.BufferGeometry().setFromPoints(curve.getPoints(110));
+   const isCore=lane===3;
+   const lineMat=new THREE.LineBasicMaterial({
+    color:isCore?0x8cf8ff:lane%2?0x4dcefc:0x60e6f2,
+    transparent:true,opacity:isCore?.49:.18,depthTest:false,depthWrite:false
+   });
+   const line=new THREE.Line(spine,lineMat);line.renderOrder=14;windLines.add(line);
+   windRoutes.push(curve);
+   // Desplazamiento visible: segmentos brillantes curvos que viajan sobre
+   // cada filamento. Se reutiliza su geometría en cada cuadro.
+   const segmentCount=isCore?8:5,steps=14;
+   for(let k=0;k<segmentCount;k++){
+    const positions=new Float32Array(steps*3);
+    const dynamic=new THREE.BufferGeometry();
+    dynamic.setAttribute('position',new THREE.BufferAttribute(positions,3).setUsage(THREE.DynamicDrawUsage));
+    const material=new THREE.LineBasicMaterial({
+     color:isCore?0xc4ffff:lane%2?0x52dcff:0x9bfbff,
+     transparent:true,opacity:isCore?.95:.65,depthTest:false,depthWrite:false
+    });
+    const streak=new THREE.Line(dynamic,material);streak.renderOrder=16;
+    streak.frustumCulled=false;windLines.add(streak);
+    windParticles.push({streak,curve,phase:(k/segmentCount+j*.137+lane*.053)%1,
+      steps,span:isCore?.075:.048});
+   }
+  }
+
+ }
+ for(const p of entries)if(usedIn.has(p.id))markWindPort(p,'entry');
+ for(const p of exits)if(usedOut.has(p.id))markWindPort(p,'exit');
+ const count=Math.floor(windRoutes.length/7);
+ $('windNote').textContent=`${count} recorrido(s) exteriores → ventanas de entrada (verde) → interior → ventanas de salida (ámbar) → exterior. ${entries.length} posibles entradas y ${exits.length} salidas. Modelo orientativo sin CFD; no se verifican tabiques interiores.`;
 }
 function setupWindView(){
  windLines.visible=true;detectWindPorts();syncWindWithWeather();if(state.weatherDate!==currentDate())queueWeather();
  if($('windTransparent').checked){
- state.root?.traverse(o=>{if(!o.isMesh)return;const c=categoryOf(o);
- if(c==='muro'||c==='cubierta'){
-  const base=visualOriginal.get(o);if(!base)return;
-  const m=(Array.isArray(base.material)?base.material[0]:base.material).clone();m.transparent=true;m.opacity=c==='cubierta'?.16:.22;m.depthWrite=false;o.material=m;
- }
- });
+  state.root?.traverse(o=>{if(!o.isMesh)return;const c=categoryOf(o);
+   if(c==='muro'||c==='cubierta'){
+    const base=visualOriginal.get(o);if(!base)return;
+    const m=(Array.isArray(base.material)?base.material[0]:base.material).clone();m.transparent=true;m.opacity=c==='cubierta'?.12:.18;m.depthWrite=false;o.material=m;
+   }
+  });
  }
  rebuildWindRoutes();
 }
-function stepWind(dt){if(state.mode!=='wind'||!windLines.visible||!$('windAnimate').checked)return;
+function stepWind(dt){
+ if(state.mode!=='wind'||!windLines.visible||!$('windAnimate').checked)return;
  const speed=Math.max(0,state.windSpeedMs??0);
- for(const p of windParticles){p.phase=(p.phase+dt*(.04+speed*.027))%1;p.dot.position.copy(p.curve.getPoint(p.phase));}
+ for(const p of windParticles){
+  p.phase=(p.phase+dt*(.045+Math.min(speed,16)*.034))%1;
+  const positions=p.streak.geometry.attributes.position;
+  for(let i=0;i<p.steps;i++){
+   // Repetición cíclica sin una línea artificial entre el final y el comienzo.
+   const t=p.phase+(i/(p.steps-1))*p.span;
+   const point=p.curve.getPoint(Math.min(1,Math.max(0,t%1)));
+   positions.setXYZ(i,point.x,point.y,point.z);
+  }
+  positions.needsUpdate=true;
+ }
 }
-// Los controles de viento son de lectura: se sincronizan automáticamente con el clima.
 $('windTransparent').addEventListener('change',()=>applyVisualization());
 
 makeDemo();setMinutes(720);modeSet('solar');
