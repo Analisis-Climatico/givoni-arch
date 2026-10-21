@@ -845,8 +845,6 @@ function markWindPort(p,role){
 function rebuildWindRoutes(){
  clearWindRoutes();if(state.mode!=='wind')return;
  const hasWeather=Number.isFinite(state.windDirectionDeg)&&Number.isFinite(state.windSpeedMs);
- // Cuando no responde el servicio, habilitar un ESQUEMA de ventilación visible,
- // inequívocamente marcado como demostración (dirección/velocidad NO meteorológicas).
  const ports=windPorts.filter(p=>p.open&&p.exterior);
  const allPorts=windPorts.filter(p=>p.open);
  const mainPorts=ports.length?ports:allPorts;
@@ -856,103 +854,141 @@ function rebuildWindRoutes(){
   w=b.center.clone().sub(a.center).setY(0).normalize();
   if(w.lengthSq()<.1)w.set(1,0,0);
  }
- const incoming=ports.filter(p=>p.outward.dot(w)<-.22).sort((a,b)=>a.center.dot(w)-b.center.dot(w));
- const outgoing=ports.filter(p=>p.outward.dot(w)>.22).sort((a,b)=>b.center.dot(w)-a.center.dot(w));
- // El viento va DE la fachada de barlovento HACIA la de sotavento.
+ const bb=new THREE.Box3().setFromObject(state.root),c=bb.getCenter(new THREE.Vector3());
+ const sz=bb.getSize(new THREE.Vector3());
+ const extent=Math.max(sz.x,sz.z), cross=new THREE.Vector3(-w.z,0,w.x).normalize();
+ const baseY = bb.min.y + sz.y*0.42;
+ const lead=Math.max(2.3,Math.min(5.5,extent*.24));
+ const markAndAnimate=(curve,lane,isCore=false)=>{
+   const spine=new THREE.BufferGeometry().setFromPoints(curve.getPoints(110));
+   const lineMat=new THREE.LineBasicMaterial({
+     color:isCore?0x91f8ff:lane%2?0x4dcefc:0x61e4f4,
+     transparent:true,opacity:isCore?.42:.15,depthTest:false,depthWrite:false
+   });
+   const line=new THREE.Line(spine,lineMat); line.renderOrder=14; windLines.add(line); windRoutes.push(curve);
+   const segmentCount=isCore?8:5,steps=14;
+   for(let k=0;k<segmentCount;k++){
+     const positions=new Float32Array(steps*3);
+     const dynamic=new THREE.BufferGeometry();
+     dynamic.setAttribute('position',new THREE.BufferAttribute(positions,3).setUsage(THREE.DynamicDrawUsage));
+     const material=new THREE.LineBasicMaterial({
+       color:isCore?0xcafcff:lane%2?0x55deff:0x9cfbff,
+       transparent:true,opacity:isCore?.95:.62,depthTest:false,depthWrite:false
+     });
+     const streak=new THREE.Line(dynamic,material); streak.renderOrder=16; streak.frustumCulled=false; windLines.add(streak);
+     windParticles.push({streak,curve,phase:(k/segmentCount+lane*.071)%1,steps,span:isCore?.076:.05});
+   }
+ };
+ const buildWrapFlows=(labelPrefix)=>{
+   const leftSkirt=c.clone().addScaledVector(cross,-extent*.45);
+   const rightSkirt=c.clone().addScaledVector(cross, extent*.45);
+   const windwardFace=c.clone().addScaledVector(w,-extent*.60);
+   const leewardFace=c.clone().addScaledVector(w, extent*.60);
+   const routeCount=9;
+   for(let lane=0; lane<routeCount; lane++){
+     const t=(lane/(routeCount-1));
+     const lateral=(t-.5)*extent*1.25;
+     const profile = lane<3 ? 'left' : lane>5 ? 'right' : 'top';
+     const yLevel = profile==='top' ? bb.max.y + 0.30 + (lane-4)*0.05 : baseY + (lane-4)*0.14;
+     const p0 = windwardFace.clone().addScaledVector(w,-lead*1.5).addScaledVector(cross,lateral);
+     let pts=[];
+     if(profile==='left'){
+       pts=[
+         p0.clone().setY(yLevel),
+         windwardFace.clone().addScaledVector(cross,-extent*.62).setY(yLevel+0.05),
+         leftSkirt.clone().addScaledVector(w,-extent*.12).setY(yLevel+0.08),
+         leftSkirt.clone().addScaledVector(w, extent*.14).setY(yLevel+0.02),
+         leewardFace.clone().addScaledVector(cross,-extent*.55).setY(yLevel),
+         leewardFace.clone().addScaledVector(w,lead*1.35).addScaledVector(cross,lateral*.55).setY(yLevel)
+       ];
+     } else if(profile==='right'){
+       pts=[
+         p0.clone().setY(yLevel),
+         windwardFace.clone().addScaledVector(cross, extent*.62).setY(yLevel+0.05),
+         rightSkirt.clone().addScaledVector(w,-extent*.12).setY(yLevel+0.08),
+         rightSkirt.clone().addScaledVector(w, extent*.14).setY(yLevel+0.02),
+         leewardFace.clone().addScaledVector(cross, extent*.55).setY(yLevel),
+         leewardFace.clone().addScaledVector(w,lead*1.35).addScaledVector(cross,lateral*.55).setY(yLevel)
+       ];
+     } else {
+       pts=[
+         p0.clone().setY(baseY+0.25),
+         windwardFace.clone().addScaledVector(w,-0.25).addScaledVector(cross,lateral*.42).setY(bb.max.y+0.22),
+         c.clone().addScaledVector(cross,lateral*.30).setY(bb.max.y+0.55+Math.sin(lane)*0.08),
+         leewardFace.clone().addScaledVector(w,0.18).addScaledVector(cross,lateral*.25).setY(bb.max.y+0.24),
+         leewardFace.clone().addScaledVector(w,lead*1.3).addScaledVector(cross,lateral*.2).setY(baseY+0.2)
+       ];
+     }
+     const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',0.5);
+     markAndAnimate(curve,lane,lane===4);
+   }
+   $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO: ':'VISTA ILUSTRATIVA SIN DATOS: ')+labelPrefix+' El flujo rodea el volumen cuando no encuentra un cruce exterior verificable por ventanas.';
+ };
+ const incoming=ports.filter(p=>p.outward.dot(w)<-.18).sort((a,b)=>a.center.dot(w)-b.center.dot(w));
+ const outgoing=ports.filter(p=>p.outward.dot(w)>.18).sort((a,b)=>b.center.dot(w)-a.center.dot(w));
  const entries=incoming.sort((a,b)=>b.center.dot(w)-a.center.dot(w));
  const exits=outgoing.sort((a,b)=>a.center.dot(w)-b.center.dot(w));
  let sampleOnly=!hasWeather, routeEntries=entries,routeExits=exits;
- // El viento puede entrar por una abertura y no encontrar salida opuesta.
- // En ese caso mostrar aire EXTERIOR; nunca ocultar toda la visualización.
+ if(!routeEntries.length||!routeExits.length){ sampleOnly=true; routeEntries=[]; routeExits=[]; }
  if(!routeEntries.length||!routeExits.length){
-  sampleOnly=true;
-  // No unir puertas interiores ni inventar pares de ventanas de fachadas incorrectas.
-  routeEntries=[];routeExits=[];
+   for(const p of ports)markWindPort(p,'entry');
+   buildWrapFlows(`${ports.length} aberturas exteriores reconocidas, pero sin pareja entrada/salida coherente.`);
+   return;
  }
- if(!routeEntries.length||!routeExits.length){
-  // Representar corriente exterior cercana a la fachada para diagnosticar la animación.
-  const bb=new THREE.Box3().setFromObject(state.root),c=bb.getCenter(new THREE.Vector3());
-  const sz=bb.getSize(new THREE.Vector3());
-  const length=Math.max(12,Math.max(sz.x,sz.z)*2.1);
-  const across=new THREE.Vector3(-w.z,0,w.x);
-  const nearWindward=c.clone().addScaledVector(w,-Math.max(sz.x,sz.z)*.65-1.4);
-  nearWindward.y=c.y;
-  const anchor=nearWindward;
-  for(let lane=0;lane<10;lane++){
-   const lateral=across.clone().multiplyScalar((lane-4.5)*.24);
-   const p0=anchor.clone().addScaledVector(w,-length*.6).add(lateral);
-   const p1=anchor.clone().add(lateral).add(new THREE.Vector3(0,Math.sin(lane)*.28,0));
-   const p2=anchor.clone().addScaledVector(w,length*.6).add(lateral);
-   const curve=new THREE.CatmullRomCurve3([p0,p1,p2]);
-   const trace=new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(90)),new THREE.LineBasicMaterial({color:lane%2?0x62d6ff:0x8bfbff,transparent:true,opacity:.35,depthTest:false}));trace.renderOrder=14;windLines.add(trace);windRoutes.push(curve);
-   const geo=new THREE.BufferGeometry(),steps=15;geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(steps*3),3).setUsage(THREE.DynamicDrawUsage));
-   const streak=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xc7ffff,transparent:true,opacity:.95,depthTest:false}));streak.frustumCulled=false;streak.renderOrder=17;windLines.add(streak);
-   windParticles.push({streak,curve,phase:lane/10,steps,span:.11});
-  }
-  for(const p of ports)markWindPort(p,'entry');
-  $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO: ':'VISTA ILUSTRATIVA SIN DATOS: ')+'corrientes EXTERIORES a barlovento; '+ports.length+' aberturas exteriores reconocidas, '+(allPorts.length-ports.length)+' interiores excluidas. Sin recorrido cruzado comprobable, no se dibuja un cruce ficticio.';
-  return;
- }
- const extent=new THREE.Box3().setFromObject(state.root).getSize(new THREE.Vector3());
- const lead=Math.max(2.5,Math.min(6,Math.max(extent.x,extent.z)*.25));
- const maxRoutes=Math.min(9,Math.max(routeEntries.length,routeExits.length));
+ const maxRoutes=Math.min(6,Math.max(routeEntries.length,routeExits.length));
  const usedIn=new Set(),usedOut=new Set();
  for(let j=0;j<maxRoutes;j++){
-  const entry=routeEntries[j%routeEntries.length],exit=routeExits[j%routeExits.length];
-  if(entry.center.distanceTo(exit.center)<1.1)continue;
-  usedIn.add(entry.id);usedOut.add(exit.id);
-  const gap=entry.center.distanceTo(exit.center);
-  const start=entry.center.clone().addScaledVector(entry.outward,lead);
-  const inside=entry.center.clone().addScaledVector(entry.outward,-Math.min(1.4,gap*.2));
-  const insideExit=exit.center.clone().addScaledVector(exit.outward,-Math.min(1.4,gap*.2));
-  const end=exit.center.clone().addScaledVector(exit.outward,lead);
-  // El tramo exterior está delante de las ventanas, nunca comienza dentro del edificio.
-  const halfway=inside.clone().lerp(insideExit,.5);
-  const path=[start,entry.center.clone(),inside,halfway,insideExit,exit.center.clone(),end];
-  // V35: filamentos translúcidos de viento que convergen al vano, recorren
-  // el espacio y vuelven a abrirse después de salir. Los colores no representan CFD.
-  const cross=new THREE.Vector3(-w.z,0,w.x);
-  for(let lane=0;lane<7;lane++){
-   const spread=(lane-3)*.11;
-   const lift=Math.sin(lane*2.17)*.13;
-   const pts=path.map((p,i)=>{
-    const spreadFactor=(i===0||i===6)?2.8:(i===1||i===5)?.38:.9;
-    const turbulence=(i===3?Math.sin(j*1.9+lane*2.4)*.16:0);
-    return p.clone().addScaledVector(cross,spread*spreadFactor+turbulence)
-      .add(new THREE.Vector3(0,lift*spreadFactor+Math.sin(i*.9+lane*.8)*.065,0));
-   });
-   const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',.35);
-   const spine=new THREE.BufferGeometry().setFromPoints(curve.getPoints(110));
-   const isCore=lane===3;
-   const lineMat=new THREE.LineBasicMaterial({
-    color:isCore?0x8cf8ff:lane%2?0x4dcefc:0x60e6f2,
-    transparent:true,opacity:isCore?.49:.18,depthTest:false,depthWrite:false
-   });
-   const line=new THREE.Line(spine,lineMat);line.renderOrder=14;windLines.add(line);
-   windRoutes.push(curve);
-   // Desplazamiento visible: segmentos brillantes curvos que viajan sobre
-   // cada filamento. Se reutiliza su geometría en cada cuadro.
-   const segmentCount=isCore?8:5,steps=14;
-   for(let k=0;k<segmentCount;k++){
-    const positions=new Float32Array(steps*3);
-    const dynamic=new THREE.BufferGeometry();
-    dynamic.setAttribute('position',new THREE.BufferAttribute(positions,3).setUsage(THREE.DynamicDrawUsage));
-    const material=new THREE.LineBasicMaterial({
-     color:isCore?0xc4ffff:lane%2?0x52dcff:0x9bfbff,
-     transparent:true,opacity:isCore?.95:.65,depthTest:false,depthWrite:false
-    });
-    const streak=new THREE.Line(dynamic,material);streak.renderOrder=16;
-    streak.frustumCulled=false;windLines.add(streak);
-    windParticles.push({streak,curve,phase:(k/segmentCount+j*.137+lane*.053)%1,
-      steps,span:isCore?.075:.048});
+   const entry=routeEntries[j%routeEntries.length],exit=routeExits[j%routeExits.length];
+   if(entry.center.distanceTo(exit.center)<1.1)continue;
+   usedIn.add(entry.id); usedOut.add(exit.id);
+   const gap=entry.center.distanceTo(exit.center);
+   const extIn=entry.center.clone().addScaledVector(entry.outward,lead*1.15);
+   const extOut=exit.center.clone().addScaledVector(exit.outward,lead*1.15);
+   const impactIn=entry.center.clone().addScaledVector(entry.outward,.35);
+   const impactOut=exit.center.clone().addScaledVector(exit.outward,.35);
+   const innerIn=entry.center.clone().addScaledVector(entry.outward,-Math.min(1.15,gap*.18));
+   const innerOut=exit.center.clone().addScaledVector(exit.outward,-Math.min(1.15,gap*.18));
+   const innerMid=c.clone().lerp(innerIn.clone().lerp(innerOut,.5),0.55);
+   const routeHeight = THREE.MathUtils.clamp((entry.center.y+exit.center.y)/2, bb.min.y+0.55, bb.max.y-0.25);
+   for(let lane=0; lane<7; lane++){
+     const spread=(lane-3)*0.12;
+     const vShift=(lane-3)*0.05;
+     const swing=Math.sin(lane*1.7+j*1.15)*0.22;
+     const startY=routeHeight+vShift;
+     const pts=[
+       extIn.clone().addScaledVector(cross,spread*2.2).setY(startY+0.02),
+       impactIn.clone().addScaledVector(cross,spread*1.2).setY(startY+0.04),
+       entry.center.clone().addScaledVector(cross,spread*0.35).setY(startY),
+       innerIn.clone().addScaledVector(cross,spread*0.55+swing*0.2).setY(startY-0.01),
+       innerMid.clone().addScaledVector(cross,spread*0.85+swing).setY(routeHeight+Math.sin(lane*.9)*0.12),
+       innerOut.clone().addScaledVector(cross,spread*0.45-swing*0.18).setY(routeHeight+vShift*0.6),
+       exit.center.clone().addScaledVector(cross,spread*0.28).setY(exit.center.y+vShift*0.45),
+       impactOut.clone().addScaledVector(cross,spread*1.15).setY(exit.center.y+vShift*0.48),
+       extOut.clone().addScaledVector(cross,spread*2.1).setY(exit.center.y+vShift*0.52)
+     ];
+     const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',0.55);
+     markAndAnimate(curve,lane,lane===3);
    }
-  }
-
+   // También dibujar algunas corrientes exteriores que rodean el volumen para lectura más natural.
+   const sideSign = (j%2===0)?-1:1;
+   for(let lane=0; lane<2; lane++){
+      const yLevel = routeHeight + (lane===0?-0.15:0.22);
+      const pts=[
+        extIn.clone().addScaledVector(cross,sideSign*(extent*.18+lane*.18)).setY(yLevel),
+        c.clone().addScaledVector(w,-extent*.48).addScaledVector(cross,sideSign*(extent*.62+lane*.15)).setY(yLevel+0.06),
+        c.clone().addScaledVector(cross,sideSign*(extent*.72+lane*.20)).setY(yLevel+0.12),
+        c.clone().addScaledVector(w, extent*.46).addScaledVector(cross,sideSign*(extent*.58+lane*.16)).setY(yLevel+0.04),
+        extOut.clone().addScaledVector(cross,sideSign*(extent*.15+lane*.1)).setY(yLevel)
+      ];
+      const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',0.52);
+      markAndAnimate(curve, lane+7, false);
+   }
  }
  for(const p of routeEntries)if(usedIn.has(p.id))markWindPort(p,'entry');
  for(const p of routeExits)if(usedOut.has(p.id))markWindPort(p,'exit');
- const count=Math.floor(windRoutes.length/7);
- $('windNote').textContent=(sampleOnly?'VISTA ILUSTRATIVA SIN DATOS O SIN PAREJA AERODINÁMICA VALIDADA · ':'')+`${count} recorrido(s) exterior → abertura → interior → abertura → exterior. Orientación ${hasWeather?'meteorológica':'demostrativa, NO medida'}; trazados geométricos sin CFD ni verificación de tabiques.`;
+ const count=Math.max(1,Math.floor(windRoutes.length/9));
+ $('windNote').textContent=(sampleOnly?'VISTA ILUSTRATIVA SIN DATOS O SIN PAREJA AERODINÁMICA VALIDADA · ':'')+
+   `${count} recorrido(s) de viento exterior e interior. Las corrientes atraviesan solo las aberturas exteriores reconocidas y rodean el volumen en zonas sin paso verificable.`;
 }
 function setupWindView(){
  windLines.visible=true;detectWindPorts();syncWindWithWeather();if(state.weatherDate!==currentDate())queueWeather();
