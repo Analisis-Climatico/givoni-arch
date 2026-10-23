@@ -497,7 +497,7 @@ function applyVisualization(){
  }
  batch();
 }
-function modeSet(mode){state.mode=mode;document.getElementById("windPanel").hidden=mode!=="wind";if(mode!=="wind")windLines.visible=false;sunOrb.visible=state.sun?.alt>0;sunGlow.visible=sunOrb.visible;sunTrack.visible=$('sunPathVisible').checked;$all('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));applyVisualization();if(state.mode==='interior')scheduleInteriorMap();updateResults();notify(mode==='solar'?'Sombras solares activas':mode==='interior'?'Cubiertas transparentes para inspección, pero opacas al cálculo geométrico de rayos':mode==='radiation'?'Estudio de fachadas activo: incidencia solar con sombras de obstáculos visibles, como árboles.':'Ventilación: trayectoria animada exterior → ventanas abiertas → interior → salida exterior.')}
+function modeSet(mode){state.mode=mode;document.getElementById("windPanel").hidden=mode!=="wind";if(mode!=="wind"){windLines.visible=false;geographicWindArrow.visible=false;}sunOrb.visible=state.sun?.alt>0;sunGlow.visible=sunOrb.visible;sunTrack.visible=$('sunPathVisible').checked;$all('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));applyVisualization();if(state.mode==='interior')scheduleInteriorMap();updateResults();notify(mode==='solar'?'Sombras solares activas':mode==='interior'?'Cubiertas transparentes para inspección, pero opacas al cálculo geométrico de rayos':mode==='radiation'?'Estudio de fachadas activo: incidencia solar con sombras de obstáculos visibles, como árboles.':'Ventilación: trayectoria animada exterior → ventanas abiertas → interior → salida exterior.')}
 $all('[data-mode]').forEach(b=>b.onclick=()=>modeSet(b.dataset.mode));const trigger=$('modeTrigger');let hoverDelay;trigger.onmouseenter=()=>{clearTimeout(hoverDelay);trigger.classList.add('show')};trigger.onmouseleave=()=>{hoverDelay=setTimeout(()=>trigger.classList.remove('show'),550)};trigger.addEventListener('click',()=>trigger.classList.toggle('show'));
 $('theme').onclick=()=>document.body.classList.toggle('light');$('loadbtn').onclick=()=>$('file').click();$('fit').onclick=fitCamera;$('tree').onclick=()=>{state.trees=!state.trees;vegetation.visible=state.trees;state.vegetationMeshes.forEach(o=>o.visible=state.trees);$('tree').classList.toggle('active',state.trees);if(['radiation','thermal'].includes(state.mode))applyVisualization()};$('plant').onclick=()=>{state.planting=!state.planting;controls.enabled=!state.planting;$('plant').classList.toggle('active',state.planting);plantPreview.visible=false;syncPlantPreview();notify(state.planting?'Mueve el cursor para previsualizar y haz clic para colocar':'Colocación desactivada')};
 $all('[data-view]').forEach(b=>b.onclick=()=>{$all('[data-view]').forEach(x=>x.classList.toggle('active',x===b));if(b.dataset.view==='top')camera.position.set(0,30,.001);else if(b.dataset.view==='front')camera.position.set(0,5,28);else camera.position.set(21,16,24);controls.target.set(0,2,0);controls.update()});
@@ -539,7 +539,7 @@ function thumbForMaterial(type,name){
  let art='';
  if(/vidrio low-e/.test(n))art=`<rect x="10" y="12" width="52" height="54" rx="2" fill="#1a455c" stroke="#dcf8ff" stroke-width="3"/><rect x="16" y="18" width="40" height="42" fill="#74d3ea" opacity=".7"/><path d="M18 22l36 35M18 50l18-18" stroke="#ffffff" stroke-width="3" opacity=".9"/><path d="M30 18v42M16 39h40" stroke="#d7fbff" stroke-width="2" opacity=".85"/>`;
  else if(/vidrio doble/.test(n))art=`<rect x="11" y="12" width="50" height="54" rx="2" fill="#244a5c" stroke="#e6fbff" stroke-width="3"/><rect x="17" y="18" width="34" height="42" fill="#62c7df" opacity=".65"/><rect x="24" y="18" width="30" height="42" fill="#93ebff" opacity=".35"/><path d="M33 18v42M17 39h37" stroke="#e8fdff" stroke-width="2"/>`;
- else if(/vidrio|cristal|policarbonato/.test(n))art=`<rect x="12" y="13" width="50" height="52" rx="2" fill="#1c4d66" stroke="#d8f4ff" stroke-width="3"/><rect x="18" y="19" width="38" height="40" fill="#57d0ec" opacity=".7"/><path d="M18 49L45 22M28 59L55 32" stroke="#f4feff" stroke-width="3" opacity=".9"/><path d="M37 19V62M18 39H56" stroke="#dbfbff" stroke-width="2" opacity=".75"/>`;
+ else if(/vidrio|cristal|policarbonato/.test(n))art=`<rect x="12" y="13" width="50" height="52" rx="2" fill="#1c4d66" stroke="#d8f4ff" stroke-width="3"/><rect x="18" y="19" width="38" height="40" fill="#57d0ec" opacity=".7"/><path d="M18 49L45 22M28 59L55 32" stroke="#f4feff" stroke-width="3" opacity=".9"/><path d="M37 19V63M18 39H56" stroke="#dbfbff" stroke-width="2" opacity=".75"/>`;
  else if(/ladrillo/.test(n))art=`<rect x="10" y="17" width="55" height="47" rx="3" fill="#b45b3f"/><g stroke="#f6cfaf" stroke-width="2.3"><path d="M10 29H65M10 42H65M10 55H65"/><path d="M22 17V29M40 17V29M55 29V42M32 29V42M18 42V55M48 42V55"/></g>`;
  else if(/bloque de hormig|bloque/.test(n))art=`<rect x="9" y="18" width="56" height="46" rx="4" fill="#9ea7ad"/><g stroke="#dfe6ea" stroke-width="2.1"><rect x="15" y="24" width="18" height="13" rx="1" fill="#bfc7cc"/><rect x="40" y="24" width="18" height="13" rx="1" fill="#bfc7cc"/><rect x="28" y="43" width="18" height="13" rx="1" fill="#c8d0d4"/></g>`;
  else if(/madera|bambú|bambu/.test(n))art=`<rect x="13" y="12" width="48" height="56" rx="2" fill="#aa7546" stroke="#f1d2a1" stroke-width="3"/><path d="M22 14V66M33 14V66M45 14V66M55 14V66" stroke="#704526" stroke-width="2.2"/><path d="M20 29q7-5 10 1m7 12q8-5 12 3" fill="none" stroke="#e3b884" stroke-width="2"/>`;
@@ -549,7 +549,7 @@ function thumbForMaterial(type,name){
  else if(/aluminio compuesto|lámina de aluminio|aluminio/.test(n))art=`<path d="M7 28L39 13L68 28L36 44Z" fill="#eef4f8"/><path d="M7 28V56L36 70V44Z" fill="#8ea5b4"/><path d="M36 44L68 28V55L36 70Z" fill="#c1d0d8"/><path d="M14 35H58M18 45H62M22 55H52" stroke="#6f8795" stroke-width="2.3"/>`;
  else if(/pir|aisla|sándwich|sandwich|panel/.test(n))art=`<path d="M7 24L42 9L68 24L33 40Z" fill="#e2eff6"/><path d="M7 34L33 49L68 33V44L33 61L7 45Z" fill="#efd785"/><path d="M7 47L33 62L68 45V54L33 72L7 56Z" fill="#8daab8"/><path d="M7 27L33 43L68 27" fill="none" stroke="#6d93ad" stroke-width="3"/>`;
  else if(/fibrocemento/.test(n))art=`<rect x="10" y="15" width="55" height="49" rx="4" fill="#b4bfc6"/><g stroke="#e1e7ea" stroke-width="2"><path d="M14 27H61M14 39H61M14 51H61"/><path d="M20 15v49M34 15v49M48 15v49" opacity=".38"/></g>`;
- else if(/hormigón|hormigon|concreto|cemento/.test(n))art=`<path d="M6 28L40 12L67 25L34 44Z" fill="#e0e3e5"/><path d="M6 28V62L34 74V44Z" fill="#9ba8b0"/><path d="M34 44L67 25V56L34 74Z" fill="#b8c4c9"/><g fill="#667682" opacity=".65"><circle cx="20" cy="45" r="1.4"/><circle cx="28" cy="60" r="1.2"/><circle cx="50" cy="49" r="1.5"/><circle cx="49" cy="31" r="1"/></g>`;
+ else if(/hormigón|hormigon|concreto|cemento/.test(n))art=`<path d="M6 28L40 12L67 25L34 44Z" fill="#e0e3e5"/><path d="M6 28V63L34 74V44Z" fill="#9ba8b0"/><path d="M34 44L67 25V56L34 74Z" fill="#b8c4c9"/><g fill="#667682" opacity=".65"><circle cx="20" cy="45" r="1.4"/><circle cx="28" cy="60" r="1.2"/><circle cx="50" cy="49" r="1.5"/><circle cx="49" cy="31" r="1"/></g>`;
  else art=thumb(type).replace(/<svg[^>]*>|<\/svg>/g,'');
  return `<div class="material-preview mat-sculpt" style="background:linear-gradient(150deg,#20344b,#102135)"><svg viewBox="0 0 75 80" aria-label="Representación ilustrativa: ${name}" role="img">${art}</svg><span class="material-preview-name">${name||type}</span></div>`;
 }
@@ -672,7 +672,7 @@ function decodeIFCText(text){
  return assign;
 }
 function applyIFCAxis(object){if(!object)return;const mode=$('upAxis').value;object.rotation.set(mode==='z'?-Math.PI/2:mode==='minusz'?Math.PI/2:0,0,0)}
-// V62: inferir el eje vertical a partir de forjados, sin modificar vértices IFC.
+// V63: inferir el eje vertical a partir de forjados, sin modificar vértices IFC.
 // En modelos WebIFC habituales el eje ya es Y; rotar -90 grados aquí los vuelca.
 function autoDetectIFCAxis(object){
  const modes=['y','z','minusz'];let best='y',bestScore=-Infinity;
@@ -734,7 +734,7 @@ function fmt(x,n=1){return Number.isFinite(x)?x.toFixed(n):'—'}
 function lineSpark(color){return `<svg class="spark" viewBox="0 0 120 40"><path d="M0 27 Q18 28 27 18 T55 20 T82 11 T120 22" fill="none" stroke="${color}" stroke-width="2.3"/><path d="M0 39H120" stroke="#36536d"/></svg>`}
 function metric(title,value,unit,icon,color,tint,edge,small){return `<div class="metric" style="--accent:${color};--tint:${tint};--edge:${edge}"><div class="metric-header"><span>${icon}</span>${title}</div><div class="metric-value">${value}<span style="font-size:.55em"> ${unit}</span></div><small>${small}</small>${(value==='—'?'':lineSpark(color))}</div>`}
 function drawChart(values,color='#46d4ff'){const svg=$('graph');svg.innerHTML='';for(let y=20;y<=110;y+=30){const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1','5');l.setAttribute('x2','295');l.setAttribute('y1',y);l.setAttribute('y2',y);l.setAttribute('stroke','#47637b');l.setAttribute('stroke-dasharray','3 4');svg.append(l)}if(!values||values.length<2)return;const valid=values.filter(Number.isFinite);if(!valid.length)return;let lo=Math.min(...valid),hi=Math.max(...valid);if(lo===hi)hi=lo+1;const p=document.createElementNS('http://www.w3.org/2000/svg','polyline');p.setAttribute('points',values.map((v,i)=>`${5+i/(values.length-1)*290},${108-(v-lo)/(hi-lo)*85}`).join(' '));p.setAttribute('stroke',color);p.setAttribute('stroke-width','2.6');p.setAttribute('fill','none');svg.append(p)}
-function weatherAt(key){const w=state.weather;if(!w||state.weatherDate!==currentDate())return null;const i=Math.min(23,Math.floor(getMinutes()/60));const v=w[key]?.[i];return Number.isFinite(v)?v:null}
+function weatherAt(key){const w=state.weather;if(!w||state.weatherDate!==currentDate()||state.weatherPositionKey!==state.lat+'|'+state.lon)return null;const i=Math.min(23,Math.floor(getMinutes()/60));const v=w[key]?.[i];return Number.isFinite(v)?v:null}
 function weatherCards(){const t=weatherAt('temperature_2m'),rh=weatherAt('relative_humidity_2m');return metric('Temperatura exterior',fmt(t),'°C','♨','#ffc05c','rgba(120,67,12,.3)','rgba(255,175,50,.4)',t===null?'Selecciona una fecha histórica y consulta ↻':'Dato climático horario · Open-Meteo')+metric('Humedad relativa exterior',fmt(rh,0),'%','◉','#4fe2d6','rgba(13,94,83,.3)','rgba(65,221,190,.42)',rh===null?'Sin datos horarios':'Dato climático horario · Open-Meteo')}
 function updateResults(){const s=state.sun||{alt:0,az:0};let content='';if(state.mode==='solar'){content+=metric('Elevación solar',fmt(s.alt),'°','☀','#ffbf4f','rgba(114,68,10,.30)','rgba(255,189,65,.45)','Ángulo astronómico calculado');content+=metric('Azimut solar',fmt(s.az),'°','◈','#46ddf9','rgba(6,75,107,.35)','rgba(54,204,242,.43)','Respecto al norte verdadero');content+=weatherCards();$('chartTitle').textContent='Elevación solar durante el día';drawChart(Array.from({length:24},(_,i)=>Math.max(0,solarPosition(currentDate(),i*60,state.lat,state.lon,state.offset).alt)),'#ffc14d')}
 else if(state.mode==='interior'){content+=metric('Temperatura interior','—','°C','⌂','#44cfff','rgba(12,77,121,.35)','rgba(63,196,250,.42)','Pendiente: motor térmico y datos del espacio');content+=metric('Humedad relativa interior','—','%','◉','#4fe2d6','rgba(13,94,83,.3)','rgba(65,221,190,.42)','Pendiente: balance higrotérmico y ventilación');content+=weatherCards();content+=metric('Suelo con sol directo',fmt(illuminatedPercent,0),'%','☀','#ffbe54','rgba(105,64,15,.26)','rgba(255,190,70,.40)',state.sun?.alt>0?'Luz geométrica sobre pisos BIM (requiere piso y huecos correctos)':'Sin sol directo: el sol está bajo el horizonte');$('chartTitle').textContent=state.weather?'Temperatura exterior horaria (real)':'Datos horarios exteriores';drawChart(state.weatherDate===currentDate()?state.weather?.temperature_2m:[])}
@@ -787,17 +787,17 @@ async function fetchWeather(){
     }
     if(!normalized.wind_direction_10m.some(Number.isFinite)||!normalized.wind_speed_10m.some(Number.isFinite))throw Error('No hay dirección o velocidad de viento');
     if(request!==weatherRequestVersion||key!==currentDate()+'|'+state.lat+'|'+state.lon)return;
-    state.weather=normalized;state.weatherDate=date;state.weatherStatus=source;failedWeatherKey=null;
+    state.weather=normalized;state.weatherDate=date;state.weatherPositionKey=lat+'|'+lon;state.weatherStatus=source;failedWeatherKey=null;
     syncWindWithWeather();updateResults();notify('Viento horario cargado: '+source);
     return;
    }catch(e){failure=e.message}
   }
   if(request!==weatherRequestVersion)return;
-  state.weather=null;state.weatherDate=null;state.weatherStatus='Sin datos meteorológicos: '+failure;failedWeatherKey=key;
+  state.weather=null;state.weatherDate=null;state.weatherPositionKey=null;state.weatherStatus='Sin datos meteorológicos: '+failure;failedWeatherKey=key;
   syncWindWithWeather();updateResults();notify('No se pudo obtener viento: '+failure);
  }finally{if(request===weatherRequestVersion)$('weather').disabled=false}
 }
-$('weather').onclick=fetchWeather;let weatherDelay=null,failedWeatherKey=null;function queueWeather(){const key=currentDate()+'|'+state.lat+'|'+state.lon;if(state.weatherDate===currentDate()||state.weatherLoading||failedWeatherKey===key)return;clearTimeout(weatherDelay);weatherDelay=setTimeout(async()=>{state.weatherLoading=true;try{await fetchWeather()}finally{state.weatherLoading=false}},800)}
+$('weather').onclick=fetchWeather;let weatherDelay=null,failedWeatherKey=null;function queueWeather(){const key=currentDate()+'|'+state.lat+'|'+state.lon;if((state.weatherDate===currentDate()&&state.weatherPositionKey===state.lat+'|'+state.lon)||state.weatherLoading||failedWeatherKey===key)return;clearTimeout(weatherDelay);weatherDelay=setTimeout(async()=>{state.weatherLoading=true;try{await fetchWeather()}finally{state.weatherLoading=false}},800)}
 // Geografía: búsqueda por OpenStreetMap Nominatim y mapa mundial Leaflet.
 let worldMap,marker,searchController,queryTimer;const suggestionBox=$('suggestions');function timezoneFromLon(lon){return Math.round(lon/15)}
 function applyPlace(place){state.lat=Number(place.lat??place.latitude);state.lon=Number(place.lon??place.longitude);$('latitude').value=state.lat.toFixed(6);$('longitude').value=state.lon.toFixed(6);$('city').value=place.display_name||[place.name,place.country].filter(Boolean).join(', ')||`${state.lat.toFixed(4)}, ${state.lon.toFixed(4)}`;suggestionBox.hidden=true;state.weather=null;state.weatherDate=null;failedWeatherKey=null;weatherRequestVersion++;if(worldMap){worldMap.setView([state.lat,state.lon],Math.max(worldMap.getZoom(),11));marker.setLatLng([state.lat,state.lon])}updateSun();fetchWeather();notify('Punto de estudio actualizado; consultando viento para '+$('city').value)}
@@ -806,7 +806,7 @@ $('city').addEventListener('input',()=>{clearTimeout(queryTimer);queryTimer=setT
 $('mapToggle').onclick=()=>{const overlay=$('mapOverlay');overlay.hidden=false;const err=$('mapError');err.hidden=true;if(typeof L==='undefined'){err.hidden=false;err.textContent='No se cargó Leaflet (revisa conexión/CDN). Puedes usar búsqueda o coordenadas manualmente.';return}try{if(!worldMap){worldMap=L.map('worldMap',{worldCopyJump:true,zoomControl:true}).setView([state.lat,state.lon],4);const layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(worldMap);layer.on('tileerror',()=>{err.hidden=false;err.textContent='No se han podido descargar los mosaicos del mapa. Comprueba conexión, bloqueadores o abre mediante Live Server.'});marker=L.marker([state.lat,state.lon]).addTo(worldMap);worldMap.on('click',ev=>{applyPlace({lat:ev.latlng.lat,lon:ev.latlng.lng,display_name:`Punto seleccionado: ${ev.latlng.lat.toFixed(5)}, ${ev.latlng.lng.toFixed(5)}`});overlay.hidden=true})}requestAnimationFrame(()=>{worldMap.invalidateSize(true);worldMap.setView([state.lat,state.lon],Math.max(worldMap.getZoom(),4))});setTimeout(()=>worldMap.invalidateSize(true),350)}catch(ex){err.hidden=false;err.textContent='Error al iniciar mapa: '+ex.message;console.error(ex)}};$('mapClose').onclick=()=>{$('mapOverlay').hidden=true};
 
 
-// V62: errores verificables en el diagnóstico (no bloquear los otros estudios).
+// V63: errores verificables en el diagnóstico (no bloquear los otros estudios).
 window.addEventListener('error',event=>{
   if(state.mode==='wind' && $('windSource'))$('windSource').textContent='Error técnico: '+(event.message||'desconocido')+' · '+(event.filename||'')+':'+(event.lineno||'');
 });
@@ -817,6 +817,9 @@ window.addEventListener('unhandledrejection',event=>{
 // V35 — filamentos animados de viento: exterior -> abertura -> interior -> abertura -> exterior.
 // Son trayectorias ilustrativas, no una solución CFD ni una medida de caudal interior.
 const windLines=new THREE.Group();scene.add(windLines);windLines.visible=false;
+// Flecha geográfica independiente del modelo, para comprobar procedencia y destino.
+const geographicWindArrow=new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),3.3,0x25e9dd,.65,.34);
+scene.add(geographicWindArrow); geographicWindArrow.visible=false;
 let windPorts=[],windRoutes=[],windParticles=[];
 const windPanel=$('windPanel');
 function detectWindPorts(){
@@ -916,7 +919,7 @@ function detectWindPorts(){
        p.outward=directions[i].clone().transformDirection(rootWrap.matrixWorld).setY(0).normalize();
      }
    }
-   // V62: recuperar ventanas perimetrales cuando la caja de muros incluye
+   // V63: recuperar ventanas perimetrales cuando la caja de muros incluye
    // pieles, perfiles, vigas o geometría extendida de un contenedor.
    if(!p.exterior && (p.cat==='ventana'||p.cat==='rejilla')){
      const faceAxis=i<2?'x':'z';
@@ -962,7 +965,7 @@ function syncWindWithWeather(){
  if(src){
  const dirs=['N','NE','E','SE','S','SO','O','NO'];
  const idx=valid?Math.round(newDir/45)%8:0;
- src.textContent=valid?`${state.weatherStatus||'Open-Meteo'} · ${currentDate()} · ${$('hour').value} · viento desde ${newDir.toFixed(0)}° (${dirs[idx]})`:(state.weatherStatus==='Consultando viento para el punto seleccionado…'?'Consultando datos… Vista ilustrativa provisional, sin dirección real.':'Sin datos meteorológicos: vista ilustrativa identificada, no se atribuye dirección ni velocidad real.');
+ src.textContent=valid?`${state.weatherStatus||'Open-Meteo'} · ${currentDate()} · ${$('hour').value} · viene de ${newDir.toFixed(0)}° (${dirs[idx]}) → avanza hacia ${((newDir+180)%360).toFixed(0)}° (${cardinalFromDegrees((newDir+180)%360)}). Dirección horaria del punto, no viento predominante anual.`:(state.weatherStatus==='Consultando viento para el punto seleccionado…'?'Consultando datos… Vista ilustrativa provisional, sin dirección real.':'Sin datos meteorológicos: vista ilustrativa identificada, no se atribuye dirección ni velocidad real.');
 }
  if(state.mode==='wind'&&changed){rebuildWindRoutes();updateResults();}
 }
@@ -976,6 +979,15 @@ function clearWindRoutes(){
  windLines.clear();windRoutes=[];windParticles=[];
 }
 function windVector(){const a=THREE.MathUtils.degToRad(state.windDirectionDeg??0);return new THREE.Vector3(-Math.sin(a),0,Math.cos(a)).normalize()}
+function cardinalFromDegrees(a){return ['N','NE','E','SE','S','SO','O','NO'][Math.round((((a%360)+360)%360)/45)%8]}
+function updateGeographicWindArrow(w,center,bounds){
+  if(!center||!w?.isVector3){geographicWindArrow.visible=false;return;}
+  const v=w.clone().setY(0).normalize();
+  geographicWindArrow.position.copy(center).addScaledVector(v,-Math.max(bounds.x,bounds.z)*.65);
+  geographicWindArrow.position.y=Math.max(.50,center.y-bounds.y*.20);
+  geographicWindArrow.setDirection(v);geographicWindArrow.setLength(Math.max(2,Math.min(4,Math.max(bounds.x,bounds.z)*.30)),.60,.30);
+  geographicWindArrow.visible=state.mode==='wind'&&Number.isFinite(state.windDirectionDeg);
+}
 function markWindPort(p,role){
  const marker=new THREE.Mesh(new THREE.RingGeometry(.19,.27,32),role==='entry'?windEntryMaterial:windExitMaterial);
  marker.position.copy(p.center).addScaledVector(p.outward,.11);
@@ -983,7 +995,7 @@ function markWindPort(p,role){
  marker.renderOrder=17;windLines.add(marker);
 }
 function rebuildWindRoutes(){
- clearWindRoutes();if(state.mode!=='wind')return;
+ clearWindRoutes();if(state.mode!=='wind'){geographicWindArrow.visible=false;return;}
  const hasWeather=Number.isFinite(state.windDirectionDeg)&&Number.isFinite(state.windSpeedMs);
  const ports=windPorts.filter(p=>p.open&&p.exterior);
  const allPorts=windPorts.filter(p=>p.open);
@@ -1000,6 +1012,7 @@ function rebuildWindRoutes(){
  const bb=new THREE.Box3().setFromObject(state.root),c=bb.getCenter(new THREE.Vector3());
  const sz=bb.getSize(new THREE.Vector3());
  const extent=Math.max(sz.x,sz.z), cross=new THREE.Vector3(-w.z,0,w.x).normalize();
+ updateGeographicWindArrow(w,c,sz);
  const baseY=bb.min.y+Math.min(sz.y*.38,1.35);
  const lead=Math.max(1.6,Math.min(3.8,extent*.18));
  const roofY=bb.max.y+.24;
@@ -1122,7 +1135,7 @@ function rebuildWindRoutes(){
      const inner=(baseSide>minAcross-safeMargin&&baseSide<maxAcross+safeMargin);
      const nearestSide=(baseSide-midAcross>=0)?1:-1;
      // For low and middle layers, go around facades. High layer rises over roof.
-     const overRoof=inner&&z===layers-1&&i%9===0;
+     const overRoof=false; // Sin CFD, evitar desviaciones artificiales sobre la cubierta
      const targetSide=nearestSide===1?maxAcross+safeMargin:minAcross-safeMargin;
      const clearance=inner&&!overRoof?targetSide-baseSide:0;
      const pts=[];
@@ -1190,8 +1203,8 @@ function rebuildWindRoutes(){
    return checked.length;
  }
 
- const inPorts=ports.filter(p=>p.outward.dot(w)<-.02);
- const outPorts=ports.filter(p=>p.outward.dot(w)>.15);
+ const inPorts=ports.filter(p=>p.outward.dot(w)<-.35);
+ const outPorts=ports.filter(p=>p.outward.dot(w)>.35);
  if(!inPorts.length||!outPorts.length){
    const inwardCount=addWindowInlets(inPorts);
    buildDistributedField();
