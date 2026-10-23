@@ -916,7 +916,7 @@ function detectWindPorts(){
        p.outward=directions[i].clone().transformDirection(rootWrap.matrixWorld).setY(0).normalize();
      }
    }
-   // V65: recuperar ventanas perimetrales cuando la caja de muros incluye
+   // V66: recuperar ventanas perimetrales cuando la caja de muros incluye
    // pieles, perfiles, vigas o geometría extendida de un contenedor.
    if(!p.exterior && (p.cat==='ventana'||p.cat==='rejilla')){
      const faceAxis=i<2?'x':'z';
@@ -1079,7 +1079,34 @@ function rebuildWindRoutes(){
  // Campo visual heurístico, NO simulación CFD. Las líneas siguen la dirección geográfica
  // y se desvían suavemente alrededor de la caja envolvente del edificio.
  function buildDistributedField(){
-   // V65: recuperar un campo abundante y cercano al proyecto, similar a la
+   // V66: proyección del volumen en los ejes del viento mundial. 
+   // minA/maxA/minB/maxB son locales a esta función, evitando ReferenceError.
+   const obstacles=[];
+   state.root?.updateWorldMatrix(true,true);
+   state.root?.traverse(o=>{
+     if(o.isMesh&&['muro','cubierta','envolvente'].includes(categoryOf(o)))obstacles.push(o);
+   });
+   const projected=obstacles.length?obstacles:[state.root];
+   let minA=Infinity,maxA=-Infinity,minB=Infinity,maxB=-Infinity;
+   for(const o of projected){
+     if(!o?.isMesh||!o.geometry)continue;
+     if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();
+     const bounds=o.geometry.boundingBox;
+     if(!bounds)continue;
+     for(const x of [bounds.min.x,bounds.max.x])
+       for(const y of [bounds.min.y,bounds.max.y])
+         for(const z of [bounds.min.z,bounds.max.z]){
+           const delta=new THREE.Vector3(x,y,z).applyMatrix4(o.matrixWorld).sub(c);
+           const a=delta.dot(w),b=delta.dot(cross);
+           minA=Math.min(minA,a);maxA=Math.max(maxA,a);
+           minB=Math.min(minB,b);maxB=Math.max(maxB,b);
+         }
+   }
+   if(!Number.isFinite(minA)||!Number.isFinite(maxA)){
+     minA=-extent*.5;maxA=extent*.5;
+     minB=-extent*.5;maxB=extent*.5;
+   }
+   // V66: recuperar un campo abundante y cercano al proyecto, similar a la
    // referencia visual aprobada, sin separarlo en exceso del volumen.
    const clearance=[.22,.42,.68];
    const heights=[bb.min.y+.22,bb.min.y+.86,Math.min(bb.max.y-.28,bb.min.y+1.52)];
