@@ -676,9 +676,9 @@ function settleModel(){
  clearInteriorMap();if(state.mode==='interior')scheduleInteriorMap();
  return new THREE.Box3().setFromObject(state.root).min.y;
 }
-$('auxShadow').onchange=()=>{state.root?.traverse(o=>{if(o.isMesh){const c=categoryOf(o);if(c==='sin clasificar'||c==='otro')o.castShadow=$('auxShadow').checked;}});notify('Sombras de elementos sin clasificar '+($('auxShadow').checked?'activadas':'desactivadas'));};$('viewerOrient').onclick=()=>{state.modelYaw=((state.modelYaw||0)+90)%360;applyProjectRotation();settleModel();updateSun();if(state.mode==='wind')setupWindView();notify('Modelo girado 90° sin alterar el norte ni la dirección meteorológica.')};$('assignFloor').onclick=()=>{if(!state.selected){notify('Primero haz clic sobre el suelo del edificio para seleccionarlo.');return}state.root?.traverse(o=>{if(o.isMesh)o.userData.v8Floor=false});state.selected.userData.v8Floor=true;notify('Piso interior asignado. Abre Sol interior y mueve la hora para estudiar luz directa.');if(state.mode==='interior')scheduleInteriorMap()};$('snapGround').onclick=()=>{$('elevationOffset').value=0;settleModel();notify('Apoyo recalculado tomando el forjado arquitectónico inferior como referencia. Verifica si el diseño tiene altura palafítica.')};$('elevationOffset').addEventListener('input',()=>{settleModel();scheduleInteriorMap()});
+$('auxShadow').onchange=()=>{state.root?.traverse(o=>{if(o.isMesh){const c=categoryOf(o);if(c==='sin clasificar'||c==='otro')o.castShadow=$('auxShadow').checked;}});notify('Sombras de elementos sin clasificar '+($('auxShadow').checked?'activadas':'desactivadas'));};$('viewerOrient').onclick=()=>{state.modelYaw=((state.modelYaw||0)+90)%360;applyProjectRotation();settleModel();updateSun();if(state.mode==='wind')setupWindView();notify('Modelo girado 90° sin alterar el norte ni la dirección meteorológica.')};$('assignFloor').onclick=()=>{if(!state.selected){notify('Primero haz clic sobre el suelo del edificio para seleccionarlo.');return}state.root?.traverse(o=>{if(o.isMesh)o.userData.v8Floor=false});state.selected.userData.v8Floor=true;notify('Piso interior asignado. Abre Sol interior y mueve la hora para estudiar luz directa.');if(state.mode==='interior')scheduleInteriorMap()};$('snapGround').onclick=()=>{$('elevationOffset').value=0;settleModel();if(state.mode==='wind')setupWindView();notify('Apoyo recalculado tomando el forjado arquitectónico inferior como referencia. Verifica si el diseño tiene altura palafítica.')};$('elevationOffset').addEventListener('input',()=>{settleModel();scheduleInteriorMap();if(state.mode==='wind')setupWindView()});
 function centerImported(object){object.position.set(0,0,0);object.updateMatrixWorld(true);let b=new THREE.Box3().setFromObject(object);if(b.isEmpty())return;const c=b.getCenter(new THREE.Vector3());object.position.x-=c.x;object.position.z-=c.z;object.position.y-=b.min.y;object.updateMatrixWorld(true)}
-$('upAxis').addEventListener('change',()=>{if(state.root?.userData?.importIFC){applyIFCAxis(state.root);centerImported(state.root);fitCamera();refreshInventory();updateSun();notify('Eje vertical corregido: '+$('upAxis').selectedOptions[0].textContent)}else notify('El ajuste de ejes se aplica a modelos IFC importados')});
+$('upAxis').addEventListener('change',()=>{if(state.root?.userData?.importIFC){applyIFCAxis(state.root);centerImported(state.root);fitCamera();refreshInventory();updateSun();if(state.mode==='wind')setupWindView();notify('Eje vertical corregido: '+$('upAxis').selectedOptions[0].textContent)}else notify('El ajuste de ejes se aplica a modelos IFC importados')});
 async function importModel(file){if(!file)return;const ext=file.name.split('.').pop().toLowerCase();notify('Importando '+file.name+'…');try{const url=URL.createObjectURL(file);let object;if(ext==='ifc'){object=await loadIFC(file)}else if(ext==='glb'||ext==='gltf'){const gltf=await new GLTFLoader().loadAsync(url);object=gltf.scene}else if(ext==='stl'){const geometry=new STLLoader().parse(await file.arrayBuffer());geometry.computeVertexNormals();object=new THREE.Mesh(geometry,concrete);object.name=file.name;object.userData.category='geometria'}else if(ext==='obj'){object=new OBJLoader().parse(await file.text())}else throw Error('Formato no admitido');URL.revokeObjectURL(url);clearInteriorMap();rootWrap.clear();rootWrap.position.set(0,0,0);state.vegetationMeshes=[];rootWrap.add(object);applyProjectRotation();object.userData.importIFC=ext==='ifc';if(ext==='ifc')applyIFCAxis(object);object.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.userData.category=o.userData.category||categoryOf(o)||'sin clasificar';if(categoryOf(o)==='vegetacion')state.vegetationMeshes.push(o)}});centerImported(object);const bounds=new THREE.Box3().setFromObject(object);const size=bounds.getSize(new THREE.Vector3());const max=Math.max(size.x,size.y,size.z);if(max>80||max<.4){const scale=18/max;object.scale.multiplyScalar(scale);object.position.multiplyScalar(scale);settleModel();notify('Modelo escalado para visualización. Confirma las unidades originales.')}state.root=object;rootWrap.updateMatrixWorld(true);settleModel();{const b=new THREE.Box3().setFromObject(object);const sz=b.getSize(new THREE.Vector3());const r=Math.max(14,Math.min(85,Math.max(sz.x,sz.z)*1.5));groundCompass.scale.setScalar(r/32)}state.selected=null;state.originalMaterials.clear();refreshSelection();fitCamera();renderMaterials();refreshInventory();detectWindPorts();applyVisualization();updateSun();$('fileStatus').textContent=file.name;notify(ext==='ifc'?'IFC cargado. Categorías BIM y capas de materiales asociadas: revisa las tarjetas y selecciona superficies.':'Modelo importado. STL y OBJ no identifican automáticamente ventanas y muros.')}catch(error){console.error(error);notify('No fue posible importar: '+error.message)}}$('file').addEventListener('change',e=>importModel(e.target.files[0]));
 function fmt(x,n=1){return Number.isFinite(x)?x.toFixed(n):'—'}
 function lineSpark(color){return `<svg class="spark" viewBox="0 0 120 40"><path d="M0 27 Q18 28 27 18 T55 20 T82 11 T120 22" fill="none" stroke="${color}" stroke-width="2.3"/><path d="M0 39H120" stroke="#36536d"/></svg>`}
@@ -707,7 +707,7 @@ async function fetchWeather(){
  const endpoints=[];
  if(dayGap>=0&&dayGap<=16){
    // Archivo puede tardar varios días en actualizarse. Forecast admite días anteriores.
-   const q=new URLSearchParams({latitude:String(lat),longitude:String(lon),start_date:date,end_date:date,hourly,timezone:'auto',past_days:String(Math.max(1,dayGap+1))});
+   const q=new URLSearchParams({latitude:String(lat),longitude:String(lon),start_date:date,end_date:date,hourly,timezone:'auto'});
    endpoints.push(['Pronóstico/registro reciente · Open-Meteo','https://api.open-meteo.com/v1/forecast?'+q]);
  }
  if(date<=today){
@@ -730,10 +730,10 @@ async function fetchWeather(){
     if(!data.hourly?.time?.length)throw Error('No hay serie horaria');
     // Usar índices alineados a la hora de la ubicación que entrega Open-Meteo.
     const w=data.hourly;
-    const hourMap=new Map(w.time.map((t,i)=>[t.slice(11,13),i]));
+    const hourMap=new Map(w.time.map((t,i)=>[t,i]));
     const normalized={};
     for(const k of ['temperature_2m','relative_humidity_2m','shortwave_radiation','wind_speed_10m','wind_direction_10m']){
-      normalized[k]=Array.from({length:24},(_,h)=>{const ix=hourMap.get(String(h).padStart(2,'0'));const v=ix===undefined?null:w[k]?.[ix];return v===null||v===undefined?null:Number(v)});
+      normalized[k]=Array.from({length:24},(_,h)=>{const ix=hourMap.get(date+'T'+String(h).padStart(2,'0')+':00');const v=ix===undefined?null:w[k]?.[ix];return v===null||v===undefined?null:Number(v)});
     }
     if(!normalized.wind_direction_10m.some(Number.isFinite)||!normalized.wind_speed_10m.some(Number.isFinite))throw Error('No hay dirección o velocidad de viento');
     if(request!==weatherRequestVersion||key!==currentDate()+'|'+state.lat+'|'+state.lon)return;
@@ -743,7 +743,7 @@ async function fetchWeather(){
    }catch(e){failure=e.message}
   }
   if(request!==weatherRequestVersion)return;
-  state.weather=null;state.weatherDate=null;state.weatherStatus='Sin datos meteorológicos';failedWeatherKey=key;
+  state.weather=null;state.weatherDate=null;state.weatherStatus='Sin datos meteorológicos: '+failure;failedWeatherKey=key;
   syncWindWithWeather();updateResults();notify('No se pudo obtener viento: '+failure);
  }finally{if(request===weatherRequestVersion)$('weather').disabled=false}
 }
@@ -783,29 +783,56 @@ function detectWindPorts(){
   if(prior){if((p.size.x*p.size.y+p.size.z*p.size.y)>(prior.size.x*prior.size.y+prior.size.z*prior.size.y))Object.assign(prior,p);continue;}
   windPorts.push({...p,open:true});
  }
- // Fachadas: usar envolvente de muros, no muebles, tabiques o cubiertas salientes.
- const envelope=new THREE.Box3(),walls=[];
+ // Analizar fachadas en coordenadas LOCALES del edificio. Las AABB mundiales
+ // aumentan de tamaño al girar 45/90 grados y confunden ventanas con tabiques.
+ rootWrap.updateWorldMatrix(true,true);
+ const toLocal=p=>rootWrap.worldToLocal(p.clone());
+ const perimeter=new THREE.Box3();
+ // Construir la envolvente en el sistema LOCAL del proyecto a partir de vértices
+ // transformados, no invirtiendo una AABB mundial (que se infla al girar).
+ const meshLocalBounds=(mesh)=>{
+   const b=new THREE.Box3();const geom=mesh.geometry;
+   if(!geom)return b;
+   if(!geom.boundingBox)geom.computeBoundingBox();
+   const gb=geom.boundingBox;if(!gb)return b;
+   const transform=new THREE.Matrix4().multiplyMatrices(rootWrap.matrixWorld.clone().invert(),mesh.matrixWorld);
+   for(const x of [gb.min.x,gb.max.x])for(const y of [gb.min.y,gb.max.y])for(const z of [gb.min.z,gb.max.z])
+     b.expandByPoint(new THREE.Vector3(x,y,z).applyMatrix4(transform));
+   return b;
+ };
  state.root.traverse(o=>{if(o.isMesh&&categoryOf(o)==='muro'){
-  const bb=new THREE.Box3().setFromObject(o),sz=bb.getSize(new THREE.Vector3());
-  if(sz.y>.55&&Math.max(sz.x,sz.z)>.5){walls.push({bb,sz});envelope.union(bb)}
+   const lb=meshLocalBounds(o);if(!lb.isEmpty())perimeter.union(lb);
  }});
- if(envelope.isEmpty())envelope.setFromObject(state.root);
- const lo=envelope.min,hi=envelope.max;
- const sides=[new THREE.Vector3(-1,0,0),new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,1)];
+ if(perimeter.isEmpty())state.root.traverse(o=>{if(o.isMesh){const lb=meshLocalBounds(o);if(!lb.isEmpty())perimeter.union(lb)}});
+ // Guardar los centros y dimensiones reales del hueco, tanto locales como mundiales.
+ for(const port of windPorts){
+   const lb=meshLocalBounds(port.o);
+   if(!lb.isEmpty()){port.localBounds=lb;port.localCenter=lb.getCenter(new THREE.Vector3());port.localSize=lb.getSize(new THREE.Vector3());}
+ }
+ const lower=perimeter.min,upper=perimeter.max;
+ const directions=[new THREE.Vector3(-1,0,0),new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,1)];
+ const span=Math.max(upper.x-lower.x,upper.z-lower.z);
+ const tolerance=Math.max(.65,Math.min(2.0,span*.13));
  for(const p of windPorts){
-  const distance=[Math.abs(p.center.x-lo.x),Math.abs(hi.x-p.center.x),Math.abs(p.center.z-lo.z),Math.abs(hi.z-p.center.z)];
-  // Las cuatro fachadas de la envolvente tienen preferencia frente a tabiques.
-  let i=distance.indexOf(Math.min(...distance));
-  const span=Math.max(hi.x-lo.x,hi.z-lo.z);
-  const threshold=Math.max(.35,Math.min(1.05,span*.065));
-  const xThin=p.size.x<p.size.z*.42,zThin=p.size.z<p.size.x*.42;
-  if(xThin&&!zThin){const candidates=[0,1];i=candidates.reduce((best,k)=>distance[k]<distance[best]?k:best,candidates[0])}
-  if(zThin&&!xThin){const candidates=[2,3];i=candidates.reduce((best,k)=>distance[k]<distance[best]?k:best,candidates[0])}
-  // Verificar el perímetro de manera independiente: no atribuir puertas interiores a una fachada.
-  p.outward=sides[i].clone();
-  p.exterior=distance[i]<=threshold;
-  p.facade=i;
-  p.distanceToFacade=distance[i];
+   const centerLocal=p.localCenter||toLocal(p.center);
+   const distances=[Math.abs(centerLocal.x-lower.x),Math.abs(upper.x-centerLocal.x),Math.abs(centerLocal.z-lower.z),Math.abs(upper.z-centerLocal.z)];
+   const i=distances.indexOf(Math.min(...distances));
+   p.outward=directions[i].clone().transformDirection(rootWrap.matrixWorld).setY(0).normalize();
+   // Geometrías de Revit pueden estar ligeramente remetidas dentro del muro.
+   p.exterior=distances[i]<=tolerance+Math.min(.65,Math.max(p.localSize?.x||0,p.localSize?.z||0)*.28);
+   // Fallback: on Revit exports a wall category or trim can enlarge the local perimeter.
+   // A window close to a tall enclosing wall is a candidate exterior opening.
+   if(!p.exterior&&p.cat==='ventana'){
+     const candidates=[];
+     state.root.traverse(o=>{if(o.isMesh&&categoryOf(o)==='muro'){const b=meshLocalBounds(o);if(!b.isEmpty())candidates.push(b)}});
+     const windowNearOuterWall=candidates.some(b=>{
+       const yz=Math.abs(centerLocal.y-(b.min.y+b.max.y)*.5)<Math.max(1.5,(b.max.y-b.min.y)*.55);
+       const flat=Math.min(Math.abs(centerLocal.x-b.min.x),Math.abs(centerLocal.x-b.max.x),Math.abs(centerLocal.z-b.min.z),Math.abs(centerLocal.z-b.max.z));
+       return yz&&flat<.42;
+     });
+     p.exterior=windowNearOuterWall;
+   }
+   p.facade=i;p.distanceToFacade=distances[i];
  }
  renderWindPorts();
 }
@@ -854,82 +881,178 @@ function rebuildWindRoutes(){
  const allPorts=windPorts.filter(p=>p.open);
  const mainPorts=ports.length?ports:allPorts;
  let w=hasWeather?windVector():new THREE.Vector3(1,0,0);
- if(!hasWeather&&mainPorts.length>=2){
-  const a=mainPorts[0],b=mainPorts.reduce((best,p)=>p.center.distanceTo(a.center)>best.center.distanceTo(a.center)?p:best,mainPorts[1]);
-  w=b.center.clone().sub(a.center).setY(0).normalize();
-  if(w.lengthSq()<.1)w.set(1,0,0);
- }
+ // No meteorological data: use a stationary illustrative direction,
+ // never infer a new world direction from rotated windows.
  const bb=new THREE.Box3().setFromObject(state.root),c=bb.getCenter(new THREE.Vector3());
  const sz=bb.getSize(new THREE.Vector3());
  const extent=Math.max(sz.x,sz.z), cross=new THREE.Vector3(-w.z,0,w.x).normalize();
  const baseY=bb.min.y+sz.y*0.42;
- const lead=Math.max(1.4,Math.min(3.0,extent*.16));
+ const lead=Math.max(1.6,Math.min(3.8,extent*.18));
  const roofY=bb.max.y+.24;
- function addAnimatedCurve(curve,lane,isCore=false){
+ // V45: cintas de viento con transparencia progresiva; no se usan THREE.Line.
+ const ribbonMaterial=new THREE.ShaderMaterial({
+   transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,
+   vertexColors:false,
+   vertexShader:`attribute float aFade; varying float vFade; void main(){vFade=aFade;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+   fragmentShader:`uniform vec3 uColor;uniform float uOpacity;varying float vFade;void main(){gl_FragColor=vec4(uColor,uOpacity*vFade);}`,
+   uniforms:{uColor:{value:new THREE.Color(0x8eefff)},uOpacity:{value:.82}}
+ });
+ function addAnimatedCurve(curve,lane,isCore=false,showGuide=false,sparse=false,ambientFixed=false,anchorCenter=null){
    windRoutes.push(curve);
-   const segmentCount=isCore?6:3,steps=isCore?18:16;
-   for(let k=0;k<segmentCount;k++){
+   // Varios filamentos del mismo haz, con desfase temporal y anchura variable.
+   const count=sparse?2:(isCore?8:5),steps=sparse?16:22;
+   for(let k=0;k<count;k++){
      const positions=new Float32Array(steps*2*3);
-     const dynamic=new THREE.BufferGeometry();
-     dynamic.setAttribute('position',new THREE.BufferAttribute(positions,3).setUsage(THREE.DynamicDrawUsage));
-     const indices=[]; for(let i=0;i<steps-1;i++){ const a=i*2,b=i*2+1,c=i*2+2,d=i*2+3; indices.push(a,b,c,b,d,c); }
-     dynamic.setIndex(indices);
-     const material=windRibbonMaterial.clone();
-     material.uniforms={uColor:{value:new THREE.Color(0x8eefff)},uOpacity:{value:isCore?.84:.52}};
+     const fade=new Float32Array(steps*2);
+     const indices=[];
+     for(let i=0;i<steps;i++){
+       const progress=i/(steps-1);
+       // Centro tenue, extremos completamente invisibles.
+       const alpha=Math.pow(Math.sin(Math.PI*progress),1.45);
+       fade[2*i]=fade[2*i+1]=alpha;
+       if(i<steps-1){const x=i*2;indices.push(x,x+1,x+2,x+1,x+3,x+2)}
+     }
+     const geometry=new THREE.BufferGeometry();
+     geometry.setAttribute('position',new THREE.BufferAttribute(positions,3).setUsage(THREE.DynamicDrawUsage));
+     geometry.setAttribute('aFade',new THREE.BufferAttribute(fade,1));
+     geometry.setIndex(indices);
+     const material=ribbonMaterial.clone();
      material.uniforms.uColor.value=new THREE.Color(k%4===0?0xe6feff:k%4===1?0xa7f6ff:k%4===2?0x76deff:0x57c8ff);
-     const ribbon=new THREE.Mesh(dynamic,material);
-     ribbon.renderOrder=15; ribbon.frustumCulled=false; windLines.add(ribbon);
-     windParticles.push({
-      ribbon,curve,
-      phase:(k/segmentCount+lane*.09)%1,
-      steps,
-      span:(isCore?.11:.09)*(0.88+Math.random()*.35),
-      width:(isCore?.12:.09)*(0.9+Math.random()*.42),
-      amp:isCore?.22:.15,freq:1.0+Math.random()*.7,drift:.2+Math.random()*.5,
-      lane,seed:Math.random()*10,offset:(Math.random()-.5)*1.6,indexCount:indices.length
-     });
+     material.uniforms.uOpacity.value=sparse?.34:(isCore?.86:.56);
+     const ribbon=new THREE.Mesh(geometry,material);
+     ribbon.frustumCulled=false;ribbon.renderOrder=16;windLines.add(ribbon);
+     windParticles.push({ribbon,curve,phase:((k/count)+lane*.083)%1,
+       steps,span:(isCore?.112:.094)*(0.88+Math.random()*.38),
+       lane,offset:k-(count-1)*.5,width:(sparse?.067:(isCore?.12:.092))*(0.9+Math.random()*.48),
+       amp:isCore?.22:.15,freq:1.0+Math.random()*.7,drift:.2+Math.random()*.5,
+       seed:k*.73+lane*1.7,indexCount:indices.length,ambientFixed,anchorCenter:anchorCenter?anchorCenter.clone():null});
    }
  }
- function addWorldAmbientField(){
-   const worldSpan=Math.max(18,extent*1.55);
-   const farIn=c.clone().addScaledVector(w,-worldSpan*.75);
-   const farOut=c.clone().addScaledVector(w, worldSpan*.75);
-   const laneOffsets=[-1.25,-.95,-.65,-.35,0,.35,.65,.95,1.25];
-   const heightOffsets=[.02,.18,.34,.12,.28,.08,.24,.14,.30];
-   laneOffsets.forEach((mul,idx)=>{
-     const lateral=worldSpan*.56*mul;
-     const bow=(idx%2===0?1:-1)*worldSpan*.08;
-     const pts=[
-       farIn.clone().addScaledVector(cross,lateral).setY(baseY+heightOffsets[idx%heightOffsets.length]),
-       c.clone().addScaledVector(w,-worldSpan*.24).addScaledVector(cross,lateral*.9+bow*.15).setY(baseY+.18+heightOffsets[idx%heightOffsets.length]),
-       c.clone().addScaledVector(cross,lateral*.72+bow).setY(baseY+.24+heightOffsets[idx%heightOffsets.length]),
-       c.clone().addScaledVector(w, worldSpan*.24).addScaledVector(cross,lateral*.86-bow*.12).setY(baseY+.18+heightOffsets[idx%heightOffsets.length]),
-       farOut.clone().addScaledVector(cross,lateral).setY(baseY+heightOffsets[idx%heightOffsets.length])
-     ];
-     addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',0.72),idx,false);
+ function buildDirectionalWrap(reason,light=false){
+   const windward=c.clone().addScaledVector(w,-extent*.58);
+   const leeward=c.clone().addScaledVector(w, extent*.58);
+   const sideOffset=extent*.52;
+   const laneDefs=light?
+     [{side:-1,roof:false,dy:0.00},{side:-1,roof:false,dy:0.14},{side:1,roof:false,dy:0.06},{side:1,roof:false,dy:0.18},{side:0,roof:true,dy:0.00}] :
+     [{side:-1,roof:false,dy:0.00},{side:-1,roof:false,dy:0.14},{side:-1,roof:false,dy:0.26},{side:1,roof:false,dy:0.06},{side:1,roof:false,dy:0.18},{side:1,roof:false,dy:0.28},{side:0,roof:true,dy:0.00}];
+   laneDefs.forEach((cfg,lane)=>{
+     let pts;
+     if(cfg.roof){
+       pts=[
+         windward.clone().addScaledVector(w,-lead*1.1).addScaledVector(cross,-extent*.08).setY(baseY+.16),
+         windward.clone().addScaledVector(cross,-extent*.06).setY(roofY+.04),
+         c.clone().addScaledVector(cross, extent*.04).setY(roofY+.24),
+         leeward.clone().addScaledVector(cross, extent*.08).setY(roofY+.06),
+         leeward.clone().addScaledVector(w,lead*1.0).addScaledVector(cross, extent*.12).setY(baseY+.14)
+       ];
+     }else{
+       const s=cfg.side;
+       pts=[
+         windward.clone().addScaledVector(w,-lead*1.08).addScaledVector(cross,s*(sideOffset*.48)).setY(baseY+.08+cfg.dy),
+         c.clone().addScaledVector(w,-extent*.22).addScaledVector(cross,s*sideOffset).setY(baseY+.18+cfg.dy),
+         c.clone().addScaledVector(cross,s*(sideOffset+0.45)).setY(baseY+.32+cfg.dy*.6),
+         c.clone().addScaledVector(w, extent*.20).addScaledVector(cross,s*sideOffset).setY(baseY+.18+cfg.dy),
+         leeward.clone().addScaledVector(w,lead*1.02).addScaledVector(cross,s*(sideOffset*.42)).setY(baseY+.12+cfg.dy*.4)
+       ];
+     }
+     addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',0.62),lane,lane===1||lane===2,false,false,true,c);
    });
+   $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO: ':'VISTA ILUSTRATIVA SIN DATOS: ')+reason+' El flujo mantiene la dirección general del viento y rodea el volumen cuando no existe cruce verificable.';
  }
- function addLocalWrap(side,dy,laneBase){
-   const s=side;
-   const sideOffset=extent*.56;
-   const pts=[
-     c.clone().addScaledVector(w,-extent*.45).addScaledVector(cross,s*(sideOffset*.95)).setY(baseY+.10+dy),
-     c.clone().addScaledVector(w,-extent*.12).addScaledVector(cross,s*(sideOffset*1.08)).setY(baseY+.24+dy),
-     c.clone().addScaledVector(cross,s*(sideOffset*1.16)).setY(baseY+.38+dy*.3),
-     c.clone().addScaledVector(w, extent*.18).addScaledVector(cross,s*(sideOffset*1.02)).setY(baseY+.20+dy),
-     c.clone().addScaledVector(w, extent*.46).addScaledVector(cross,s*(sideOffset*.92)).setY(baseY+.12+dy*.2)
-   ];
-   addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',0.7),laneBase,false);
+ // V48: campo de trayectorias distribuidas en toda la anchura y varias alturas.
+ // Campo visual heurístico, NO simulación CFD. Las líneas siguen la dirección geográfica
+ // y se desvían suavemente alrededor de la caja envolvente del edificio.
+ function buildDistributedField(){
+   const lanes=17,layers=3;
+   // Project the actual BIM envelope onto fixed wind axes. Unlike the world AABB,
+   // this footprint is recomputed after rotating the building.
+   const wallMeshes=[];
+   state.root.traverse(o=>{if(o.isMesh&&['muro','cubierta','envolvente','celosia'].includes(categoryOf(o)))wallMeshes.push(o)});
+   const obstacleMeshes=wallMeshes.length?wallMeshes:[state.root];
+   let minAlong=Infinity,maxAlong=-Infinity,minAcross=Infinity,maxAcross=-Infinity;
+   let roofTop=bb.max.y;
+   const corner=new THREE.Vector3();
+   const obstacleBounds=[];
+   for(const o of obstacleMeshes){
+      const ob=new THREE.Box3().setFromObject(o);
+      if(ob.isEmpty())continue;
+      obstacleBounds.push(ob);
+      for(const x of [ob.min.x,ob.max.x])for(const z of [ob.min.z,ob.max.z]){
+         corner.set(x,0,z).sub(new THREE.Vector3(c.x,0,c.z));
+         const a=corner.dot(w), b=corner.dot(cross);
+         minAlong=Math.min(minAlong,a);maxAlong=Math.max(maxAlong,a);
+         minAcross=Math.min(minAcross,b);maxAcross=Math.max(maxAcross,b);
+      }
+      roofTop=Math.max(roofTop,ob.max.y);
+   }
+   if(!Number.isFinite(minAlong)){
+      minAlong=-extent*.5;maxAlong=extent*.5;
+      minAcross=-extent*.5;maxAcross=extent*.5;
+   }
+   const safeMargin=Math.max(.55,Math.min(1.1,extent*.055));
+   const upstream=minAlong-lead*1.4,downstream=maxAlong+lead*1.4;
+   const midAcross=(minAcross+maxAcross)*.5;
+   const halfAcross=(maxAcross-minAcross)*.5;
+   const fieldRadius=halfAcross+Math.max(1.5,extent*.26);
+   const smooth=t=>{t=THREE.MathUtils.clamp(t,0,1);return t*t*(3-2*t)};
+   // Bump rises before windward facade and decays only past leeward facade.
+   const marginAlong=Math.max(1.25,lead*.9);
+   for(let z=0;z<layers;z++)for(let i=0;i<lanes;i++){
+     const n=(i+.5)/lanes*2-1;
+     const baseSide=midAcross+n*fieldRadius;
+     const y=bb.min.y+.38+(z+.22)/layers*Math.max(1,sz.y*.67);
+     const inner=(baseSide>minAcross-safeMargin&&baseSide<maxAcross+safeMargin);
+     const nearestSide=(baseSide-midAcross>=0)?1:-1;
+     // For low and middle layers, go around facades. High layer rises over roof.
+     const overRoof=inner&&z===layers-1;
+     const targetSide=nearestSide===1?maxAcross+safeMargin:minAcross-safeMargin;
+     const clearance=inner&&!overRoof?targetSide-baseSide:0;
+     const pts=[];
+     const N=22;
+     for(let k=0;k<=N;k++){
+       const f=k/N, along=upstream+(downstream-upstream)*f;
+       const approach=smooth((along-(minAlong-marginAlong))/(marginAlong*.80));
+       const departure=1-smooth((along-(maxAlong+marginAlong*.08))/(marginAlong*.90));
+       const bump=approach*departure;
+       const lateral=baseSide+clearance*bump;
+       const rise=overRoof?Math.max(0,roofTop+Math.min(.34,safeMargin*.38)-y)*bump:0;
+       const swirl=Math.sin(f*Math.PI)*Math.sin(f*7+i*1.17+z*.7)*.06;
+       pts.push(c.clone().addScaledVector(w,along).addScaledVector(cross,lateral+swirl).setY(y+rise));
+     }
+     const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',.55);
+     addAnimatedCurve(curve,i+z*lanes,false,false,true,true,c);
+   }
  }
- // 1) Campo global fijo según la ubicación (no depende de la orientación del modelo)
- addWorldAmbientField();
- // 2) Rodeos locales compactos, visibles alrededor del edificio
- addLocalWrap(-1,.00,20); addLocalWrap(-1,.18,21); addLocalWrap(1,.06,22); addLocalWrap(1,.22,23);
- const inPorts=ports.filter(p=>p.outward.dot(w)<-.15);
+ // La fachada expuesta recibe viento aunque no exista una segunda ventana opuesta.
+ // Este recorrido de ingreso termina DENTRO del vano y nunca presume una salida.
+ function addWindowInlets(inlets){
+   const checked=[...inlets].filter(p=>p.cat==='ventana'||p.cat==='puerta').sort((a,b)=>a.center.y-b.center.y).slice(0,16);
+   for(let idx=0;idx<checked.length;idx++){
+     const p=checked[idx];markWindPort(p,'entry');
+     const aperture=p.center.clone();
+     const approach=aperture.clone().addScaledVector(w,-Math.max(1.7,lead*1.05));
+     const close=aperture.clone().addScaledVector(p.outward,.22);
+     const inside=aperture.clone().addScaledVector(p.outward,-.18);
+     const halfWidth=Math.max(.10,Math.min(.42,(p.localSize?.x||p.size.x)*.23));
+     for(let lane=0;lane<6;lane++){
+       const spread=(lane-2.5)*halfWidth*.33;
+       const vShift=(lane-2.5)*Math.max(.035,Math.min(.14,p.size.y*.065));
+       const pts=[approach.clone().addScaledVector(cross,spread*1.4).add(new THREE.Vector3(0,vShift,0)),
+         approach.clone().lerp(close,.55).addScaledVector(cross,spread*.7).add(new THREE.Vector3(0,vShift*.7,0)),
+         close.clone().addScaledVector(cross,spread*.20),
+         aperture.clone().addScaledVector(cross,spread*.15),
+         inside.clone().addScaledVector(cross,spread*.36)];
+       addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',.6),70+idx*4+lane,true,false,false);
+     }
+   }
+   return checked.length;
+ }
+ const inPorts=ports.filter(p=>p.outward.dot(w)<-.06);
  const outPorts=ports.filter(p=>p.outward.dot(w)>.15);
  if(!inPorts.length||!outPorts.length){
-   for(const p of ports)markWindPort(p,'entry');
-   $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO: ':'VISTA ILUSTRATIVA SIN DATOS: ')+`${ports.length} aberturas exteriores reconocidas, pero sin entradas y salidas opuestas adecuadas. Se muestra el campo general del viento fijo a la ubicación.`;
+   const inwardCount=addWindowInlets(inPorts);
+   buildDistributedField();
+   $('windNote').textContent=`${windPorts.filter(p=>p.cat==='ventana').length} ventanas IFC reconocidas; ${ports.length} aberturas exteriores; ${inwardCount} entradas orientadas al viento. Sin salida confirmada: solo se representa el ingreso.`;
    return;
  }
  const entries=[...inPorts].sort((a,b)=>a.center.dot(cross)-b.center.dot(cross));
@@ -949,11 +1072,13 @@ function rebuildWindRoutes(){
    if(bestIndex>=0){pairs.push([entry,exitsPool.splice(bestIndex,1)[0]]);}
  }
  if(!pairs.length){
-   for(const p of ports)markWindPort(p,'entry');
-   $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO: ':'VISTA ILUSTRATIVA SIN DATOS: ')+`No se pudo emparejar aberturas de entrada y salida con una dirección coherente. Se mantiene el campo general del viento fijo a la ubicación.`;
+   const inwardCount=addWindowInlets(inPorts);
+   buildDistributedField();
+   $('windNote').textContent=`${inwardCount} ingresos por ventanas; sin parejas comprobadas de ventilación cruzada.`;
    return;
  }
- const limited=pairs.slice(0,4);
+ addWindowInlets(inPorts);
+ const limited=pairs.slice(0,4);let validCrossings=0;
  for(let j=0;j<limited.length;j++){
    const [entry,exit]=limited[j];
    markWindPort(entry,'entry'); markWindPort(exit,'exit');
@@ -966,25 +1091,44 @@ function rebuildWindRoutes(){
    const mid1=entry.center.clone().lerp(exit.center,.26).addScaledVector(cross,lateralDelta*.12).setY(routeHeight+.08);
    const mid2=entry.center.clone().lerp(exit.center,.55).addScaledVector(cross,lateralDelta*.18).setY(routeHeight+.02);
    const mid3=entry.center.clone().lerp(exit.center,.80).addScaledVector(cross,lateralDelta*.08).setY(routeHeight-.02);
-   for(let lane=0; lane<5; lane++){
+   for(let lane=0; lane<6; lane++){
      const spread=(lane-2)*.10;
      const yJitter=(lane-2)*.04;
      const bow=Math.sin(lane*1.35+j*.9)*.18;
      const pts=[
-       extIn.clone().addScaledVector(cross,spread*1.2).setY(routeHeight+yJitter),
-       entry.center.clone().addScaledVector(cross,spread*.5).setY(entry.center.y+yJitter*.45),
+       extIn.clone().addScaledVector(cross,spread*1.3).setY(routeHeight+yJitter),
+       entry.center.clone().addScaledVector(cross,spread*.50).setY(entry.center.y+yJitter*.5),
        innerIn.clone().addScaledVector(cross,spread*.55+bow*.15).setY(routeHeight+yJitter*.4),
        mid1.clone().addScaledVector(cross,spread*.40+bow*.55).setY(routeHeight+.06+yJitter*.2),
        mid2.clone().addScaledVector(cross,spread*.48-bow*.35).setY(routeHeight+.02),
        mid3.clone().addScaledVector(cross,spread*.34-bow*.18).setY(routeHeight-.01-yJitter*.1),
        innerOut.clone().addScaledVector(cross,spread*.22).setY(routeHeight-yJitter*.18),
        exit.center.clone().addScaledVector(cross,spread*.45).setY(exit.center.y-yJitter*.3),
-       extOut.clone().addScaledVector(cross,spread*1.1).setY(routeHeight-yJitter*.25)
+       extOut.clone().addScaledVector(cross,spread*1.15).setY(routeHeight-yJitter*.25)
      ];
-     addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',0.68),lane+30,lane===2);
+     // Do not display a cross-ventilation path if it crosses opaque BIM walls.
+     const candidate=new THREE.CatmullRomCurve3(pts,false,'centripetal',0.68);
+     const opaque=[];
+     state.root.traverse(o=>{if(o.isMesh&&['muro','cubierta'].includes(categoryOf(o)))opaque.push(o)});
+     let blocked=false;
+     const probes=candidate.getPoints(30);
+     const cast=new THREE.Raycaster();
+     for(let q=0;q<probes.length-1&&!blocked;q++){
+       const delta=probes[q+1].clone().sub(probes[q]);
+       const length=delta.length();if(length<.001)continue;
+       cast.set(probes[q],delta.normalize());cast.far=length;
+       if(cast.intersectObjects(opaque,false).some(hit=>{
+         if(hit.distance<=.005||hit.distance>=length-.005)return false;
+         // Cruces próximos a los centros de ventanas reconocidas son aperturas permitidas.
+         const radius=Math.max(.52,Math.min(1.15,Math.max(entry.size.x,entry.size.y,exit.size.x,exit.size.y)*.38));
+         return hit.point.distanceTo(entry.center)>radius&&hit.point.distanceTo(exit.center)>radius;
+       }))blocked=true;
+     }
+     if(!blocked){addAnimatedCurve(candidate,lane,lane===2,false);validCrossings++;}
    }
  }
- $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO: ':'VISTA ILUSTRATIVA SIN DATOS: ')+`${limited.length} recorrido(s) principales atraviesan aberturas detectadas. El campo exterior del viento permanece fijo según la ubicación; solo cambia la interacción con el edificio.`;
+ buildDistributedField();
+ $('windNote').textContent=(hasWeather?'VIENTO METEOROLÓGICO · ':'VISTA ILUSTRATIVA SIN DATOS · ')+`${inPorts.length} aberturas orientadas hacia el viento; ${validCrossings} traza(s) interiores sin muro interpuesto, más ingresos individuales por ventanas.`;
 }
 function setupWindView(){
  windLines.visible=true;detectWindPorts();syncWindWithWeather();if(state.weatherDate!==currentDate())queueWeather();
@@ -1014,9 +1158,11 @@ function stepWind(dt){
   for(let i=0;i<p.steps;i++){
    const progress=i/(p.steps-1),t=p.phase+progress*p.span;
    const point=p.curve.getPoint(t),tangent=p.curve.getTangent(Math.max(.001,Math.min(.999,t))).normalize();
+   const envelope=Math.sin(progress*Math.PI);
+   // World-space wind trajectories are rebuilt after model rotation.
+   // Do not rotate them a second time: that made wind follow the building.
    const side=windSide.crossVectors(up,tangent);
    if(side.lengthSq()<1e-6)side.set(1,0,0);else side.normalize();
-   const envelope=Math.sin(progress*Math.PI);
    const wave=Math.sin(windTime*(1.22+p.drift)+t*15*p.freq+p.seed)*p.amp
      +Math.sin(windTime*.84+t*23+p.seed*1.4)*p.amp*.34;
    const lift=Math.sin(windTime*(1.1+p.drift*.3)+t*11+p.seed)*p.amp*.34;
