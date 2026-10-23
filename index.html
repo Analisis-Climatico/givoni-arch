@@ -589,7 +589,7 @@
   --cv-grad-amber: linear-gradient(180deg,#e8820e 0%,#c95f0a 100%);
   --cv-shadow: 0 1px 0 rgba(255,255,255,1) inset, 0 1px 2px rgba(8,62,72,.05), 0 14px 30px -18px rgba(8,62,72,.24);
   --cv-shadow-lg: 0 28px 60px -24px rgba(8,62,72,.42);
-  --cv-overlay: rgba(10,29,34,.50);
+  --cv-overlay: rgba(10,29,34,.50); --cv-spot: rgba(13,148,136,.10);
   --cv-wash1: rgba(20,184,166,.12); --cv-wash2: rgba(251,146,60,.08); --cv-wash3: rgba(56,189,248,.10);
   --cv-ease: cubic-bezier(.22,1,.36,1); --cv-spring: cubic-bezier(.34,1.4,.64,1);
 }
@@ -600,7 +600,7 @@ html.dark {
   --cv-accent: #2dd4bf; --cv-accent-soft: rgba(45,212,191,.12); --cv-accent-line: rgba(45,212,191,.40);
   --cv-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 12px 30px -16px rgba(0,0,0,.6);
   --cv-shadow-lg: 0 28px 70px -20px rgba(0,0,0,.75);
-  --cv-overlay: rgba(2,6,7,.62);
+  --cv-overlay: rgba(2,6,7,.62); --cv-spot: rgba(45,212,191,.13);
   --cv-wash1: rgba(45,212,191,.07); --cv-wash2: rgba(245,158,11,.04); --cv-wash3: transparent;
   --cv-grad: linear-gradient(135deg,#14b8a6 0%,#0f766e 100%);
   --cv-grad-amber: linear-gradient(135deg,#d97706 0%,#b45309 100%);
@@ -1162,87 +1162,130 @@ html:not(.dark) #save-modal-overlay button.bg-indigo-600, html:not(.dark) #qr-mo
 
 
 /* =====================================================================
-   ESTRATEGIAS ARQUITECTÓNICAS — FICHA EDITORIAL (v3)
-   Solo presentación: el HTML de la app y su orden no cambian. El PDF lee
-   innerText de estos párrafos, así que no se usa text-transform ni display:block
-   en los textos reales; todo lo añadido va en pseudo-elementos.
+   ESTRATEGIAS ARQUITECTÓNICAS — CONSOLA INTERACTIVA (v4)
+   Lista a la izquierda + panel de detalle a la derecha (escritorio ≥1280px)
+   y acordeón animado en pantallas menores. Se activa solo cuando el script
+   aditivo añade .cv-acc; sin él se ven las tarjetas de siempre.
+   Solo presentación: el PDF lee innerText de estos textos, por eso no se usa
+   display:none, visibility ni text-transform sobre ellos (se ocultan con opacidad
+   o altura 0) y todo lo añadido va en pseudo-elementos.
    ===================================================================== */
-@property --cv-ang { syntax: '<angle>'; inherits: false; initial-value: 135deg; }
-@keyframes cvSpin { to { --cv-ang: 495deg; } }
+html.cv-acc #strategy-list.cv-acc { display: flex !important; flex-direction: column; gap: 10px !important; counter-reset: strat; position: relative; }
+html.cv-acc #strategy-list.cv-acc > div {
+  display: block !important; position: relative; counter-increment: none !important; margin: 0; padding: 0 !important; overflow: hidden;
+  border-radius: 18px !important; border: 1px solid var(--cv-line2) !important; background: var(--cv-surface) !important; background-image: none !important;
+  box-shadow: var(--cv-shadow) !important; transform: none !important; animation: none !important; opacity: 1 !important;
+  transition: border-color .4s ease, box-shadow .5s ease !important;
+}
+html.cv-acc #strategy-list.cv-acc > div:hover { transform: none !important; border-color: var(--cv-accent-line) !important; box-shadow: var(--cv-shadow) !important; }
+html.cv-acc #strategy-list.cv-acc > div.cv-open { border-color: var(--cv-accent-line) !important; }
+html.cv-acc #strategy-list.cv-acc > div::before, html.cv-acc #strategy-list.cv-acc > div::after,
+html.cv-acc:not(.dark) #strategy-list.cv-acc > div::before, html.cv-acc:not(.dark) #strategy-list.cv-acc > div::after,
+html.cv-acc #strategy-list.cv-acc > div:hover::after { content: none !important; }
 
-html #strategy-list { gap: 1.5rem !important; }
-html #strategy-list > div, html:not(.dark) #strategy-list > div {
-  display: flex; flex-direction: column; overflow: hidden; position: relative;
-  border-radius: 20px !important; border: 1px solid transparent !important;
-  padding: 5.3rem 1.65rem 1.55rem !important;
-  background:
-    radial-gradient(120% 70% at 0% 0%, rgba(45,212,191,.13), transparent 60%) padding-box,
-    linear-gradient(var(--cv-surface), var(--cv-surface)) padding-box,
-    conic-gradient(from var(--cv-ang), rgba(45,212,191,.60), rgba(56,189,248,.14) 22%, var(--cv-line2) 45%, rgba(245,158,11,.30) 70%, rgba(45,212,191,.60)) border-box !important;
-  box-shadow: 0 26px 44px -30px rgba(0,0,0,.9) !important;
+/* fila: número + título + indicador */
+html.cv-acc #strategy-list.cv-acc > div > p:first-child {
+  counter-increment: strat; display: flex !important; align-items: center; gap: 1rem; margin: 0 !important; padding: 1.05rem 1.3rem !important;
+  cursor: pointer; border-radius: 16px; position: relative; z-index: 2;
+  font: 700 12.5px/1.35 'Space Grotesk', sans-serif !important; letter-spacing: .1em !important; color: var(--cv-ink) !important;
+  transition: background-color .35s ease, box-shadow .35s ease;
 }
-html:not(.dark) #strategy-list > div {
-  background:
-    radial-gradient(120% 70% at 0% 0%, rgba(13,148,136,.10), transparent 60%) padding-box,
-    linear-gradient(#ffffff, #ffffff) padding-box,
-    conic-gradient(from var(--cv-ang), rgba(13,148,136,.55), rgba(56,168,201,.16) 22%, rgba(8,62,72,.14) 45%, rgba(232,130,14,.30) 70%, rgba(13,148,136,.55)) border-box !important;
-  box-shadow: 0 1px 2px rgba(8,62,72,.05), 0 22px 38px -28px rgba(8,62,72,.40) !important;
+html.cv-acc #strategy-list.cv-acc > div > p:first-child::before {
+  content: counter(strat, decimal-leading-zero) !important; position: static; flex: none; width: auto; height: auto; margin: 0; background: none; transform: none; opacity: 1;
+  font: 600 11px 'Space Grotesk', sans-serif; letter-spacing: .14em; color: var(--cv-ink3); transition: color .3s ease;
 }
-html #strategy-list > div:hover, html:not(.dark) #strategy-list > div:hover {
-  border-color: transparent !important; animation: cvSpin 5s linear infinite;
-  box-shadow: 0 34px 56px -30px rgba(13,148,136,.50) !important;
+html.cv-acc #strategy-list.cv-acc > div > p:first-child::after {
+  content: '+'; display: block; flex: none; width: auto; height: auto; margin: 0 0 0 auto; background: none; transform: none;
+  font: 300 22px/1 'Space Grotesk', sans-serif; color: var(--cv-ink3); transition: transform .5s var(--cv-spring), color .3s ease, opacity .3s ease;
+}
+html.cv-acc #strategy-list.cv-acc > div > p:first-child:hover { background: var(--cv-line); }
+html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child { background: var(--cv-accent-soft); box-shadow: inset 0 0 0 1px var(--cv-accent-line); }
+html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child::before { color: var(--cv-accent); }
+html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child::after { transform: rotate(45deg); color: var(--cv-accent); }
+html.cv-acc #strategy-list.cv-acc > div > p:first-child:focus-visible { outline: 2px solid var(--cv-accent); outline-offset: -2px; }
+
+/* contenido (acordeón): se pliega con altura 0 y opacidad, nunca con display:none */
+html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div > .border-t {
+  overflow: hidden; max-height: 0; opacity: 0; margin: 0 !important; padding: 0 1.3rem !important; border: 0 !important;
+  transition: max-height .7s var(--cv-ease), opacity .45s ease, padding .5s var(--cv-ease);
+}
+html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) {
+  max-height: 380px; opacity: 1; padding: .3rem 1.3rem 1rem !important; font-size: 14.5px !important; line-height: 1.65 !important; color: var(--cv-ink2) !important;
+}
+html.cv-acc #strategy-list.cv-acc > div > .border-t { display: grid; gap: 14px; }
+html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t {
+  max-height: 460px; opacity: 1; padding: 1.1rem 1.3rem 1.3rem !important; border-top: 1px solid var(--cv-line) !important;
 }
 
-/* numeral editorial: serif cursiva con degradado */
-html #strategy-list > div::before, html:not(.dark) #strategy-list > div::before {
-  content: counter(strat, decimal-leading-zero); position: absolute; left: 1.65rem; right: auto; top: 14px;
-  font: italic 600 58px/1 'Playfair Display', serif; letter-spacing: -.02em; opacity: 1;
-  color: transparent; -webkit-text-stroke: 0; border: 0; text-align: left; padding: 0; grid-column: auto; grid-row: auto;
-  background: linear-gradient(135deg, var(--cv-accent) 10%, #38bdf8 90%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-}
-/* etiqueta superior derecha */
-html #strategy-list > div::after, html #strategy-list > div:hover::after, html:not(.dark) #strategy-list > div::after, html:not(.dark) #strategy-list > div:hover::after {
-  content: 'ESTRATEGIA'; position: absolute; left: auto; right: 1.45rem; top: 26px; width: auto; height: auto; transform: none !important;
-  padding: 5px 10px; border: 1px solid var(--cv-line2); border-radius: 999px; background: none; pointer-events: none;
-  font: 600 9.5px 'Space Grotesk', sans-serif; letter-spacing: .22em; color: var(--cv-ink3); transition: none;
-}
-
-/* título: tinta + subrayado corto (conserva las mayúsculas originales) */
-html #strategy-list > div > p:first-child, html:not(.dark) #strategy-list > div > p:first-child {
-  display: block; padding-right: 0; margin: 0 0 .85rem !important; color: var(--cv-ink) !important;
-  font: 700 14px/1.4 'Space Grotesk', sans-serif !important; letter-spacing: .13em !important;
-}
-html #strategy-list > div > p:first-child::before { content: none; }
-html #strategy-list > div > p:first-child::after {
-  content: ''; display: block; width: 30px; height: 2px; margin-top: .7rem; border-radius: 2px;
-  background: linear-gradient(90deg, var(--cv-accent), #38bdf8); transition: width .7s var(--cv-ease);
-}
-html #strategy-list > div:hover > p:first-child::after { width: 64px; }
-html #strategy-list > div > p:nth-child(2) { font-size: 14.5px !important; line-height: 1.65 !important; color: var(--cv-ink2) !important; margin: 0 0 1.2rem !important; }
-
-/* detalles: filas con icono circular */
-html #strategy-list > div .border-t, html:not(.dark) #strategy-list > div .border-t {
-  display: grid; gap: 14px; margin: auto 0 0 !important; padding: 1.15rem 0 0 !important; border-top: 1px solid var(--cv-line) !important;
-}
-html #strategy-list > div .border-t > p, html #strategy-list > div .border-t > p:nth-child(1), html #strategy-list > div .border-t > p:nth-child(2),
-html:not(.dark) #strategy-list > div .border-t > p:nth-child(1), html:not(.dark) #strategy-list > div .border-t > p:nth-child(2) {
-  position: relative; display: block; margin: 0 !important; padding: 0 0 0 40px !important; text-indent: 0; min-height: 28px;
-  background: none !important; border: 0 !important; border-radius: 0;
+/* filas de detalle con icono circular */
+html.cv-acc #strategy-list.cv-acc .border-t > p, html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(1), html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(2) {
+  position: relative; display: block; margin: 0 !important; padding: 0 0 0 40px !important; min-height: 28px; background: none !important; border: 0 !important; border-radius: 0;
   font-size: 12.5px !important; line-height: 1.55 !important; color: var(--cv-ink2) !important;
 }
-html #strategy-list > div .border-t > p::before {
-  position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; text-indent: 0;
-  display: flex; align-items: center; justify-content: center; font: 700 13px/1 'Space Grotesk', sans-serif;
+html.cv-acc #strategy-list.cv-acc .border-t > p::before {
+  position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 700 13px/1 'Space Grotesk', sans-serif;
 }
-html #strategy-list > div .border-t > p:nth-child(1)::before { content: '!'; color: #f43f5e; background: rgba(244,63,94,.12); box-shadow: inset 0 0 0 1px rgba(244,63,94,.35); }
-html #strategy-list > div .border-t > p:nth-child(2)::before { content: '\25C6'; font-size: 11px; color: #10b981; background: rgba(16,185,129,.12); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
-html #strategy-list > div .border-t > p > span:first-child { display: inline; width: auto; font-size: 10.5px; letter-spacing: .08em; white-space: normal; }
-html #strategy-list > div .border-t > p > span:first-child::after { content: ''; display: block; height: 4px; }
+html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(1)::before { content: '!'; color: #f43f5e; background: rgba(244,63,94,.12); box-shadow: inset 0 0 0 1px rgba(244,63,94,.35); }
+html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(2)::before { content: '\25C6'; font-size: 11px; color: #10b981; background: rgba(16,185,129,.12); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
+html.cv-acc #strategy-list.cv-acc .border-t > p > span:first-child { font-size: 10.5px; letter-spacing: .08em; }
 
-.is-mobile #strategy-list > div { padding: 4.6rem 1.25rem 1.25rem !important; }
-.is-mobile #strategy-list > div::before { font-size: 46px; left: 1.25rem; }
-.is-mobile #strategy-list > div::after { right: 1.1rem; }
-@media (prefers-reduced-motion: reduce) { html #strategy-list > div:hover { animation: none !important; } }
+/* ---------------- ESCRITORIO: consola de dos paneles ---------------- */
+@media (min-width: 1280px) {
+  html.cv-acc #strategy-list.cv-acc {
+    --stg-l: calc(14px + 300px + 1.6rem + 2.4rem);
+    display: grid !important; grid-template-columns: 300px minmax(0, 1fr) !important; grid-template-rows: repeat(var(--cv-n, 10), auto) !important;
+    align-content: start; column-gap: 1.6rem; row-gap: 6px !important; padding: 14px; min-height: 580px; overflow: hidden; border-radius: 26px;
+    border: 1px solid var(--cv-line2); box-shadow: var(--cv-shadow-lg);
+    background:
+      linear-gradient(90deg, transparent calc(14px + 300px + .8rem), var(--cv-line2) calc(14px + 300px + .8rem), var(--cv-line2) calc(14px + 300px + .8rem + 1px), transparent calc(14px + 300px + .8rem + 1px)),
+      radial-gradient(900px 520px at 88% 0%, var(--cv-accent-soft), transparent 62%),
+      var(--cv-surface);
+  }
+  html.cv-acc #strategy-list.cv-acc::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(540px circle at var(--mx, 72%) var(--my, 26%), var(--cv-spot), transparent 62%);
+  }
+  html.cv-acc #strategy-list.cv-acc > div { display: contents !important; }
+  html.cv-acc #strategy-list.cv-acc > div > p:first-child { grid-column: 1; padding: .95rem 1.1rem !important; }
+  html.cv-acc #strategy-list.cv-acc > div > p:first-child::after { content: '\2192'; font: 400 17px/1 'Space Grotesk', sans-serif; opacity: 0; transform: translateX(-8px); }
+  html.cv-acc #strategy-list.cv-acc > div:hover > p:first-child::after { opacity: .6; transform: none; }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child::after { opacity: 1; transform: none; }
+
+  /* elementos del panel de detalle: apilados en el mismo sitio; solo el activo se ve */
+  html.cv-acc #strategy-list.cv-acc > div::before, html.cv-acc #strategy-list.cv-acc > div::after,
+  html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div > .border-t {
+    position: absolute; z-index: 1; opacity: 0; transform: translate3d(0, 16px, 0); pointer-events: none; max-height: none; overflow: visible;
+    transition: opacity .3s ease, transform .55s var(--cv-ease);
+  }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open::before, html.cv-acc #strategy-list.cv-acc > div.cv-open::after,
+  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { opacity: 1; transform: none; }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { pointer-events: auto; }
+
+  html.cv-acc #strategy-list.cv-acc > div::before, html.cv-acc:not(.dark) #strategy-list.cv-acc > div::before {
+    content: attr(data-n) !important; right: 1.8rem; top: .5rem; z-index: 0;
+    font: italic 600 116px/1 'Playfair Display', Georgia, serif; letter-spacing: -.03em; color: transparent; -webkit-text-stroke: 1px var(--cv-accent-line);
+  }
+  html.cv-acc #strategy-list.cv-acc > div::after, html.cv-acc #strategy-list.cv-acc > div:hover::after,
+  html.cv-acc:not(.dark) #strategy-list.cv-acc > div::after {
+    content: attr(data-t) !important; left: var(--stg-l); right: calc(2.4rem + 130px); top: 2.2rem; width: auto; height: auto; background: none; border-radius: 0; transition-property: opacity, transform;
+    font: italic 600 clamp(24px, 2.1vw, 33px)/1.15 'Playfair Display', Georgia, serif; color: var(--cv-ink);
+  }
+  html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2)::before {
+    content: ''; display: block; width: 52px; height: 2px; margin-bottom: 1.2rem; border-radius: 2px; background: linear-gradient(90deg, var(--cv-accent), #38bdf8);
+  }
+  html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2) {
+    left: var(--stg-l); right: 2.4rem; top: 8.3rem; max-width: 62ch; margin: 0 !important; padding: 0 !important;
+    font-size: 17px !important; line-height: 1.7 !important; color: var(--cv-ink2) !important;
+  }
+  html.cv-acc #strategy-list.cv-acc > div > .border-t {
+    left: var(--stg-l); right: 2.4rem; bottom: 1.8rem; display: grid; gap: 16px; margin: 0 !important; padding: 1.2rem 0 0 !important; border-top: 1px solid var(--cv-line2) !important;
+  }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) { padding: 0 !important; max-height: none; }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { padding: 1.2rem 0 0 !important; max-height: none; border-top: 1px solid var(--cv-line2) !important; }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open::after { transition-delay: .06s; }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) { transition-delay: .14s; }
+  html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { transition-delay: .24s; }
+}
 
 /* ---------- Movimiento reducido (solo cromo de interfaz; no toca D3/Leaflet/SVG) ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -5892,49 +5935,100 @@ async function exportZIP() {
         }
     </script>
 <script id="clovina-reveal">
-/* Aparición al desplazar: capa visual aditiva. No lee datos, no llama a funciones de la aplicación
-   y no modifica su código; solo añade/quita clases de presentación. Si falla, la página se ve igual. */
+/* Capa visual aditiva. No lee datos, no llama a funciones de la aplicación y no modifica su código:
+   solo añade/quita clases y atributos de presentación. Si algo falla, la página se ve y funciona igual. */
 (function () {
-  try {
-    if (!('IntersectionObserver' in window)) return;
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var root = document.documentElement;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        var el = e.target; io.unobserve(el);
-        el.classList.add('cv-in');
-        var d = parseInt(el.style.getPropertyValue('--cv-d'), 10) || 0;
-        setTimeout(function () {
-          el.style.removeProperty('--cv-d');
-          if (el.classList.contains('cv-reveal')) el.classList.remove('cv-reveal', 'cv-in');
-        }, d + 2000);
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+  var root = document.documentElement;
 
-    document.querySelectorAll('#export-container > section').forEach(function (sec) {
-      Array.prototype.forEach.call(sec.children, function (el, i) {
-        el.classList.add('cv-reveal');
-        el.style.setProperty('--cv-d', (i * 120) + 'ms');
-        io.observe(el);
+  /* 1) Aparición al desplazar */
+  try {
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if ('IntersectionObserver' in window && !calm) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var el = e.target; io.unobserve(el);
+          el.classList.add('cv-in');
+          var d = parseInt(el.style.getPropertyValue('--cv-d'), 10) || 0;
+          setTimeout(function () {
+            el.style.removeProperty('--cv-d');
+            el.classList.remove('cv-reveal', 'cv-in');
+          }, d + 2000);
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+      document.querySelectorAll('#export-container > section').forEach(function (sec) {
+        Array.prototype.forEach.call(sec.children, function (el, i) {
+          el.classList.add('cv-reveal');
+          el.style.setProperty('--cv-d', (i * 120) + 'ms');
+          io.observe(el);
+        });
+      });
+      root.classList.add('cv-ready');
+    }
+  } catch (err) { root.classList.remove('cv-ready'); }
+
+  /* 2) Consola interactiva de estrategias (selección, teclado y foco de luz) */
+  try {
+    var list = document.getElementById('strategy-list');
+    if (!list) return;
+    var wide = window.matchMedia ? window.matchMedia('(min-width: 1280px)') : { matches: false };
+    var cards = function () { return Array.prototype.slice.call(list.children); };
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    function openCard(card) {
+      cards().forEach(function (c) {
+        var on = c === card, t = c.firstElementChild;
+        c.classList.toggle('cv-open', on);
+        if (t) t.setAttribute('aria-expanded', on ? 'true' : 'false');
+      });
+    }
+    function prepare() {
+      var cs = cards();
+      list.style.setProperty('--cv-n', cs.length || 1);
+      cs.forEach(function (c, i) {
+        var t = c.firstElementChild;
+        if (!t || c.hasAttribute('data-n')) return;
+        c.setAttribute('data-n', pad(i + 1));
+        c.setAttribute('data-t', (t.textContent || '').replace(/\s+/g, ' ').trim());
+        t.setAttribute('tabindex', '0');
+        t.setAttribute('role', 'button');
+        t.setAttribute('aria-expanded', 'false');
+      });
+      list.classList.toggle('cv-acc', cs.length > 0);
+      root.classList.toggle('cv-acc', cs.length > 0);
+      if (cs.length && !cs.some(function (c) { return c.classList.contains('cv-open'); })) openCard(cs[0]);
+    }
+    function titleOf(e) {
+      var t = e.target && e.target.closest ? e.target.closest('#strategy-list > div > p:first-child') : null;
+      return t && list.contains(t) ? t : null;
+    }
+    list.addEventListener('click', function (e) {
+      var c = e.target.closest ? e.target.closest('#strategy-list > div') : null;
+      if (c && list.contains(c)) openCard(c);
+    });
+    list.addEventListener('pointerover', function (e) {
+      if (e.pointerType !== 'mouse' || !wide.matches) return;
+      var t = titleOf(e); if (t) openCard(t.parentElement);
+    });
+    list.addEventListener('keydown', function (e) {
+      var t = titleOf(e); if (!t) return;
+      var k = e.key, cs = cards(), i = cs.indexOf(t.parentElement);
+      if (k === 'Enter' || k === ' ') { e.preventDefault(); openCard(t.parentElement); return; }
+      var j = (k === 'ArrowDown' || k === 'ArrowRight') ? i + 1 : (k === 'ArrowUp' || k === 'ArrowLeft') ? i - 1 : -1;
+      if (j >= 0 && j < cs.length) { e.preventDefault(); cs[j].firstElementChild.focus(); if (wide.matches) openCard(cs[j]); }
+    });
+    var raf = 0;
+    list.addEventListener('pointermove', function (e) {
+      if (!wide.matches || raf) return;
+      raf = requestAnimationFrame(function () {
+        raf = 0;
+        var r = list.getBoundingClientRect();
+        list.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        list.style.setProperty('--my', (e.clientY - r.top) + 'px');
       });
     });
-
-    var list = document.getElementById('strategy-list');
-    if (list) {
-      var tag = function () {
-        Array.prototype.forEach.call(list.children, function (c, i) {
-          if (c.classList.contains('cv-card')) return;
-          c.classList.add('cv-card');
-          c.style.setProperty('--cv-d', ((i % 3) * 120) + 'ms');
-          io.observe(c);
-        });
-      };
-      new MutationObserver(tag).observe(list, { childList: true });
-      tag();
-    }
-    root.classList.add('cv-ready');
-  } catch (err) { document.documentElement.classList.remove('cv-ready'); }
+    new MutationObserver(prepare).observe(list, { childList: true });
+    prepare();
+  } catch (err) { /* sin consola: se ven las tarjetas normales */ }
 })();
 </script>
 </body>
