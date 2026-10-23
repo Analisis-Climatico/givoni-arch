@@ -2,7 +2,7 @@
 <html lang="es" class="dark">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>CLÓVINA — Estudio Solar 3D V9 · V6</title>
+<title>CLÓVINA — Análisis solar y ventilación 3D V58</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--bg:#071324;--panel:rgba(14,31,53,.78);--panel2:rgba(26,48,75,.84);--border:rgba(129,175,210,.22);--text:#edf7ff;--muted:#98aec7;--cyan:#38d8ff;--gold:#ffbb42;--green:#39e7c1;--blue:#57afff}
@@ -179,7 +179,7 @@ body.light{--bg:#e9f4ff;--panel:rgba(234,247,255,.87);--panel2:rgba(217,236,249,
 <header class="top"><div class="brand"><img class="brand-image" src="Tipo1.png" alt="Isotipo CLÓVINA" onerror="this.style.display='none'"><div><img class="brand-wordmark" src="Tipo3.png" alt="CLÓVINA" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><strong class="brand-fallback" style="display:none">CLÓVINA</strong><small>Análisis solar y ventilación 3D</small></div></div><div class="top-fields"><div class="field location glass" id="locationField"><label for="city">Ubicación / búsqueda · seleccionar del mapa</label><div class="location-row"><input id="city" value="Guayaquil, Ecuador" autocomplete="off" placeholder="Ciudad, dirección o lugar"><button type="button" id="mapToggle" title="Seleccionar lugar en mapa mundial">◉ Mapa</button></div><div id="suggestions" class="suggestions" hidden></div></div><button class="iconbtn" id="search" title="Buscar coordenadas">⌕</button><div class="field glass"><label for="date">Fecha</label><input id="date" type="date" value="2026-10-15"></div><div class="field glass"><label for="hour">Hora local</label><input id="hour" type="time" value="12:00"></div><div class="field glass" style="max-width:105px"><label for="north">Norte (°)</label><input type="number" id="north" min="0" max="359" step="1" value="0"></div><div class="field glass" style="max-width:120px"><label for="latitude">Latitud</label><input id="latitude" type="number" step="any" value="-2.17"></div><div class="field glass" style="max-width:120px"><label for="longitude">Longitud</label><input id="longitude" type="number" step="any" value="-79.92"></div><div class="field glass" style="max-width:94px"><label for="utcOffset">UTC ± horas</label><input id="utcOffset" type="number" min="-12" max="14" step="0.5" value="-5" title="Ajusta zona horaria local del lugar seleccionado"></div></div><div class="top-actions"><button class="iconbtn" id="theme" title="Modo claro / oscuro">☀</button><button class="iconbtn" id="loadbtn" title="Importar modelo 3D">⇧</button><input id="file" type="file" accept=".ifc,.glb,.gltf,.stl,.obj" hidden></div></header>
 <div id="mapOverlay" class="map-overlay" hidden><div class="map-head"><b>Seleccionar ubicación en el mapa</b><button id="mapClose" class="smallbtn">✕ Cerrar</button></div><div id="worldMap"></div><div id="mapError" class="map-error" hidden></div><p>Haz clic en cualquier punto del mapa para usar sus coordenadas o selecciona una sugerencia de búsqueda.</p></div><div class="workspace"><section class="viewport glass" id="viewport"><div id="scene"></div><div class="mode-trigger" id="modeTrigger"><nav class="modebar" aria-label="Modo de estudio"><button class="active" data-mode="solar">☀ &nbsp; Recorrido solar</button><button data-mode="interior">⌂ &nbsp; Sol interior</button><button data-mode="radiation">▥ &nbsp; Sol en fachadas</button><button data-mode="wind">≈ &nbsp; Ventilación natural</button></nav></div><div class="tools"><button class="tool active" id="select" title="Seleccionar elemento">↖</button><button class="tool" id="fit" title="Centrar modelo">⬡</button><button class="tool" id="tree" title="Mostrar / ocultar vegetación">♧</button><button class="tool" id="plant" title="Añadir árbol o arbusto: elige tipo y coloca sobre el terreno">✚🌳</button><select id="plantType" title="Tipo de vegetación" aria-label="Tipo de vegetación"><option value="tree">🌳 Árbol</option><option value="shrub">🌿 Arbusto</option></select></div><div class="compass" title="Arrastra la brújula para orientar el norte geográfico del proyecto"><span class="cardinal n">N</span><span class="cardinal s">S</span><span class="cardinal e">E</span><span class="cardinal o">O</span><div class="needle" id="needle">▲</div><span class="compass-label">Ajustar norte</span></div><div class="viewer-utilities glass" id="viewerUtilities"><div class="viewer-advanced"><div class="field glass" style="max-width:150px"><label for="upAxis">Eje IFC</label><select id="upAxis" title="Corrige la orientación sin reimportar"><option value="z">Z arriba (IFC)</option><option value="y">Y arriba</option><option value="minusz">Z invertido</option></select></div><button class="smallbtn" id="snapGround" title="Alinear la base geométrica con el terreno">↓ Apoyar</button><div class="field glass" style="max-width:120px"><label for="elevationOffset">Altura (m)</label><input id="elevationOffset" type="number" value="0" step="0.1" title="Ajuste de altura respecto al terreno"></div></div><button id="viewerOrient" type="button">⟳ Girar</button><label title="Desactiva sombras de elementos IFC no clasificados para diagnosticar sombras rectangulares"><input type="checkbox" id="auxShadow" checked> Sombras extra</label></div><div id="sunPresets" class="sun-presets"><select id="sunEvent" title="Fechas solares de referencia"><option value="day">Día seleccionado</option><option value="march">Equinoccio de marzo</option><option value="june">Solsticio de junio</option><option value="september">Equinoccio de septiembre</option><option value="december">Solsticio de diciembre</option></select><label><input id="sunPathVisible" type="checkbox" checked> Trayectoria solar y horas</label></div><div id="windPanel" class="wind-panel glass" hidden><div class="wind-panel-title">≈ Ventilación natural <span>Flujos animados · datos reales o vista ilustrativa identificada</span></div><div class="wind-line"><label>Dirección meteorológica (desde °) <input id="windDirection" type="number" min="0" max="359" value="" placeholder="Sin datos" readonly></label><label>Velocidad exterior (m/s) <input id="windSpeed" type="number" min="0" max="40" value="" placeholder="Sin datos" readonly></label></div><div class="wind-note" id="windSource">El viento se obtiene automáticamente según ubicación, fecha y hora.</div><div class="wind-line"><label><input id="windTransparent" type="checkbox" checked> Ver muros translúcidos</label><label><input id="windAnimate" type="checkbox" checked> Animar corrientes de aire</label></div><div class="wind-note" id="windNote">Se necesita cargar un modelo para detectar aberturas.</div></div><div id="visualLegend" class="visual-legend">Sombras 3D · trayectoria solar</div><button type="button" id="assignFloor" class="assign-floor" title="Selecciona un elemento 3D que sea un piso y pulsa aquí">▦ Definir piso interior</button><div class="viewer-hint">Arrastra el modelo para orbitar · Rueda para acercar · Pulsa la brújula para ajustar el norte</div><div class="viewbuttons"><button class="active" data-view="perspective">Perspectiva</button><button data-view="top">Planta</button><button data-view="front">Alzado</button></div><div class="floatnote" id="notification">Modelo de demostración · Arrastra para orbitar · Rueda para acercar</div><div class="timeline"><button class="iconbtn" id="play" title="Reproducir día">▶</button><span style="font-size:11px;color:#9db6cb">06:00</span><input type="range" id="slider" min="0" max="1439" step="10" value="720" aria-label="Hora del análisis"><span style="font-size:11px;color:#9db6cb">23:59</span><span class="timeval" id="clocklabel">12:00</span></div></section>
 <aside class="results glass"><div class="result-head">▥ &nbsp; RESULTADOS <button id="weather" class="iconbtn" title="Consultar clima histórico" style="font-size:13px">↻</button></div><div id="metricList"></div><div class="chart"><h3 id="chartTitle">Análisis del día</h3><svg id="graph" viewBox="0 0 300 135" role="img" aria-label="Gráfica ilustrativa o de datos disponibles"></svg></div><div class="result-foot" id="info">Las cifras térmicas necesitan datos meteorológicos y un modelo de simulación. No se inventan resultados.</div></aside></div>
-<section class="materials glass"><div class="materials-top"><div class="section-title">▤ &nbsp; MATERIALES DEL PROYECTO <button class="smallbtn" id="fold">⌄</button></div><span class="materials-help">Selecciona un elemento y edita aquí su composición y datos térmicos</span><span class="status" id="selection">Selecciona un objeto 3D para editar su material</span></div><div id="materialsContent"><div class="matgrid" id="matgrid"></div><div class="optional-row"><label for="addOptional">Componentes opcionales</label><select id="addOptional"><option value="">+ Añadir celosía o envolvente…</option><option value="Celosía">Celosía</option><option value="Envolvente">Envolvente</option></select><span id="optionalStatus" class="status"></span><div id="componentInventory" class="status" style="flex-basis:100%"></div></div></div></section><footer class="footer"><span>CLÓVINA · Sol y sombras geométricas; mapas visuales de radiación/temperatura NO equivalen a cálculos energéticos.</span><span id="fileStatus">V44 · IFC/GLB/GLTF/STL/OBJ</span></footer></div>
+<section class="materials glass"><div class="materials-top"><div class="section-title">▤ &nbsp; MATERIALES DEL PROYECTO <button class="smallbtn" id="fold">⌄</button></div><span class="materials-help">Selecciona un elemento y edita aquí su composición y datos térmicos</span><span class="status" id="selection">Selecciona un objeto 3D para editar su material</span></div><div id="materialsContent"><div class="matgrid" id="matgrid"></div><div class="optional-row"><label for="addOptional">Componentes opcionales</label><select id="addOptional"><option value="">+ Añadir celosía o envolvente…</option><option value="Celosía">Celosía</option><option value="Envolvente">Envolvente</option></select><span id="optionalStatus" class="status"></span><div id="componentInventory" class="status" style="flex-basis:100%"></div></div></div></section><footer class="footer"><span>CLÓVINA · Sol y sombras geométricas; mapas visuales de radiación/temperatura NO equivalen a cálculos energéticos.</span><span id="fileStatus">V58 · IFC/GLB/GLTF/STL/OBJ</span></footer></div>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -203,7 +203,7 @@ function makeDemo(){rootWrap.clear();const building=new THREE.Group();building.n
 function fitCamera(){const bounds=new THREE.Box3().setFromObject(rootWrap);if(bounds.isEmpty())return;const size=bounds.getSize(new THREE.Vector3());const center=bounds.getCenter(new THREE.Vector3());const d=Math.max(size.length()*.95,16);camera.position.copy(center).add(new THREE.Vector3(d*.8,d*.64,d));controls.target.copy(center);controls.update()}
 function resize(){const w=host.clientWidth,h=host.clientHeight;if(w<2||h<2)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}new ResizeObserver(resize).observe(host);resize();
 function notify(message){$('notification').textContent=message}
-function applyProjectRotation(){const total=THREE.MathUtils.degToRad(state.modelYaw-state.heading);rootWrap.rotation.y=total;vegetation.rotation.y=total;}
+function applyProjectRotation(){const total=THREE.MathUtils.degToRad(state.modelYaw-state.heading);rootWrap.rotation.y=total;}
 function rotateNorth(){state.heading=((Number($('north').value)||0)%360+360)%360;applyProjectRotation();settleModel();$('needle').style.transform=`rotate(${state.heading}deg)`;updateSun();if(state.mode==='wind')setupWindView()}
 $('north').addEventListener('input',rotateNorth);let compassActive=false;const compass=$('viewport').querySelector('.compass');function angleFromPointer(e){const r=compass.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);$('north').value=Math.round((Math.atan2(x,-y)*180/Math.PI+360)%360);rotateNorth()}compass.addEventListener('pointerdown',e=>{compassActive=true;compass.setPointerCapture(e.pointerId);angleFromPointer(e)});compass.addEventListener('pointermove',e=>{if(compassActive)angleFromPointer(e)});compass.addEventListener('pointerup',()=>compassActive=false);compass.addEventListener('pointercancel',()=>compassActive=false);
 // NOAA simplified solar position, azimuth clockwise from true north.
@@ -539,7 +539,7 @@ function thumbForMaterial(type,name){
  let art='';
  if(/vidrio low-e/.test(n))art=`<rect x="10" y="12" width="52" height="54" rx="2" fill="#1a455c" stroke="#dcf8ff" stroke-width="3"/><rect x="16" y="18" width="40" height="42" fill="#74d3ea" opacity=".7"/><path d="M18 22l36 35M18 50l18-18" stroke="#ffffff" stroke-width="3" opacity=".9"/><path d="M30 18v42M16 39h40" stroke="#d7fbff" stroke-width="2" opacity=".85"/>`;
  else if(/vidrio doble/.test(n))art=`<rect x="11" y="12" width="50" height="54" rx="2" fill="#244a5c" stroke="#e6fbff" stroke-width="3"/><rect x="17" y="18" width="34" height="42" fill="#62c7df" opacity=".65"/><rect x="24" y="18" width="30" height="42" fill="#93ebff" opacity=".35"/><path d="M33 18v42M17 39h37" stroke="#e8fdff" stroke-width="2"/>`;
- else if(/vidrio|cristal|policarbonato/.test(n))art=`<rect x="12" y="13" width="50" height="52" rx="2" fill="#1c4d66" stroke="#d8f4ff" stroke-width="3"/><rect x="18" y="19" width="38" height="40" fill="#57d0ec" opacity=".7"/><path d="M18 49L45 22M28 59L55 32" stroke="#f4feff" stroke-width="3" opacity=".9"/><path d="M37 19V59M18 39H56" stroke="#dbfbff" stroke-width="2" opacity=".75"/>`;
+ else if(/vidrio|cristal|policarbonato/.test(n))art=`<rect x="12" y="13" width="50" height="52" rx="2" fill="#1c4d66" stroke="#d8f4ff" stroke-width="3"/><rect x="18" y="19" width="38" height="40" fill="#57d0ec" opacity=".7"/><path d="M18 49L45 22M28 59L55 32" stroke="#f4feff" stroke-width="3" opacity=".9"/><path d="M37 19V62M18 39H56" stroke="#dbfbff" stroke-width="2" opacity=".75"/>`;
  else if(/ladrillo/.test(n))art=`<rect x="10" y="17" width="55" height="47" rx="3" fill="#b45b3f"/><g stroke="#f6cfaf" stroke-width="2.3"><path d="M10 29H65M10 42H65M10 55H65"/><path d="M22 17V29M40 17V29M55 29V42M32 29V42M18 42V55M48 42V55"/></g>`;
  else if(/bloque de hormig|bloque/.test(n))art=`<rect x="9" y="18" width="56" height="46" rx="4" fill="#9ea7ad"/><g stroke="#dfe6ea" stroke-width="2.1"><rect x="15" y="24" width="18" height="13" rx="1" fill="#bfc7cc"/><rect x="40" y="24" width="18" height="13" rx="1" fill="#bfc7cc"/><rect x="28" y="43" width="18" height="13" rx="1" fill="#c8d0d4"/></g>`;
  else if(/madera|bambú|bambu/.test(n))art=`<rect x="13" y="12" width="48" height="56" rx="2" fill="#aa7546" stroke="#f1d2a1" stroke-width="3"/><path d="M22 14V66M33 14V66M45 14V66M55 14V66" stroke="#704526" stroke-width="2.2"/><path d="M20 29q7-5 10 1m7 12q8-5 12 3" fill="none" stroke="#e3b884" stroke-width="2"/>`;
@@ -549,7 +549,7 @@ function thumbForMaterial(type,name){
  else if(/aluminio compuesto|lámina de aluminio|aluminio/.test(n))art=`<path d="M7 28L39 13L68 28L36 44Z" fill="#eef4f8"/><path d="M7 28V56L36 70V44Z" fill="#8ea5b4"/><path d="M36 44L68 28V55L36 70Z" fill="#c1d0d8"/><path d="M14 35H58M18 45H62M22 55H52" stroke="#6f8795" stroke-width="2.3"/>`;
  else if(/pir|aisla|sándwich|sandwich|panel/.test(n))art=`<path d="M7 24L42 9L68 24L33 40Z" fill="#e2eff6"/><path d="M7 34L33 49L68 33V44L33 61L7 45Z" fill="#efd785"/><path d="M7 47L33 62L68 45V54L33 72L7 56Z" fill="#8daab8"/><path d="M7 27L33 43L68 27" fill="none" stroke="#6d93ad" stroke-width="3"/>`;
  else if(/fibrocemento/.test(n))art=`<rect x="10" y="15" width="55" height="49" rx="4" fill="#b4bfc6"/><g stroke="#e1e7ea" stroke-width="2"><path d="M14 27H61M14 39H61M14 51H61"/><path d="M20 15v49M34 15v49M48 15v49" opacity=".38"/></g>`;
- else if(/hormigón|hormigon|concreto|cemento/.test(n))art=`<path d="M6 28L40 12L67 25L34 44Z" fill="#e0e3e5"/><path d="M6 28V59L34 74V44Z" fill="#9ba8b0"/><path d="M34 44L67 25V56L34 74Z" fill="#b8c4c9"/><g fill="#667682" opacity=".65"><circle cx="20" cy="45" r="1.4"/><circle cx="28" cy="60" r="1.2"/><circle cx="50" cy="49" r="1.5"/><circle cx="49" cy="31" r="1"/></g>`;
+ else if(/hormigón|hormigon|concreto|cemento/.test(n))art=`<path d="M6 28L40 12L67 25L34 44Z" fill="#e0e3e5"/><path d="M6 28V62L34 74V44Z" fill="#9ba8b0"/><path d="M34 44L67 25V56L34 74Z" fill="#b8c4c9"/><g fill="#667682" opacity=".65"><circle cx="20" cy="45" r="1.4"/><circle cx="28" cy="60" r="1.2"/><circle cx="50" cy="49" r="1.5"/><circle cx="49" cy="31" r="1"/></g>`;
  else art=thumb(type).replace(/<svg[^>]*>|<\/svg>/g,'');
  return `<div class="material-preview mat-sculpt" style="background:linear-gradient(150deg,#20344b,#102135)"><svg viewBox="0 0 75 80" aria-label="Representación ilustrativa: ${name}" role="img">${art}</svg><span class="material-preview-name">${name||type}</span></div>`;
 }
@@ -567,7 +567,7 @@ async function loadIFC(file){
   const api=new WebIFC.IfcAPI();
   if(typeof api.SetWasmPath==='function')api.SetWasmPath(WEB_IFC_URL);
   await api.Init();
-  const rawBuffer=await file.arrayBuffer();const stepMetadata=decodeIFCText(new TextDecoder('utf-8').decode(rawBuffer));
+  const rawBuffer=await file.arrayBuffer();const ifcText=new TextDecoder('utf-8').decode(rawBuffer);const stepMetadata=decodeIFCText(ifcText);const openingLinks=readIFCOpeningLinks(ifcText);
   const modelID=api.OpenModel(new Uint8Array(rawBuffer));
   const group=new THREE.Group();group.name=file.name;// El eje se configura en el selector del usuario; se rota el grupo después de crear la geometría
   const typeMap=new Map();
@@ -576,7 +576,7 @@ async function loadIFC(file){
   }
   const ifcToCategory=(name)=>{
     name=String(name||'').toUpperCase();
-    if(name.includes('WINDOW'))return 'ventana';
+    if(name.includes('WINDOW'))return 'ventana';if(name.includes('AIRTERMINAL')||name.includes('DISTRIBUTIONPORT'))return 'rejilla';
     if(name.includes('DOOR'))return 'puerta';
     if(name.includes('ROOF'))return 'cubierta';if(name.includes('SLAB'))return 'forjado';if(name.includes('COVERING'))return 'sin clasificar';
     if(name.includes('WALL'))return 'muro';
@@ -618,18 +618,36 @@ async function loadIFC(file){
         mesh.applyMatrix4(new THREE.Matrix4().fromArray(placed.flatTransformation));
         mesh.name=String(label);
         const predefined=String(line?.PredefinedType?.value||line?.PredefinedType||'').toUpperCase();
-        const elementCat=typeName.toUpperCase().includes('SLAB')&&(predefined.includes('ROOF')||/cubierta|techo|roof/i.test(String(label)))?'cubierta':ifcToCategory(typeName);
+        let elementCat=typeName.toUpperCase().includes('SLAB')&&(predefined.includes('ROOF')||/cubierta|techo|roof/i.test(String(label)))?'cubierta':ifcToCategory(typeName);if(elementCat==='sin clasificar'&&/rejilla|ventilaci[oó]n|louver|grille|vent\b/i.test(String(label)))elementCat='rejilla';
         mesh.userData={category:elementCat,ifcType:typeName,ifcPredefinedType:predefined,
           expressID:flatMesh.expressID,globalId:line?.GlobalId?.value||null,
-          description:line?.Description?.value||null,ifcMaterials:stepMetadata.get(flatMesh.expressID)||null,origin:'IFC'};
+          description:line?.Description?.value||null,ifcMaterials:stepMetadata.get(flatMesh.expressID)||null,openingLink:openingLinks.get(flatMesh.expressID)||null,origin:'IFC'};
         group.add(mesh);count++;
       }
     });
   }finally{api.CloseModel(modelID)}
   if(count===0)throw Error('El archivo IFC no contiene geometría que este lector pueda mostrar. Revisa la exportación IFC.');
-  notify(`IFC importado: ${count} piezas 3D. Categorías BIM detectadas según la exportación.`);
+  group.userData.openingLinkCount=openingLinks.size;notify(`IFC importado: ${count} piezas 3D. Relaciones muro-hueco identificadas: ${openingLinks.size}.`);
   return group;
 }
+
+// IFC2x3/IFC4: IfcRelVoidsElement (wall -> opening) and IfcRelFillsElement
+// (opening -> window/door). These references are metadata, not airtightness proof.
+function readIFCOpeningLinks(step){
+ const voids=new Map(),links=new Map();
+ for(const m of step.matchAll(/#\d+\s*=\s*IFCRELVOIDSELEMENT\s*\(([^;]*?)\)\s*;/gi)){
+   const ids=[...m[1].matchAll(/#(\d+)/g)].map(x=>Number(x[1]));
+   if(ids.length>=2)voids.set(ids[ids.length-1],ids[ids.length-2]);
+ }
+ for(const m of step.matchAll(/#\d+\s*=\s*IFCRELFILLSELEMENT\s*\(([^;]*?)\)\s*;/gi)){
+   const ids=[...m[1].matchAll(/#(\d+)/g)].map(x=>Number(x[1]));
+   if(ids.length<2)continue;
+   const opening=ids[ids.length-2],element=ids[ids.length-1];
+   links.set(element,{openingID:opening,hostWallID:voids.get(opening)||null,verifiedHost:voids.has(opening)});
+ }
+ return links;
+}
+
 function decodeIFCText(text){
  const lines=new Map();for(const m of text.matchAll(/#(\d+)=(IFC[A-Z0-9_]+)\(([^;]*)\);/g))lines.set(Number(m[1]),{type:m[2],body:m[3]});
  const materialNames=new Map(),assign=new Map();
@@ -654,15 +672,47 @@ function decodeIFCText(text){
  return assign;
 }
 function applyIFCAxis(object){if(!object)return;const mode=$('upAxis').value;object.rotation.set(mode==='z'?-Math.PI/2:mode==='minusz'?Math.PI/2:0,0,0)}
+// V62: inferir el eje vertical a partir de forjados, sin modificar vértices IFC.
+// En modelos WebIFC habituales el eje ya es Y; rotar -90 grados aquí los vuelca.
+function autoDetectIFCAxis(object){
+ const modes=['y','z','minusz'];let best='y',bestScore=-Infinity;
+ const slabs=[];const walls=[];
+ object.traverse(o=>{if(!o.isMesh)return;const cat=categoryOf(o);if(cat==='forjado')slabs.push(o);else if(cat==='muro')walls.push(o)});
+ for(const mode of modes){
+   $('upAxis').value=mode;applyIFCAxis(object);object.updateWorldMatrix(true,true);
+   let score=0,considered=0;
+   for(const o of slabs){const b=new THREE.Box3().setFromObject(o),d=b.getSize(new THREE.Vector3());
+     if(b.isEmpty())continue;
+     const horizontal=Math.min(d.x,d.z),vertical=d.y;
+     if(horizontal>.15){score+=Math.log(1+horizontal/(vertical+.05))*3;considered++;}
+   }
+   for(const o of walls.slice(0,60)){const d=new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3());
+     if(Math.max(d.x,d.z)>.2){score+=Math.min(2,Math.log(1+d.y/(Math.min(d.x,d.z)+.15)))*.15;considered++;}
+   }
+   if(!considered){const d=new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3());score=-Math.max(0,d.y-Math.max(d.x,d.z));}
+   if(score>bestScore){bestScore=score;best=mode;}
+ }
+ $('upAxis').value=best;applyIFCAxis(object);object.updateWorldMatrix(true,true);
+ object.userData.autoAxis=best;
+ return best;
+} 
 function architecturalBounds(){
- const slabCandidates=[],structural=[];
- state.root?.traverse(o=>{if(!o.isMesh)return;let cat=categoryOf(o);if(!['forjado','muro','cubierta','puerta','ventana'].includes(cat))return;
-  o.updateWorldMatrix(true,false);const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;
-  if(cat==='forjado'||o.userData.v8Floor)slabCandidates.push({o,bb});else structural.push(bb);
+ const slabs=[],structural=[];
+ state.root?.traverse(o=>{
+   if(!o.isMesh)return;
+   const cat=categoryOf(o),name=(o.name||'').toLowerCase();
+   if(!['forjado','muro','cubierta','puerta','ventana'].includes(cat)&&!o.userData.v8Floor)return;
+   const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;
+   if(cat==='forjado'||o.userData.v8Floor){
+     const size=bb.getSize(new THREE.Vector3());
+     if(size.x>.5&&size.z>.5&&size.y<Math.max(1.2,Math.min(size.x,size.z)*.6))
+       slabs.push({bb,o,rank:o.userData.v8Floor?0:/suelo|piso|floor|ground|planta baja|nivel 0/i.test(name)?1:2});
+   }else structural.push(bb);
  });
- // Usar primero el forjado más bajo próximo al nivel arquitectónico. El terreno no debe depender de muebles ni árboles.
- const opts=slabCandidates.filter(v=>{const sz=v.bb.getSize(new THREE.Vector3());return sz.x>.5&&sz.z>.5&&sz.y<Math.max(1,Math.min(sz.x,sz.z)*.6)});
- if(opts.length){opts.sort((a,b)=>a.bb.min.y-b.bb.min.y);return opts[0].bb.clone()}
+ // Choose the lowest real IFC slab, favor explicitly named floors at that elevation.
+ if(slabs.length){const min=Math.min(...slabs.map(v=>v.bb.min.y));
+   const near=slabs.filter(v=>v.bb.min.y<=min+.45).sort((a,b)=>a.rank-b.rank||a.bb.min.y-b.bb.min.y);
+   return near[0].bb.clone();}
  const b=new THREE.Box3();for(const bb of structural)b.union(bb);
  if(b.isEmpty()&&state.root)b.setFromObject(state.root);return b;
 }
@@ -677,9 +727,9 @@ function settleModel(){
  return new THREE.Box3().setFromObject(state.root).min.y;
 }
 $('auxShadow').onchange=()=>{state.root?.traverse(o=>{if(o.isMesh){const c=categoryOf(o);if(c==='sin clasificar'||c==='otro')o.castShadow=$('auxShadow').checked;}});notify('Sombras de elementos sin clasificar '+($('auxShadow').checked?'activadas':'desactivadas'));};$('viewerOrient').onclick=()=>{state.modelYaw=((state.modelYaw||0)+90)%360;applyProjectRotation();settleModel();updateSun();if(state.mode==='wind')setupWindView();notify('Modelo girado 90° sin alterar el norte ni la dirección meteorológica.')};$('assignFloor').onclick=()=>{if(!state.selected){notify('Primero haz clic sobre el suelo del edificio para seleccionarlo.');return}state.root?.traverse(o=>{if(o.isMesh)o.userData.v8Floor=false});state.selected.userData.v8Floor=true;notify('Piso interior asignado. Abre Sol interior y mueve la hora para estudiar luz directa.');if(state.mode==='interior')scheduleInteriorMap()};$('snapGround').onclick=()=>{$('elevationOffset').value=0;settleModel();if(state.mode==='wind')setupWindView();notify('Apoyo recalculado tomando el forjado arquitectónico inferior como referencia. Verifica si el diseño tiene altura palafítica.')};$('elevationOffset').addEventListener('input',()=>{settleModel();scheduleInteriorMap();if(state.mode==='wind')setupWindView()});
-function centerImported(object){object.position.set(0,0,0);object.updateMatrixWorld(true);let b=new THREE.Box3().setFromObject(object);if(b.isEmpty())return;const c=b.getCenter(new THREE.Vector3());object.position.x-=c.x;object.position.z-=c.z;object.position.y-=b.min.y;object.updateMatrixWorld(true)}
-$('upAxis').addEventListener('change',()=>{if(state.root?.userData?.importIFC){applyIFCAxis(state.root);centerImported(state.root);fitCamera();refreshInventory();updateSun();if(state.mode==='wind')setupWindView();notify('Eje vertical corregido: '+$('upAxis').selectedOptions[0].textContent)}else notify('El ajuste de ejes se aplica a modelos IFC importados')});
-async function importModel(file){if(!file)return;const ext=file.name.split('.').pop().toLowerCase();notify('Importando '+file.name+'…');try{const url=URL.createObjectURL(file);let object;if(ext==='ifc'){object=await loadIFC(file)}else if(ext==='glb'||ext==='gltf'){const gltf=await new GLTFLoader().loadAsync(url);object=gltf.scene}else if(ext==='stl'){const geometry=new STLLoader().parse(await file.arrayBuffer());geometry.computeVertexNormals();object=new THREE.Mesh(geometry,concrete);object.name=file.name;object.userData.category='geometria'}else if(ext==='obj'){object=new OBJLoader().parse(await file.text())}else throw Error('Formato no admitido');URL.revokeObjectURL(url);clearInteriorMap();rootWrap.clear();rootWrap.position.set(0,0,0);state.vegetationMeshes=[];rootWrap.add(object);applyProjectRotation();object.userData.importIFC=ext==='ifc';if(ext==='ifc')applyIFCAxis(object);object.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.userData.category=o.userData.category||categoryOf(o)||'sin clasificar';if(categoryOf(o)==='vegetacion')state.vegetationMeshes.push(o)}});centerImported(object);const bounds=new THREE.Box3().setFromObject(object);const size=bounds.getSize(new THREE.Vector3());const max=Math.max(size.x,size.y,size.z);if(max>80||max<.4){const scale=18/max;object.scale.multiplyScalar(scale);object.position.multiplyScalar(scale);settleModel();notify('Modelo escalado para visualización. Confirma las unidades originales.')}state.root=object;rootWrap.updateMatrixWorld(true);settleModel();{const b=new THREE.Box3().setFromObject(object);const sz=b.getSize(new THREE.Vector3());const r=Math.max(14,Math.min(85,Math.max(sz.x,sz.z)*1.5));groundCompass.scale.setScalar(r/32)}state.selected=null;state.originalMaterials.clear();refreshSelection();fitCamera();renderMaterials();refreshInventory();detectWindPorts();applyVisualization();updateSun();$('fileStatus').textContent=file.name;notify(ext==='ifc'?'IFC cargado. Categorías BIM y capas de materiales asociadas: revisa las tarjetas y selecciona superficies.':'Modelo importado. STL y OBJ no identifican automáticamente ventanas y muros.')}catch(error){console.error(error);notify('No fue posible importar: '+error.message)}}$('file').addEventListener('change',e=>importModel(e.target.files[0]));
+function centerImported(object){object.position.set(0,0,0);object.updateMatrixWorld(true);let b=new THREE.Box3().setFromObject(object);if(b.isEmpty())return;const c=b.getCenter(new THREE.Vector3());object.position.x-=c.x;object.position.z-=c.z;object.updateMatrixWorld(true)}
+$('upAxis').addEventListener('change',()=>{if(state.root?.userData?.importIFC){applyIFCAxis(state.root);centerImported(state.root);settleModel();fitCamera();refreshInventory();updateSun();if(state.mode==='wind')setupWindView();notify('Eje vertical corregido: '+$('upAxis').selectedOptions[0].textContent)}else notify('El ajuste de ejes se aplica a modelos IFC importados')});
+async function importModel(file){if(!file)return;const ext=file.name.split('.').pop().toLowerCase();notify('Importando '+file.name+'…');try{const url=URL.createObjectURL(file);let object;if(ext==='ifc'){object=await loadIFC(file)}else if(ext==='glb'||ext==='gltf'){const gltf=await new GLTFLoader().loadAsync(url);object=gltf.scene}else if(ext==='stl'){const geometry=new STLLoader().parse(await file.arrayBuffer());geometry.computeVertexNormals();object=new THREE.Mesh(geometry,concrete);object.name=file.name;object.userData.category='geometria'}else if(ext==='obj'){object=new OBJLoader().parse(await file.text())}else throw Error('Formato no admitido');URL.revokeObjectURL(url);clearInteriorMap();rootWrap.clear();rootWrap.position.set(0,0,0);state.vegetationMeshes=[];rootWrap.add(object);applyProjectRotation();object.userData.importIFC=ext==='ifc';if(ext==='ifc')autoDetectIFCAxis(object);object.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.userData.category=o.userData.category||categoryOf(o)||'sin clasificar';if(categoryOf(o)==='vegetacion')state.vegetationMeshes.push(o)}});centerImported(object);const bounds=new THREE.Box3().setFromObject(object);const size=bounds.getSize(new THREE.Vector3());const max=Math.max(size.x,size.y,size.z);if(max>80||max<.4){const scale=18/max;object.scale.multiplyScalar(scale);object.position.multiplyScalar(scale);settleModel();notify('Modelo escalado para visualización. Confirma las unidades originales.')}state.root=object;rootWrap.updateMatrixWorld(true);settleModel();{const b=new THREE.Box3().setFromObject(object);const sz=b.getSize(new THREE.Vector3());const r=Math.max(14,Math.min(85,Math.max(sz.x,sz.z)*1.5));groundCompass.scale.setScalar(r/32)}state.selected=null;state.originalMaterials.clear();refreshSelection();fitCamera();renderMaterials();refreshInventory();detectWindPorts();try{applyVisualization();updateSun()}catch(visualError){console.error('Visualización sin afectar importación:',visualError);notify('IFC cargado; error de visualización: '+visualError.message)}$('fileStatus').textContent=file.name;notify(ext==='ifc'?'IFC cargado y apoyado automáticamente según el forjado inferior; si existen apoyos inferiores, se conserva su geometría. Consulta el diagnóstico de aberturas en Ventilación natural.':'Modelo importado. STL y OBJ no identifican automáticamente ventanas y muros.')}catch(error){console.error(error);notify('Error de carga o visualización: '+error.message);console.error('CLÓVINA detalle:',error.stack)}}$('file').addEventListener('change',e=>importModel(e.target.files[0]));
 function fmt(x,n=1){return Number.isFinite(x)?x.toFixed(n):'—'}
 function lineSpark(color){return `<svg class="spark" viewBox="0 0 120 40"><path d="M0 27 Q18 28 27 18 T55 20 T82 11 T120 22" fill="none" stroke="${color}" stroke-width="2.3"/><path d="M0 39H120" stroke="#36536d"/></svg>`}
 function metric(title,value,unit,icon,color,tint,edge,small){return `<div class="metric" style="--accent:${color};--tint:${tint};--edge:${edge}"><div class="metric-header"><span>${icon}</span>${title}</div><div class="metric-value">${value}<span style="font-size:.55em"> ${unit}</span></div><small>${small}</small>${(value==='—'?'':lineSpark(color))}</div>`}
@@ -755,6 +805,15 @@ async function searchPlaces(query){if(query.trim().length<3){suggestionBox.hidde
 $('city').addEventListener('input',()=>{clearTimeout(queryTimer);queryTimer=setTimeout(()=>searchPlaces($('city').value),500)});$('city').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchPlaces($('city').value)}});$('search').onclick=()=>searchPlaces($('city').value);document.addEventListener('pointerdown',e=>{if(!$('locationField').contains(e.target))suggestionBox.hidden=true});
 $('mapToggle').onclick=()=>{const overlay=$('mapOverlay');overlay.hidden=false;const err=$('mapError');err.hidden=true;if(typeof L==='undefined'){err.hidden=false;err.textContent='No se cargó Leaflet (revisa conexión/CDN). Puedes usar búsqueda o coordenadas manualmente.';return}try{if(!worldMap){worldMap=L.map('worldMap',{worldCopyJump:true,zoomControl:true}).setView([state.lat,state.lon],4);const layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(worldMap);layer.on('tileerror',()=>{err.hidden=false;err.textContent='No se han podido descargar los mosaicos del mapa. Comprueba conexión, bloqueadores o abre mediante Live Server.'});marker=L.marker([state.lat,state.lon]).addTo(worldMap);worldMap.on('click',ev=>{applyPlace({lat:ev.latlng.lat,lon:ev.latlng.lng,display_name:`Punto seleccionado: ${ev.latlng.lat.toFixed(5)}, ${ev.latlng.lng.toFixed(5)}`});overlay.hidden=true})}requestAnimationFrame(()=>{worldMap.invalidateSize(true);worldMap.setView([state.lat,state.lon],Math.max(worldMap.getZoom(),4))});setTimeout(()=>worldMap.invalidateSize(true),350)}catch(ex){err.hidden=false;err.textContent='Error al iniciar mapa: '+ex.message;console.error(ex)}};$('mapClose').onclick=()=>{$('mapOverlay').hidden=true};
 
+
+// V62: errores verificables en el diagnóstico (no bloquear los otros estudios).
+window.addEventListener('error',event=>{
+  if(state.mode==='wind' && $('windSource'))$('windSource').textContent='Error técnico: '+(event.message||'desconocido')+' · '+(event.filename||'')+':'+(event.lineno||'');
+});
+window.addEventListener('unhandledrejection',event=>{
+  if(state.mode==='wind' && $('windSource'))$('windSource').textContent='Error de operación: '+String(event.reason?.message||event.reason||'desconocido');
+});
+
 // V35 — filamentos animados de viento: exterior -> abertura -> interior -> abertura -> exterior.
 // Son trayectorias ilustrativas, no una solución CFD ni una medida de caudal interior.
 const windLines=new THREE.Group();scene.add(windLines);windLines.visible=false;
@@ -767,21 +826,21 @@ function detectWindPorts(){
  const raw=[],seen=new Set();
  state.root.traverse(o=>{
   if(!o.isMesh)return;
-  const cat=categoryOf(o);if(cat!=='ventana'&&cat!=='puerta')return;
+  const cat=categoryOf(o);if(!['ventana','puerta','rejilla'].includes(cat))return;
   const name=(o.name||'').toLowerCase();
   if(/marco|frame|mullion|montante|manija|tirador|jamb|sill|threshold/.test(name))return;
   const id=String(o.userData.expressID??o.uuid);
   if(seen.has(id))return;seen.add(id);
   const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;
   const size=bb.getSize(new THREE.Vector3());
-  if(size.y<.35||Math.max(size.x,size.z)<.3)return;
+  if(size.y<.18||Math.max(size.x,size.z)<.20)return;
   raw.push({id,o,cat,center:bb.getCenter(new THREE.Vector3()),size,bb});
  });
  // Agrupar componentes BIM que representen la misma abertura (vidrio, panel y marco).
  for(const p of raw){
   const prior=windPorts.find(q=>q.cat===p.cat&&q.center.distanceTo(p.center)<Math.max(.38,Math.min(p.size.x+p.size.z,.85))&&Math.abs(q.center.y-p.center.y)<.55);
   if(prior){if((p.size.x*p.size.y+p.size.z*p.size.y)>(prior.size.x*prior.size.y+prior.size.z*prior.size.y))Object.assign(prior,p);continue;}
-  windPorts.push({...p,open:true});
+  windPorts.push({...p,open:p.cat==='ventana'||p.cat==='rejilla',hostLink:p.o.userData.openingLink||null});
  }
  // Analizar fachadas en coordenadas LOCALES del edificio. Las AABB mundiales
  // aumentan de tamaño al girar 45/90 grados y confunden ventanas con tabiques.
@@ -816,7 +875,7 @@ function detectWindPorts(){
  for(const p of windPorts){
    const centerLocal=p.localCenter||toLocal(p.center);
    const distances=[Math.abs(centerLocal.x-lower.x),Math.abs(upper.x-centerLocal.x),Math.abs(centerLocal.z-lower.z),Math.abs(upper.z-centerLocal.z)];
-   const i=distances.indexOf(Math.min(...distances));
+   let i=distances.indexOf(Math.min(...distances));
    p.outward=directions[i].clone().transformDirection(rootWrap.matrixWorld).setY(0).normalize();
    // Geometrías de Revit pueden estar ligeramente remetidas dentro del muro.
    p.exterior=distances[i]<=tolerance+Math.min(.65,Math.max(p.localSize?.x||0,p.localSize?.z||0)*.28);
@@ -831,15 +890,64 @@ function detectWindPorts(){
        return yz&&flat<.42;
      });
      p.exterior=windowNearOuterWall;
+   // IFC host-hueco demostrado: el vidrio puede estar remetido en un marco grueso.
+   // No debemos eliminarlo porque no coincide con la caja extrema de los muros.
+   if(p.hostLink?.verifiedHost)p.exterior=true;
+   // Envolvente cerrada: para ventanas sin relación IFC, comprobar que son próximas
+   // a una cara EXTERIOR del conjunto de ventanas, no al límite de toda la estructura.
+   if(!p.exterior){
+     const peers=windPorts.filter(q=>q.cat==='ventana'||q.cat==='rejilla');
+     const localPeers=peers.map(q=>q.localCenter||toLocal(q.center));
+     const along=(v)=>i<2?v.x:v.z;
+     const coord=along(centerLocal),vals=localPeers.map(along);
+     const extreme=i===0||i===2?Math.min(...vals):Math.max(...vals);
+     if(Math.abs(coord-extreme)<Math.max(.45,tolerance*.6)&&distances[i]<Math.max(3.5,tolerance*2.6))p.exterior=true;
    }
-   p.facade=i;p.distanceToFacade=distances[i];
+   }
+   // La ventana suele tener una dimensión horizontal muy reducida en la normal
+   // de fachada. No usar exclusivamente la cara extrema de una envolvente BIM.
+   if(p.localSize && p.localSize.x>.1 && p.localSize.z>.1){
+     const axis=p.localSize.x<p.localSize.z?'x':'z';
+     const centerOfShell=perimeter.getCenter(new THREE.Vector3());
+     const sign=(centerLocal[axis]-centerOfShell[axis])>=0?1:-1;
+     const idx=axis==='x'?(sign>0?1:0):(sign>0?3:2);
+     if(Math.min(p.localSize.x,p.localSize.z)<Math.max(.6,Math.max(p.localSize.x,p.localSize.z)*.38)){
+       i=idx;
+       p.outward=directions[i].clone().transformDirection(rootWrap.matrixWorld).setY(0).normalize();
+     }
+   }
+   // V62: recuperar ventanas perimetrales cuando la caja de muros incluye
+   // pieles, perfiles, vigas o geometría extendida de un contenedor.
+   if(!p.exterior && (p.cat==='ventana'||p.cat==='rejilla')){
+     const faceAxis=i<2?'x':'z';
+     const coord=centerLocal[faceAxis];
+     const peers=windPorts.filter(q=>q.cat===p.cat).map(q=>q.localCenter||toLocal(q.center));
+     const spread=peers.length?Math.max(...peers.map(v=>v[faceAxis]))-Math.min(...peers.map(v=>v[faceAxis])):0;
+     // Sin relaciones BIM, permitir una CANDIDATURA de fachada, no darla por verificada.
+     // Se comprueba la proximidad a un muro local de espesor reducido.
+     const adjoining=[];
+     state.root.traverse(o=>{
+       if(!o.isMesh||categoryOf(o)!=='muro')return;
+       const b=meshLocalBounds(o),sz=b.getSize(new THREE.Vector3());
+       if(b.isEmpty()||Math.abs(centerLocal.y-b.getCenter(new THREE.Vector3()).y)>Math.max(1.5,sz.y*.6))return;
+       const spanAxis=faceAxis==='x'?sz.x:sz.z;
+       const closeAxis=Math.abs(coord-(faceAxis==='x'?b.getCenter(new THREE.Vector3()).x:b.getCenter(new THREE.Vector3()).z));
+       if(spanAxis<Math.max(1.4,sz.y*.7)&&closeAxis<Math.max(1.1,spanAxis*.7))adjoining.push({b,closeAxis});
+     });
+     if(adjoining.length){p.exterior=true;p.estimatedExterior=true;}
+     // Caso de IFC de paneles sin IfcWall reconocibles: aceptar puertos de ventana
+     // con geometría orientada verticalmente, marcados explícitamente como estimados.
+     if(!p.exterior && windPorts.filter(q=>q.cat==='ventana').length<=8 &&
+        p.localSize?.y>.35 && spread>=0){p.exterior=true;p.estimatedExterior=true;}
+   }
+   p.facade=i;p.distanceToFacade=distances[i];p.hostVerified=!!p.hostLink?.verifiedHost;p.confidence=p.hostVerified?'IFC muro-hueco':p.exterior?'Geometría aproximada':'Interior/no verificada';
  }
  renderWindPorts();
 }
 function renderWindPorts(){
  const note=$('windNote');if(!note)return;
- const windows=windPorts.filter(p=>p.cat==='ventana').length,doors=windPorts.filter(p=>p.cat==='puerta').length;
- note.textContent=windPorts.length?`${windows} ventanas y ${doors} puertas detectadas, ${windPorts.filter(p=>p.exterior).length} aberturas exteriores; abiertas automáticamente. Solo se trazan cruces por aberturas exteriores.`:'No se identificaron ventanas o puertas utilizables. Revisa la clasificación IFC.';
+ const windows=windPorts.filter(p=>p.cat==='ventana').length,doors=windPorts.filter(p=>p.cat==='puerta').length,grilles=windPorts.filter(p=>p.cat==='rejilla').length,verified=windPorts.filter(p=>p.hostVerified).length;
+ note.textContent=windPorts.length?`${windows} ventanas, ${doors} puertas y ${grilles} rejillas · ${windPorts.filter(p=>p.exterior).length} exteriores (estimadas) · ${verified} asociadas a hueco/muro IFC. Ventanas y rejillas abiertas (hipótesis); puertas cerradas. Sin relación IFC, ingreso potencial no verificado.`:'No se identificaron ventanas o puertas utilizables. Revisa la clasificación IFC.';
 }
 state.windDirectionDeg=null;state.windSpeedMs=null;
 function syncWindWithWeather(){
@@ -879,14 +987,20 @@ function rebuildWindRoutes(){
  const hasWeather=Number.isFinite(state.windDirectionDeg)&&Number.isFinite(state.windSpeedMs);
  const ports=windPorts.filter(p=>p.open&&p.exterior);
  const allPorts=windPorts.filter(p=>p.open);
- const mainPorts=ports.length?ports:allPorts;
+ const mainPorts=ports;
  let w=hasWeather?windVector():new THREE.Vector3(1,0,0);
+ // Sin datos horarios, escoger una dirección DEMOSTRATIVA que mire a una
+ // ventana exterior reconocida. No se presenta como dirección meteorológica.
+ if(!hasWeather&&ports.length){
+   const primary=ports.find(p=>p.cat==='ventana'&&p.outward?.isVector3)||ports.find(p=>p.outward?.isVector3);
+   if(primary)w=primary.outward.clone().multiplyScalar(-1).normalize();
+ }
  // No meteorological data: use a stationary illustrative direction,
  // never infer a new world direction from rotated windows.
  const bb=new THREE.Box3().setFromObject(state.root),c=bb.getCenter(new THREE.Vector3());
  const sz=bb.getSize(new THREE.Vector3());
  const extent=Math.max(sz.x,sz.z), cross=new THREE.Vector3(-w.z,0,w.x).normalize();
- const baseY=bb.min.y+sz.y*0.42;
+ const baseY=bb.min.y+Math.min(sz.y*.38,1.35);
  const lead=Math.max(1.6,Math.min(3.8,extent*.18));
  const roofY=bb.max.y+.24;
  // V45: cintas de viento con transparencia progresiva; no se usan THREE.Line.
@@ -900,7 +1014,7 @@ function rebuildWindRoutes(){
  function addAnimatedCurve(curve,lane,isCore=false,showGuide=false,sparse=false,ambientFixed=false,anchorCenter=null){
    windRoutes.push(curve);
    // Varios filamentos del mismo haz, con desfase temporal y anchura variable.
-   const count=sparse?2:(isCore?8:5),steps=sparse?16:22;
+   const count=sparse?2:(isCore?3:5),steps=sparse?20:30;
    for(let k=0;k<count;k++){
      const positions=new Float32Array(steps*2*3);
      const fade=new Float32Array(steps*2);
@@ -922,9 +1036,9 @@ function rebuildWindRoutes(){
      const ribbon=new THREE.Mesh(geometry,material);
      ribbon.frustumCulled=false;ribbon.renderOrder=16;windLines.add(ribbon);
      windParticles.push({ribbon,curve,phase:((k/count)+lane*.083)%1,
-       steps,span:(isCore?.112:.094)*(0.88+Math.random()*.38),
-       lane,offset:k-(count-1)*.5,width:(sparse?.067:(isCore?.12:.092))*(0.9+Math.random()*.48),
-       amp:isCore?.22:.15,freq:1.0+Math.random()*.7,drift:.2+Math.random()*.5,
+       steps,span:(isCore?.46:.15)*(0.94+Math.random()*.12),
+       lane,offset:k-(count-1)*.5,width:(sparse?.060:(isCore?.075:.078))*(0.95+Math.random()*.15),
+       amp:isCore?.035:.10,freq:1.0+Math.random()*.7,drift:.2+Math.random()*.5,
        seed:k*.73+lane*1.7,indexCount:indices.length,ambientFixed,anchorCenter:anchorCenter?anchorCenter.clone():null});
    }
  }
@@ -977,11 +1091,15 @@ function rebuildWindRoutes(){
       const ob=new THREE.Box3().setFromObject(o);
       if(ob.isEmpty())continue;
       obstacleBounds.push(ob);
-      for(const x of [ob.min.x,ob.max.x])for(const z of [ob.min.z,ob.max.z]){
-         corner.set(x,0,z).sub(new THREE.Vector3(c.x,0,c.z));
-         const a=corner.dot(w), b=corner.dot(cross);
-         minAlong=Math.min(minAlong,a);maxAlong=Math.max(maxAlong,a);
-         minAcross=Math.min(minAcross,b);maxAcross=Math.max(maxAcross,b);
+      if(o.isMesh&&o.geometry){
+        if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();
+        const gb=o.geometry.boundingBox;
+        for(const x of [gb.min.x,gb.max.x])for(const y of [gb.min.y,gb.max.y])for(const z of [gb.min.z,gb.max.z]){
+           corner.set(x,y,z).applyMatrix4(o.matrixWorld).sub(c);
+           const a=corner.dot(w),b=corner.dot(cross);
+           minAlong=Math.min(minAlong,a);maxAlong=Math.max(maxAlong,a);
+           minAcross=Math.min(minAcross,b);maxAcross=Math.max(maxAcross,b);
+        }
       }
       roofTop=Math.max(roofTop,ob.max.y);
    }
@@ -1000,11 +1118,11 @@ function rebuildWindRoutes(){
    for(let z=0;z<layers;z++)for(let i=0;i<lanes;i++){
      const n=(i+.5)/lanes*2-1;
      const baseSide=midAcross+n*fieldRadius;
-     const y=bb.min.y+.38+(z+.22)/layers*Math.max(1,sz.y*.67);
+     const y=bb.min.y+.38+(z+.22)/layers*Math.max(.9,sz.y*.63);
      const inner=(baseSide>minAcross-safeMargin&&baseSide<maxAcross+safeMargin);
      const nearestSide=(baseSide-midAcross>=0)?1:-1;
      // For low and middle layers, go around facades. High layer rises over roof.
-     const overRoof=inner&&z===layers-1;
+     const overRoof=inner&&z===layers-1&&i%9===0;
      const targetSide=nearestSide===1?maxAcross+safeMargin:minAcross-safeMargin;
      const clearance=inner&&!overRoof?targetSide-baseSide:0;
      const pts=[];
@@ -1015,7 +1133,7 @@ function rebuildWindRoutes(){
        const departure=1-smooth((along-(maxAlong+marginAlong*.08))/(marginAlong*.90));
        const bump=approach*departure;
        const lateral=baseSide+clearance*bump;
-       const rise=overRoof?Math.max(0,roofTop+Math.min(.34,safeMargin*.38)-y)*bump:0;
+       const rise=overRoof?Math.max(0,roofTop+Math.min(.14,safeMargin*.20)-y)*bump:0;
        const swirl=Math.sin(f*Math.PI)*Math.sin(f*7+i*1.17+z*.7)*.06;
        pts.push(c.clone().addScaledVector(w,along).addScaledVector(cross,lateral+swirl).setY(y+rise));
      }
@@ -1025,38 +1143,63 @@ function rebuildWindRoutes(){
  }
  // La fachada expuesta recibe viento aunque no exista una segunda ventana opuesta.
  // Este recorrido de ingreso termina DENTRO del vano y nunca presume una salida.
+ // A wall hit can be ignored ONLY if it belongs to the host wall of an
+ // opening and the intersection falls inside its geometric aperture bounds.
+ // For missing IFC host relationships, mark the result as unverified, not clear.
+ function hitInsideIFCAperture(hit,port){
+   if(!port?.hostVerified||!port.hostLink?.hostWallID)return false;
+   if(Number(hit.object.userData.expressID)!==Number(port.hostLink.hostWallID))return false;
+   const local=rootWrap.worldToLocal(hit.point.clone());
+   const b=port.localBounds;if(!b)return false;
+   const tol=.055;
+   return local.x>=b.min.x-tol&&local.x<=b.max.x+tol&&
+          local.y>=b.min.y-tol&&local.y<=b.max.y+tol&&
+          local.z>=b.min.z-tol&&local.z<=b.max.z+tol;
+ }
  function addWindowInlets(inlets){
-   const checked=[...inlets].filter(p=>p.cat==='ventana'||p.cat==='puerta').sort((a,b)=>a.center.y-b.center.y).slice(0,16);
+   // Cada acceso muestra una aproximación CONTINUA desde barlovento hasta el vano.
+   // Sin IFC de hueco verificable, NO se representa paso a través de un muro macizo.
+   const checked=[...inlets].filter(p=>(p.cat==='ventana'||p.cat==='rejilla')&&p.center?.isVector3&&p.outward?.isVector3).sort((a,b)=>a.center.y-b.center.y).slice(0,16);
    for(let idx=0;idx<checked.length;idx++){
-     const p=checked[idx];markWindPort(p,'entry');
+     const p=checked[idx];
+     markWindPort(p,'entry');
+     const normal=p.outward.clone().setY(0).normalize();
      const aperture=p.center.clone();
-     const approach=aperture.clone().addScaledVector(w,-Math.max(1.7,lead*1.05));
-     const close=aperture.clone().addScaledVector(p.outward,.22);
-     const inside=aperture.clone().addScaledVector(p.outward,-.18);
-     const halfWidth=Math.max(.10,Math.min(.42,(p.localSize?.x||p.size.x)*.23));
-     for(let lane=0;lane<6;lane++){
-       const spread=(lane-2.5)*halfWidth*.33;
-       const vShift=(lane-2.5)*Math.max(.035,Math.min(.14,p.size.y*.065));
-       const pts=[approach.clone().addScaledVector(cross,spread*1.4).add(new THREE.Vector3(0,vShift,0)),
-         approach.clone().lerp(close,.55).addScaledVector(cross,spread*.7).add(new THREE.Vector3(0,vShift*.7,0)),
-         close.clone().addScaledVector(cross,spread*.20),
-         aperture.clone().addScaledVector(cross,spread*.15),
-         inside.clone().addScaledVector(cross,spread*.36)];
-       addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',.6),70+idx*4+lane,true,false,false);
+     const approachDistance=Math.max(3.8,Math.min(8.0,extent*.65));
+     const atStart=aperture.clone().addScaledVector(w,-approachDistance);
+     // La trayectoria se aproxima en la dirección geográfica del viento.
+     // La pequeña inflexión final localiza el vano sin perforar muros ajenos.
+     const atNear=aperture.clone().addScaledVector(normal,Math.max(.40,Math.min(.85,lead*.30)));
+     const atFace=aperture.clone().addScaledVector(normal,.035);
+     const endpoint=p.hostVerified?aperture.clone().addScaledVector(normal,-.09):atFace;
+     const tangentSide=new THREE.Vector3(-normal.z,0,normal.x);
+     const width=Math.max(.10,Math.min(.40,Math.max(p.localSize?.x||0,p.localSize?.z||0,p.size.x,p.size.z)*.23));
+     for(let lane=0;lane<3;lane++){
+       const spread=(lane-1)*width*.62;
+       const heightShift=(lane-1)*Math.min(.09,p.size.y*.045);
+       const offset=tangentSide.clone().multiplyScalar(spread).add(new THREE.Vector3(0,heightShift,0));
+       const pts=[atStart.clone().add(offset),
+          atStart.clone().lerp(atNear,.58).add(offset),
+          atNear.clone().add(offset.clone().multiplyScalar(.62)),
+          atFace.clone().add(offset.clone().multiplyScalar(.35)),
+          endpoint.clone().add(offset.clone().multiplyScalar(.20))];
+       const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',.35);
+       addAnimatedCurve(curve,70+idx*3+lane,true,false,false);
      }
    }
    return checked.length;
  }
- const inPorts=ports.filter(p=>p.outward.dot(w)<-.06);
+
+ const inPorts=ports.filter(p=>p.outward.dot(w)<-.02);
  const outPorts=ports.filter(p=>p.outward.dot(w)>.15);
  if(!inPorts.length||!outPorts.length){
    const inwardCount=addWindowInlets(inPorts);
    buildDistributedField();
-   $('windNote').textContent=`${windPorts.filter(p=>p.cat==='ventana').length} ventanas IFC reconocidas; ${ports.length} aberturas exteriores; ${inwardCount} entradas orientadas al viento. Sin salida confirmada: solo se representa el ingreso.`;
+   $('windNote').textContent=`${windPorts.filter(p=>p.cat==='ventana').length} ventanas IFC; ${ports.length} aberturas exteriores estimadas; ${inwardCount} entradas ${hasWeather?'orientadas al viento horario':'ilustrativas hacia las ventanas'}. Sin salida geométrica confirmada.`;
    return;
  }
- const entries=[...inPorts].sort((a,b)=>a.center.dot(cross)-b.center.dot(cross));
- const exitsPool=[...outPorts];
+ const entries=[...inPorts.filter(p=>p.hostVerified)].sort((a,b)=>a.center.dot(cross)-b.center.dot(cross));
+ const exitsPool=[...outPorts.filter(p=>p.hostVerified)];
  const pairs=[];
  for(const entry of entries){
    if(!exitsPool.length)break;
@@ -1074,7 +1217,7 @@ function rebuildWindRoutes(){
  if(!pairs.length){
    const inwardCount=addWindowInlets(inPorts);
    buildDistributedField();
-   $('windNote').textContent=`${inwardCount} ingresos por ventanas; sin parejas comprobadas de ventilación cruzada.`;
+   $('windNote').textContent=`${inwardCount} aproximaciones a ventanas; no se afirma cruce de muro sin vínculo IFC de hueco.`;
    return;
  }
  addWindowInlets(inPorts);
@@ -1119,9 +1262,7 @@ function rebuildWindRoutes(){
        cast.set(probes[q],delta.normalize());cast.far=length;
        if(cast.intersectObjects(opaque,false).some(hit=>{
          if(hit.distance<=.005||hit.distance>=length-.005)return false;
-         // Cruces próximos a los centros de ventanas reconocidas son aperturas permitidas.
-         const radius=Math.max(.52,Math.min(1.15,Math.max(entry.size.x,entry.size.y,exit.size.x,exit.size.y)*.38));
-         return hit.point.distanceTo(entry.center)>radius&&hit.point.distanceTo(exit.center)>radius;
+         return !hitInsideIFCAperture(hit,entry)&&!hitInsideIFCAperture(hit,exit);
        }))blocked=true;
      }
      if(!blocked){addAnimatedCurve(candidate,lane,lane===2,false);validCrossings++;}
@@ -1136,7 +1277,9 @@ function setupWindView(){
   state.root?.traverse(o=>{if(!o.isMesh)return;const c=categoryOf(o);
    if(c==='muro'||c==='cubierta'){
     const base=visualOriginal.get(o);if(!base)return;
-    const m=(Array.isArray(base.material)?base.material[0]:base.material).clone();m.transparent=true;m.opacity=c==='cubierta'?.12:.18;m.depthWrite=false;o.material=m;
+    const sourceMaterial=Array.isArray(base.material)?base.material.find(m=>m&&typeof m.clone==='function'):base.material;
+    if(!sourceMaterial||typeof sourceMaterial.clone!=='function')return;
+    const m=sourceMaterial.clone();m.transparent=true;m.opacity=c==='cubierta'?.12:.18;m.depthWrite=false;o.material=m;
    }
   });
  }
@@ -1150,6 +1293,7 @@ function stepWind(dt){
  const speed=Math.max(.85,state.windSpeedMs??1.8);
  const up=new THREE.Vector3(0,1,0);
  for(const p of windParticles){
+  if(!p.curve||!p.ribbon?.geometry)continue;
   p.phase=(p.phase+dt*(.042+Math.min(speed,16)*.027)*(0.9+p.drift*.25))%1;
   // Se mantiene la corrección de V44: nunca se une el final de una ruta con su principio.
   if(p.phase+p.span>=1){p.ribbon.geometry.setDrawRange(0,0);continue;}
