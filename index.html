@@ -539,7 +539,7 @@ function thumbForMaterial(type,name){
  let art='';
  if(/vidrio low-e/.test(n))art=`<rect x="10" y="12" width="52" height="54" rx="2" fill="#1a455c" stroke="#dcf8ff" stroke-width="3"/><rect x="16" y="18" width="40" height="42" fill="#74d3ea" opacity=".7"/><path d="M18 22l36 35M18 50l18-18" stroke="#ffffff" stroke-width="3" opacity=".9"/><path d="M30 18v42M16 39h40" stroke="#d7fbff" stroke-width="2" opacity=".85"/>`;
  else if(/vidrio doble/.test(n))art=`<rect x="11" y="12" width="50" height="54" rx="2" fill="#244a5c" stroke="#e6fbff" stroke-width="3"/><rect x="17" y="18" width="34" height="42" fill="#62c7df" opacity=".65"/><rect x="24" y="18" width="30" height="42" fill="#93ebff" opacity=".35"/><path d="M33 18v42M17 39h37" stroke="#e8fdff" stroke-width="2"/>`;
- else if(/vidrio|cristal|policarbonato/.test(n))art=`<rect x="12" y="13" width="50" height="52" rx="2" fill="#1c4d66" stroke="#d8f4ff" stroke-width="3"/><rect x="18" y="19" width="38" height="40" fill="#57d0ec" opacity=".7"/><path d="M18 49L45 22M28 59L55 32" stroke="#f4feff" stroke-width="3" opacity=".9"/><path d="M37 19V64M18 39H56" stroke="#dbfbff" stroke-width="2" opacity=".75"/>`;
+ else if(/vidrio|cristal|policarbonato/.test(n))art=`<rect x="12" y="13" width="50" height="52" rx="2" fill="#1c4d66" stroke="#d8f4ff" stroke-width="3"/><rect x="18" y="19" width="38" height="40" fill="#57d0ec" opacity=".7"/><path d="M18 49L45 22M28 59L55 32" stroke="#f4feff" stroke-width="3" opacity=".9"/><path d="M37 19V65M18 39H56" stroke="#dbfbff" stroke-width="2" opacity=".75"/>`;
  else if(/ladrillo/.test(n))art=`<rect x="10" y="17" width="55" height="47" rx="3" fill="#b45b3f"/><g stroke="#f6cfaf" stroke-width="2.3"><path d="M10 29H65M10 42H65M10 55H65"/><path d="M22 17V29M40 17V29M55 29V42M32 29V42M18 42V55M48 42V55"/></g>`;
  else if(/bloque de hormig|bloque/.test(n))art=`<rect x="9" y="18" width="56" height="46" rx="4" fill="#9ea7ad"/><g stroke="#dfe6ea" stroke-width="2.1"><rect x="15" y="24" width="18" height="13" rx="1" fill="#bfc7cc"/><rect x="40" y="24" width="18" height="13" rx="1" fill="#bfc7cc"/><rect x="28" y="43" width="18" height="13" rx="1" fill="#c8d0d4"/></g>`;
  else if(/madera|bambú|bambu/.test(n))art=`<rect x="13" y="12" width="48" height="56" rx="2" fill="#aa7546" stroke="#f1d2a1" stroke-width="3"/><path d="M22 14V66M33 14V66M45 14V66M55 14V66" stroke="#704526" stroke-width="2.2"/><path d="M20 29q7-5 10 1m7 12q8-5 12 3" fill="none" stroke="#e3b884" stroke-width="2"/>`;
@@ -549,7 +549,7 @@ function thumbForMaterial(type,name){
  else if(/aluminio compuesto|lámina de aluminio|aluminio/.test(n))art=`<path d="M7 28L39 13L68 28L36 44Z" fill="#eef4f8"/><path d="M7 28V56L36 70V44Z" fill="#8ea5b4"/><path d="M36 44L68 28V55L36 70Z" fill="#c1d0d8"/><path d="M14 35H58M18 45H62M22 55H52" stroke="#6f8795" stroke-width="2.3"/>`;
  else if(/pir|aisla|sándwich|sandwich|panel/.test(n))art=`<path d="M7 24L42 9L68 24L33 40Z" fill="#e2eff6"/><path d="M7 34L33 49L68 33V44L33 61L7 45Z" fill="#efd785"/><path d="M7 47L33 62L68 45V54L33 72L7 56Z" fill="#8daab8"/><path d="M7 27L33 43L68 27" fill="none" stroke="#6d93ad" stroke-width="3"/>`;
  else if(/fibrocemento/.test(n))art=`<rect x="10" y="15" width="55" height="49" rx="4" fill="#b4bfc6"/><g stroke="#e1e7ea" stroke-width="2"><path d="M14 27H61M14 39H61M14 51H61"/><path d="M20 15v49M34 15v49M48 15v49" opacity=".38"/></g>`;
- else if(/hormigón|hormigon|concreto|cemento/.test(n))art=`<path d="M6 28L40 12L67 25L34 44Z" fill="#e0e3e5"/><path d="M6 28V64L34 74V44Z" fill="#9ba8b0"/><path d="M34 44L67 25V56L34 74Z" fill="#b8c4c9"/><g fill="#667682" opacity=".65"><circle cx="20" cy="45" r="1.4"/><circle cx="28" cy="60" r="1.2"/><circle cx="50" cy="49" r="1.5"/><circle cx="49" cy="31" r="1"/></g>`;
+ else if(/hormigón|hormigon|concreto|cemento/.test(n))art=`<path d="M6 28L40 12L67 25L34 44Z" fill="#e0e3e5"/><path d="M6 28V65L34 74V44Z" fill="#9ba8b0"/><path d="M34 44L67 25V56L34 74Z" fill="#b8c4c9"/><g fill="#667682" opacity=".65"><circle cx="20" cy="45" r="1.4"/><circle cx="28" cy="60" r="1.2"/><circle cx="50" cy="49" r="1.5"/><circle cx="49" cy="31" r="1"/></g>`;
  else art=thumb(type).replace(/<svg[^>]*>|<\/svg>/g,'');
  return `<div class="material-preview mat-sculpt" style="background:linear-gradient(150deg,#20344b,#102135)"><svg viewBox="0 0 75 80" aria-label="Representación ilustrativa: ${name}" role="img">${art}</svg><span class="material-preview-name">${name||type}</span></div>`;
 }
@@ -672,7 +672,7 @@ function decodeIFCText(text){
  return assign;
 }
 function applyIFCAxis(object){if(!object)return;const mode=$('upAxis').value;object.rotation.set(mode==='z'?-Math.PI/2:mode==='minusz'?Math.PI/2:0,0,0)}
-// V64: inferir el eje vertical a partir de forjados, sin modificar vértices IFC.
+// V65: inferir el eje vertical a partir de forjados, sin modificar vértices IFC.
 // En modelos WebIFC habituales el eje ya es Y; rotar -90 grados aquí los vuelca.
 function autoDetectIFCAxis(object){
  const modes=['y','z','minusz'];let best='y',bestScore=-Infinity;
@@ -806,7 +806,7 @@ $('city').addEventListener('input',()=>{clearTimeout(queryTimer);queryTimer=setT
 $('mapToggle').onclick=()=>{const overlay=$('mapOverlay');overlay.hidden=false;const err=$('mapError');err.hidden=true;if(typeof L==='undefined'){err.hidden=false;err.textContent='No se cargó Leaflet (revisa conexión/CDN). Puedes usar búsqueda o coordenadas manualmente.';return}try{if(!worldMap){worldMap=L.map('worldMap',{worldCopyJump:true,zoomControl:true}).setView([state.lat,state.lon],4);const layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(worldMap);layer.on('tileerror',()=>{err.hidden=false;err.textContent='No se han podido descargar los mosaicos del mapa. Comprueba conexión, bloqueadores o abre mediante Live Server.'});marker=L.marker([state.lat,state.lon]).addTo(worldMap);worldMap.on('click',ev=>{applyPlace({lat:ev.latlng.lat,lon:ev.latlng.lng,display_name:`Punto seleccionado: ${ev.latlng.lat.toFixed(5)}, ${ev.latlng.lng.toFixed(5)}`});overlay.hidden=true})}requestAnimationFrame(()=>{worldMap.invalidateSize(true);worldMap.setView([state.lat,state.lon],Math.max(worldMap.getZoom(),4))});setTimeout(()=>worldMap.invalidateSize(true),350)}catch(ex){err.hidden=false;err.textContent='Error al iniciar mapa: '+ex.message;console.error(ex)}};$('mapClose').onclick=()=>{$('mapOverlay').hidden=true};
 
 
-// V64: errores verificables en el diagnóstico (no bloquear los otros estudios).
+// V65: errores verificables en el diagnóstico (no bloquear los otros estudios).
 window.addEventListener('error',event=>{
   if(state.mode==='wind' && $('windSource'))$('windSource').textContent='Error técnico: '+(event.message||'desconocido')+' · '+(event.filename||'')+':'+(event.lineno||'');
 });
@@ -916,7 +916,7 @@ function detectWindPorts(){
        p.outward=directions[i].clone().transformDirection(rootWrap.matrixWorld).setY(0).normalize();
      }
    }
-   // V64: recuperar ventanas perimetrales cuando la caja de muros incluye
+   // V65: recuperar ventanas perimetrales cuando la caja de muros incluye
    // pieles, perfiles, vigas o geometría extendida de un contenedor.
    if(!p.exterior && (p.cat==='ventana'||p.cat==='rejilla')){
      const faceAxis=i<2?'x':'z';
@@ -1079,48 +1079,63 @@ function rebuildWindRoutes(){
  // Campo visual heurístico, NO simulación CFD. Las líneas siguen la dirección geográfica
  // y se desvían suavemente alrededor de la caja envolvente del edificio.
  function buildDistributedField(){
-   // V64: campo ajustado al volumen arquitectónico, NO a un anillo grande.
-   // El flujo está expresado siempre en coordenadas MUNDIALES y usa el
-   // viento meteorológico (procedencia -> destino) sin rotar con el IFC.
-   const obstacles=[];
-   state.root.updateWorldMatrix(true,true);
-   state.root.traverse(o=>{
-     if(o.isMesh&&['muro','cubierta','envolvente'].includes(categoryOf(o)))obstacles.push(o);
-   });
-   const target=obstacles.length?obstacles:[state.root];
-   let minA=Infinity,maxA=-Infinity,minB=Infinity,maxB=-Infinity;
-   for(const o of target){
-     if(!o.isMesh||!o.geometry)continue;
-     if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();
-     const g=o.geometry.boundingBox;
-     if(!g)continue;
-     for(const x of [g.min.x,g.max.x])for(const y of [g.min.y,g.max.y])for(const z of [g.min.z,g.max.z]){
-       const v=new THREE.Vector3(x,y,z).applyMatrix4(o.matrixWorld).sub(c);
-       minA=Math.min(minA,v.dot(w)); maxA=Math.max(maxA,v.dot(w));
-       minB=Math.min(minB,v.dot(cross)); maxB=Math.max(maxB,v.dot(cross));
-     }
-   }
-   if(!Number.isFinite(minA)){
-     minA=-extent*.5;maxA=extent*.5;
-     minB=-extent*.5;maxB=extent*.5;
-   }
-   // Los haces recorren solamente una franja a 0.35-1.20 m de cada fachada.
-   // No se simula falsa perforación: los que no tienen hueco se desvían.
-   const clearance=[.38,.68,1.02];
-   const upstream=minA-Math.max(2.2,lead*.85);
-   const downstream=maxA+Math.max(2.2,lead*.85);
+   // V65: recuperar un campo abundante y cercano al proyecto, similar a la
+   // referencia visual aprobada, sin separarlo en exceso del volumen.
+   const clearance=[.22,.42,.68];
+   const heights=[bb.min.y+.22,bb.min.y+.86,Math.min(bb.max.y-.28,bb.min.y+1.52)];
+   const upstream=minA-Math.max(2.0,lead*.95);
+   const downstream=maxA+Math.max(2.0,lead*.95);
+   const windwardA=minA-.20;
+   const leewardA=maxA+.20;
    let lane=0;
-   for(const sign of [-1,1])for(let z=0;z<3;z++)for(const offset of clearance){
-     const side=(sign<0?minB-offset:maxB+offset);
-     const h=bb.min.y+Math.min(sz.y*.72,.65+z*.72);
-     const points=[];
-     for(let j=0;j<=24;j++){
-       const t=j/24;
-       const along=upstream+(downstream-upstream)*t;
-       const smallWave=.045*Math.sin(t*Math.PI*3+lane*.7)*Math.sin(Math.PI*t);
-       points.push(c.clone().addScaledVector(w,along).addScaledVector(cross,side+smallWave).setY(h));
+
+   for(const sign of [-1,1]){
+     const facadeSide=sign<0?minB:maxB;
+     for(const offset of clearance){
+       for(const h of heights){
+         const side=facadeSide+sign*offset;
+         const pts=[
+           c.clone().addScaledVector(w,upstream).addScaledVector(cross,side).setY(h),
+           c.clone().addScaledVector(w,windwardA).addScaledVector(cross,side-sign*.04).setY(h+.02),
+           c.clone().addScaledVector(w,(minA+maxA)*.18).addScaledVector(cross,side-sign*.02).setY(h+.03),
+           c.clone().addScaledVector(w,leewardA).addScaledVector(cross,side+sign*.02).setY(h+.01),
+           c.clone().addScaledVector(w,downstream).addScaledVector(cross,side+sign*.04).setY(h)
+         ];
+         addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',.44),lane++,false,false,false,true,c);
+       }
      }
-     addAnimatedCurve(new THREE.CatmullRomCurve3(points,false,'centripetal',.4),lane++,false,false,true,true,c);
+   }
+
+   const cornerHeights=[bb.min.y+.32,Math.min(bb.max.y-.24,bb.min.y+1.10)];
+   for(const sign of [-1,1]){
+     const side=sign<0?minB-.34:maxB+.34;
+     for(const h of cornerHeights){
+       const ptsIn=[
+         c.clone().addScaledVector(w,upstream-.25).addScaledVector(cross,side+sign*.35).setY(h),
+         c.clone().addScaledVector(w,windwardA-.12).addScaledVector(cross,side+sign*.18).setY(h+.02),
+         c.clone().addScaledVector(w,windwardA+.10).addScaledVector(cross,side).setY(h+.06),
+         c.clone().addScaledVector(w,windwardA+.34).addScaledVector(cross,side-sign*.16).setY(h+.03)
+       ];
+       addAnimatedCurve(new THREE.CatmullRomCurve3(ptsIn,false,'centripetal',.55),lane++,false,false,false,true,c);
+       const ptsOut=[
+         c.clone().addScaledVector(w,leewardA-.34).addScaledVector(cross,side-sign*.16).setY(h+.03),
+         c.clone().addScaledVector(w,leewardA-.10).addScaledVector(cross,side).setY(h+.06),
+         c.clone().addScaledVector(w,leewardA+.12).addScaledVector(cross,side+sign*.18).setY(h+.02),
+         c.clone().addScaledVector(w,downstream+.25).addScaledVector(cross,side+sign*.35).setY(h)
+       ];
+       addAnimatedCurve(new THREE.CatmullRomCurve3(ptsOut,false,'centripetal',.55),lane++,false,false,false,true,c);
+     }
+   }
+
+   for(const sign of [-1,1]){
+     const side=sign<0?minB-.82:maxB+.82;
+     const h=Math.min(bb.max.y+.10,bb.min.y+1.85);
+     const pts=[
+       c.clone().addScaledVector(w,upstream-.4).addScaledVector(cross,side).setY(h),
+       c.clone().addScaledVector(w,(minA+maxA)*.1).addScaledVector(cross,side+sign*.10).setY(h+.06),
+       c.clone().addScaledVector(w,downstream+.4).addScaledVector(cross,side-sign*.05).setY(h+.02)
+     ];
+     addAnimatedCurve(new THREE.CatmullRomCurve3(pts,false,'centripetal',.35),lane++,false,false,true,true,c);
    }
  }
  // La fachada expuesta recibe viento aunque no exista una segunda ventana opuesta.
@@ -1128,74 +1143,81 @@ function rebuildWindRoutes(){
  // A wall hit can be ignored ONLY if it belongs to the host wall of an
  // opening and the intersection falls inside its geometric aperture bounds.
  // For missing IFC host relationships, mark the result as unverified, not clear.
- function hitInsideIFCAperture(hit,port){
-   if(!port?.hostVerified||!port.hostLink?.hostWallID)return false;
-   if(Number(hit.object.userData.expressID)!==Number(port.hostLink.hostWallID))return false;
+ function hitInsidePortBounds(hit,port,strictHost=false){
+   if(!port?.localBounds)return false;
+   if(strictHost){
+     if(!port?.hostVerified||!port.hostLink?.hostWallID)return false;
+     if(Number(hit.object.userData.expressID)!==Number(port.hostLink.hostWallID))return false;
+   }
    const local=rootWrap.worldToLocal(hit.point.clone());
-   const b=port.localBounds;if(!b)return false;
-   const tol=.055;
+   const b=port.localBounds;const tol=.10;
    return local.x>=b.min.x-tol&&local.x<=b.max.x+tol&&
           local.y>=b.min.y-tol&&local.y<=b.max.y+tol&&
           local.z>=b.min.z-tol&&local.z<=b.max.z+tol;
  }
+ function hitInsideIFCAperture(hit,port){
+   return hitInsidePortBounds(hit,port,true)||hitInsidePortBounds(hit,port,false);
+ }
  function addWindowInlets(inlets){
-   // Cada acceso muestra una aproximación CONTINUA desde barlovento hasta el vano.
-   // Sin IFC de hueco verificable, NO se representa paso a través de un muro macizo.
-   const checked=[...inlets].filter(p=>(p.cat==='ventana'||p.cat==='rejilla')&&p.center?.isVector3&&p.outward?.isVector3).sort((a,b)=>a.center.y-b.center.y).slice(0,16);
+   // Aproximaciones visibles y continuas desde barlovento hasta la ventana.
+   const checked=[...inlets].filter(p=>(p.cat==='ventana'||p.cat==='rejilla')&&p.center?.isVector3&&p.outward?.isVector3)
+      .sort((a,b)=>a.center.dot(cross)-b.center.dot(cross)).slice(0,18);
    for(let idx=0;idx<checked.length;idx++){
      const p=checked[idx];
      markWindPort(p,'entry');
      const normal=p.outward.clone().setY(0).normalize();
      const aperture=p.center.clone();
-     const approachDistance=Math.max(1.9,Math.min(3.3,extent*.20));
-     const atStart=aperture.clone().addScaledVector(normal,approachDistance).addScaledVector(w,-.35);
-     // La trayectoria se aproxima en la dirección geográfica del viento.
-     // La pequeña inflexión final localiza el vano sin perforar muros ajenos.
-     const atNear=aperture.clone().addScaledVector(normal,Math.max(.42,Math.min(.80,lead*.28)));
-     const atFace=aperture.clone().addScaledVector(normal,.035);
-     const endpoint=p.hostVerified?aperture.clone().addScaledVector(normal,-.09):atFace;
-     const tangentSide=new THREE.Vector3(-normal.z,0,normal.x);
-     const width=Math.max(.10,Math.min(.40,Math.max(p.localSize?.x||0,p.localSize?.z||0,p.size.x,p.size.z)*.23));
-     for(let lane=0;lane<3;lane++){
-       const spread=(lane-1)*width*.62;
-       const heightShift=(lane-1)*Math.min(.09,p.size.y*.045);
+     const approachDistance=Math.max(2.2,Math.min(4.0,extent*.24));
+     const tangentSide=new THREE.Vector3(-normal.z,0,normal.x).normalize();
+     const width=Math.max(.12,Math.min(.46,Math.max(p.localSize?.x||0,p.localSize?.z||0,p.size.x,p.size.z)*.25));
+     for(let lane=0;lane<4;lane++){
+       const spread=(lane-1.5)*width*.64;
+       const heightShift=(lane-1.5)*Math.min(.08,p.size.y*.04);
        const offset=tangentSide.clone().multiplyScalar(spread).add(new THREE.Vector3(0,heightShift,0));
-       const pts=[atStart.clone().add(offset),
-          atStart.clone().lerp(atNear,.58).add(offset),
-          atNear.clone().add(offset.clone().multiplyScalar(.62)),
-          atFace.clone().add(offset.clone().multiplyScalar(.35)),
-          endpoint.clone().add(offset.clone().multiplyScalar(.20))];
-       const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',.35);
-       addAnimatedCurve(curve,70+idx*3+lane,true,false,false);
+       const start=aperture.clone().addScaledVector(w,-approachDistance).add(offset);
+       const guide=aperture.clone().addScaledVector(w,-approachDistance*.45).addScaledVector(normal,Math.max(.55,Math.min(.90,approachDistance*.22))).add(offset);
+       const near=aperture.clone().addScaledVector(normal,Math.max(.34,Math.min(.62,lead*.22))).add(offset.clone().multiplyScalar(.55));
+       const face=aperture.clone().addScaledVector(normal,.03).add(offset.clone().multiplyScalar(.24));
+       const endpoint=aperture.clone().addScaledVector(normal,-.10).add(offset.clone().multiplyScalar(.15));
+       const pts=[start,guide,near,face,endpoint];
+       const curve=new THREE.CatmullRomCurve3(pts,false,'centripetal',.40);
+       addAnimatedCurve(curve,70+idx*4+lane,true,false,false);
      }
    }
    return checked.length;
  }
 
- const inPorts=ports.filter(p=>p.outward.dot(w)<-.35);
- const outPorts=ports.filter(p=>p.outward.dot(w)>.35);
+ let inPorts=ports.filter(p=>p.outward.dot(w)<-.18);
+ let outPorts=ports.filter(p=>p.outward.dot(w)>.18);
+ if(!inPorts.length&&ports.length){const minDot=Math.min(...ports.map(p=>p.outward.dot(w)));inPorts=ports.filter(p=>p.outward.dot(w)<=minDot+.14);}
+ if(!outPorts.length&&ports.length){const maxDot=Math.max(...ports.map(p=>p.outward.dot(w)));outPorts=ports.filter(p=>p.outward.dot(w)>=maxDot-.14);} 
  if(!inPorts.length||!outPorts.length){
    const inwardCount=addWindowInlets(inPorts);
    buildDistributedField();
    $('windNote').textContent=`${windPorts.filter(p=>p.cat==='ventana').length} ventanas IFC; ${ports.length} aberturas exteriores estimadas; ${inwardCount} entradas ${hasWeather?'orientadas al viento horario':'ilustrativas hacia las ventanas'}. Sin salida geométrica confirmada; no se dibuja cruce interior inventado.`;
    return;
  }
- const entries=[...inPorts.filter(p=>p.hostVerified)].sort((a,b)=>a.center.dot(cross)-b.center.dot(cross));
- const exitsPool=[...outPorts.filter(p=>p.hostVerified)];
- const pairs=[];
- for(const entry of entries){
-   if(!exitsPool.length)break;
-   let bestIndex=-1,bestScore=1e9;
-   for(let i=0;i<exitsPool.length;i++){
-     const ex=exitsPool[i];
-     const lateral=Math.abs(ex.center.dot(cross)-entry.center.dot(cross));
-     const vertical=Math.abs(ex.center.y-entry.center.y)*1.4;
-     const downwind=Math.abs(ex.center.dot(w)-entry.center.dot(w))*0.08;
-     const score=lateral+vertical+downwind;
-     if(score<bestScore){bestScore=score;bestIndex=i;}
+ function buildPairs(entriesSource,exitsSource){
+   const entries=[...entriesSource].sort((a,b)=>a.center.dot(cross)-b.center.dot(cross));
+   const exitsPool=[...exitsSource];
+   const result=[];
+   for(const entry of entries){
+     if(!exitsPool.length)break;
+     let bestIndex=-1,bestScore=1e9;
+     for(let i=0;i<exitsPool.length;i++){
+       const ex=exitsPool[i];
+       const lateral=Math.abs(ex.center.dot(cross)-entry.center.dot(cross));
+       const vertical=Math.abs(ex.center.y-entry.center.y)*1.25;
+       const downwind=Math.abs(ex.center.dot(w)-entry.center.dot(w))*0.08;
+       const score=lateral+vertical+downwind;
+       if(score<bestScore){bestScore=score;bestIndex=i;}
+     }
+     if(bestIndex>=0)result.push([entry,exitsPool.splice(bestIndex,1)[0]]);
    }
-   if(bestIndex>=0){pairs.push([entry,exitsPool.splice(bestIndex,1)[0]]);}
+   return result;
  }
+ let pairs=buildPairs(inPorts.filter(p=>p.hostVerified),outPorts.filter(p=>p.hostVerified));
+ if(!pairs.length)pairs=buildPairs(inPorts,outPorts);
  if(!pairs.length){
    const inwardCount=addWindowInlets(inPorts);
    buildDistributedField();
