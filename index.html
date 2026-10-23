@@ -1162,130 +1162,98 @@ html:not(.dark) #save-modal-overlay button.bg-indigo-600, html:not(.dark) #qr-mo
 
 
 /* =====================================================================
-   ESTRATEGIAS ARQUITECTÓNICAS — CONSOLA INTERACTIVA (v4)
-   Lista a la izquierda + panel de detalle a la derecha (escritorio ≥1280px)
-   y acordeón animado en pantallas menores. Se activa solo cuando el script
+   ESTRATEGIAS ARQUITECTÓNICAS — MOSAICO EXPANSIBLE (v5)
+   Todas las estrategias visibles a la vez, en una rejilla densa que se adapta
+   al ancho. Cada tarjeta se despliega en su sitio (detalle con animación),
+   con un borde luminoso que sigue al cursor. Se activa solo cuando el script
    aditivo añade .cv-acc; sin él se ven las tarjetas de siempre.
-   Solo presentación: el PDF lee innerText de estos textos, por eso no se usa
-   display:none, visibility ni text-transform sobre ellos (se ocultan con opacidad
-   o altura 0) y todo lo añadido va en pseudo-elementos.
+   Solo presentación: el PDF lee innerText de estos textos, por eso nada se
+   oculta con display:none/visibility (se usa altura 0 y opacidad) y lo añadido
+   va en pseudo-elementos.
    ===================================================================== */
-html.cv-acc #strategy-list.cv-acc { display: flex !important; flex-direction: column; gap: 10px !important; counter-reset: strat; position: relative; }
-html.cv-acc #strategy-list.cv-acc > div {
-  display: block !important; position: relative; counter-increment: none !important; margin: 0; padding: 0 !important; overflow: hidden;
-  border-radius: 18px !important; border: 1px solid var(--cv-line2) !important; background: var(--cv-surface) !important; background-image: none !important;
-  box-shadow: var(--cv-shadow) !important; transform: none !important; animation: none !important; opacity: 1 !important;
-  transition: border-color .4s ease, box-shadow .5s ease !important;
+html.cv-acc #strategy-list.cv-acc {
+  display: grid !important; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)) !important;
+  gap: 14px !important; align-items: start; counter-reset: strat;
 }
-html.cv-acc #strategy-list.cv-acc > div:hover { transform: none !important; border-color: var(--cv-accent-line) !important; box-shadow: var(--cv-shadow) !important; }
+html.cv-acc #strategy-list.cv-acc > div {
+  position: relative; display: block !important; counter-increment: none !important; margin: 0; cursor: pointer; overflow: hidden;
+  padding: 1.15rem 1.25rem 1.2rem !important; border-radius: 18px !important; border: 1px solid var(--cv-line2) !important;
+  background: radial-gradient(280px circle at var(--mx, 100%) var(--my, 0%), var(--cv-accent-soft), transparent 72%), var(--cv-surface) !important;
+  box-shadow: var(--cv-shadow) !important; opacity: 1 !important; animation: none !important;
+  transition: border-color .4s ease, box-shadow .5s ease, transform .5s var(--cv-ease) !important;
+}
+html.cv-acc #strategy-list.cv-acc > div:hover { transform: translateY(-2px) !important; border-color: var(--cv-accent-line) !important; box-shadow: var(--cv-shadow-lg) !important; }
 html.cv-acc #strategy-list.cv-acc > div.cv-open { border-color: var(--cv-accent-line) !important; }
-html.cv-acc #strategy-list.cv-acc > div::before, html.cv-acc #strategy-list.cv-acc > div::after,
-html.cv-acc:not(.dark) #strategy-list.cv-acc > div::before, html.cv-acc:not(.dark) #strategy-list.cv-acc > div::after,
-html.cv-acc #strategy-list.cv-acc > div:hover::after { content: none !important; }
 
-/* fila: número + título + indicador */
+/* borde luminoso que sigue al cursor */
+html.cv-acc #strategy-list.cv-acc > div::before {
+  content: '' !important; position: absolute; inset: 0; right: auto; top: 0; width: auto; height: auto; padding: 1px; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(200px circle at var(--mx, 50%) var(--my, 50%), var(--cv-accent), transparent 70%); transform: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  transition: opacity .4s ease;
+}
+html.cv-acc #strategy-list.cv-acc > div:hover::before, html.cv-acc #strategy-list.cv-acc > div.cv-open::before { opacity: 1; }
+
+/* indicador + / × */
+html.cv-acc #strategy-list.cv-acc > div::after, html.cv-acc #strategy-list.cv-acc > div:hover::after {
+  content: '+' !important; position: absolute; left: auto; right: 1rem; top: 1rem; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--cv-line2); border-radius: 50%; background: none; pointer-events: none;
+  font: 300 18px/1 'Space Grotesk', sans-serif; color: var(--cv-ink3); transform: none !important; transition: transform .5s var(--cv-spring), color .3s ease, border-color .3s ease, background-color .3s ease;
+}
+html.cv-acc #strategy-list.cv-acc > div:hover::after { color: var(--cv-accent); border-color: var(--cv-accent-line); }
+html.cv-acc #strategy-list.cv-acc > div.cv-open::after { transform: rotate(45deg) !important; color: #fff; background: var(--cv-accent); border-color: var(--cv-accent); }
+html.dark.cv-acc #strategy-list.cv-acc > div.cv-open::after { color: #04201c; }
+
+/* título con numeral */
 html.cv-acc #strategy-list.cv-acc > div > p:first-child {
-  counter-increment: strat; display: flex !important; align-items: center; gap: 1rem; margin: 0 !important; padding: 1.05rem 1.3rem !important;
-  cursor: pointer; border-radius: 16px; position: relative; z-index: 2;
+  counter-increment: strat; display: flex !important; align-items: center; gap: .75rem; margin: 0 !important; padding: 0 2.4rem 0 0 !important; position: relative; z-index: 1;
   font: 700 12.5px/1.35 'Space Grotesk', sans-serif !important; letter-spacing: .1em !important; color: var(--cv-ink) !important;
-  transition: background-color .35s ease, box-shadow .35s ease;
 }
 html.cv-acc #strategy-list.cv-acc > div > p:first-child::before {
   content: counter(strat, decimal-leading-zero) !important; position: static; flex: none; width: auto; height: auto; margin: 0; background: none; transform: none; opacity: 1;
-  font: 600 11px 'Space Grotesk', sans-serif; letter-spacing: .14em; color: var(--cv-ink3); transition: color .3s ease;
+  font: italic 600 22px/1 'Playfair Display', Georgia, serif; letter-spacing: -.01em; color: transparent;
+  background-image: linear-gradient(135deg, var(--cv-accent), #38bdf8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
-html.cv-acc #strategy-list.cv-acc > div > p:first-child::after {
-  content: '+'; display: block; flex: none; width: auto; height: auto; margin: 0 0 0 auto; background: none; transform: none;
-  font: 300 22px/1 'Space Grotesk', sans-serif; color: var(--cv-ink3); transition: transform .5s var(--cv-spring), color .3s ease, opacity .3s ease;
-}
-html.cv-acc #strategy-list.cv-acc > div > p:first-child:hover { background: var(--cv-line); }
-html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child { background: var(--cv-accent-soft); box-shadow: inset 0 0 0 1px var(--cv-accent-line); }
-html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child::before { color: var(--cv-accent); }
-html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child::after { transform: rotate(45deg); color: var(--cv-accent); }
-html.cv-acc #strategy-list.cv-acc > div > p:first-child:focus-visible { outline: 2px solid var(--cv-accent); outline-offset: -2px; }
+html.cv-acc #strategy-list.cv-acc > div > p:first-child::after { content: none !important; }
+html.cv-acc #strategy-list.cv-acc > div > p:first-child:focus-visible { outline: 2px solid var(--cv-accent); outline-offset: 4px; border-radius: 6px; }
 
-/* contenido (acordeón): se pliega con altura 0 y opacidad, nunca con display:none */
-html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div > .border-t {
-  overflow: hidden; max-height: 0; opacity: 0; margin: 0 !important; padding: 0 1.3rem !important; border: 0 !important;
-  transition: max-height .7s var(--cv-ease), opacity .45s ease, padding .5s var(--cv-ease);
+/* descripción: 3 líneas cerrada, completa abierta */
+html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2) {
+  margin: .7rem 0 0 !important; font-size: 13.5px !important; line-height: 1.62 !important; color: var(--cv-ink2) !important;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
 }
-html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) {
-  max-height: 380px; opacity: 1; padding: .3rem 1.3rem 1rem !important; font-size: 14.5px !important; line-height: 1.65 !important; color: var(--cv-ink2) !important;
+html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) { -webkit-line-clamp: unset; line-clamp: unset; display: block; }
+
+/* cajón de detalles */
+html.cv-acc #strategy-list.cv-acc > div > .border-t {
+  display: grid; gap: 14px; overflow: hidden; max-height: 0; opacity: 0; margin: 0 !important; padding: 0 !important; border: 0 !important;
+  transition: max-height .75s var(--cv-ease), opacity .5s ease, padding .5s var(--cv-ease), margin .5s var(--cv-ease);
 }
-html.cv-acc #strategy-list.cv-acc > div > .border-t { display: grid; gap: 14px; }
 html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t {
-  max-height: 460px; opacity: 1; padding: 1.1rem 1.3rem 1.3rem !important; border-top: 1px solid var(--cv-line) !important;
+  max-height: 460px; opacity: 1; margin: 1rem 0 0 !important; padding: 1rem 0 0 !important; border-top: 1px solid var(--cv-line) !important;
 }
-
-/* filas de detalle con icono circular */
 html.cv-acc #strategy-list.cv-acc .border-t > p, html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(1), html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(2) {
-  position: relative; display: block; margin: 0 !important; padding: 0 0 0 40px !important; min-height: 28px; background: none !important; border: 0 !important; border-radius: 0;
+  position: relative; display: block; margin: 0 !important; padding: 0 0 0 38px !important; min-height: 28px; background: none !important; border: 0 !important; border-radius: 0;
   font-size: 12.5px !important; line-height: 1.55 !important; color: var(--cv-ink2) !important;
 }
 html.cv-acc #strategy-list.cv-acc .border-t > p::before {
-  position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 700 13px/1 'Space Grotesk', sans-serif;
+  position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 700 12px/1 'Space Grotesk', sans-serif;
 }
 html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(1)::before { content: '!'; color: #f43f5e; background: rgba(244,63,94,.12); box-shadow: inset 0 0 0 1px rgba(244,63,94,.35); }
-html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(2)::before { content: '\25C6'; font-size: 11px; color: #10b981; background: rgba(16,185,129,.12); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
+html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(2)::before { content: '\25C6'; font-size: 10px; color: #10b981; background: rgba(16,185,129,.12); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
 html.cv-acc #strategy-list.cv-acc .border-t > p > span:first-child { font-size: 10.5px; letter-spacing: .08em; }
 
-/* ---------------- ESCRITORIO: consola de dos paneles ---------------- */
-@media (min-width: 1280px) {
-  html.cv-acc #strategy-list.cv-acc {
-    --stg-l: calc(14px + 300px + 1.6rem + 2.4rem);
-    display: grid !important; grid-template-columns: 300px minmax(0, 1fr) !important; grid-template-rows: repeat(var(--cv-n, 10), auto) !important;
-    align-content: start; column-gap: 1.6rem; row-gap: 6px !important; padding: 14px; min-height: 580px; overflow: hidden; border-radius: 26px;
-    border: 1px solid var(--cv-line2); box-shadow: var(--cv-shadow-lg);
-    background:
-      linear-gradient(90deg, transparent calc(14px + 300px + .8rem), var(--cv-line2) calc(14px + 300px + .8rem), var(--cv-line2) calc(14px + 300px + .8rem + 1px), transparent calc(14px + 300px + .8rem + 1px)),
-      radial-gradient(900px 520px at 88% 0%, var(--cv-accent-soft), transparent 62%),
-      var(--cv-surface);
-  }
-  html.cv-acc #strategy-list.cv-acc::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    background: radial-gradient(540px circle at var(--mx, 72%) var(--my, 26%), var(--cv-spot), transparent 62%);
-  }
-  html.cv-acc #strategy-list.cv-acc > div { display: contents !important; }
-  html.cv-acc #strategy-list.cv-acc > div > p:first-child { grid-column: 1; padding: .95rem 1.1rem !important; }
-  html.cv-acc #strategy-list.cv-acc > div > p:first-child::after { content: '\2192'; font: 400 17px/1 'Space Grotesk', sans-serif; opacity: 0; transform: translateX(-8px); }
-  html.cv-acc #strategy-list.cv-acc > div:hover > p:first-child::after { opacity: .6; transform: none; }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:first-child::after { opacity: 1; transform: none; }
-
-  /* elementos del panel de detalle: apilados en el mismo sitio; solo el activo se ve */
-  html.cv-acc #strategy-list.cv-acc > div::before, html.cv-acc #strategy-list.cv-acc > div::after,
-  html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div > .border-t {
-    position: absolute; z-index: 1; opacity: 0; transform: translate3d(0, 16px, 0); pointer-events: none; max-height: none; overflow: visible;
-    transition: opacity .3s ease, transform .55s var(--cv-ease);
-  }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open::before, html.cv-acc #strategy-list.cv-acc > div.cv-open::after,
-  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { opacity: 1; transform: none; }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2), html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { pointer-events: auto; }
-
-  html.cv-acc #strategy-list.cv-acc > div::before, html.cv-acc:not(.dark) #strategy-list.cv-acc > div::before {
-    content: attr(data-n) !important; right: 1.8rem; top: .5rem; z-index: 0;
-    font: italic 600 116px/1 'Playfair Display', Georgia, serif; letter-spacing: -.03em; color: transparent; -webkit-text-stroke: 1px var(--cv-accent-line);
-  }
-  html.cv-acc #strategy-list.cv-acc > div::after, html.cv-acc #strategy-list.cv-acc > div:hover::after,
-  html.cv-acc:not(.dark) #strategy-list.cv-acc > div::after {
-    content: attr(data-t) !important; left: var(--stg-l); right: calc(2.4rem + 130px); top: 2.2rem; width: auto; height: auto; background: none; border-radius: 0; transition-property: opacity, transform;
-    font: italic 600 clamp(24px, 2.1vw, 33px)/1.15 'Playfair Display', Georgia, serif; color: var(--cv-ink);
-  }
-  html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2)::before {
-    content: ''; display: block; width: 52px; height: 2px; margin-bottom: 1.2rem; border-radius: 2px; background: linear-gradient(90deg, var(--cv-accent), #38bdf8);
-  }
-  html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2) {
-    left: var(--stg-l); right: 2.4rem; top: 8.3rem; max-width: 62ch; margin: 0 !important; padding: 0 !important;
-    font-size: 17px !important; line-height: 1.7 !important; color: var(--cv-ink2) !important;
-  }
-  html.cv-acc #strategy-list.cv-acc > div > .border-t {
-    left: var(--stg-l); right: 2.4rem; bottom: 1.8rem; display: grid; gap: 16px; margin: 0 !important; padding: 1.2rem 0 0 !important; border-top: 1px solid var(--cv-line2) !important;
-  }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) { padding: 0 !important; max-height: none; }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { padding: 1.2rem 0 0 !important; max-height: none; border-top: 1px solid var(--cv-line2) !important; }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open::after { transition-delay: .06s; }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) { transition-delay: .14s; }
-  html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t { transition-delay: .24s; }
+/* barra de herramientas */
+.cv-tools { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: -.2rem 0 .9rem; padding: 0 .25rem; }
+.cv-tools[hidden] { display: none !important; }
+.cv-tools-hint { font: 600 10.5px 'Space Grotesk', sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--cv-ink3); }
+.cv-tools-btns { display: inline-flex; gap: 8px; }
+.cv-tools-btns button {
+  padding: .45rem .9rem; border-radius: 999px; border: 1px solid var(--cv-line2); background: var(--cv-surface2); color: var(--cv-ink2);
+  font: 600 10.5px 'Space Grotesk', sans-serif; letter-spacing: .12em; text-transform: uppercase;
 }
+.cv-tools-btns button:hover { border-color: var(--cv-accent-line); color: var(--cv-accent); }
+@media (prefers-reduced-motion: reduce) { html.cv-acc #strategy-list.cv-acc > div:hover { transform: none !important; } }
 
 /* ---------- Movimiento reducido (solo cromo de interfaz; no toca D3/Leaflet/SVG) ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -5967,68 +5935,67 @@ async function exportZIP() {
     }
   } catch (err) { root.classList.remove('cv-ready'); }
 
-  /* 2) Consola interactiva de estrategias (selección, teclado y foco de luz) */
+  /* 2) Mosaico expansible de estrategias (abrir/cerrar, teclado y borde luminoso) */
   try {
     var list = document.getElementById('strategy-list');
     if (!list) return;
-    var wide = window.matchMedia ? window.matchMedia('(min-width: 1280px)') : { matches: false };
+    var tools = document.createElement('div');
+    tools.id = 'cv-strat-tools'; tools.className = 'cv-tools'; tools.hidden = true;
+    tools.innerHTML = '<span class="cv-tools-hint"></span><span class="cv-tools-btns"><button type="button" data-a="open">Expandir todo</button><button type="button" data-a="close">Contraer todo</button></span>';
+    list.parentNode.insertBefore(tools, list);
     var cards = function () { return Array.prototype.slice.call(list.children); };
-    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    function openCard(card) {
-      cards().forEach(function (c) {
-        var on = c === card, t = c.firstElementChild;
-        c.classList.toggle('cv-open', on);
-        if (t) t.setAttribute('aria-expanded', on ? 'true' : 'false');
-      });
+    function setOpen(c, on) {
+      c.classList.toggle('cv-open', on);
+      var t = c.firstElementChild; if (t) t.setAttribute('aria-expanded', on ? 'true' : 'false');
     }
     function prepare() {
       var cs = cards();
-      list.style.setProperty('--cv-n', cs.length || 1);
-      cs.forEach(function (c, i) {
+      cs.forEach(function (c) {
         var t = c.firstElementChild;
-        if (!t || c.hasAttribute('data-n')) return;
-        c.setAttribute('data-n', pad(i + 1));
-        c.setAttribute('data-t', (t.textContent || '').replace(/\s+/g, ' ').trim());
-        t.setAttribute('tabindex', '0');
-        t.setAttribute('role', 'button');
-        t.setAttribute('aria-expanded', 'false');
+        if (!t || t.hasAttribute('tabindex')) return;
+        t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); t.setAttribute('aria-expanded', 'false');
       });
       list.classList.toggle('cv-acc', cs.length > 0);
       root.classList.toggle('cv-acc', cs.length > 0);
-      if (cs.length && !cs.some(function (c) { return c.classList.contains('cv-open'); })) openCard(cs[0]);
-    }
-    function titleOf(e) {
-      var t = e.target && e.target.closest ? e.target.closest('#strategy-list > div > p:first-child') : null;
-      return t && list.contains(t) ? t : null;
+      tools.hidden = cs.length === 0;
+      tools.firstChild.textContent = cs.length + (cs.length === 1 ? ' estrategia' : ' estrategias') + ' · toca una para ver el detalle';
     }
     list.addEventListener('click', function (e) {
       var c = e.target.closest ? e.target.closest('#strategy-list > div') : null;
-      if (c && list.contains(c)) openCard(c);
+      if (!c || !list.contains(c)) return;
+      var sel = window.getSelection ? String(window.getSelection()) : '';
+      if (sel) return;
+      setOpen(c, !c.classList.contains('cv-open'));
     });
-    list.addEventListener('pointerover', function (e) {
-      if (e.pointerType !== 'mouse' || !wide.matches) return;
-      var t = titleOf(e); if (t) openCard(t.parentElement);
+    tools.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('button[data-a]') : null; if (!b) return;
+      var on = b.getAttribute('data-a') === 'open';
+      cards().forEach(function (c) { setOpen(c, on); });
     });
     list.addEventListener('keydown', function (e) {
-      var t = titleOf(e); if (!t) return;
-      var k = e.key, cs = cards(), i = cs.indexOf(t.parentElement);
-      if (k === 'Enter' || k === ' ') { e.preventDefault(); openCard(t.parentElement); return; }
-      var j = (k === 'ArrowDown' || k === 'ArrowRight') ? i + 1 : (k === 'ArrowUp' || k === 'ArrowLeft') ? i - 1 : -1;
-      if (j >= 0 && j < cs.length) { e.preventDefault(); cs[j].firstElementChild.focus(); if (wide.matches) openCard(cs[j]); }
+      var t = e.target && e.target.closest ? e.target.closest('#strategy-list > div > p:first-child') : null;
+      if (!t) return;
+      var cs = cards(), i = cs.indexOf(t.parentElement), k = e.key;
+      if (k === 'Enter' || k === ' ') { e.preventDefault(); setOpen(t.parentElement, !t.parentElement.classList.contains('cv-open')); return; }
+      var j = (k === 'ArrowRight' || k === 'ArrowDown') ? i + 1 : (k === 'ArrowLeft' || k === 'ArrowUp') ? i - 1 : -1;
+      if (j >= 0 && j < cs.length) { e.preventDefault(); cs[j].firstElementChild.focus(); }
     });
-    var raf = 0;
+    var raf = 0, last = null;
     list.addEventListener('pointermove', function (e) {
-      if (!wide.matches || raf) return;
+      var c = e.target.closest ? e.target.closest('#strategy-list > div') : null;
+      if (!c || !list.contains(c)) return;
+      last = { c: c, x: e.clientX, y: e.clientY };
+      if (raf) return;
       raf = requestAnimationFrame(function () {
-        raf = 0;
-        var r = list.getBoundingClientRect();
-        list.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-        list.style.setProperty('--my', (e.clientY - r.top) + 'px');
+        raf = 0; if (!last) return;
+        var r = last.c.getBoundingClientRect();
+        last.c.style.setProperty('--mx', (last.x - r.left) + 'px');
+        last.c.style.setProperty('--my', (last.y - r.top) + 'px');
       });
     });
     new MutationObserver(prepare).observe(list, { childList: true });
     prepare();
-  } catch (err) { /* sin consola: se ven las tarjetas normales */ }
+  } catch (err) { /* sin mosaico: se ven las tarjetas normales */ }
 })();
 </script>
 </body>
