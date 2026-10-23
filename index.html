@@ -1162,97 +1162,107 @@ html:not(.dark) #save-modal-overlay button.bg-indigo-600, html:not(.dark) #qr-mo
 
 
 /* =====================================================================
-   ESTRATEGIAS ARQUITECTÓNICAS — MOSAICO EXPANSIBLE (v5)
-   Todas las estrategias visibles a la vez, en una rejilla densa que se adapta
-   al ancho. Cada tarjeta se despliega en su sitio (detalle con animación),
-   con un borde luminoso que sigue al cursor. Se activa solo cuando el script
-   aditivo añade .cv-acc; sin él se ven las tarjetas de siempre.
+   ESTRATEGIAS ARQUITECTÓNICAS — FICHAS CON PESTAÑAS VISIBLES (v6)
+   Todo el contenido se ve de entrada; la interacción es evidente: cada ficha
+   trae un selector con texto ("Si no se aplica" | "Material") y una pastilla
+   deslizante, más un interruptor general arriba. Se activa solo cuando el
+   script aditivo añade .cv-acc; sin él se ven las tarjetas de siempre.
    Solo presentación: el PDF lee innerText de estos textos, por eso nada se
-   oculta con display:none/visibility (se usa altura 0 y opacidad) y lo añadido
-   va en pseudo-elementos.
+   oculta con display:none/visibility (se usa opacidad y tamaño de fuente 0 solo
+   en la etiqueta repetida) y lo añadido va en pseudo-elementos o en el selector.
    ===================================================================== */
 html.cv-acc #strategy-list.cv-acc {
-  display: grid !important; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)) !important;
-  gap: 14px !important; align-items: start; counter-reset: strat;
+  display: grid !important; grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr)) !important;
+  gap: 14px !important; align-items: stretch; counter-reset: strat;
 }
 html.cv-acc #strategy-list.cv-acc > div {
-  position: relative; display: block !important; counter-increment: none !important; margin: 0; cursor: pointer; overflow: hidden;
-  padding: 1.15rem 1.25rem 1.2rem !important; border-radius: 18px !important; border: 1px solid var(--cv-line2) !important;
-  background: radial-gradient(280px circle at var(--mx, 100%) var(--my, 0%), var(--cv-accent-soft), transparent 72%), var(--cv-surface) !important;
+  position: relative; display: flex !important; flex-direction: column; counter-increment: none !important; margin: 0; overflow: hidden;
+  padding: 1.2rem 1.25rem 1.15rem !important; border-radius: 18px !important; border: 1px solid var(--cv-line2) !important;
+  background: radial-gradient(300px circle at var(--mx, 100%) var(--my, 0%), var(--cv-accent-soft), transparent 72%), var(--cv-surface) !important;
   box-shadow: var(--cv-shadow) !important; opacity: 1 !important; animation: none !important;
   transition: border-color .4s ease, box-shadow .5s ease, transform .5s var(--cv-ease) !important;
 }
 html.cv-acc #strategy-list.cv-acc > div:hover { transform: translateY(-2px) !important; border-color: var(--cv-accent-line) !important; box-shadow: var(--cv-shadow-lg) !important; }
-html.cv-acc #strategy-list.cv-acc > div.cv-open { border-color: var(--cv-accent-line) !important; }
 
 /* borde luminoso que sigue al cursor */
 html.cv-acc #strategy-list.cv-acc > div::before {
-  content: '' !important; position: absolute; inset: 0; right: auto; top: 0; width: auto; height: auto; padding: 1px; border-radius: inherit; pointer-events: none; opacity: 0;
-  background: radial-gradient(200px circle at var(--mx, 50%) var(--my, 50%), var(--cv-accent), transparent 70%); transform: none;
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
-  transition: opacity .4s ease;
+  content: '' !important; position: absolute; inset: 0; right: auto; top: 0; width: auto; height: auto; padding: 1px; border-radius: inherit; pointer-events: none; opacity: 0; transform: none;
+  background: radial-gradient(200px circle at var(--mx, 50%) var(--my, 50%), var(--cv-accent), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; transition: opacity .4s ease;
 }
-html.cv-acc #strategy-list.cv-acc > div:hover::before, html.cv-acc #strategy-list.cv-acc > div.cv-open::before { opacity: 1; }
-
-/* indicador + / × */
-html.cv-acc #strategy-list.cv-acc > div::after, html.cv-acc #strategy-list.cv-acc > div:hover::after {
-  content: '+' !important; position: absolute; left: auto; right: 1rem; top: 1rem; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--cv-line2); border-radius: 50%; background: none; pointer-events: none;
-  font: 300 18px/1 'Space Grotesk', sans-serif; color: var(--cv-ink3); transform: none !important; transition: transform .5s var(--cv-spring), color .3s ease, border-color .3s ease, background-color .3s ease;
-}
-html.cv-acc #strategy-list.cv-acc > div:hover::after { color: var(--cv-accent); border-color: var(--cv-accent-line); }
-html.cv-acc #strategy-list.cv-acc > div.cv-open::after { transform: rotate(45deg) !important; color: #fff; background: var(--cv-accent); border-color: var(--cv-accent); }
-html.dark.cv-acc #strategy-list.cv-acc > div.cv-open::after { color: #04201c; }
+html.cv-acc #strategy-list.cv-acc > div:hover::before { opacity: 1; }
+html.cv-acc #strategy-list.cv-acc > div::after, html.cv-acc #strategy-list.cv-acc > div:hover::after { content: none !important; }
 
 /* título con numeral */
 html.cv-acc #strategy-list.cv-acc > div > p:first-child {
-  counter-increment: strat; display: flex !important; align-items: center; gap: .75rem; margin: 0 !important; padding: 0 2.4rem 0 0 !important; position: relative; z-index: 1;
+  counter-increment: strat; display: flex !important; align-items: center; gap: .8rem; margin: 0 !important; padding: 0 !important; position: relative; z-index: 1;
   font: 700 12.5px/1.35 'Space Grotesk', sans-serif !important; letter-spacing: .1em !important; color: var(--cv-ink) !important;
 }
 html.cv-acc #strategy-list.cv-acc > div > p:first-child::before {
   content: counter(strat, decimal-leading-zero) !important; position: static; flex: none; width: auto; height: auto; margin: 0; background: none; transform: none; opacity: 1;
-  font: italic 600 22px/1 'Playfair Display', Georgia, serif; letter-spacing: -.01em; color: transparent;
+  font: italic 600 26px/1 'Playfair Display', Georgia, serif; letter-spacing: -.01em; color: transparent;
   background-image: linear-gradient(135deg, var(--cv-accent), #38bdf8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
 html.cv-acc #strategy-list.cv-acc > div > p:first-child::after { content: none !important; }
-html.cv-acc #strategy-list.cv-acc > div > p:first-child:focus-visible { outline: 2px solid var(--cv-accent); outline-offset: 4px; border-radius: 6px; }
-
-/* descripción: 3 líneas cerrada, completa abierta */
 html.cv-acc #strategy-list.cv-acc > div > p:nth-child(2) {
-  margin: .7rem 0 0 !important; font-size: 13.5px !important; line-height: 1.62 !important; color: var(--cv-ink2) !important;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+  flex: 1 1 auto; margin: .7rem 0 0 !important; font-size: 13.5px !important; line-height: 1.62 !important; color: var(--cv-ink2) !important;
 }
-html.cv-acc #strategy-list.cv-acc > div.cv-open > p:nth-child(2) { -webkit-line-clamp: unset; line-clamp: unset; display: block; }
 
-/* cajón de detalles */
-html.cv-acc #strategy-list.cv-acc > div > .border-t {
-  display: grid; gap: 14px; overflow: hidden; max-height: 0; opacity: 0; margin: 0 !important; padding: 0 !important; border: 0 !important;
-  transition: max-height .75s var(--cv-ease), opacity .5s ease, padding .5s var(--cv-ease), margin .5s var(--cv-ease);
+/* selector con pestañas (lo inserta el script) */
+.cv-tabs {
+  position: relative; display: grid; grid-template-columns: 1fr 1fr; margin-top: 1rem; padding: 4px; border-radius: 13px;
+  background: var(--cv-sunken); border: 1px solid var(--cv-line); isolation: isolate;
 }
-html.cv-acc #strategy-list.cv-acc > div.cv-open > .border-t {
-  max-height: 460px; opacity: 1; margin: 1rem 0 0 !important; padding: 1rem 0 0 !important; border-top: 1px solid var(--cv-line) !important;
+.cv-tabs::before {
+  content: ''; position: absolute; z-index: -1; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 10px;
+  background: rgba(244,63,94,.16); box-shadow: inset 0 0 0 1px rgba(244,63,94,.40), 0 6px 14px -8px rgba(244,63,94,.55);
+  transition: transform .55s var(--cv-spring), background-color .3s ease, box-shadow .3s ease;
+}
+#strategy-list > div[data-tab="1"] .cv-tabs::before {
+  transform: translateX(100%); background: rgba(16,185,129,.16); box-shadow: inset 0 0 0 1px rgba(16,185,129,.40), 0 6px 14px -8px rgba(16,185,129,.55);
+}
+.cv-tabs button {
+  display: flex; align-items: center; justify-content: center; gap: .4rem; padding: .62rem .3rem; border: 0; background: none; cursor: pointer; border-radius: 10px;
+  font: 700 10px/1.2 'Space Grotesk', sans-serif; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; color: var(--cv-ink3); transition: color .3s ease;
+}
+.cv-tabs button::before {
+  content: '!'; flex: none; width: 17px; height: 17px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%;
+  font: 700 10px/1 'Space Grotesk', sans-serif; color: #f43f5e; background: rgba(244,63,94,.14); box-shadow: inset 0 0 0 1px rgba(244,63,94,.35);
+}
+.cv-tabs button[data-i="1"]::before { content: '\25C6'; font-size: 8px; color: #10b981; background: rgba(16,185,129,.14); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
+.cv-tabs button[aria-selected="true"] { color: var(--cv-ink); }
+.cv-tabs button:hover { color: var(--cv-ink); }
+.cv-tabs button:focus-visible { outline: 2px solid var(--cv-accent); outline-offset: 1px; }
+
+/* panel de contenido: ambos textos apilados; solo se ve el activo */
+html.cv-acc #strategy-list.cv-acc > div > .border-t {
+  display: grid; margin: .7rem 0 0 !important; padding: 0 !important; border: 0 !important; overflow: visible;
 }
 html.cv-acc #strategy-list.cv-acc .border-t > p, html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(1), html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(2) {
-  position: relative; display: block; margin: 0 !important; padding: 0 0 0 38px !important; min-height: 28px; background: none !important; border: 0 !important; border-radius: 0;
-  font-size: 12.5px !important; line-height: 1.55 !important; color: var(--cv-ink2) !important;
+  grid-area: 1 / 1; margin: 0 !important; padding: .85rem 1rem !important; border-radius: 12px; border: 1px solid; border-left-width: 3px;
+  font-size: 12.5px !important; line-height: 1.58 !important; color: var(--cv-ink2) !important; transition: opacity .35s ease, transform .55s var(--cv-ease);
 }
-html.cv-acc #strategy-list.cv-acc .border-t > p::before {
-  position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 700 12px/1 'Space Grotesk', sans-serif;
-}
-html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(1)::before { content: '!'; color: #f43f5e; background: rgba(244,63,94,.12); box-shadow: inset 0 0 0 1px rgba(244,63,94,.35); }
-html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(2)::before { content: '\25C6'; font-size: 10px; color: #10b981; background: rgba(16,185,129,.12); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
-html.cv-acc #strategy-list.cv-acc .border-t > p > span:first-child { font-size: 10.5px; letter-spacing: .08em; }
+html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(1), html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(1) { background: rgba(244,63,94,.07) !important; border-color: rgba(244,63,94,.28) !important; }
+html.cv-acc #strategy-list.cv-acc .border-t > p:nth-child(2), html.cv-acc:not(.dark) #strategy-list.cv-acc .border-t > p:nth-child(2) { background: rgba(16,185,129,.08) !important; border-color: rgba(16,185,129,.30) !important; }
+html.cv-acc #strategy-list.cv-acc .border-t > p > span:first-child { font-size: 0; }
+html.cv-acc #strategy-list.cv-acc .border-t > p { text-indent: -.28em; }
+#strategy-list > div[data-tab="0"] .border-t > p:nth-child(2) { opacity: 0; transform: translateX(18px); pointer-events: none; }
+#strategy-list > div[data-tab="1"] .border-t > p:nth-child(1) { opacity: 0; transform: translateX(-18px); pointer-events: none; }
 
-/* barra de herramientas */
-.cv-tools { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: -.2rem 0 .9rem; padding: 0 .25rem; }
+/* interruptor general */
+.cv-tools { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: -.2rem 0 .95rem; padding: 0 .25rem; }
 .cv-tools[hidden] { display: none !important; }
 .cv-tools-hint { font: 600 10.5px 'Space Grotesk', sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--cv-ink3); }
-.cv-tools-btns { display: inline-flex; gap: 8px; }
+.cv-tools-all { display: inline-flex; align-items: center; gap: .7rem; }
+.cv-tools-all > span { font: 600 10.5px 'Space Grotesk', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--cv-ink3); }
+.cv-tools-btns { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 999px; background: var(--cv-sunken); border: 1px solid var(--cv-line); isolation: isolate; }
 .cv-tools-btns button {
-  padding: .45rem .9rem; border-radius: 999px; border: 1px solid var(--cv-line2); background: var(--cv-surface2); color: var(--cv-ink2);
-  font: 600 10.5px 'Space Grotesk', sans-serif; letter-spacing: .12em; text-transform: uppercase;
+  padding: .45rem 1rem; border: 0; background: none; border-radius: 999px; cursor: pointer; color: var(--cv-ink3);
+  font: 700 10.5px 'Space Grotesk', sans-serif; letter-spacing: .1em; text-transform: uppercase; transition: color .3s ease, background-color .3s ease, box-shadow .3s ease;
 }
-.cv-tools-btns button:hover { border-color: var(--cv-accent-line); color: var(--cv-accent); }
+.cv-tools-btns button:hover { color: var(--cv-ink); }
+.cv-tools-btns button[aria-pressed="true"][data-i="0"] { color: var(--cv-ink); background: rgba(244,63,94,.16); box-shadow: inset 0 0 0 1px rgba(244,63,94,.40); }
+.cv-tools-btns button[aria-pressed="true"][data-i="1"] { color: var(--cv-ink); background: rgba(16,185,129,.16); box-shadow: inset 0 0 0 1px rgba(16,185,129,.40); }
 @media (prefers-reduced-motion: reduce) { html.cv-acc #strategy-list.cv-acc > div:hover { transform: none !important; } }
 
 /* ---------- Movimiento reducido (solo cromo de interfaz; no toca D3/Leaflet/SVG) ---------- */
@@ -5935,50 +5945,63 @@ async function exportZIP() {
     }
   } catch (err) { root.classList.remove('cv-ready'); }
 
-  /* 2) Mosaico expansible de estrategias (abrir/cerrar, teclado y borde luminoso) */
+  /* 2) Fichas de estrategias con pestañas visibles (riesgo / material) y borde luminoso */
   try {
     var list = document.getElementById('strategy-list');
     if (!list) return;
     var tools = document.createElement('div');
     tools.id = 'cv-strat-tools'; tools.className = 'cv-tools'; tools.hidden = true;
-    tools.innerHTML = '<span class="cv-tools-hint"></span><span class="cv-tools-btns"><button type="button" data-a="open">Expandir todo</button><button type="button" data-a="close">Contraer todo</button></span>';
+    tools.innerHTML = '<span class="cv-tools-hint"></span><span class="cv-tools-all"><span>Ver en todas:</span><span class="cv-tools-btns"><button type="button" data-i="0" aria-pressed="true">Si no se aplica</button><button type="button" data-i="1" aria-pressed="false">Material</button></span></span>';
     list.parentNode.insertBefore(tools, list);
+    var hint = tools.firstChild;
     var cards = function () { return Array.prototype.slice.call(list.children); };
-    function setOpen(c, on) {
-      c.classList.toggle('cv-open', on);
-      var t = c.firstElementChild; if (t) t.setAttribute('aria-expanded', on ? 'true' : 'false');
+    function setTab(c, i) {
+      c.setAttribute('data-tab', String(i));
+      var bs = c.querySelectorAll('.cv-tabs button');
+      Array.prototype.forEach.call(bs, function (b, k) { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.setAttribute('tabindex', k === i ? '0' : '-1'); });
+    }
+    function syncTools() {
+      var withTabs = cards().filter(function (c) { return c.querySelector('.cv-tabs'); });
+      var cur = withTabs.length && withTabs.every(function (c) { return c.getAttribute('data-tab') === withTabs[0].getAttribute('data-tab'); }) ? withTabs[0].getAttribute('data-tab') : null;
+      Array.prototype.forEach.call(tools.querySelectorAll('.cv-tools-btns button'), function (b) {
+        b.setAttribute('aria-pressed', cur !== null && b.getAttribute('data-i') === cur ? 'true' : 'false');
+      });
     }
     function prepare() {
       var cs = cards();
       cs.forEach(function (c) {
-        var t = c.firstElementChild;
-        if (!t || t.hasAttribute('tabindex')) return;
-        t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); t.setAttribute('aria-expanded', 'false');
+        if (c.querySelector('.cv-tabs')) return;
+        var det = c.querySelector(':scope > .border-t');
+        if (!det || det.children.length < 2) return;
+        var bar = document.createElement('div');
+        bar.className = 'cv-tabs'; bar.setAttribute('role', 'tablist');
+        bar.innerHTML = '<button type="button" role="tab" data-i="0">Si no se aplica</button><button type="button" role="tab" data-i="1">Material</button>';
+        c.insertBefore(bar, det);
+        setTab(c, 0);
       });
       list.classList.toggle('cv-acc', cs.length > 0);
       root.classList.toggle('cv-acc', cs.length > 0);
       tools.hidden = cs.length === 0;
-      tools.firstChild.textContent = cs.length + (cs.length === 1 ? ' estrategia' : ' estrategias') + ' · toca una para ver el detalle';
+      hint.textContent = cs.length + (cs.length === 1 ? ' estrategia' : ' estrategias');
+      syncTools();
     }
     list.addEventListener('click', function (e) {
-      var c = e.target.closest ? e.target.closest('#strategy-list > div') : null;
-      if (!c || !list.contains(c)) return;
-      var sel = window.getSelection ? String(window.getSelection()) : '';
-      if (sel) return;
-      setOpen(c, !c.classList.contains('cv-open'));
-    });
-    tools.addEventListener('click', function (e) {
-      var b = e.target.closest ? e.target.closest('button[data-a]') : null; if (!b) return;
-      var on = b.getAttribute('data-a') === 'open';
-      cards().forEach(function (c) { setOpen(c, on); });
+      var b = e.target.closest ? e.target.closest('.cv-tabs button') : null; if (!b) return;
+      var c = b.closest('#strategy-list > div'); if (!c) return;
+      setTab(c, parseInt(b.getAttribute('data-i'), 10) || 0); syncTools();
     });
     list.addEventListener('keydown', function (e) {
-      var t = e.target && e.target.closest ? e.target.closest('#strategy-list > div > p:first-child') : null;
-      if (!t) return;
-      var cs = cards(), i = cs.indexOf(t.parentElement), k = e.key;
-      if (k === 'Enter' || k === ' ') { e.preventDefault(); setOpen(t.parentElement, !t.parentElement.classList.contains('cv-open')); return; }
-      var j = (k === 'ArrowRight' || k === 'ArrowDown') ? i + 1 : (k === 'ArrowLeft' || k === 'ArrowUp') ? i - 1 : -1;
-      if (j >= 0 && j < cs.length) { e.preventDefault(); cs[j].firstElementChild.focus(); }
+      var b = e.target.closest ? e.target.closest('.cv-tabs button') : null; if (!b) return;
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      var c = b.closest('#strategy-list > div'), i = e.key === 'ArrowRight' ? 1 : 0;
+      setTab(c, i); syncTools(); c.querySelectorAll('.cv-tabs button')[i].focus();
+    });
+    tools.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('button[data-i]') : null; if (!b) return;
+      var i = parseInt(b.getAttribute('data-i'), 10) || 0;
+      cards().forEach(function (c) { if (c.querySelector('.cv-tabs')) setTab(c, i); });
+      syncTools();
     });
     var raf = 0, last = null;
     list.addEventListener('pointermove', function (e) {
@@ -5995,7 +6018,7 @@ async function exportZIP() {
     });
     new MutationObserver(prepare).observe(list, { childList: true });
     prepare();
-  } catch (err) { /* sin mosaico: se ven las tarjetas normales */ }
+  } catch (err) { /* sin fichas: se ven las tarjetas normales */ }
 })();
 </script>
 </body>
